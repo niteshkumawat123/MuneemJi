@@ -1,0 +1,93 @@
+#cancel-if {
+    display: flex;
+    justify-content: flex-end;
+    padding: 5px 10px;
+}
+
+.formats-download-left {
+    background-color: #FAD8D8;
+}
+
+.invoice-format-dialog {
+    border-radius: 8px 0 0 8px;
+    margin-top: 5em !important;
+}
+
+.invoice-format-body {
+    padding: 0 !important
+}
+
+.invoice-formats-right {
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.formats-logo {
+    width: 136px;
+    height: 31px;
+    margin-top: 25px;
+}
+
+.formats-desktop {
+    width: 407px;
+    margin-top: 28px;
+    max-width: 100%;
+}
+
+.formats-para-if {
+    color: #71748E;
+    font-size: 14px;
+    margin-top: 16px;
+}
+
+.formats-left-content {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.format-popup-header {
+    color: #3F4155;
+    font-size: 24px !important;
+    font-weight: 500;
+    text-align: center;
+}
+
+.format-label-if {
+    color: #71748E;
+    font-size: 12px;
+    margin-bottom: 9px;
+    margin-top: 16px;
+}
+
+.format-input::placeholder,
+#business-type,
+.format-input {
+    color: #9B9EB8 !important;
+    font-size: 14px !important;
+}
+
+.format-input {
+    border-radius: 6px !important;
+    border: 1px solid #BDC0D6 !important;
+    background: #FFF;
+}
+
+.formats-form-group {
+    width: 85%;
+}
+
+.submit-button-container {
+    width: 85%;
+    margin-top: 28px;
+}
+
+#submit-formats {
+    background-color: #ed1a3b !important;
+    border-radius: 24px !important;
+    border: none;
+    width: 100% !important;
+}

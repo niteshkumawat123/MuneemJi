@@ -1,0 +1,400 @@
+Uri: https://dev.visualwebsiteoptimizer.com/
+File Name: E:\New\New Web Sites\vyaparapp.in\index.htm
+Content Type: application/javascript
+
+Uri: https://fonts.googleapis.com/css2?family=Poppins&display=swap
+File Name: E:\New\New Web Sites\vyaparapp.in\css2
+Content Type: text/css
+
+Uri: https://fonts.gstatic.com/s/poppins/v23/pxiEyp8kv8JHgFVrFJA.ttf
+File Name: E:\New\New Web Sites\vyaparapp.in\s\poppins\v23\pxiEyp8kv8JHgFVrFJA.ttf
+Content Type: font/ttf
+
+Uri: https://vyaparapp.in/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js
+File Name: E:\New\New Web Sites\vyaparapp.in\cdn-cgi\scripts\5c5dd728\cloudflare-static\email-decode.min.js
+Content Type: application/javascript
+
+Uri: https://vyaparapp.in/distributor/create
+File Name: E:\New\New Web Sites\vyaparapp.in\distributor\create.htm
+Content Type: text/html
+
+Uri: https://vyaparapp.in/v/z/wp-content/plugins/betterdocs/assets/blocks/categorygrid/frontend.js?ver=a4a7e7ed1fd9a2aaf85a
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\plugins\betterdocs\assets\blocks\categorygrid\frontend.js
+Content Type: application/javascript
+
+Uri: https://vyaparapp.in/v/z/wp-content/plugins/betterdocs/assets/shortcodes/js/search-modal.js?ver=bdf2e7264f82ed923d6c
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\plugins\betterdocs\assets\shortcodes\js\search-modal.js
+Content Type: application/javascript
+
+Uri: https://vyaparapp.in/v/z/wp-content/plugins/page-list/css/page-list.css?ver=5.6
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\plugins\page-list\css\page-list.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/plugins/tenweb-speed-optimizer/includes/external/js/vanilla-lazyload/lazyload.min.js
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\plugins\tenweb-speed-optimizer\includes\external\js\vanilla-lazyload\lazyload.min.js
+Content Type: application/javascript
+
+Uri: https://vyaparapp.in/v/z/wp-content/themes/sydney-pro-ii/css/bootstrap/bootstrap.min.css?ver=1
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\themes\sydney-pro-ii\css\bootstrap\bootstrap.min.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/themes/sydney-pro-ii/css/components/elementor.min.css?ver=20220824
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\themes\sydney-pro-ii\css\components\elementor.min.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/themes/sydney-pro-ii/css/modules/ext-footer.min.css?ver=6.5.4
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\themes\sydney-pro-ii\css\modules\ext-footer.min.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/themes/sydney-pro-ii/css/modules/ext-header.css?ver=20220223
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\themes\sydney-pro-ii\css\modules\ext-header.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/themes/sydney-pro-ii/css/styles.min.css?ver=20230208
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\themes\sydney-pro-ii\css\styles.min.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/themes/sydney-pro-ii/fonts/fontello.min.css?ver=6.5.4
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\themes\sydney-pro-ii\fonts\fontello.min.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/themes/sydney-pro-ii/style.css?ver=20230208
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\themes\sydney-pro-ii\style.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2022/09/cropped-favicon-32x32-1-180x180.png
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2022\09\cropped-favicon-32x32-1-180x180.png
+Content Type: image/png
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2022/09/cropped-favicon-32x32-1-192x192.png
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2022\09\cropped-favicon-32x32-1-192x192.png
+Content Type: image/png
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2022/09/cropped-favicon-32x32-1-32x32.png
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2022\09\cropped-favicon-32x32-1-32x32.png
+Content Type: image/png
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2022/12/logo.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2022\12\logo.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/02/invoice-format-bg-image-768x347.png
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\02\invoice-format-bg-image-768x347.png
+Content Type: image/png
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/02/invoice-format-bg-image.png
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\02\invoice-format-bg-image.png
+Content Type: image/png
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer-1000x741.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer-1000x741.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer-1024x759.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer-1024x759.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer-230x170.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer-230x170.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer-300x222.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer-300x222.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer-350x259.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer-350x259.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer-480x356.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer-480x356.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer-600x445.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer-600x445.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer-768x569.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer-768x569.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/10-M-Customer.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\10-M-Customer.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Dedicated-Support-150x150.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Dedicated-Support-150x150.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Dedicated-Support-230x230.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Dedicated-Support-230x230.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Dedicated-Support-300x300.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Dedicated-Support-300x300.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Dedicated-Support-350x350.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Dedicated-Support-350x350.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Dedicated-Support.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Dedicated-Support.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Fast-Payout-150x150.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Fast-Payout-150x150.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Fast-Payout-230x230.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Fast-Payout-230x230.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Fast-Payout-300x300.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Fast-Payout-300x300.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Fast-Payout-350x350.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Fast-Payout-350x350.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Fast-Payout.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Fast-Payout.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Group-1000001578-1.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Group-1000001578-1.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/partner-features-1.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\partner-features-1.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/partner-stats-2.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\partner-stats-2.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/partner-stats-3.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\partner-stats-3.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/why-partner.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\why-partner.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Zero-Investment-150x150.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Zero-Investment-150x150.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Zero-Investment-230x230.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Zero-Investment-230x230.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Zero-Investment-300x300.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Zero-Investment-300x300.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Zero-Investment-350x350.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Zero-Investment-350x350.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/2024/12/Zero-Investment.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\2024\12\Zero-Investment.webp
+Content Type: 
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/wp-coder/style-48.css?ver=3.5.1_1735198960
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\wp-coder\style-48.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/wp-coder/style-49.css?ver=3.5.1_1744892719
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\wp-coder\style-49.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/wp-coder/style-51.css?ver=3.5.1_1737616331
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\wp-coder\style-51.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-content/uploads/wp-coder/style-52.css?ver=3.5.1_1735193159
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-content\uploads\wp-coder\style-52.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-includes/css/dist/block-library/style.min.css?ver=6.5.4
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-includes\css\dist\block-library\style.min.css
+Content Type: text/css
+
+Uri: https://vyaparapp.in/v/z/wp-includes/js/jquery/jquery-migrate.min.js?ver=3.4.1
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-includes\js\jquery\jquery-migrate.min.js
+Content Type: application/javascript
+
+Uri: https://vyaparapp.in/v/z/wp-includes/js/jquery/jquery.min.js?ver=3.7.1
+File Name: E:\New\New Web Sites\vyaparapp.in\v\z\wp-includes\js\jquery\jquery.min.js
+Content Type: application/javascript
+
+Uri: https://vyaparapp.in/wp-json/
+File Name: E:\New\New Web Sites\vyaparapp.in\wp-json\index.htm
+Content Type: application/json
+
+Uri: https://vyaparapp.in/wp-json/oembed/1.0/embed?url=https:%2F%2Fvyaparapp.in%2Fdistributor%2Fcreate
+File Name: E:\New\New Web Sites\vyaparapp.in\wp-json\oembed\1.0\embed
+Content Type: application/json
+
+Uri: https://vyaparapp.in/wp-json/oembed/1.0/embed?url=https:%2F%2Fvyaparapp.in%2Fdistributor%2Fcreate&format=xml
+File Name: E:\New\New Web Sites\vyaparapp.in\wp-json\oembed\1.0\embed-1
+Content Type: text/xml
+
+Uri: https://vyaparapp.in/wp-json/wp/v2/pages/54090
+File Name: E:\New\New Web Sites\vyaparapp.in\wp-json\wp\v2\pages\54090
+Content Type: application/json
+
+Uri: https://vyaparwebfiles.vypcdn.in/css/bootstrap-new/bootstrap-grid.css?v=0.4
+File Name: E:\New\New Web Sites\vyaparapp.in\css\bootstrap-new\bootstrap-grid.css
+Content Type: text/css
+
+Uri: https://vyaparwebfiles.vypcdn.in/css/bootstrap-new/bootstrap-reboot.css?v=0.2
+File Name: E:\New\New Web Sites\vyaparapp.in\css\bootstrap-new\bootstrap-reboot.css
+Content Type: text/css
+
+Uri: https://vyaparwebfiles.vypcdn.in/css/bootstrap-new/bootstrap.css?v=0.3
+File Name: E:\New\New Web Sites\vyaparapp.in\css\bootstrap-new\bootstrap.css
+Content Type: text/css
+
+Uri: https://vyaparwebfiles.vypcdn.in/css/bootstrap-new/style.css?v=1.7
+File Name: E:\New\New Web Sites\vyaparapp.in\css\bootstrap-new\style.css
+Content Type: text/css
+
+Uri: https://vyaparwebfiles.vypcdn.in/css/exit-popup/exit-pop-up.css?v=0.2
+File Name: E:\New\New Web Sites\vyaparapp.in\css\exit-popup\exit-pop-up.css
+Content Type: text/css
+
+Uri: https://vyaparwebfiles.vypcdn.in/css/intelInputCss/intlTelInput.css?v=0.2
+File Name: E:\New\New Web Sites\vyaparapp.in\css\intelInputCss\intlTelInput.css
+Content Type: text/css
+
+Uri: https://vyaparwebfiles.vypcdn.in/css/invoice-format-download-popup-revamp.css?ver=3.5.1_1745568179
+File Name: E:\New\New Web Sites\vyaparapp.in\css\invoice-format-download-popup-revamp.css
+Content Type: text/css
+
+Uri: https://vyaparwebfiles.vypcdn.in/css/scroll-popup-desktop-v2.css?v=1.0
+File Name: E:\New\New Web Sites\vyaparapp.in\css\scroll-popup-desktop-v2.css
+Content Type: text/css
+
+Uri: https://vyaparwebfiles.vypcdn.in/js/intelTelJS/intlTelInput.js
+File Name: E:\New\New Web Sites\vyaparapp.in\js\intelTelJS\intlTelInput.js
+Content Type: application/javascript
+
+Uri: https://vyaparwebfiles.vypcdn.in/js/invoicing-software-for-windows-thumbnail.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\js\invoicing-software-for-windows-thumbnail.webp
+Content Type: image/webp
+
+Uri: https://vyaparwebfiles.vypcdn.in/js/wp/download-utils-wp.js?v=2.9
+File Name: E:\New\New Web Sites\vyaparapp.in\js\wp\download-utils-wp.js
+Content Type: application/javascript
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/download_desktop_popup_image.png
+File Name: E:\New\New Web Sites\vyaparapp.in\download_desktop_popup_image.png
+Content Type: image/png
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/img/flags.png
+File Name: E:\New\New Web Sites\vyaparapp.in\img\flags.png
+Content Type: image/png
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/logo1.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\logo1.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/become-a-partner.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\become-a-partner.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/download-strip.gif
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\download-strip.gif
+Content Type: image/gif
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/generate-e-invoice.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\generate-e-invoice.webp
+Content Type: image/webp
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/home-page-revamp/new-vyapar-hero.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\home-page-revamp\new-vyapar-hero.webp
+Content Type: image/webp
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/logo-maker/success-tick-gif.gif
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\logo-maker\success-tick-gif.gif
+Content Type: image/gif
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/mask-scroll-bg.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\mask-scroll-bg.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/Bhikaram-removebg-preview-Photoroom.png
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\Bhikaram-removebg-preview-Photoroom.png
+Content Type: image/png
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/business-category.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\business-category.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/business-type.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\business-type.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/email-icon.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\email-icon.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/JAIMIN_SHAH-removebg-preview.png
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\JAIMIN_SHAH-removebg-preview.png
+Content Type: image/png
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/phone-icon.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\phone-icon.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/pincode.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\pincode.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/review-40.png
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\review-40.png
+Content Type: image/png
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/stars-carousel.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\stars-carousel.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/partner-revamp/TNIT-removebg-preview 2.png
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\partner-revamp\TNIT-removebg-preview 2.png
+Content Type: image/png
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/program-features-bg.svg
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\program-features-bg.svg
+Content Type: image/svg+xml
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/marketing-images/images/qr-code.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-images\images\qr-code.webp
+Content Type: image/webp
+
+Uri: https://vyaparwebsiteimages.vypcdn.in/scroll-popup-step-2.webp
+File Name: E:\New\New Web Sites\vyaparapp.in\scroll-popup-step-2.webp
+Content Type: image/webp
+
+Uri: https://webfiles.vyaparapp.in/marketing-css-file/footer-revamp-common.css?v=0.1
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-css-file\footer-revamp-common.css
+Content Type: text/css
+
+Uri: https://webfiles.vyaparapp.in/marketing-css-file/marketing-scroll-popup.css?v=0.4
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-css-file\marketing-scroll-popup.css
+Content Type: text/css
+
+Uri: https://webfiles.vyaparapp.in/marketing-js-file/bootstrap/js/bootstrap.min.js
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-js-file\bootstrap\js\bootstrap.min.js
+Content Type: application/javascript
+
+Uri: https://webfiles.vyaparapp.in/marketing-js-file/jquery-3.4.1.min.js
+File Name: E:\New\New Web Sites\vyaparapp.in\marketing-js-file\jquery-3.4.1.min.js
+Content Type: application/javascript
+
+Uri: https://www.facebook.com/tr?id=854160030134228&ev=PageView&noscript=1
+File Name: E:\New\New Web Sites\vyaparapp.in\tr
+Content Type: text/plain
+

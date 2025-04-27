@@ -1,0 +1,842 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+.custom-courasel-2-heading,
+.tab-everything-for-business-heading,
+.custom-caurosel-2,
+.vertical-Tab-Details-2-group,
+.tab-everything-for-business-2-group,
+.tab-everything-for-business-check-mark,
+.tab-everything-for-business-phone,
+.tab-everything-for-business-demo-text {
+    display: none !important;
+}
+
+body {
+    font-family: Poppins;
+}
+
+.hero-container-group {
+    margin: 0;
+}
+
+.hero-container-block {
+    background-image: url("https://vyaparapp.in/v/z/wp-content/uploads/2024/02/invoice-format-bg-image.png");
+    width: 119%;
+    height: 525px;
+    overflow: hidden;
+    position: relative;
+    background-repeat: no-repeat;
+    background-size: 84%;
+    background-position-y: -125px;
+    margin-top: -30px;
+    margin-bottom: 0px !important;
+}
+
+.invoice-hero-image {
+    margin-top: 0%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.hero-content {
+    padding-left: 7%;
+    width: 30%;
+    padding-top: 5%;
+    padding-right: 5%;
+}
+
+.format-invoice-list {
+    list-style-type: none;
+    color: #71748E;
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+    padding: 0;
+}
+
+.hero-para {
+    font-family: Poppins;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 28px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #71748E;
+    margin-bottom: 0.5rem !important;
+}
+
+.hero-heading {
+    font-family: Poppins;
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 38px;
+    letter-spacing: 0em;
+    text-align: left;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem !important;
+}
+
+.format-invoice-list {
+    color: #71748E;
+    font-family: Poppins;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: 40px !important;
+    letter-spacing: 0em;
+    text-align: left;
+    list-style-type: none;
+    padding: 0;
+}
+
+.format-download {
+    border: 2px solid red;
+    background: white;
+    color: red;
+}
+
+.standard-download-button-invoice-excel a {
+    padding-left: 35px !important;
+    border-radius: 25px !important;
+    font-size: 20px !important;
+    padding-right: 35px !important;
+}
+
+.contact-for-support-col {
+    gap: 0.4rem;
+}
+
+.everything-for-business {
+    background: #F9FAFA;
+    padding-bottom: 1rem;
+}
+
+.page-wrap {
+    padding-top: 0 !important;
+    margin-top: -1rem !important;
+}
+
+.hero-download-btn-columns {
+    gap: 0;
+}
+
+.invoice-format-columns {
+    padding-bottom: 0.75rem;
+}
+
+.download-format-text-excel-invoice a {
+    padding: 11px !important;
+    padding-left: 45px !important;
+    padding-right: 45px !important;
+    border-radius: 25px !important;
+}
+
+.tools-tailored-for-business {
+    font-family: Poppins;
+}
+
+.tools-tailored-for-business-heading {
+    font-size: 32px;
+    font-weight: 600;
+    line-height: 48px;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #3F4155;
+    font-family: poppins;
+}
+
+.tailored-business-tile {
+    font-family: Poppins;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+    letter-spacing: 0em;
+    text-align: center;
+    margin: 0.3rem 0 0.5rem 0 !important;
+}
+
+.tailored-business-para {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 26px;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #71748E;
+}
+
+.business-types-heading {
+    color: blue;
+}
+
+.tools-tailored-business-Items {
+    display: flex;
+    justify-content: center;
+}
+
+#user-phone-number::placeholder {
+    color: #757575 !important;
+}
+
+.input_effect {
+    color: black !important;
+}
+
+@media only screen and (max-width: 576px) {
+    .contact-for-support-col {
+        gap: 0;
+    }
+    .contact-for-support {
+        text-align: center;
+    }
+    .hero-para {
+        text-align: center;
+    }
+    .download-for-mobile a {
+        border-radius: 25px !important;
+    }
+    .download-for-mobile {
+        margin-bottom: 30px;
+    }
+    .download-btn-stack {
+        align-items: center !important;
+    }
+    .hero-heading {
+        font-family: Poppins;
+        font-size: 32px;
+        font-weight: 600;
+        line-height: 50px;
+        letter-spacing: 0em;
+        text-align: left;
+        margin-bottom: 1rem;
+        text-align: center;
+        padding: 0 4rem;
+    }
+    .invoice-hero-image {
+        display: none;
+    }
+    .hero-content {
+        width: 100%;
+        padding: 1rem;
+        text-align: center;
+    }
+    .hero-container-block {
+        background-image: none;
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+        position: relative;
+        margin: 0;
+        display: none;
+    }
+    .format-invoice-list {
+        display: none;
+    }
+    .tools-tailored-business-group {
+        display: block !important;
+        width: 100%;
+        overflow: scroll;
+    }
+    .tools-tailored-business-Items {
+        display: block !important;
+        width: 285%;
+        padding: 0 4.4rem;
+    }
+    .tools-tailored-business-Item {
+        display: inline-block !important;
+        width: 25% !important;
+    }
+    .intro-section-padding-homepage {
+        display: flex;
+        overflow: scroll;
+    }
+}
+
+/* new styles */
+
+.hero-padding {
+    padding-top: 3em;
+}
+
+.tab-selected {
+    border: 1px solid #ed1a3b;
+    border-left: 10px solid #ed1a3b;
+    background: linear-gradient(90deg, #F5FAFF 0%, rgba(223, 239, 255, 0) 76.11%);
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+.intro-section-padding-homepage {
+    padding: 4em 15em 0 15em;
+    color: #314259 !important;
+}
+
+.homepage-columns {
+    gap: 0;
+}
+
+.homepage-cols-image {
+    margin-top: 20px !important;
+}
+
+.owl-dots {
+    display: none;
+}
+
+.pt-2em {
+    padding-top: 2em !important;
+}
+
+@media screen and (max-width:768px) {
+    .intro-section-padding {
+        overflow: scroll !important;
+        justify-content: flex-start !important;
+    }
+    .intro-section-container {
+        min-width: 35% !important;
+    }
+    .intro-section-padding-homepage {
+        padding: 2em 0em 0 1em !important;
+        text-align: left !important;
+        gap: 15px !important;
+    }
+    .owl-dots {
+        display: block;
+        margin-bottom: 10px;
+    }
+    .owl-dot {
+        background-color: #f2f2f2;
+        padding: 1em;
+        border-radius: 10px;
+    }
+    .owl-dot .active {
+        background-color: #CCCCCC;
+    }
+    .caouselNavDiv {
+        display: none;
+    }
+    .homepage-columns {
+        text-align: left !important;
+    }
+    .homepage-columns div p {
+        text-align: left !important;
+    }
+    .benefits-column {
+        display: flex;
+        flex-direction: row-reverse;
+        text-align: left !important;
+        gap: 0;
+    }
+    .benefits-column div h4 {
+        text-align: left;
+    }
+    .benefits-img {
+        float: left !important;
+    }
+    .hero-h1 {
+        text-align: left;
+        font-size: 46px !important;
+    }
+    .align-highlights-mob {
+        text-align: left !important;
+    }
+    .hero-padding {
+        padding-top: 0 !important;
+    }
+    .homepage-columns-left {
+        flex-direction: row !important;
+    }
+}
+
+.tab {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 20px;
+    justify-content: flex-end;
+}
+
+.margin-top-40px {
+    margin-top: 40px;
+}
+
+.header-main-wrapper li>a {
+    font-weight: 500 !important;
+}
+
+#home-nav {
+    margin-left: 0 !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.margin-bottom-0 {
+    margin-bottom: 0 !important;
+}
+
+.faq-answer-container {
+    width: 150%;
+    background-color: #FFE6EB;
+    border-radius: 15px;
+    padding: 1em;
+    color: black;
+}
+
+#tryMobileAppClose:hover {
+    background-color: white !important;
+}
+
+#smsVerificationClose {
+    background-color: white;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.hero-h1 {
+    font-size: 54px !important;
+}
+
+.homepage-columns-left {
+    gap: 0;
+    flex-direction: row-reverse;
+}
+
+/* Basic styling, you can customize this according to your needs */
+
+.tab-container {
+    display: flex;
+    overflow: hidden;
+    width: 80%;
+    /* Adjust the width as needed */
+    margin: 3rem auto;
+    /* Center the tab container */
+    height: 600px;
+    font-family: Poppins;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    color: #3F4155;
+}
+
+.tab-list {
+    width: 55%;
+    overflow-y: scroll;
+    font-size: 22px;
+    border: none;
+    background-color: #fff;
+    padding: 0 1em 1em 1em;
+    white-space: nowrap;
+}
+
+.tab {
+    cursor: pointer;
+    transition: background-color 0.3s;
+    height: 75px;
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+    margin-top: 15px !important;
+    padding: 2em;
+    box-shadow: 0 0 20px #00000029;
+    height: unset !important;
+    border-radius: 10px;
+    font-weight: bold !important;
+}
+
+.tab:hover {
+    background-color: #f0f0f0;
+    border-radius: 10px;
+}
+
+.tab.selected {
+    /*         border: 1px solid #238DF6;
+        border-left: 10px solid #238DF6;
+        background: linear-gradient(90deg, #F5FAFF 0%, rgba(223, 239, 255, 0) 76.11%); */
+    border-radius: 10px;
+    font-weight: 600;
+    background-color: #ebf4ff !important;
+    color: #2a353d !important;
+}
+
+.tab-content {
+    width: 55%;
+    padding: 0 20px;
+    line-height: 2;
+    overflow-y: scroll;
+}
+
+.tab-content-text {
+    color: black;
+    font-size: 14px !important;
+}
+
+.heading-vertical-tab {
+    text-align: center;
+    padding: 1rem;
+    font-size: 44px !important;
+    color: #3F4155;
+    font-family: poppins;
+}
+
+.tab-list {
+    background-color: #FAFAFA
+}
+
+.tab-list::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 11px;
+}
+
+.tab-list::-webkit-scrollbar:horizontal {
+    height: 5px;
+}
+
+.tab-list::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    background-color: #D9D9D9;
+}
+
+.tab-list::-webkit-scrollbar-track {
+    border-radius: 8px;
+}
+
+.tab-content::-webkit-scrollbar {
+    display: none;
+    width: 11px
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    background-color: #D9D9D9;
+}
+
+@media only screen and (max-width: 576px) {
+    .heading {
+        margin-bottom: 1.5rem;
+    }
+    .tab-container {
+        flex-direction: column;
+        overflow: hidden;
+        width: 100%;
+        /* Adjust the width as needed */
+        margin: 2rem auto;
+        /* Center the tab container */
+        height: auto;
+        font-family: Poppins;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 12px;
+        color: #3F4155;
+        padding: 0 1rem;
+        gap: 1rem;
+    }
+    .tab-list {
+        display: block;
+        overflow-x: scroll;
+        overflow-y: auto;
+        font-size: 12px;
+        width: 100%;
+    }
+    .tab-list-inner {
+        display: flex;
+        flex-direction: row;
+        width: 600%;
+    }
+    .tab-content {
+        width: 100%;
+        line-height: 1.5;
+        overflow-y: scroll;
+        overflow-x: scroll;
+        padding: 0;
+        font-size: 12px;
+        height: 600px;
+    }
+    .tab {
+        /*             display: inline-block; */
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-weight: 400;
+        height: 2rem;
+        padding: 0.4rem;
+        border: 1px solid #E2E2E2;
+        border-radius: 10px;
+        margin: 2px;
+    }
+    .tab:hover {
+        background-color: #f0f0f0;
+        border-radius: 10px;
+    }
+    .tab.selected {
+        /*             border: 1px solid #238DF6;
+            border-left: 10px solid #238DF6;
+            background: linear-gradient(90deg, #F5FAFF 0%, rgba(223, 239, 255, 0) 76.11%);
+            border-radius: 10px;
+            font-weight: 600; */
+    }
+    .text-align-left-mobile {
+        text-align: left !important;
+    }
+}
+
+/*  FAQ. */
+
+.faqs {
+    margin: 4rem;
+}
+
+.faq-section {
+    margin-bottom: 0;
+    border: 1px solid #E7E7E7;
+    border-radius: 10px !important;
+}
+
+.faq-inner {
+    padding: 0;
+    border-radius: 10px !important;
+}
+
+.faq-answer-collapse-expand {
+    display: flex;
+    justify-content: center;
+    padding-top: 18px;
+}
+
+.faq-answer-collapse .faq-answer-expand {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    margin: 0;
+    display: none;
+}
+
+/* 	.faq-answer-collapse.show-faq {
+		display: block;
+	}
+	.faq-answer-expand.show-faq {
+		display: block;
+	} */
+
+.faq-heading-invoice-format {
+    font-family: Poppins;
+    color: #3F4155;
+}
+
+.faq-heading {
+    margin: 0;
+    margin-bottom: 1rem;
+    font-family: Poppins;
+    color: #3F4155;
+    font-weight: bold;
+}
+
+.faq-answer {
+    font-family: Poppins;
+    color: #333333;
+    background-color: #FFE6EB;
+    font-size: 14px !important;
+    display: none !important;
+}
+
+.faq-answer.show-faq {
+    display: block !important;
+}
+
+.faq-answer p {
+    padding: 1em;
+}
+
+.faq-question {
+    margin-bottom: 0 !important;
+    padding: 1em;
+    cursor: pointer;
+}
+
+.owl-dot.active {
+    background-color: #cccccc
+}
+
+.hero-h1 {
+    margin-top: 0 !important;
+    line-height: 70px !important;
+}
+
+.font-w-500 a {
+    font-weight: 500 !important;
+}
+
+.margin-bottom-1em {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.hero-p {
+    width: 80% !important;
+}
+
+.f-s-25 {
+    font-size: 25px !important;
+    margin-top: 10px !important;
+}
+
+.f-s-14 {
+    font-size: 14px !important;
+}
+
+.f-s-14 a {
+    color: #3279B7 !important;
+}
+
+.f-s-18px {
+    font-size: 18px !important;
+}
+
+.f-s-18px a {
+    color: #3279B7 !important;
+}
+
+.tab-content-text a {
+    color: #3279B7 !important;
+}
+
+.tab-content-text a:hover,
+.f-s-14 a:hover,
+.f-s-18px a:hover {
+    text-decoration: underline;
+}
+
+.f-s-44-h2 {
+    font-size: 44px !important;
+    font-weight: bold !important;
+}
+
+.h4-tabs {
+    font-size: 22px !important;
+    color: #314259 !important;
+    font-weight: bold;
+}
+
+.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.margin-0 {
+    margin: 0 !important;
+}
+
+.first-border {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.last-border {
+    border-radius: 0 0 10px 10px !important;
+}
+
+#user-phone-number {
+    background-color: white !important;
+}
+
+#phone_number {
+    background-color: white !important;
+}
+
+.close {
+    background-color: none;
+}
+
+.faqs {
+    padding-bottom: 2em !important;
+}
+
+@media only screen and (max-width: 576px) {
+    .faqs {
+        margin: 1rem;
+    }
+    .faq-inner {
+        padding: 0;
+    }
+    .container-fluid {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .hero-h1 {
+        font-size: 46px !important;
+        margin-left: 10px !important;
+        margin-top: 40px !important;
+        line-height: 60px !important
+    }
+    .hero-p {
+        width: 100% !important;
+    }
+    .f-s-14 {
+        text-align: left !important;
+    }
+    .f-s-25 {
+        text-align: left !important;
+        padding-right: 0 !important;
+        font-size: 18px !important;
+    }
+    .p-0 {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    .f-s-44-h2 {
+        font-size: 28px !important;
+        font-weight: bold !important;
+        padding-left: 15px !important;
+    }
+    #heading-vertical-tab {
+        font-size: 28px !important;
+        font-weight: bold !important;
+    }
+    .intro-image {
+        padding-left: 15px;
+    }
+    .read-more__link {
+        padding-left: 15px;
+    }
+    #h-frequently-asked-questions {
+        padding-top: 30px;
+        margin-top: 0 !important;
+    }
+    .tab-image {
+        width: 50px;
+        height: 40px;
+    }
+    .tab {
+        padding: 1.5em 1em !important;
+    }
+    #scroll-phone::placeholder {
+        color: #3a4259 !important
+    }
+    .mob-gap-0 {
+        gap: 0;
+        padding: 0 1em;
+    }
+    #mobile-strip {
+        margin-top: 65px;
+    }
+    .header-section-new {
+        padding-bottom: 2em;
+        margin-top: 1em !important;
+        text-align: center !important;
+    }
+    .hero-p {
+        padding-top: 1em;
+        padding-bottom: 1em !important;
+        text-align: center !important;
+    }
+    .hero-h1 {
+        text-align: center !important;
+    }
+}
+
+@media (max-width: 420px) {
+    .owl-stage {
+        margin-top: 300px !important;
+    }
+}

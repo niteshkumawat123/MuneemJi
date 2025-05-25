@@ -1,0 +1,84 @@
+﻿<!-- Views/Inventory/_CategoryPartial.cshtml -->
+@model CategoryViewModel
+
+<div id="categoryTab" data-selectedcategory="@Model.SelectedCategoryId">
+    <div class="row">
+        <!-- Left Sidebar: Categories -->
+        <div class="col-md-4 border-right sidebar-panel">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h5>CATEGORY</h5>
+                <button class="btn btn-warning btn-sm" id="btnAddCategory">+ Add Category</button>
+            </div>
+            <table class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <tr><th>Category</th><th>Items</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <tr class="category-row" data-id="@cat.Id">
+                            <td>@cat.Name</td>
+                            <td>@cat.ItemCount</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Right Panel: Items in Category -->
+        <div class="col-md-8">
+            <div class="d-flex align-items-center justify-content-between">
+                @{
+                    string header = Model.Categories.FirstOrDefault(c => c.Id == Model.SelectedCategoryId)?.Name;
+                    if (string.IsNullOrEmpty(header))
+                    {
+                        header = "Items";
+                    }
+                }
+                <h4>@header</h4>
+                <button class="btn btn-primary btn-sm" id="btnMoveToCategory">Move To This Category</button>
+            </div>
+            <table class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <tr><th>Name</th><th>Quantity</th><th>Stock Value</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        var stockValue = item.Quantity > 0 ? item.Quantity * item.PurchasePrice : 0;
+                        <tr class="category-item-row" data-id="@item.Id">
+                            <td>@item.Name</td>
+                            <td>@item.Quantity</td>
+                            <td>₹ @stockValue</td>
+                        </tr>
+                    }
+                    @if (!Model.Items.Any())
+                    {
+                        <tr><td colspan="3" class="text-center">No items in this category.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Category Add Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Category</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" name="Name" class="form-control" required />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSaveCategory" class="btn btn-success">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

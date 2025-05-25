@@ -9,45 +9,89 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = MUNEEMJI
 build_property.RootNamespace = MUNEEMJI
-build_property.ProjectDir = E:\parikshit\MUNEEMJI\MUNEEMJI\
+build_property.ProjectDir = E:\parikshit\MuneemJi\MUNEEMJI\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = E:\parikshit\MUNEEMJI\MUNEEMJI
+build_property.MSBuildProjectDirectory = E:\parikshit\MuneemJi\MUNEEMJI
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 6.0
 build_property.EnableCodeStyleSeverity = 
 
-[E:/parikshit/MUNEEMJI/MUNEEMJI/Views/Home/Index.cshtml]
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Bank/AddBankAccount.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmFua1xBZGRCYW5rQWNjb3VudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Bank/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQmFua1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/BusinessProfile/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQnVzaW5lc3NQcm9maWxlXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/parikshit/MUNEEMJI/MUNEEMJI/Views/Home/Privacy.cshtml]
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/parikshit/MUNEEMJI/MUNEEMJI/Views/Party/Add.cshtml]
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Inventory/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Inventory/_CategoryPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XF9DYXRlZ29yeVBhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Inventory/_ProductsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XF9Qcm9kdWN0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Inventory/_ServicesPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XF9TZXJ2aWNlc1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Inventory/_UnitsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW52ZW50b3J5XF9Vbml0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Items/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSXRlbXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Party/Add.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydHlcQWRkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/parikshit/MUNEEMJI/MUNEEMJI/Views/Shared/Error.cshtml]
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Party/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGFydHlcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Purchase/Purchase.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVyY2hhc2VcUHVyY2hhc2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/parikshit/MUNEEMJI/MUNEEMJI/Views/Shared/_ValidationScriptsPartial.cshtml]
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/parikshit/MUNEEMJI/MUNEEMJI/Views/_ViewImports.cshtml]
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/parikshit/MUNEEMJI/MUNEEMJI/Views/_ViewStart.cshtml]
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[E:/parikshit/MUNEEMJI/MUNEEMJI/Views/Shared/_Layout.cshtml]
+[E:/parikshit/MuneemJi/MUNEEMJI/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-b7om7dg6yp

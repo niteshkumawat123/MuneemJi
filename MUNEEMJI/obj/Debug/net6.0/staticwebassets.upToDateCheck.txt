@@ -1,5 +1,9 @@
 wwwroot\css\site.css
 wwwroot\favicon.ico
+wwwroot\images\654e0a1a-4580-449b-a876-3420514f8a4d_Index.txt
+wwwroot\images\7b695e86-eb49-4420-817e-d67568c690fa_Index.txt
+wwwroot\images\953d7772-d112-4334-914c-9c9c5f565805_newsp.txt
+wwwroot\images\ccb06a77-e603-4bfd-9798-b18562a6d607_Index.txt
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap.css
 wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
@@ -58,3 +62,5 @@ wwwroot\lib\jquery-validation\LICENSE.md
 wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js
 wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js
 wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+wwwroot\uploads\logos\Index.txt
+wwwroot\uploads\signatures\Index.txt

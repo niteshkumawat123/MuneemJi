@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "Add Bank Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">Add Bank Account</h2>
+
+<form method="post">
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <label for="AccountDisplayName" class="form-label">Account Display Name</label>
+            <input type="text" id="AccountDisplayName" name="AccountDisplayName" class="form-control" value="@Model.AccountDisplayName" />
+        </div>
+        <div class="col-md-4">
+            <label for="OpeningBalance" class="form-label">Opening Balance</label>
+            <input type="number" step="0.01" id="OpeningBalance" name="OpeningBalance" class="form-control" value="@Model.OpeningBalance" />
+        </div>
+        <div class="col-md-4">
+            <label for="AsOfDate" class="form-label">As Of Date</label>
+            <input type="date" id="AsOfDate" name="AsOfDate" class="form-control" value="@Model.AsOfDate?.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="PrintUPIQrCode" name="PrintUPIQrCode" @(Model.PrintUPIQrCode ? "checked" : "") />
+            <label class="form-check-label" for="PrintUPIQrCode">Print UPI QR Code on Invoices</label>
+        </div>
+        <div class="form-check mt-1">
+            <input class="form-check-input" type="checkbox" id="PrintBankDetails" name="PrintBankDetails" @(Model.PrintBankDetails ? "checked" : "") />
+            <label class="form-check-label" for="PrintBankDetails">Print bank details on invoices</label>
+        </div>
+    </div>
+
+    <div class="border rounded p-3 mb-3">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="AccountNumber" class="form-label">Account Number *</label>
+                <input type="text" id="AccountNumber" name="AccountNumber" class="form-control" value="@Model.AccountNumber" />
+            </div>
+            <div class="col-md-4">
+                <label for="IFSCCode" class="form-label">IFSC Code</label>
+                <div class="input-group">
+                    <input type="text" id="IFSCCode" name="IFSCCode" class="form-control" placeholder="IFSC Code" value="@Model.IFSCCode" />
+                    <button class="btn btn-primary" type="button"><i class="bi bi-search"></i></button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="UPIID" class="form-label">UPI ID for QR Code</label>
+                <input type="text" id="UPIID" name="UPIID" class="form-control" value="@Model.UPIID" />
+            </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+            <div class="col-md-6">
+                <label for="BankName" class="form-label">Bank Name</label>
+                <input type="text" id="BankName" name="BankName" class="form-control" value="@Model.BankName" />
+            </div>
+            <div class="col-md-6">
+                <label for="AccountHolderName" class="form-label">Account Holder Name</label>
+                <input type="text" id="AccountHolderName" name="AccountHolderName" class="form-control" value="@Model.AccountHolderName" />
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Save</button>
+    </div>
+</form>

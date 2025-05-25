@@ -126,18 +126,33 @@
                     </a>
                     <div class="collapse" id="partiesMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
-                            <li><a href="#" class="nav-link">All Parties</a></li>
-                            <li><a href="#" class="nav-link">Add Party</a></li>
+                            <li><a href="/party/index" class="nav-link">All Parties</a></li>
+                            <li><a href="/party/add" class="nav-link">Add Party</a></li>
                         </ul>
                     </div>
                 </li>
                 <!-- Items (no submenu, has plus icon) -->
+                @* <li class="nav-item"> *@
+                @*     <a class="nav-link" href="#"> *@
+                @*         <i class="bi bi-bag"></i> Items *@
+                @*         <i class="bi bi-plus float-end"></i> *@
+                @*     </a> *@
+                @* </li> *@
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-bag"></i> Items
-                        <i class="bi bi-plus float-end"></i>
+                    <a class="nav-link" data-bs-toggle="collapse" href="#partiesMenu"
+                       role="button" aria-expanded="false" aria-controls="partiesMenu">
+                        <i class="bi bi-people"></i> Items
+                        <i class="bi bi-chevron-down float-end"></i>
                     </a>
+                    <div class="collapse" id="partiesMenu">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                            <li><a href="/inventory/Index" class="nav-link">All Items</a></li>
+                            <li><a href="/items/create" class="nav-link">Add Item</a></li>
+                        </ul>
+                    </div>
                 </li>
+
+
                 <!-- Sale (collapsible) -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#saleMenu"
@@ -190,7 +205,7 @@
                     <div class="collapse" id="cashMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
                             <li><a href="#" class="nav-link">Cash Ledger</a></li>
-                            <li><a href="#" class="nav-link">Bank Accounts</a></li>
+                            <li><a href="/bank/index" class="nav-link">Bank Accounts</a></li>
                         </ul>
                     </div>
                 </li>
@@ -243,7 +258,7 @@
             </ul>
             <!-- Sidebar Footer (Developer Info) -->
             <div class="sidebar-footer">
-                <a href="#" class="d-flex align-items-center w-100">
+                <a href="BusinessProfile/Edit" class="d-flex align-items-center w-100">
                     <i class="bi bi-plus-circle me-2"></i> Unlinsoftware Development
                     <i class="bi bi-chevron-right ms-auto"></i>
                 </a>

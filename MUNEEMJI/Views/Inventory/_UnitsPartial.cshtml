@@ -1,0 +1,118 @@
+﻿<!-- Views/Inventory/_UnitsPartial.cshtml -->
+@model UnitsViewModel
+
+<div id="unitsTab" data-selectedunit="@Model.SelectedUnitId">
+    <div class="row">
+        <!-- Left Sidebar: Units -->
+        <div class="col-md-4 border-right sidebar-panel">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h5>FULL NAME</h5>
+                <h5>SHORT NAME</h5>
+                <button class="btn btn-warning btn-sm ml-auto" id="btnAddUnit">+ Add Unit</button>
+            </div>
+            <table class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <tr><th>FullName</th><th>ShortName</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var unit in Model.Units)
+                    {
+                        <tr class="unit-row" data-id="@unit.Id">
+                            <td>@unit.FullName</td>
+                            <td>@unit.ShortName</td>
+                            <td>
+                                <button class="btn btn-sm btn-light delete-unit" data-id="@unit.Id" title="Delete">&times;</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Right Panel: Conversions -->
+        <div class="col-md-8">
+            @{
+                var selectedUnit = Model.Units.FirstOrDefault(u => u.Id == Model.SelectedUnitId);
+                var selectedName = selectedUnit != null ? selectedUnit.FullName : "";
+            }
+            <div class="d-flex align-items-center justify-content-between">
+                <h4>@selectedName</h4>
+                <button class="btn btn-primary btn-sm" id="btnAddConversion">Add Conversion</button>
+            </div>
+            <table class="table table-sm table-hover">
+                <thead class="thead-light">
+                    <tr><th>Conversion</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var conv in Model.Conversions)
+                    {
+                        var toUnit = Model.Units.FirstOrDefault(u => u.Id == conv.ToUnitId);
+                        <tr>
+                            <td>1 @selectedName = @conv.Factor @toUnit.ShortName</td>
+                            <td>
+                                <button class="btn btn-sm btn-light delete-conv" data-id="@conv.Id" title="Delete">&times;</button>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.Conversions.Any())
+                    {
+                        <tr><td colspan="2" class="text-center">No conversions defined.</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Unit Add Modal -->
+<div class="modal fade" id="unitModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Unit</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="FullName" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <label>Short Name</label>
+                    <input type="text" name="ShortName" class="form-control" required />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSaveUnit" class="btn btn-success">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Conversion Add Modal -->
+<div class="modal fade" id="conversionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Conversion</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>To Unit</label>
+                    <select name="ToUnitId" class="form-control" required>
+                        <!-- Options populated via JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Factor</label>
+                    <input type="number" step="any" name="Factor" class="form-control" required />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSaveConversion" class="btn btn-success">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

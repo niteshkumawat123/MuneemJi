@@ -1,0 +1,128 @@
+﻿@model MUNEEMJI.Models.PurchaseHeaderModel
+@{
+    ViewData["Title"] = "Create Purchase Entry";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>New Purchase Entry</h2>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+    @* Header row: Supplier search, Phone, Bill Number, Bill Date, State *@
+    <div class="form-row">
+        <!-- Left Column: Supplier and Phone -->
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                    <label asp-for="SupplierId">Search by Name/Phone *</label>
+                    <select id="SupplierDropdown" asp-for="SupplierId" class="form-control">
+                        <option value="">-- Select Supplier --</option>
+                    </select>
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label asp-for="PhoneNo">Phone No.</label>
+                    <input type="text" id="PhoneNo" asp-for="PhoneNo" class="form-control" readonly />
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Bill Number, Bill Date, State of Supply -->
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-sm-6 form-group">
+                    <label asp-for="BillNumber">Bill Number</label>
+                    <input type="text" asp-for="BillNumber" class="form-control" />
+                </div>
+                <div class="col-sm-6 form-group">
+                    <label asp-for="BillDate">Bill Date</label>
+                    <input type="date" asp-for="BillDate" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="StateOfSupply">State of Supply</label>
+                <select id="StateOfSupply" asp-for="StateOfSupply" class="form-control">
+                    <option value="">-- Select State --</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    @* (Existing item table and payment sections remain unchanged) *@
+    <!-- Example existing content (simplified) -->
+    <table class="table">
+        <thead>
+            <tr><th>#</th><th>Item</th><th>Qty</th><th>Unit</th><th>Price/Unit</th><th>Discount</th><th>Tax</th><th>Amount</th></tr>
+        </thead>
+        <tbody id="itemRows">
+            @* Existing dynamic rows *@
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary" id="addRow">Add Row</button>
+
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description" class="form-control"></textarea>
+    </div>
+
+    @* File upload and payment fields *@
+    <div class="form-group">
+        <label>Upload Bill</label>
+        <input type="file" asp-for="BillDocument" class="form-control-file" />
+    </div>
+    <!-- (Payment type and total fields here) -->
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Fetch supplier list via AJAX and populate the dropdown
+            $.ajax({
+                url: '@Url.Action("GetSuppliers", "Purchase")',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    // data is assumed to be a list of { id, name, phone }
+                    $.each(data, function(i, supplier) {
+                        // Append option with supplier name and phone as text, store phone in data attribute
+                        $('#SupplierDropdown').append(
+                            $('<option>').val(supplier.id)
+                                         .text(supplier.name + ' / ' + supplier.phone)
+                                         .data('phone', supplier.phone)
+                        );
+                    });
+                },
+                error: function() {
+                    console.error('Failed to load suppliers.');
+                }
+            });
+
+            // When supplier is selected, auto-fill the phone number
+            $('#SupplierDropdown').change(function() {
+                // Get the selected <option> and its data-phone attribute
+                var selectedOption = $(this).find('option:selected');
+                var phone = selectedOption.data('phone') || '';
+                // Set the phone input value
+                $('#PhoneNo').val(phone);
+            });
+
+            // Fetch list of states via AJAX and populate the state dropdown
+            $.ajax({
+                url: '@Url.Action("GetStates", "Purchase")',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    // data is assumed to be a list of { id, name }
+                    $.each(data, function(i, state) {
+                        $('#StateOfSupply').append(
+                            $('<option>').val(state.id).text(state.name)
+                        );
+                    });
+                },
+                error: function() {
+                    console.error('Failed to load states.');
+                }
+            });
+        });
+    </script>
+}

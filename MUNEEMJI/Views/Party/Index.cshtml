@@ -1,0 +1,72 @@
+﻿@model PartyViewModel
+@{
+    ViewData["Title"] = "Parties";
+}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <!-- Sidebar: Party Search and List -->
+        <div class="col-md-3 border-end">
+            <h5 class="mb-3">Parties</h5>
+            <input type="text" class="form-control mb-2" placeholder="Search Party Name" />
+            <div class="list-group">
+                @foreach (var party in Model.Parties)
+                {
+                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center @(party.Id == Model.SelectedParty?.Id ? "active" : "")"
+                       asp-action="Index" asp-route-id="@party.Id">
+                        @party.PartyName
+                        <span class="badge bg-primary rounded-pill">
+                            @party.Balance.ToString("0.00")
+                        </span>
+                    </a>
+                }
+            </div>
+        </div>
+        <!-- Main panel: Party Details and Transactions -->
+        <div class="col-md-9">
+            @if (Model.SelectedParty != null)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title d-flex align-items-center">
+                            @Model.SelectedParty.PartyName
+                            <a asp-action="Edit" asp-route-id="@Model.SelectedParty.Id" class="btn btn-sm btn-outline-secondary ms-3">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        </h5>
+                        <div class="row mt-2">
+                            <div class="col"><strong>Phone Number:</strong><br /> @Model.SelectedParty.PhoneNumber</div>
+                            <div class="col"><strong>Email:</strong><br /> @Model.SelectedParty.Email</div>
+                            <div class="col"><strong>GSTIN:</strong><br /> @Model.SelectedParty.GSTIN</div>
+                            <div class="col"><strong>Billing Address:</strong><br /> @Model.SelectedParty.BillingAddress</div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3">Transactions</h6>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Number</th>
+                                <th>Date</th>
+                                <th>Total</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-5">
+                                    <div class="mb-2"><i class="bi bi-receipt" style="font-size:2rem;"></i></div>
+                                    <div>No Transactions to Show</div>
+                                    <div class="small">You haven't added any transactions yet.</div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -7,7 +7,7 @@ namespace MUNEEMJI.Controllers
 {
     public class BankController: Controller
     {
-        private readonly string _connStr = "Host=13.232.132.81;Port=5432;Database=MyDatabase;Username=betauser;Password=sdmVertex+beta@2022";
+        private readonly string _connStr = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
 
         [HttpGet]
         public IActionResult AddBankAccount()
@@ -67,7 +67,7 @@ namespace MUNEEMJI.Controllers
             var accounts = new List<BankAccountModel>();
 
             // Get connection string from configuration
-            string connStr = "Host=13.232.132.81;Port=5432;Database=MyDatabase;Username=betauser;Password=sdmVertex+beta@2022"; 
+            string connStr = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"; 
             using var conn = new NpgsqlConnection(connStr);
             conn.Open();  // Open the PostgreSQL connection:contentReference[oaicite:6]{index=6}
 

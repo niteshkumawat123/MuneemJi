@@ -9,7 +9,7 @@ namespace MUNEEMJI.Controllers
     public class BusinessProfileController : Controller
     {
         private readonly IWebHostEnvironment _env;
-        private static string connString = "Host=13.232.132.81;Port=5432;Database=MyDatabase;Username=betauser;Password=sdmVertex+beta@2022";
+        private static string connString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
 
         public BusinessProfileController( IWebHostEnvironment env)
         {

@@ -14,7 +14,7 @@ namespace MUNEEMJI.Repositories
             using (var conn = new NpgsqlConnection(ConnString))
             {
                 conn.Open();
-                string sql = "SELECT id,name as  fullname ,name as  shortname FROM units ORDER BY name";
+                string sql = "SELECT id,name as  fullname ,shortname as  shortname FROM units ORDER BY name";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -37,9 +37,10 @@ namespace MUNEEMJI.Repositories
             using (var conn = new NpgsqlConnection(ConnString))
             {
                 conn.Open();
-                string sql = "INSERT INTO units (fullname, shortname) VALUES (@FullName, @ShortName)";
+                string sql = "INSERT INTO units (name,fullname, shortname) VALUES (@FullName,@FullName, @ShortName)";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
+                    
                     cmd.Parameters.AddWithValue("FullName", unit.FullName);
                     cmd.Parameters.AddWithValue("ShortName", unit.ShortName);
                     cmd.ExecuteNonQuery();

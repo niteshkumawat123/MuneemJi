@@ -1,0 +1,163 @@
+﻿@model Purchase
+@using System.Text.Json
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Sales Entry</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+
+        <h2>Purchase Entry</h2>
+
+        <form asp-action="Create" method="post">
+            <div>
+                <label>Invoice Number</label>
+                <input asp-for="InvoiceNumber" />
+
+                <label>Invoice Date</label>
+                <input asp-for="InvoiceDate" type="date" />
+
+                <label>PO Number</label>
+                <input asp-for="PONumber" />
+
+                <label>PO Date</label>
+                <input asp-for="PODate" type="date" />
+
+                <label>E-Way Bill Number</label>
+                <input asp-for="EWayBillNumber" />
+            </div>
+
+            <hr />
+
+            <table id="itemTable">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Unit</th>
+                        <th>Price/Unit</th>
+                        <th>Discount (%)</th>
+                        <th>Discount Amt</th>
+                        <th>Tax</th>
+                        <th>Tax Amt</th>
+                        <th>Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Items.Count; i++)
+                    {
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td>
+                                <select asp-for="Items[@i].ItemId" class="form-select">
+                                    <option value="">--Select Item--</option>
+                                    @foreach (var it in (List<ItemDropdownModel>)ViewBag.Items)
+                                    {
+                                        <option value="@it.ItemId">@it.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Items[@i].ItemId" class="text-danger"></span>
+                            </td>
+                            <td>
+                                <input asp-for="Items[@i].Quantity" class="form-control" />
+                                <span asp-validation-for="Items[@i].Quantity" class="text-danger"></span>
+                            </td>
+                            <td>
+                                <select asp-for="Items[@i].UnitId" class="form-select">
+                                    <option value="">None</option>
+                                    @foreach (var u in (List<UnitModel>)ViewBag.Units)
+                                    {
+                                        <option value="@u.UnitId">@u.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Items[@i].UnitId" class="text-danger"></span>
+                            </td>
+                            <td>
+                                <input asp-for="Items[@i].PricePerUnit" class="form-control" />
+                                <span asp-validation-for="Items[@i].PricePerUnit" class="text-danger"></span>
+                            </td>
+                            <td><input asp-for="Items[@i].DiscountPercent" class="form-control" /></td>
+                            <td><input asp-for="Items[@i].DiscountAmount" class="form-control" /></td>
+                            <td>
+                                <select asp-for="Items[@i].TaxId" class="form-select">
+                                    <option value="">None</option>
+                                    @foreach (var t in (List<TaxModel>)ViewBag.Taxes)
+                                    {
+                                        <option value="@t.TaxId">@t.Name</option>
+                                    }
+                                </select>
+                            </td>
+                            <td><input asp-for="Items[@i].TaxPercent" class="form-control" /></td>
+                            <td><input asp-for="Items[@i].TaxAmount" class="form-control" /></td>
+                            <td><input asp-for="Items[@i].Amount" class="form-control" readonly /></td>
+                            <td><button type="button" onclick="removeRow(this)">Remove</button></td>
+
+
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <button type="button" onclick="addRow()">Add Row</button>
+
+            <hr />
+
+            <div>
+                <label>Transport Name</label>
+                <input asp-for="TransportName" />
+
+                <label>Delivery Location</label>
+                <input asp-for="DeliveryLocation" />
+
+                <label>Vehicle Number</label>
+                <input asp-for="VehicleNumber" />
+
+                <label>Delivery Date</label>
+                <input asp-for="DeliveryDate" type="date" />
+
+                <label>Payment Type</label>
+                <input asp-for="PaymentType" />
+
+                <label>Round Off</label>
+                <input asp-for="RoundOff" type="checkbox" />
+
+                <label>Round Off Amount</label>
+                <input asp-for="RoundOffAmount" />
+
+                <label>Total</label>
+                <input asp-for="Total" />
+
+                <label>Grand Total</label>
+                <input asp-for="GrandTotal" />
+            </div>
+
+            <button type="submit">Save</button>
+        </form>
+
+
+        <script>
+            function addRow() {
+                const table = document.querySelector('#itemTable tbody');
+                const row = table.rows[0].cloneNode(true);
+                row.querySelectorAll('input, select').forEach(e => e.value = '');
+                table.appendChild(row);
+            }
+
+            function removeRow(button) {
+                const row = button.closest('tr');
+                const table = row.parentNode;
+                if (table.rows.length > 1) row.remove();
+            }
+        </script>
+
+
+    </body>
+</html>

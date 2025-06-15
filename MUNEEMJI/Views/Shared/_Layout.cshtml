@@ -11,6 +11,7 @@
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    @RenderSection("Styles", required: false)
 
     <style>
         body {
@@ -89,18 +90,28 @@
     </style>
 </head>
 <body>
+    <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-building"></i>
+            <a href="#" class="me-3 text-dark text-decoration-none">Company</a>
+            <a href="#" class="me-3 text-dark text-decoration-none">Help</a>
+            <a href="#" class="me-3 text-dark text-decoration-none">Shortcuts</a>
+            <button class="btn btn-sm text-dark"><i class="bi bi-arrow-clockwise"></i></button>
+        </div>
+        <div class="d-flex align-items-center">
+            <span class="me-2 text-dark">Customer Support :</span>
+            <a href="tel:+916364444752" class="me-3 text-decoration-none text-primary">
+                <i class="bi bi-telephone-fill"></i> (+91)-6364444752
+            </a>
+            <a href="#" class="text-decoration-none text-primary">
+                <i class="bi bi-broadcast-pin"></i> Get Instant Online Support
+            </a>
+        </div>
+    </div>
     <div class="d-flex">
         <!-- Sidebar -->
         <nav id="sidebar" class="bg-dark position-relative">
-            <!-- Sidebar Header (Company, Help, Shortcuts) -->
-            <div class="sidebar-header d-flex align-items-center border-bottom border-secondary">
-                <h4 class="mb-0 text-white"><i class="bi bi-building"></i> Company</h4>
-                <div class="ms-auto">
-                    <a href="#" class="me-3 text-secondary">Help</a>
-                    <a href="#" class="me-3 text-secondary">Shortcuts</a>
-                    <button class="btn btn-sm text-secondary"><i class="bi bi-arrow-clockwise"></i></button>
-                </div>
-            </div>
+       
             <!-- Search Input -->
             <div class="sidebar-search p-3 border-bottom border-secondary">
                 <div class="input-group">
@@ -148,6 +159,7 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
                             <li><a href="/inventory/Index" class="nav-link">All Items</a></li>
                             <li><a href="/items/create" class="nav-link">Add Item</a></li>
+                            <li><a href="/items/create" class="nav-link">Smart Connect</a></li>
                         </ul>
                     </div>
                 </li>
@@ -164,6 +176,15 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
                             <li><a href="#" class="nav-link">New Invoice</a></li>
                             <li><a href="#" class="nav-link">View Reports</a></li>
+                            <li><a href="#" class="nav-link">Sales Invoices</a></li>
+                            <li><a href="#" class="nav-link">Estimate/Quotaion</a></li>
+                            <li><a href="#" class="nav-link">Payment In</a></li>
+                            <li><a href="#" class="nav-link">Sale Order</a></li>
+                            <li><a href="#" class="nav-link">Delivery Challan</a></li>
+                            <li><a href="#" class="nav-link">Sale Return/Credit Note</a></li>
+                            <li><a href="#" class="nav-link">Sale FA</a></li>
+                            <li><a href="#" class="nav-link">Muneem Ji POS</a></li>
+                            <li><a href="#" class="nav-link">Other Income</a></li>
                         </ul>
                     </div>
                 </li>
@@ -178,6 +199,12 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
                             <li><a href="#" class="nav-link">New Purchase</a></li>
                             <li><a href="#" class="nav-link">Expense Report</a></li>
+                            <li><a href="#" class="nav-link">Purchase Bill</a></li>
+                            <li><a href="#" class="nav-link">Payment Out</a></li>
+                            <li><a href="#" class="nav-link">Expense</a></li>
+                            <li><a href="#" class="nav-link">Purchase Order</a></li>
+                            <li><a href="#" class="nav-link">Purchase Return/Dr. Note</a></li>
+                            <li><a href="#" class="nav-link">Purchase FA</a></li>
                         </ul>
                     </div>
                 </li>
@@ -192,6 +219,8 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
                             <li><a href="#" class="nav-link">Business Plan</a></li>
                             <li><a href="#" class="nav-link">Analytics</a></li>
+                            <li><a href="#" class="nav-link">Whatsapp Marketing</a></li>
+                            <li><a href="#" class="nav-link">Online Store</a></li>
                         </ul>
                     </div>
                 </li>
@@ -206,6 +235,10 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
                             <li><a href="#" class="nav-link">Cash Ledger</a></li>
                             <li><a href="/bank/index" class="nav-link">Bank Accounts</a></li>
+                            <li><a href="/bank/CashinHand" class="nav-link">Cash In Hand</a></li>
+                            <li><a href="#" class="nav-link">Cheques</a></li>
+                            <li><a href="#" class="nav-link">Loan Account</a></li>
+                            <li><a href="#" class="nav-link">Fixed Asset</a></li>
                         </ul>
                     </div>
                 </li>
@@ -226,6 +259,10 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
                             <li><a href="#" class="nav-link">Cloud Sync</a></li>
                             <li><a href="#" class="nav-link">Backup Now</a></li>
+                            <li><a href="#" class="nav-link">Backup to Drive</a></li>
+                            <li><a href="#" class="nav-link">Backup to Computer </a></li>
+                            <li><a href="#" class="nav-link">Auto Backup</a></li>
+                          
                         </ul>
                     </div>
                 </li>
@@ -240,6 +277,9 @@
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
                             <li><a href="#" class="nav-link">Backup Tools</a></li>
                             <li><a href="#" class="nav-link">Config Tools</a></li>
+                            <li><a href="#" class="nav-link">Import Items</a></li>
+                            <li><a href="#" class="nav-link">Set Up My Business</a></li>
+                            <li><a href="#" class="nav-link">Account Access</a></li>
                         </ul>
                     </div>
                 </li>
@@ -273,5 +313,7 @@
 
     <!-- Bootstrap Bundle JS (with Popper for collapse) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>

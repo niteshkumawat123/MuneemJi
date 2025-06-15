@@ -1,0 +1,339 @@
+﻿@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Purchase Bills";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fa fa-search"></i>
+                </span>
+                <input type="text" class="form-control" placeholder="Search Transactions" id="searchTransactions">
+            </div>
+        </div>
+        @*  <div class="col-md-4 text-end">
+            <button class="btn btn-outline-danger me-2">
+                <i class="fa fa-plus"></i> Add Sale
+            </button>
+            <button class="btn btn-outline-primary me-2">
+                <i class="fa fa-plus"></i> Add Purchase
+            </button>
+            <button class="btn btn-outline-secondary">
+                <i class="fa fa-plus"></i>
+            </button>
+            <button class="btn btn-outline-secondary">
+                <i class="fa fa-ellipsis-v"></i>
+            </button>
+        </div> *@
+    </div>
+
+    <!-- Page Title and Actions -->
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h4>Purchase Bills</h4>
+        </div>
+        <div class="col-md-6 text-end">
+            <button class="btn btn-outline-danger me-2">
+                <i class="fa fa-upload"></i> Upload Bill
+            </button>
+            <a href="/PurchaseBill/Create">
+                <button class="btn btn-danger">
+                    <i class="fa fa-plus"></i> Add Purchase
+                </button>
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="row mb-3">
+        <div class="col-md-2">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                    This Month
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Week</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-1 text-center">
+            <span class="btn btn-secondary">Between</span>
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" value="@ViewBag.StartDate" id="startDate">
+        </div>
+        <div class="col-md-1 text-center">
+            <span>To</span>
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" value="@ViewBag.EndDate" id="endDate">
+        </div>
+        <div class="col-md-2">
+            <select class="form-select">
+                <option selected>@ViewBag.FirmFilter</option>
+                <option>ALL FIRMS</option>
+                <option>FIRM 1</option>
+                <option>FIRM 2</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select">
+                <option selected>@ViewBag.VendorFilter</option>
+                <option>All Vendors</option>
+                <option>Vendor 1</option>
+                <option>Vendor 2</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-light-success text-success">
+                <div class="card-body text-center">
+                    <h5>Paid</h5>
+                    <h3><i class="fa fa-rupee-sign"></i> @ViewBag.PaidTotal.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1 text-center align-self-center">
+            <h4>+</h4>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-light-primary text-primary">
+                <div class="card-body text-center">
+                    <h5>Unpaid</h5>
+                    <h3><i class="fa fa-rupee-sign"></i> @ViewBag.UnpaidTotal.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-1 text-center align-self-center">
+            <h4>=</h4>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-light-warning text-warning">
+                <div class="card-body text-center">
+                    <h5>Total</h5>
+                    <h3><i class="fa fa-rupee-sign"></i> @ViewBag.GrandTotal.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        @*  <div class="col-md-2 d-flex gap-3 justify-content-end">
+            <!-- Excel Report Button -->
+            <button class="btn btn-outline-secondary d-flex flex-column align-items-center">
+                <i class="fa fa-file-excel fa-2x"></i>
+                <small>Excel Report</small>
+            </button>
+
+            <!-- Print Button -->
+            <button class="btn btn-outline-secondary d-flex flex-column align-items-center">
+                <i class="fa fa-print fa-2x"></i>
+                <small>Print</small>
+            </button>
+        </div> *@
+    </div>
+
+    <!-- Transactions Section -->
+    <div class="row">
+        <div class="col-12">
+            <h5 class="mb-3">TRANSACTIONS</h5>
+
+            <!-- Search Box -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fa fa-search"></i>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Search transactions" id="transactionSearch">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                DATE
+                                <i class="fa fa-filter ms-2"></i>
+                            </th>
+                            <th>
+                                INVOICE NO.
+                                <i class="fa fa-filter ms-2"></i>
+                            </th>
+                            <th>
+                                PARTY NAME
+                                <i class="fa fa-filter ms-2"></i>
+                            </th>
+                            <th>
+                                PAYMENT TYPE
+                                <i class="fa fa-filter ms-2"></i>
+                            </th>
+                            <th>
+                                AMOUNT
+                                <i class="fa fa-filter ms-2"></i>
+                            </th>
+                            <th>
+                                BALANCE DUE
+                                <i class="fa fa-filter ms-2"></i>
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var bill in Model)
+                            {
+                                <tr class="@(bill.payment_type == "Cash" ? "table-success" : "table-info")">
+                                    <td>@((DateTime)bill.bill_date)</td>
+                                    <td>@bill.bill_number </td>
+                                    <td>test</td>
+                                    <td>@bill.payment_type</td>
+                                    <td>@((decimal)bill.total)</td>
+                                    <td>@((decimal)bill.total)</td>
+                                    <td>
+                                        <button class="btn border-0 me-2" title="Print">
+                                            <!-- Option 1: FontAwesome Icon -->
+                                            <!-- Option 2: Custom Image Icon -->
+                                            <img src="~/images/PrinterIcon.png" alt="Print" style="width: 16px; height: 16px;">
+                                        </button>
+                                        <button class="btn border-0 me-2" title="Share">
+                                            <!-- Option 1: FontAwesome Icon -->
+                                            @*                                             <i class="fas fa-external-link-alt" style="color: #6c757d; font-size: 16px;"></i>
+ *@                                            <img src="~/images/Share.png" alt="Share" style="width: 16px; height: 16px;">
+
+                                            <!-- Option 2: Custom Image Icon -->
+                                            <!-- <img src="~/images/icons/share-icon.png" alt="Share" style="width: 16px; height: 16px;"> -->
+                                        </button>
+                                        <div class="dropdown d-inline">
+                                            <button class="btn border-0 me-2" type="button" data-bs-toggle="dropdown" title="More Options">
+                                                <img src="~/images/ThreeDots.png" alt="Share" style="width: 16px; height: 16px;">
+
+                                                <!-- Option 1: FontAwesome Icon -->
+                                                @*  <i class="fas fa-ellipsis-v" style="color: #6c757d; font-size: 16px;"></i> *@
+                                                <!-- Option 2: Custom Image Icon -->
+                                                <!-- <img src="~/images/icons/more-icon.png" alt="More" style="width: 16px; height: 16px;"> -->
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#">View</a></li>
+                                                <li><a class="dropdown-item" href="#">Edit</a></li>
+                                            </ul>
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">No transactions found</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Windows Activation Notice -->
+    @*   <div class="position-fixed bottom-0 end-0 p-3">
+        <div class="toast show" role="alert">
+            <div class="toast-body">
+                <strong>Activate Windows</strong><br>
+                Go to Settings to activate Windows.
+            </div>
+        </div>
+    </div> *@
+</div>
+
+<style>
+    .bg-light-success {
+        background-color: #d4edda !important;
+    }
+
+    .bg-light-primary {
+        background-color: #cce7ff !important;
+    }
+
+    .bg-light-warning {
+        background-color: #fff3cd !important;
+    }
+
+    .table-success {
+        background-color: #d4edda !important;
+    }
+
+    .table-info {
+        background-color: #cce7ff !important;
+    }
+
+    .card {
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+
+    .btn {
+        border-radius: 6px;
+    }
+
+    .table th {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .toast {
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        border: none;
+    }
+</style>
+
+<script>
+    // Search functionality
+    document.getElementById('transactionSearch').addEventListener('keyup', function() {
+        var searchTerm = this.value.toLowerCase();
+        var tableRows = document.querySelectorAll('tbody tr');
+
+        tableRows.forEach(function(row) {
+            var text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Date filter functionality
+    document.getElementById('startDate').addEventListener('change', function() {
+        // Add your date filtering logic here
+        filterByDate();
+    });
+
+    document.getElementById('endDate').addEventListener('change', function() {
+        // Add your date filtering logic here
+        filterByDate();
+    });
+
+    function filterByDate() {
+        var startDate = document.getElementById('startDate').value;
+        var endDate = document.getElementById('endDate').value;
+
+        if (startDate && endDate) {
+            // Reload page with new date parameters
+            window.location.href = '?startDate=' + startDate + '&endDate=' + endDate;
+        }
+    }
+</script>

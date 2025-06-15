@@ -116,8 +116,9 @@
 
             // Add Item button click
             $('#btnAddProduct').on('click', function () {
-                clearProductForm();
-                $('#productModal').data('id', null).modal('show');
+                //clearProductForm();
+                //$('#productModal').data('id', null).modal('show');
+            window.location.href = "/items/create";
             });
 
             // Delete product
@@ -195,8 +196,9 @@
 
             // Add Service button click
             $('#btnAddService, #btnAddFirstService').on('click', function () {
-                $('#serviceModal input').val('');
-                $('#serviceModal').data('id', null).modal('show');
+                // $('#serviceModal input').val('');
+                // $('#serviceModal').data('id', null).modal('show');
+            window.location.href = "/items/create";
             });
 
             // Edit and Delete buttons
@@ -221,23 +223,24 @@
 
             // Save Service (Add or Update)
             $('#btnSaveService').on('click', function () {
-                var id = $('#serviceModal').data('id');
-                var formData = {
-                    Name: $('#serviceModal input[name="Name"]').val(),
-                    Price: $('#serviceModal input[name="Price"]').val()
-                };
-                if (id) {
-                    formData.Id = id;
-                    $.post('/Services/Update', formData, function () {
-                        $('#serviceModal').modal('hide');
-                        loadTab('Services');
-                    });
-                } else {
-                    $.post('/Services/Add', formData, function () {
-                        $('#serviceModal').modal('hide');
-                        loadTab('Services');
-                    });
-                }
+                // var id = $('#serviceModal').data('id');
+                // var formData = {
+                //     Name: $('#serviceModal input[name="Name"]').val(),
+                //     Price: $('#serviceModal input[name="Price"]').val()
+                // };
+                // if (id) {
+                //     formData.Id = id;
+                //     $.post('/Services/Update', formData, function () {
+                //         $('#serviceModal').modal('hide');
+                //         loadTab('Services');
+                //     });
+                // } else {
+                //     $.post('/Services/Add', formData, function () {
+                //         $('#serviceModal').modal('hide');
+                //         loadTab('Services');
+                //     });
+                // }
+            window.location.href = "/items/create";
             });
         }
 

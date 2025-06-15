@@ -38,6 +38,17 @@ namespace MUNEEMJI.Models
             public int UnitId { get; set; }
             public string ImagePath { get; set; }
 
+            public int TaxType { get; set; }
+
+            public int DiscountType { get; set; }
+
+            public string ServiceName { get; set; }
+
+            public string ServiceHSN { get; set; }
+
+            public int Category { get; set; }
+
+            public string ServiceCode { get; set; }
             // Pricing details
             public decimal SalePrice { get; set; }
             public decimal Discount { get; set; }

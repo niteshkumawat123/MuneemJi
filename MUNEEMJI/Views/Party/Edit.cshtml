@@ -85,7 +85,7 @@
 
 <div class="container mt-4">
     <h2>Add Party</h2>
-    <form asp-action="Add" method="post">
+    <form asp-action="Edit" method="post">
         <div class="row mb-3">
             <div class="col-md-4 field">
                 <label asp-for="PartyName">Party Name *</label>
@@ -102,17 +102,6 @@
                 <input asp-for="PhoneNumber" class="form-control" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
-
-            <div class="col-md-4 field">
-                <label asp-for="PartyGroup">Party Group</label>
-                <select asp-for="PartyGroup" class="form-select">
-                    <option value="General">General</option>
-                    <option value="Semi-Government">Semi-Government</option>
-                    <option value="Third Party">Third Party</option>
-                </select>
-                <span asp-validation-for="PartyGroup" class="text-danger"></span>
-            </div>
-
         </div>
 
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -164,14 +153,12 @@
                     </div>
                     <div class="col-md-6 field">
                         <label asp-for="ShippingAddress">Shipping Address</label>
-                        <textarea asp-for="ShippingAddress" class="form-control"></textarea>
-                        <span asp-validation-for="ShippingAddress" class="text-danger"></span>
-
-                       @*  <div class="form-check mt-2">
+                        <textarea asp-for="ShippingAddress" class="form-control" disabled="@shippingDisabled"></textarea>
+                        <div class="form-check mt-2">
                             <input asp-for="IsShippingDisabled" class="form-check-input" />
                             <label class="form-check-label" asp-for="IsShippingDisabled">Disable Shipping Address</label>
                         </div>
-                        <span asp-validation-for="ShippingAddress" class="text-danger"></span> *@
+                        <span asp-validation-for="ShippingAddress" class="text-danger"></span>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,749 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .page-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .page-body {
+            padding: 25px;
+        }
+
+        .page-footer {
+            padding: 15px 25px;
+            border-top: 1px solid #e5e5e5;
+            background: #fafafa;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-type-toggle {
+            display: flex;
+            background: #f0f0f0;
+            border-radius: 25px;
+            padding: 4px;
+            margin-bottom: 25px;
+        }
+
+        .toggle-option {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+            .toggle-option.active {
+                background: #007bff;
+                color: white;
+            }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: end;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+            .form-group.small {
+                flex: 0 0 200px;
+            }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #007bff;
+                box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+            }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 2px solid transparent;
+        }
+
+            .tab.active {
+                color: #e74c3c;
+                border-bottom-color: #e74c3c;
+            }
+
+        .tab-content {
+            display: none;
+        }
+
+            .tab-content.active {
+                display: block;
+            }
+
+        .pricing-section {
+            margin-bottom: 30px;
+        }
+
+        .pricing-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .pricing-row {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            flex: 1;
+        }
+
+            .input-group.small {
+                flex: 0 0 150px;
+            }
+
+        .wholesale-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 15px;
+        }
+
+        .manufacturing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+            .manufacturing-table th,
+            .manufacturing-table td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .manufacturing-table th {
+                background: #f8f9fa;
+                font-weight: 600;
+                color: #333;
+            }
+
+            .manufacturing-table input,
+            .manufacturing-table select {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+        .add-row-btn {
+            color: #007bff;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .cost-summary {
+            background: #fef9e7;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #f39c12;
+            margin-top: 20px;
+        }
+
+        .settings-icon {
+            color: #999;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .help-section {
+            color: #666;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .video-link {
+            color: #007bff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .date-input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .delete-row-btn {
+            color: #dc3545;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px;
+        }
+
+            .delete-row-btn:hover {
+                color: #c82333;
+            }
+
+        /* Responsive design */
+        media (max-width: 768px) {
+            .form-row
+
+        {
+            flex-direction: column;
+        }
+
+        .pricing-row {
+            flex-direction: column;
+        }
+
+        .page-header {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">Add Item</h1>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span class="settings-icon">⚙️</span>
+            </div>
+        </div>
+
+        <div class="page-body">
+            <form id="itemForm" method="post" action="/BillItem/Save">
+                <!-- Item Type Toggle -->
+                <div class="item-type-toggle">
+                    <button type="button" class="toggle-option active" onclick="switchType('product')">Product</button>
+                    <button type="button" class="toggle-option" onclick="switchType('service')">Service</button>
+                </div>
+
+                <!-- Product Form -->
+                <div id="productForm" class="item-form">
+                    <!-- Basic Info Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Item Name *</label>
+                            <input type="text" name="ItemName" class="form-input" required>
+                        </div>
+                        <div class="form-group input-with-icon">
+                            <label class="form-label">Item HSN</label>
+                            <input type="text" name="ItemHSN" class="form-input">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                        <div class="form-group small">
+                            <button type="button" class="btn-primary">Select Unit</button>
+                        </div>
+                        <div class="form-group small">
+                            <button type="button" class="btn-link">📷 Add Item Image</button>
+                        </div>
+                    </div>
+
+                    <!-- Category and Code Row -->
+                    <!-- Category and Code Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select name="Category" class="form-select">
+                                <option value="">Select Category</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="clothing">Clothing</option>
+                                <option value="food">Food & Beverages</option>
+                            </select>
+                        </div>
+                        <div class="form-group input-with-icon">
+                            <label class="form-label">Item Code</label>
+                            <input type="text" name="ItemCode" class="form-input" style="padding-right: 100px;">
+                            <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button type="button" class="tab active" onclick="showTab('pricing')">Pricing</button>
+                        <button type="button" class="tab" onclick="showTab('stock')">Stock</button>
+                        <button type="button" class="tab" onclick="showTab('online-store')">Online Store</button>
+                        <button type="button" class="tab" onclick="showTab('manufacturing')">Manufacturing</button>
+                    </div>
+
+                    <!-- Pricing Tab -->
+                    <div id="pricing" class="tab-content active">
+                        <div class="pricing-section">
+                            <h3 class="pricing-title">Sale Price</h3>
+                            <div class="pricing-row">
+                                <div class="input-group">
+                                    <label class="form-label">Sale Price</label>
+                                    <input type="number" name="SalePrice" class="form-input" step="0.01">
+                                </div>
+                                <div class="input-group small">
+                                    <label class="form-label"></label>
+                                    <select name="SalePriceTax" class="form-select">
+                                        <option>Without Tax</option>
+                                        <option>With Tax</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label class="form-label">Disc. On Sale Price</label>
+                                    <input type="number" name="SaleDiscount" class="form-input" step="0.01">
+                                </div>
+                                <div class="input-group small">
+                                    <label class="form-label"></label>
+                                    <select name="SaleDiscountType" class="form-select">
+                                        <option>Percentage</option>
+                                        <option>Amount</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <a href="#" class="wholesale-link">+ Add Wholesale Price</a>
+                        </div>
+
+                        <div class="pricing-section">
+                            <h3 class="pricing-title">Purchase Price</h3>
+                            <div class="pricing-row">
+                                <div class="input-group">
+                                    <label class="form-label">Purchase Price</label>
+                                    <input type="number" name="PurchasePrice" class="form-input" step="0.01">
+                                </div>
+                                <div class="input-group small">
+                                    <select name="PurchasePriceTax" class="form-select">
+                                        <option>Without Tax</option>
+                                        <option>With Tax</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pricing-section">
+                            <h3 class="pricing-title">Taxes</h3>
+                            <div class="form-group" style="max-width: 300px;">
+                                <label class="form-label">Tax Rate</label>
+                                <select name="TaxRate" class="form-select">
+                                    <option>None</option>
+                                    <option>5%</option>
+                                    <option>12%</option>
+                                    <option>18%</option>
+                                    <option>28%</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stock Tab -->
+                    <div id="stock" class="tab-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Opening Quantity</label>
+                                <input type="number" name="OpeningQuantity" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">At Price</label>
+                                <input type="number" name="AtPrice" class="form-input" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">As Of Date</label>
+                                <input type="date" name="AsOfDate" class="date-input" value="2025-06-15">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Min Stock To Maintain</label>
+                                <input type="number" name="MinStock" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Location</label>
+                                <input type="text" name="Location" class="form-input">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Online Store Tab -->
+                    <div id="online-store" class="tab-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Online Store Price</label>
+                                <input type="number" name="OnlineStorePrice" class="form-input" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Description</label>
+                                <textarea name="Description" class="form-textarea" rows="4"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manufacturing Tab -->
+                    <div id="manufacturing" class="tab-content">
+                        <div class="pricing-section">
+                            <h3 class="pricing-title">Raw Material</h3>
+                            <table class="manufacturing-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 40px;">#</th>
+                                        <th>RAW MATERIAL</th>
+                                        <th>QTY</th>
+                                        <th>UNIT</th>
+                                        <th>PURCHASE PRICE/UNIT (₹)</th>
+                                        <th>ESTIMATED COST (₹)</th>
+                                        <th style="width: 40px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rawMaterialTable">
+                                    <tr>
+                                        <td>1</td>
+                                        <td><input type="text" name="RawMaterial[]" class="form-input"></td>
+                                        <td><input type="number" name="RawMaterialQty[]" class="form-input"></td>
+                                        <td>
+                                            <select name="RawMaterialUnit[]" class="form-select">
+                                                <option>None</option>
+                                                <option>Kg</option>
+                                                <option>Pieces</option>
+                                                <option>Liters</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="number" name="RawMaterialPrice[]" class="form-input" step="0.01" value="0"></td>
+                                        <td><input type="number" name="RawMaterialCost[]" class="form-input" step="0.01" value="0" readonly></td>
+                                        <td><button type="button" class="delete-row-btn" onclick="deleteRawMaterialRow(this)">🗑️</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td><input type="text" name="RawMaterial[]" class="form-input"></td>
+                                        <td><input type="number" name="RawMaterialQty[]" class="form-input"></td>
+                                        <td>
+                                            <select name="RawMaterialUnit[]" class="form-select">
+                                                <option>None</option>
+                                                <option>Kg</option>
+                                                <option>Pieces</option>
+                                                <option>Liters</option>
+                                            </select>
+                                        </td>
+                                        <td><input type="number" name="RawMaterialPrice[]" class="form-input" step="0.01" value="0"></td>
+                                        <td><input type="number" name="RawMaterialCost[]" class="form-input" step="0.01" value="0" readonly></td>
+                                        <td><button type="button" class="delete-row-btn" onclick="deleteRawMaterialRow(this)">🗑️</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button type="button" class="add-row-btn" onclick="addRawMaterialRow()">+ Add Row</button>
+                            <div style="text-align: right; margin-bottom: 20px;">
+                                <strong id="rawMaterialTotal">TOTAL: ₹ 0.00</strong>
+                            </div>
+                        </div>
+
+                        <div class="cost-summary">
+                            <strong id="totalCostSummary">Total Estimated Cost (Raw Material + Additional Cost) = ₹ 0.00</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Form -->
+                <div id="serviceForm" class="item-form" style="display: none;">
+                    <!-- Service form content similar to product but simplified -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Service Name *</label>
+                            <input type="text" name="ServiceName" class="form-input">
+                        </div>
+                        <div class="form-group input-with-icon">
+                            <label class="form-label">Service HSN</label>
+                            <input type="text" name="ServiceHSN" class="form-input">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                    </div>
+
+                    <div class="pricing-section">
+                        <h3 class="pricing-title">Service Pricing</h3>
+                        <div class="pricing-row">
+                            <div class="input-group">
+                                <label class="form-label">Sale Price</label>
+                                <input type="number" name="ServiceSalePrice" class="form-input" step="0.01">
+                            </div>
+                            <div class="input-group">
+                                <label class="form-label">Tax Rate</label>
+                                <select name="ServiceTaxRate" class="form-select">
+                                    <option>None</option>
+                                    <option>5%</option>
+                                    <option>12%</option>
+                                    <option>18%</option>
+                                    <option>28%</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="ItemType" id="itemTypeInput" value="product">
+            </form>
+        </div>
+
+        <div class="page-footer">
+            <div class="help-section">
+                <span>Learn how to use Manufacturing</span>
+                <a href="#" class="video-link">▶️ Watch Video</a>
+            </div>
+            <div>
+                <button type="button" class="btn-secondary" onclick="history.back()">Cancel</button>
+                <button type="submit" form="itemForm" class="btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchType(type) {
+            // Update toggle buttons
+            document.querySelectorAll('.toggle-option').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide forms
+            if (type === 'product') {
+                document.getElementById('productForm').style.display = 'block';
+                document.getElementById('serviceForm').style.display = 'none';
+            } else {
+                document.getElementById('productForm').style.display = 'none';
+                document.getElementById('serviceForm').style.display = 'block';
+            }
+
+            // Update hidden input
+            document.getElementById('itemTypeInput').value = type;
+        }
+
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('#productForm .tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide tab content
+            document.querySelectorAll('#productForm .tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function addRawMaterialRow() {
+            const table = document.getElementById('rawMaterialTable');
+            const rowCount = table.rows.length + 1;
+            const newRow = table.insertRow();
+
+            newRow.innerHTML = `
+                <td>${rowCount}</td>
+                <td><input type="text" name="RawMaterial[]" class="form-input"></td>
+                <td><input type="number" name="RawMaterialQty[]" class="form-input"></td>
+                <td>
+                    <select name="RawMaterialUnit[]" class="form-select">
+                        <option>None</option>
+                        <option>Kg</option>
+                        <option>Pieces</option>
+                        <option>Liters</option>
+                    </select>
+                </td>
+                <td><input type="number" name="RawMaterialPrice[]" class="form-input" step="0.01" value="0"></td>
+                <td><input type="number" name="RawMaterialCost[]" class="form-input" step="0.01" value="0" readonly></td>
+                <td><button type="button" class="delete-row-btn" onclick="deleteRawMaterialRow(this)">🗑️</button></td>
+            `;
+        }
+
+        function deleteRawMaterialRow(button) {
+            const row = button.closest('tr');
+            const table = document.getElementById('rawMaterialTable');
+
+            if (table.rows.length > 1) {
+                row.remove();
+                updateRowNumbers();
+                updateTotal();
+            }
+        }
+
+        function updateRowNumbers() {
+            const table = document.getElementById('rawMaterialTable');
+            Array.from(table.rows).forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+        }
+
+        // Calculate estimated cost for raw materials
+        document.addEventListener('input', function(e) {
+            if (e.target.name === 'RawMaterialQty[]' || e.target.name === 'RawMaterialPrice[]') {
+                const row = e.target.closest('tr');
+                const qty = row.querySelector('input[name="RawMaterialQty[]"]').value || 0;
+                const price = row.querySelector('input[name="RawMaterialPrice[]"]').value || 0;
+                const cost = qty * price;
+                row.querySelector('input[name="RawMaterialCost[]"]').value = cost.toFixed(2);
+
+                updateTotal();
+            }
+        });
+
+        function updateTotal() {
+            const costInputs = document.querySelectorAll('input[name="RawMaterialCost[]"]');
+            let total = 0;
+            costInputs.forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+
+            // Update total displays
+            const totalElement = document.getElementById('rawMaterialTotal');
+            if (totalElement) {
+                totalElement.textContent = `TOTAL: ₹ ${total.toFixed(2)}`;
+            }
+
+            const summaryElement = document.getElementById('totalCostSummary');
+            if (summaryElement) {
+                summaryElement.textContent = `Total Estimated Cost (Raw Material + Additional Cost) = ₹ ${total.toFixed(2)}`;
+            }
+        }
+    </script>
+</body>
+</html>

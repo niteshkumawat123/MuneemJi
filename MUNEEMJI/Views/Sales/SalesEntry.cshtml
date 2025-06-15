@@ -1,0 +1,324 @@
+﻿@model Sale
+@using System.Text.Json
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Sales Entry</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Sales Entry</h2>
+
+        <form asp-action="Create" method="post">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <!-- Toggle for Cash/Credit -->
+                    <label>Payment:</label>
+                    <select class="form-select" asp-for="IsCash">
+                        <option value="false">Credit</option>
+                        <option value="true">Cash</option>
+                    </select>
+                </div>
+                <div class="col-md-6 text-end">
+                   @*  <div class="mb-2">
+                        <label>Invoice Number:</label>
+                        <span class="form-control">@Model.InvoiceNumber</span>
+                    </div> *@
+
+                    <div class="mb-2">
+                        <label asp-for="InvoiceNumber"></label>
+                        <input asp-for="InvoiceNumber" class="form-control" />
+                        <span asp-validation-for="InvoiceNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-2">
+                        <label asp-for="InvoiceDate">Invoice Date:</label>
+                        <input asp-for="InvoiceDate" class="form-control" type="date" />
+                        <span asp-validation-for="InvoiceDate" class="text-danger"></span>
+                    </div>
+                    <div class="mb-2">
+                        <label>State of Supply:</label>
+                        <select class="form-select" asp-for="StateOfSupplyId">
+                            <option value="">Select State</option>
+                            @* If you had states, you would populate here *@
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing and Shipping -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label asp-for="BillingName">Billing Name (Optional):</label>
+                        <input asp-for="BillingName" class="form-control" />
+                    </div>
+                    <div class="mb-2">
+                        <label asp-for="PhoneNumber">Phone No.:</label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-2">
+                        <label asp-for="BillingAddress">Billing Address:</label>
+                        <textarea asp-for="BillingAddress" class="form-control"></textarea>
+                        <span asp-validation-for="BillingAddress" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-2">
+                        <label asp-for="ShippingAddress">Shipping Address:</label>
+                        <textarea asp-for="ShippingAddress" class="form-control"></textarea>
+                        <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item table -->
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Unit</th>
+                        <th>Price/Unit</th>
+                        <th>Discount %</th>
+                        <th>Discount Amt</th>
+                        <th>Tax</th>
+                        <th>Tax %</th>
+                        <th>Tax Amt</th>
+                        <th>Amount</th>
+                        <th>Action</th> <!-- New column for Delete -->
+                    </tr>
+                </thead>
+                <tbody id="itemsTableBody">
+                    @for (int i = 0; i < Model.Items.Count; i++)
+                    {
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td>
+                                <select asp-for="Items[@i].ItemId" class="form-select">
+                                    <option value="">--Select Item--</option>
+                                    @foreach (var it in (List<ItemDropdownModel>)ViewBag.Items)
+                                    {
+                                        <option value="@it.ItemId">@it.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Items[@i].ItemId" class="text-danger"></span>
+                            </td>
+                            <td>
+                                <input asp-for="Items[@i].Quantity" class="form-control" />
+                                <span asp-validation-for="Items[@i].Quantity" class="text-danger"></span>
+                            </td>
+                            <td>
+                                <select asp-for="Items[@i].UnitId" class="form-select">
+                                    <option value="">None</option>
+                                    @foreach (var u in (List<UnitModel>)ViewBag.Units)
+                                    {
+                                        <option value="@u.UnitId">@u.Name</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="Items[@i].UnitId" class="text-danger"></span>
+                            </td>
+                            <td>
+                                <input asp-for="Items[@i].PricePerUnit" class="form-control" />
+                                <span asp-validation-for="Items[@i].PricePerUnit" class="text-danger"></span>
+                            </td>
+                            <td><input asp-for="Items[@i].DiscountPercent" class="form-control" /></td>
+                            <td><input asp-for="Items[@i].DiscountAmount" class="form-control" /></td>
+                            <td>
+                                <select asp-for="Items[@i].TaxId" class="form-select">
+                                    <option value="">None</option>
+                                    @foreach (var t in (List<TaxModel>)ViewBag.Taxes)
+                                    {
+                                        <option value="@t.TaxId">@t.Name</option>
+                                    }
+                                </select>
+                            </td>
+                            <td><input asp-for="Items[@i].TaxPercent" class="form-control" /></td>
+                            <td><input asp-for="Items[@i].TaxAmount" class="form-control" /></td>
+                            <td><input asp-for="Items[@i].Amount" class="form-control" readonly /></td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm deleteRow">Delete</button>
+                            </td>
+                           
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="button" id="addRowBtn" class="btn btn-success mb-3">Add Row</button>
+
+            <!-- Total section -->
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-4 d-flex align-items-center">
+                    <div class="form-check me-2">
+                        <input class="form-check-input" type="checkbox" asp-for="RoundOff" id="RoundOff" />
+                        <label class="form-check-label" for="RoundOff">Round Off</label>
+                    </div>
+                    <input type="number" asp-for="Total" class="form-control ms-2" style="width: 100px;" />
+                </div>
+
+               @*  <div class="col-md-4">
+                    <label for="Total">Total:</label>
+                    <input asp-for="Total" class="form-control" id="Total" readonly />
+                </div> *@
+
+                <div class="col-md-4">
+                    <label for="GrandTotal">Grand Total:</label>
+                    <input asp-for="GrandTotal" class="form-control" id="GrandTotal" readonly />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    </div>
+
+    @* <script>
+        // JavaScript to add new item rows dynamically
+        var items = @Html.Raw(JsonSerializer.Serialize(ViewBag.Items));
+        var units = @Html.Raw(JsonSerializer.Serialize(ViewBag.Units));
+        var taxes = @Html.Raw(JsonSerializer.Serialize(ViewBag.Taxes));
+
+        $(document).ready(function() {
+            $('#addRowBtn').click(function () {
+                var rowCount = $('#itemsTableBody tr').length;
+                var newRow = $('<tr>');
+                newRow.append('<td>' + (rowCount+1) + '</td>');
+
+                // Item dropdown
+                var itemSelect = '<select name="Items['+rowCount+'].ItemId" class="form-select"><option value="">--Select Item--</option>';
+                $.each(items, function(i, it) {
+                    itemSelect += '<option value="' + it.ItemId + '">' + it.Name + '</option>';
+                });
+                itemSelect += '</select>';
+                newRow.append('<td>' + itemSelect + '</td>');
+
+                // Quantity
+                newRow.append('<td><input name="Items['+rowCount+'].Quantity" class="form-control" /></td>');
+
+                // Unit dropdown
+                var unitSelect = '<select name="Items['+rowCount+'].UnitId" class="form-select"><option value="">None</option>';
+                $.each(units, function(i, u) {
+                    unitSelect += '<option value="' + u.UnitId + '">' + u.Name + '</option>';
+                });
+                unitSelect += '</select>';
+                newRow.append('<td>' + unitSelect + '</td>');
+
+                // Price per unit
+                newRow.append('<td><input name="Items['+rowCount+'].PricePerUnit" class="form-control" /></td>');
+                // Discount %
+                newRow.append('<td><input name="Items['+rowCount+'].DiscountPercent" class="form-control" /></td>');
+                // Discount Amt
+                newRow.append('<td><input name="Items['+rowCount+'].DiscountAmount" class="form-control" /></td>');
+
+                // Tax dropdown
+                var taxSelect = '<select name="Items['+rowCount+'].TaxId" class="form-select"><option value="">None</option>';
+                $.each(taxes, function(i, t) {
+                    taxSelect += '<option value="' + t.TaxId + '">' + t.Name + '</option>';
+                });
+                taxSelect += '</select>';
+                newRow.append('<td>' + taxSelect + '</td>');
+
+                // Tax %
+                newRow.append('<td><input name="Items['+rowCount+'].TaxPercent" class="form-control" /></td>');
+                // Tax Amount
+                newRow.append('<td><input name="Items['+rowCount+'].TaxAmount" class="form-control" /></td>');
+                // Amount
+                newRow.append('<td><input name="Items['+rowCount+'].Amount" class="form-control" readonly /></td>');
+
+                $('#itemsTableBody').append(newRow);
+            });
+        });
+    </script> *@
+    <script>
+        var items = @Html.Raw(JsonSerializer.Serialize(ViewBag.Items));
+        var units = @Html.Raw(JsonSerializer.Serialize(ViewBag.Units));
+        var taxes = @Html.Raw(JsonSerializer.Serialize(ViewBag.Taxes));
+
+        $(document).ready(function () {
+
+            // Add Row button click
+            $('#addRowBtn').click(function () {
+                var rowCount = $('#itemsTableBody tr').length;
+                var newRow = $('<tr>');
+
+                newRow.append('<td>' + (rowCount + 1) + '</td>');
+
+                var itemSelect = '<select name="Items[' + rowCount + '].ItemId" class="form-select"><option value="">--Select Item--</option>';
+                $.each(items, function (i, it) {
+                    itemSelect += '<option value="' + it.ItemId + '">' + it.Name + '</option>';
+                });
+                itemSelect += '</select>';
+                newRow.append('<td>' + itemSelect + '</td>');
+
+                newRow.append('<td><input name="Items[' + rowCount + '].Quantity" class="form-control" /></td>');
+
+                var unitSelect = '<select name="Items[' + rowCount + '].UnitId" class="form-select"><option value="">None</option>';
+                $.each(units, function (i, u) {
+                    unitSelect += '<option value="' + u.UnitId + '">' + u.Name + '</option>';
+                });
+                unitSelect += '</select>';
+                newRow.append('<td>' + unitSelect + '</td>');
+
+                newRow.append('<td><input name="Items[' + rowCount + '].PricePerUnit" class="form-control" /></td>');
+                newRow.append('<td><input name="Items[' + rowCount + '].DiscountPercent" class="form-control" /></td>');
+                newRow.append('<td><input name="Items[' + rowCount + '].DiscountAmount" class="form-control" /></td>');
+
+                var taxSelect = '<select name="Items[' + rowCount + '].TaxId" class="form-select"><option value="">None</option>';
+                $.each(taxes, function (i, t) {
+                    taxSelect += '<option value="' + t.TaxId + '">' + t.Name + '</option>';
+                });
+                taxSelect += '</select>';
+                newRow.append('<td>' + taxSelect + '</td>');
+
+                newRow.append('<td><input name="Items[' + rowCount + '].TaxPercent" class="form-control" /></td>');
+                newRow.append('<td><input name="Items[' + rowCount + '].TaxAmount" class="form-control" /></td>');
+                newRow.append('<td><input name="Items[' + rowCount + '].Amount" class="form-control" readonly /></td>');
+
+                // Delete Button
+                newRow.append('<td><button type="button" class="btn btn-danger btn-sm deleteRow">Delete</button></td>');
+
+                $('#itemsTableBody').append(newRow);
+            });
+
+            // Delete row with validation for minimum one row
+            $('#itemsTableBody').on('click', '.deleteRow', function () {
+                var rowCount = $('#itemsTableBody tr').length;
+                if (rowCount > 1) {
+                    $(this).closest('tr').remove();
+                    renumberRows();
+                } else {
+                    alert("At least one item row is required.");
+                }
+            });
+
+            // Re-index input names and update row numbers
+            function renumberRows() {
+                $('#itemsTableBody tr').each(function (index) {
+                    $(this).find('td:first').text(index + 1); // Row number
+
+                    $(this).find('input, select').each(function () {
+                        var nameAttr = $(this).attr('name');
+                        if (nameAttr) {
+                            var updatedName = nameAttr.replace(/\[\d+\]/, '[' + index + ']');
+                            $(this).attr('name', updatedName);
+                        }
+                    });
+                });
+            }
+        });
+    </script>
+
+
+    
+      
+    
+
+</body>
+</html>

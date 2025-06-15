@@ -2,14 +2,83 @@
 @{
     ViewData["Title"] = "Add Item";
     // Prepare SelectLists for dropdowns
-    var categoryList = new SelectList((IEnumerable<MUNEEMJI.Models.ItemModel.Category>)ViewBag.Categories, "Id", "Name");
+    var categoryList = new SelectList(ViewBag.Categories as IEnumerable<MUNEEMJI.Models.ItemModel.Category>, "Id", "Name");
     var unitList = new SelectList((IEnumerable<MUNEEMJI.Models.ItemModel.Unit>)ViewBag.Units, "Id", "Name");
     var taxList = new SelectList((IEnumerable<MUNEEMJI.Models.ItemModel.Tax>)ViewBag.Taxes, "Id", "Name");
 }
 
+<style>
+    .toggle-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .switch-label {
+        font-weight: 500;
+        color: #555;
+    }
+
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 46px;
+        height: 24px;
+    }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+    input:checked + .slider {
+        background-color: #0d6efd;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+</style>
 <h2>Add Item</h2>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data">
+    <div class="form-group mb-3">
+        <label class="form-label me-3">Type:</label>
+        <div class="toggle-switch">
+            <label class="switch-label">Product</label>
+            <label class="switch">
+                <input type="checkbox" id="isServiceToggle" name="IsService">
+                <span class="slider round"></span>
+            </label>
+            <label class="switch-label">Service</label>
+        </div>
+    </div>
+    <div id="productFields">
     <div class="card p-3">
         <div class="row mb-3">
             <div class="col-md-4">
@@ -129,4 +198,97 @@
             <!-- You could add "Save and Add More" functionality as needed -->
         </div>
     </div>
+    </div>
+    <div id="serviceFields" style="display: none;">
+        <div class="card p-3">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <input asp-for="ServiceName" class="form-control" placeholder="Service Name *" required />
+            </div>
+            <div class="col-md-3">
+                <input asp-for="ServiceHSN" class="form-control" placeholder="Service HSN" />
+            </div>
+            <div class="col-md-3">
+                <button type="button" class="btn btn-primary w-100">Select Unit</button>
+            </div>
+            <div class="col-md-3 text-end">
+                <label class="btn btn-outline-primary">
+                    <i class="bi bi-camera"></i> Add Item Image
+                    <input asp-for="ItemImage" type="file" hidden />
+                </label>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <select asp-for="CategoryId" class="form-select">
+                    <option value="">Category</option>
+                    <!-- Populate from DB -->
+                </select>
+            </div>
+            <div class="col-md-3 d-flex">
+                <input asp-for="ServiceCode" class="form-control" placeholder="Service Code" />
+                <button type="button" class="action-btn ms-2">Assign Code</button>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="pricing-tab" data-bs-toggle="tab" data-bs-target="#pricing" type="button">Pricing</button>
+            </li>
+        </ul>
+
+        <div class="tab-content border border-top-0 p-3">
+            <div class="tab-pane fade show active" id="pricing" role="tabpanel">
+                <h5>Sale Price</h5>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <input asp-for="SalePrice" class="form-control" placeholder="Sale Price" />
+                    </div>
+                    <div class="col-md-3">
+                        <select asp-for="TaxType" class="form-select">
+                            <option>Without Tax</option>
+                            <option>Inclusive</option>
+                            <option>Exclusive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input asp-for="Discount" class="form-control" placeholder="Disc. On Sale Price" />
+                    </div>
+                    <div class="col-md-3">
+                        <select asp-for="DiscountType" class="form-select">
+                            <option value="Percentage">Percentage</option>
+                            <option value="Flat">Flat</option>
+                        </select>
+                    </div>
+                </div>
+
+                <a href="#" class="text-primary">+ Add Wholesale Price</a>
+
+                <hr />
+                <h5>Taxes</h5>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <select class="form-select">
+                            <option>None</option>
+                            <option value="5">GST 5%</option>
+                            <option value="18">GST 18%</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-end mt-3">
+            <button type="submit" class="btn btn-success">Save</button>
+        </div>
+        </div>
+    </div>
 </form>
+<script>
+    document.getElementById("isServiceToggle").addEventListener("change", function () {
+        var isService = this.checked;
+        document.getElementById("productFields").style.display = isService ? "none" : "block";
+        document.getElementById("serviceFields").style.display = isService ? "block" : "none";
+    });
+</script>

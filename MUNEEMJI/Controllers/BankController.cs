@@ -124,5 +124,12 @@ namespace MUNEEMJI.Controllers
 
             return View(accounts);
         }
+
+        [HttpGet]
+        public IActionResult CashInhand()
+        {
+            return View();
+        }
+
     }
 }

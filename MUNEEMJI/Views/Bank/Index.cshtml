@@ -4,7 +4,241 @@
 }
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
+   
+    .container {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .dropdown-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 150px;
+    }
+
+        .dropdown-btn:hover {
+            background-color: #0056b3;
+        }
+
+    .dropdown-arrow {
+        margin-left: auto;
+        transition: transform 0.3s ease;
+    }
+
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        min-width: 200px;
+        z-index: 100;
+        display: none;
+        overflow: hidden;
+    }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+    .dropdown-item {
+        padding: 12px 15px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        color: #333;
+        font-size: 14px;
+        transition: background-color 0.2s ease;
+    }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+    .modal {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .modal-header {
+        padding: 20px 20px 10px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #999;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .close-btn:hover {
+            background-color: #f0f0f0;
+            color: #666;
+        }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-row {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        flex: 1;
+    }
+
+        .form-group.full-width {
+            flex: none;
+            width: 100%;
+        }
+
+    .form-label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+
+    .form-input, .form-select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #e9ecef;
+        border-radius: 4px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+        .form-input:focus, .form-select:focus {
+            border-color: #007bff;
+        }
+
+        .form-input.amount {
+            border-color: #007bff;
+        }
+
+    .description-btn {
+        width: 100%;
+        padding: 15px;
+        border: 2px dashed #ddd;
+        background: none;
+        border-radius: 4px;
+        color: #999;
+        cursor: pointer;
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+        .description-btn:hover {
+            border-color: #007bff;
+            color: #007bff;
+        }
+
+    .attachment-icon {
+        width: 30px;
+        height: 30px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #999;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    .save-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        float: right;
+    }
+
+        .save-btn:hover {
+            background-color: #0056b3;
+        }
+
+    .clearfix::after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+</style>
 <div class="container-fluid mt-4">
     <div class="row">
         <!-- Left column: Account list and search/add -->
@@ -63,15 +297,18 @@
                     <p><strong>IFSC Code:</strong> @Model[0].IFSCCode</p>
                     <p><strong>UPI ID:</strong> @Model[0].UPIID</p>
                 </div>
-                <div>
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown">
+                <div class="container">
+                    <div class="dropdown-container">
+                        <button class="dropdown-btn" onclick="toggleDropdown()">
                             Deposit / Withdraw
+                            <span class="dropdown-arrow" id="dropdownArrow">▼</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Deposit</a></li>
-                            <li><a class="dropdown-item" href="#">Withdraw</a></li>
-                        </ul>
+                        <div class="dropdown-menu" id="dropdownMenu">
+                            <div class="dropdown-item" onclick="openModal('bankToCash')">Bank to Cash Transfer</div>
+                            <div class="dropdown-item" onclick="openModal('cashToBank')">Cash to Bank Transfer</div>
+                            <div class="dropdown-item" onclick="openModal('bankToBank')">Bank to Bank Transfer</div>
+                            <div class="dropdown-item" onclick="openModal('adjustment')">Adjust Bank Balance</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -106,6 +343,234 @@
             </table>
         </div>
     </div>
+    <!-- Bank to Cash Transfer Modal -->
+    <div class="modal-overlay" id="bankToCashModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Bank To Cash Transfer</h3>
+                <button class="close-btn" onclick="closeModal('bankToCashModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">From</label>
+                        <select class="form-select">
+                            <option>lokesh saini</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">To</label>
+                        <select class="form-select">
+                            <option>Cash</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="text" class="form-input amount" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Adjustment Date</label>
+                        <input type="date" class="form-input" value="2025-06-14">
+                    </div>
+                </div>
+                <button class="description-btn">📎 Add Description</button>
+                <div class="attachment-icon">📎</div>
+                <div class="clearfix">
+                    <button class="save-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cash to Bank Transfer Modal -->
+    <div class="modal-overlay" id="cashToBankModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Cash To Bank Transfer</h3>
+                <button class="close-btn" onclick="closeModal('cashToBankModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">From</label>
+                        <select class="form-select">
+                            <option>Cash</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">To</label>
+                        <select class="form-select">
+                            <option>lokesh saini</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="text" class="form-input amount" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Adjustment Date</label>
+                        <input type="date" class="form-input" value="2025-06-14">
+                    </div>
+                </div>
+                <button class="description-btn">📎 Add Description</button>
+                <div class="attachment-icon">📎</div>
+                <div class="clearfix">
+                    <button class="save-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank to Bank Transfer Modal -->
+    <div class="modal-overlay" id="bankToBankModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Bank To Bank Transfer</h3>
+                <button class="close-btn" onclick="closeModal('bankToBankModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">From</label>
+                        <select class="form-select">
+                            <option>lokesh saini</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">To</label>
+                        <select class="form-select">
+                            <option>lokesh saini</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="text" class="form-input amount" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Adjustment Date</label>
+                        <input type="date" class="form-input" value="2025-06-14">
+                    </div>
+                </div>
+                <button class="description-btn">📎 Add Description</button>
+                <div class="attachment-icon">📎</div>
+                <div class="clearfix">
+                    <button class="save-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Adjustment Modal -->
+    <div class="modal-overlay" id="adjustmentModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Bank Adjustment Entry</h3>
+                <button class="close-btn" onclick="closeModal('adjustmentModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Account Name</label>
+                        <select class="form-select">
+                            <option>lokesh saini</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <select class="form-select">
+                            <option>Increase balance</option>
+                            <option>Decrease balance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Amount</label>
+                        <input type="text" class="form-input amount" placeholder="">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Adjustment Date</label>
+                        <input type="date" class="form-input" value="2025-06-14">
+                    </div>
+                </div>
+                <button class="description-btn">📎 Add Description</button>
+                <div class="attachment-icon">📎</div>
+                <div class="clearfix">
+                    <button class="save-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    let isDropdownOpen = false;
+
+    function toggleDropdown() {
+        const menu = document.getElementById('dropdownMenu');
+        const arrow = document.getElementById('dropdownArrow');
+
+        isDropdownOpen = !isDropdownOpen;
+
+        if (isDropdownOpen) {
+            menu.classList.add('show');
+            arrow.classList.add('open');
+        } else {
+            menu.classList.remove('show');
+            arrow.classList.remove('open');
+        }
+    }
+
+    function openModal(type) {
+        // Close dropdown first
+        toggleDropdown();
+
+        // Open appropriate modal
+        let modalId;
+        switch (type) {
+            case 'bankToCash':
+                modalId = 'bankToCashModal';
+                break;
+            case 'cashToBank':
+                modalId = 'cashToBankModal';
+                break;
+            case 'bankToBank':
+                modalId = 'bankToBankModal';
+                break;
+            case 'adjustment':
+                modalId = 'adjustmentModal';
+                break;
+        }
+
+        document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function (event) {
+        const dropdown = document.querySelector('.dropdown-container');
+        if (!dropdown.contains(event.target) && isDropdownOpen) {
+            toggleDropdown();
+        }
+    });
+
+    // Close modal when clicking outside
+    document.addEventListener('click', function (event) {
+        const modals = document.querySelectorAll('.modal-overlay');
+        modals.forEach(modal => {
+            if (event.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+    });
+</script>

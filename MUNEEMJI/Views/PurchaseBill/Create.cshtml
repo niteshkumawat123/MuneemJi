@@ -1,0 +1,448 @@
+﻿@model PurchaseBillViewModel
+
+@{
+    ViewData["Title"] = "Create Bill";
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+}
+
+<style>
+    .form-container {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .search-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .bill-info-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .items-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .transport-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .payment-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .items-table {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+        .items-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            font-size: 12px;
+        }
+
+        .items-table td {
+            padding: 5px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        .items-table input, .items-table select {
+            width: 100%;
+            border: none;
+            padding: 5px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+    .total-row {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .btn-add-row {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+
+    .form-control-sm {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .checkbox-container {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .action-buttons {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .btn-share {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+    .btn-save {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container-fluid">
+    <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
+        <div class="form-container">
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Search by Name/Phone</label>
+                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="PartyId">
+                            <option value="">Select</option>
+                            @if (ViewBag.PartyList != null)
+                            {
+                                <!-- Header Option (disabled and styled) -->
+                                <option disabled class="dropdown-header">
+                                    <span class="header-item">Party Name</span>
+                                    <span class="header-item">Mobile Number</span>
+                                    <span class="header-item">Balance</span>
+                                </option>
+
+                                @foreach (var party in ViewBag.PartyList)
+                                {
+                                    <option value="@party.id" data-phone="@party.phonenumber" data-balance="@party.balance" class="party-option">
+                                        <span class="party-name">@party.partyname</span>
+                                        <span class="party-phone">@party.phonenumber</span>
+                                        <span class="party-balance">@party.balance</span>
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>                    <div class="col-md-2">
+                        <label>Phone No.</label>
+                        <input asp-for="Bill.PhoneNo" class="form-control form-control-sm" placeholder="Phone No." />
+                    </div>
+                    <div class="col-md-2">
+                        <label>P.O No.</label>
+                        <input asp-for="Bill.PONo" class="form-control form-control-sm" placeholder="P.O No." />
+                    </div>
+                    <div class="col-md-2">
+                        <label>P.O Date</label>
+                        <input asp-for="Bill.PODate" type="date" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-md-2">
+                        <label>E-Way Bill No.</label>
+                        <input asp-for="Bill.EWayBillNo" class="form-control form-control-sm" placeholder="E-Way Bill No." />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bill Info Section -->
+            <div class="bill-info-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Bill Number</label>
+                        <input asp-for="Bill.BillNumber" class="form-control form-control-sm" readonly />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Bill Date</label>
+                        <input asp-for="Bill.BillDate" type="date" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>State of supply</label>
+                        <select asp-for="Bill.StateOfSupply" class="form-control form-control-sm">
+                            @foreach (var state in Model.StateOptions)
+                            {
+                                <option value="@state">@state</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Section -->
+            <div class="items-section">
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 25%">ITEM</th>
+                            <th style="width: 8%">QTY</th>
+                            <th style="width: 10%">UNIT</th>
+                            <th style="width: 12%">PRICE/UNIT<br />Without Tax</th>
+                            <th style="width: 8%">DISCOUNT<br />%</th>
+                            <th style="width: 10%">AMOUNT</th>
+                            <th style="width: 8%">TAX</th>
+                            <th style="width: 10%">AMOUNT</th>
+                            <th style="width: 4%">AMOUNT</th>
+                            <th style="width: 2%">⊕</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody">
+                        @for (int i = 0; i < Model.Bill.BillItems.Count; i++)
+                        {
+                            <tr class="item-row" data-index="@i">
+                                <td>@(i + 1)</td>
+                                <td>
+                                    <input asp-for="Bill.BillItems[i].Item" class="form-control-sm" />
+                                </td>
+                                <td>
+                                    <input asp-for="Bill.BillItems[i].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(@i)" />
+                                </td>
+                                <td>
+                                    <select asp-for="Bill.BillItems[i].Unit" class="form-control-sm">
+                                        @foreach (var unit in Model.UnitOptions)
+                                        {
+                                            <option value="@unit">@unit</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input asp-for="Bill.BillItems[i].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(@i)" />
+                                </td>
+                                <td>
+                                    <input asp-for="Bill.BillItems[i].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(@i)" />
+                                </td>
+                                <td>
+                                    <input asp-for="Bill.BillItems[i].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly />
+                                </td>
+                                <td>
+                                    <select asp-for="Bill.BillItems[i].Tax" class="form-control-sm tax-select" onchange="calculateItemAmount(@i)">
+                                        @foreach (var tax in Model.TaxOptions)
+                                        {
+                                            <option value="@tax">@tax</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input asp-for="Bill.BillItems[i].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly />
+                                </td>
+                                <td>
+                                    <input asp-for="Bill.BillItems[i].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="9" style="text-align: right; font-weight: bold;">TOTAL</td>
+                            <td><span id="grandTotal">0</span></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <button type="button" class="btn-add-row" onclick="addNewRow()">ADD ROW</button>
+            </div>
+
+            <!-- Transport Section -->
+            <div class="transport-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Transport Name</label>
+                        <input asp-for="Bill.TransportName" class="form-control form-control-sm" placeholder="Transport Name" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Delivery Location</label>
+                        <input asp-for="Bill.DeliveryLocation" class="form-control form-control-sm" placeholder="Delivery Location" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Vehicle Number</label>
+                        <input asp-for="Bill.VehicleNumber" class="form-control form-control-sm" placeholder="Vehicle Number" />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Delivery Date</label>
+                        <input asp-for="Bill.DeliveryDate" type="date" class="form-control form-control-sm" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Payment Type</label>
+                        <select asp-for="Bill.PaymentType" class="form-control form-control-sm">
+                            @foreach (var payment in Model.PaymentTypes)
+                            {
+                                <option value="@payment">@payment</option>
+                            }
+                        </select>
+                        <a href="#" style="color: #007bff; font-size: 12px;">+ Add Payment type</a>
+                    </div>
+                    <div class="col-md-3">
+                        <label>ADD DESCRIPTION</label>
+                        <textarea asp-for="Bill.Description" class="form-control form-control-sm" rows="2" placeholder="Add description"></textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label>ADD IMAGE</label>
+                        <input type="file" name="imageFile" class="form-control form-control-sm" accept="image/*" />
+                    </div>
+                    <div class="col-md-3">
+                        <div class="checkbox-container">
+                            <input asp-for="Bill.RoundOff" type="checkbox" checked />
+                            <label asp-for="Bill.RoundOff">Round Off</label>
+                            <span id="roundOffAmount">0</span>
+                            <span style="margin-left: 20px;">Total: <strong id="finalTotal">0</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button type="button" class="btn-share">Share ▼</button>
+                <button type="submit" class="btn-save">Save</button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    let itemIndex = @Model.Bill.BillItems.Count;
+
+    function addNewRow() {
+        const tbody = document.getElementById('itemsTableBody');
+        const newRow = document.createElement('tr');
+        newRow.className = 'item-row';
+        newRow.setAttribute('data-index', itemIndex);
+
+        newRow.innerHTML = `
+            <td>${itemIndex + 1}</td>
+            <td><input name="Bill.BillItems[${itemIndex}].Item" class="form-control-sm" /></td>
+            <td><input name="Bill.BillItems[${itemIndex}].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(${itemIndex})" /></td>
+            <td>
+                <select name="Bill.BillItems[${itemIndex}].Unit" class="form-control-sm">
+    @foreach (var unit in Model.UnitOptions)
+    {
+                            <option value="@unit">@unit</option>
+    }
+                </select>
+            </td>
+            <td><input name="Bill.BillItems[${itemIndex}].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(${itemIndex})" /></td>
+            <td><input name="Bill.BillItems[${itemIndex}].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(${itemIndex})" /></td>
+            <td><input name="Bill.BillItems[${itemIndex}].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly /></td>
+            <td>
+                <select name="Bill.BillItems[${itemIndex}].Tax" class="form-control-sm tax-select" onchange="calculateItemAmount(${itemIndex})">
+    @foreach (var tax in Model.TaxOptions)
+    {
+                            <option value="@tax">@tax</option>
+    }
+                </select>
+            </td>
+            <td><input name="Bill.BillItems[${itemIndex}].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly /></td>
+            <td><input name="Bill.BillItems[${itemIndex}].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly /></td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${itemIndex})">×</button></td>
+        `;
+
+        tbody.appendChild(newRow);
+        itemIndex++;
+    }
+
+    function removeRow(index) {
+        const row = document.querySelector(`tr[data-index="${index}"]`);
+        if (row) {
+            row.remove();
+            updateGrandTotal();
+        }
+    }
+
+    function calculateItemAmount(index) {
+        const row = document.querySelector(`tr[data-index="${index}"]`);
+        if (!row) return;
+
+        const quantity = parseFloat(row.querySelector('.qty-input').value) || 0;
+        const pricePerUnit = parseFloat(row.querySelector('.price-input').value) || 0;
+        const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
+        const taxSelect = row.querySelector('.tax-select').value;
+
+        const subtotal = quantity * pricePerUnit;
+        const discountAmount = subtotal * (discountPercentage / 100);
+        const afterDiscount = subtotal - discountAmount;
+
+        let taxRate = 0;
+        if (taxSelect && taxSelect !== 'Select') {
+            taxRate = parseFloat(taxSelect.replace('%', '')) || 0;
+        }
+
+        const taxAmount = afterDiscount * (taxRate / 100);
+        const finalAmount = afterDiscount + taxAmount;
+
+        row.querySelector('.discount-amount').value = discountAmount.toFixed(2);
+        row.querySelector('.tax-amount').value = taxAmount.toFixed(2);
+        row.querySelector('.item-amount').value = finalAmount.toFixed(2);
+
+        updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+        let total = 0;
+        document.querySelectorAll('.item-amount').forEach(input => {
+            total += parseFloat(input.value) || 0;
+        });
+
+        document.getElementById('grandTotal').textContent = total.toFixed(2);
+
+        const roundOff = document.querySelector('input[name="Bill.RoundOff"]').checked;
+        let finalTotal = roundOff ? Math.round(total) : total;
+        let roundOffAmount = finalTotal - total;
+
+        document.getElementById('roundOffAmount').textContent = roundOffAmount.toFixed(2);
+        document.getElementById('finalTotal').textContent = finalTotal.toFixed(2);
+    }
+
+    // Initialize calculations on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.item-row').forEach((row, index) => {
+            calculateItemAmount(index);
+        });
+    });
+
+    // Handle round off checkbox change
+    document.querySelector('input[name="Bill.RoundOff"]').addEventListener('change', updateGrandTotal);
+</script>

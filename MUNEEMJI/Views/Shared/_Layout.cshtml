@@ -23,6 +23,18 @@
             max-width: 250px;
             min-height: 100vh;
         }
+        #sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px; /* Adjust based on your layout */
+    height: 100vh;
+    background-color: #f8f9fa; /* optional */
+    overflow-y: auto; /* if sidebar has scrollable content */
+    z-index: 1000; /* ensures it appears above other elements */
+    height:auto;
+}
+
 
             #sidebar .nav-link {
                 color: #fff;
@@ -150,15 +162,16 @@
                 @*     </a> *@
                 @* </li> *@
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#partiesMenu"
-                       role="button" aria-expanded="false" aria-controls="partiesMenu">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#ItemMenu"
+                       role="button" aria-expanded="false" aria-controls="ItemMenu">
                         <i class="bi bi-people"></i> Items
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse" id="partiesMenu">
+                    <div class="collapse" id="ItemMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
-                            <li><a href="/inventory/Index" class="nav-link">All Items</a></li>
-                            <li><a href="/items/create" class="nav-link">Add Item</a></li>
+                            <li><a href="/billitem/Index" class="nav-link">All Items</a></li>
+                            <li><a href="/billitem/create" class="nav-link">Add Item</a></li>
+                            <li><a href="/godown/index" class="nav-link">Godown Management</a></li>
                             <li><a href="/items/create" class="nav-link">Smart Connect</a></li>
                         </ul>
                     </div>
@@ -190,16 +203,16 @@
                 </li>
                 <!-- Purchase & Expense (collapsible, active) -->
                 <li class="nav-item">
-                    <a class="nav-link active" data-bs-toggle="collapse" href="#purchaseMenu"
+                    <a class="nav-link" data-bs-toggle="collapse" href="#purchaseMenu"
                        role="button" aria-expanded="true" aria-controls="purchaseMenu">
                         <i class="bi bi-cart3"></i> Purchase &amp; Expense
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse show" id="purchaseMenu">
+                    <div class="collapse" id="purchaseMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
-                            <li><a href="#" class="nav-link">New Purchase</a></li>
+                            <li><a href="/PurchaseBill/Create" class="nav-link">New Purchase</a></li>
                             <li><a href="#" class="nav-link">Expense Report</a></li>
-                            <li><a href="#" class="nav-link">Purchase Bill</a></li>
+                            <li><a href="/PurchaseBill/index" class="nav-link">Purchase Bill</a></li>
                             <li><a href="#" class="nav-link">Payment Out</a></li>
                             <li><a href="#" class="nav-link">Expense</a></li>
                             <li><a href="#" class="nav-link">Purchase Order</a></li>

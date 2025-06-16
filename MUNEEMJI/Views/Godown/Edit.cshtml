@@ -1,0 +1,118 @@
+﻿@model Godown
+
+@{
+    ViewData["Title"] = "Edit Godown";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-0">Edit Godown</h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="@Url.Action("Index")">Manage Godowns</a></li>
+                            <li class="breadcrumb-item active">Edit Godown</li>
+                        </ol>
+                    </nav>
+                </div>
+                <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Godown Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Edit" method="post">
+                        @Html.AntiForgeryToken()
+                        <input asp-for="Id" type="hidden" />
+                        <input asp-for="CreatedDate" type="hidden" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GodownType" class="form-label">Godown Type <span class="text-danger">*</span></label>
+                                <select asp-for="GodownType" class="form-select" required>
+                                    <option value="">Select</option>
+                                    <option value="Retail Store">Retail Store</option>
+                                    <option value="Warehouse">Warehouse</option>
+                                    <option value="Distribution Center">Distribution Center</option>
+                                    <option value="Manufacturing Unit">Manufacturing Unit</option>
+                                    <option value="Cold Storage">Cold Storage</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                                <span asp-validation-for="GodownType" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GodownName" class="form-label">Godown Name <span class="text-danger">*</span></label>
+                                <input asp-for="GodownName" type="text" class="form-control" placeholder="Enter Godown Name" required>
+                                <span asp-validation-for="GodownName" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhoneNo" class="form-label">Phone No <span class="text-danger">*</span></label>
+                                <input asp-for="PhoneNo" type="tel" class="form-control" required>
+                                <span asp-validation-for="PhoneNo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="EmailId" class="form-label">Email ID</label>
+                                <input asp-for="EmailId" type="email" class="form-control">
+                                <span asp-validation-for="EmailId" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <h6 class="mt-4 mb-3">More Information</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GSTIN" class="form-label">GSTIN</label>
+                                <input asp-for="GSTIN" type="text" class="form-control">
+                                <span asp-validation-for="GSTIN" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="GodownPincode" class="form-label">Godown Pincode</label>
+                                <input asp-for="GodownPincode" type="text" class="form-control">
+                                <span asp-validation-for="GodownPincode" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="GodownAddress" class="form-label">Godown Address</label>
+                            <textarea asp-for="GodownAddress" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="GodownAddress" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-save me-2"></i>
+                                Update Godown
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

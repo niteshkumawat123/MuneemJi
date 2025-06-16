@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IPurchaseBillService, PurchaseBillService>();
 builder.Services.AddScoped<IBillItemService, BillItemService>();
+builder.Services.AddScoped<IGodownService, GodownService>();
 
 
 var app = builder.Build();
@@ -24,6 +25,12 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "settings",
+    pattern: "setting/{controller=General}/{action=Index}/{id?}",
+    defaults: new { area = "Settings" }
+);
 
 app.MapControllerRoute(
     name: "default",

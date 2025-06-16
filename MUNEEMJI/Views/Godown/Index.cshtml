@@ -1,0 +1,339 @@
+﻿@model GodownViewModel
+
+@{
+    ViewData["Title"] = "Manage Godowns";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Manage Godowns</h2>
+                <div>
+                    <button class="btn btn-outline-danger me-2" onclick="transferStock()">
+                        <i class="fas fa-exchange-alt"></i> Transfer Stock
+                    </button>
+                    <button class="btn btn-danger" onclick="openAddGodownModal()">
+                        <i class="fas fa-plus"></i> Add Godown
+                    </button>
+                </div>
+            </div>
+
+            <!-- Success Banner -->
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <strong>Congratulations!</strong> You can now easily add your godowns and transfer stock between them.
+                        <br>
+                        <strong>Watch this video to learn more about Godown Management</strong>
+                    </div>
+                    <div class="ms-3">
+                        <div class="video-thumbnail position-relative">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iIzMzNzNkYyIvPgo8Y2lyY2xlIGN4PSI1MCIgY3k9IjMwIiByPSIxNSIgZmlsbD0id2hpdGUiLz4KPHN2ZyB4PSI0NSIgeT0iMjMiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxNCIgdmlld0JveD0iMCAwIDEwIDE0IiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTAgMFYxNEwxMCA3TDAgMFoiIGZpbGw9IiMzMzczZGMiLz4KPC9zdmc+Cjwvc3ZnPgo=" alt="Video Thumbnail" class="rounded">
+                            <button class="btn btn-danger btn-sm position-absolute top-50 start-50 translate-middle" onclick="playVideo()">
+                                <i class="fas fa-play"></i> Play Video
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Main Godown Section -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-0">Main Godown</h5>
+                            <span class="badge bg-warning text-dark">@Model.MainGodown</span>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Godowns List -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Your Godowns (@Model.TotalGodowns)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Godowns.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>
+                                            <i class="fas fa-warehouse me-2"></i>
+                                            GODOWN NAME
+                                        </th>
+                                        <th>GODOWN TYPE</th>
+                                        <th>CONTACT DETAILS</th>
+                                        <th>LOCATION</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var godown in Model.Godowns)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="me-3">
+                                                        <i class="fas fa-store-alt text-primary fs-4"></i>
+                                                    </div>
+                                                    <strong>@godown.GodownName</strong>
+                                                </div>
+                                            </td>
+                                            <td>@godown.GodownType</td>
+                                            <td>@godown.PhoneNo</td>
+                                            <td>@godown.GodownAddress</td>
+                                            <td>
+                                                <button class="btn btn-outline-primary btn-sm" onclick="editGodown(@godown.Id)">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-5">
+                            <i class="fas fa-warehouse text-muted" style="font-size: 3rem;"></i>
+                            <h5 class="mt-3 text-muted">No godowns found</h5>
+                            <p class="text-muted">Click "Add Godown" to create your first godown</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Godown Modal -->
+<div class="modal fade" id="addGodownModal" tabindex="-1" aria-labelledby="addGodownModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addGodownModalLabel">Add Godown</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addGodownForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="godownType" class="form-label">Godown Type <span class="text-danger">*</span></label>
+                            <select class="form-select" id="godownType" name="GodownType" required>
+                                <option value="">Select</option>
+                                <option value="Retail Store">Retail Store</option>
+                                <option value="Warehouse">Warehouse</option>
+                                <option value="Distribution Center">Distribution Center</option>
+                                <option value="Manufacturing Unit">Manufacturing Unit</option>
+                                <option value="Cold Storage">Cold Storage</option>
+                                <option value="Others">Others</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="godownName" class="form-label">Godown Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="godownName" name="GodownName" placeholder="Enter Godown Name" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phoneNo" class="form-label">Phone No <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" id="phoneNo" name="PhoneNo" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="emailId" class="form-label">Email ID</label>
+                            <input type="email" class="form-control" id="emailId" name="EmailId">
+                        </div>
+                    </div>
+
+                    <h6 class="mt-4 mb-3">More Information</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="gstin" class="form-label">GSTIN</label>
+                            <input type="text" class="form-control" id="gstin" name="GSTIN">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="godownPincode" class="form-label">Godown Pincode</label>
+                            <input type="text" class="form-control" id="godownPincode" name="GodownPincode">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="godownAddress" class="form-label">Godown Address</label>
+                        <textarea class="form-control" id="godownAddress" name="GodownAddress" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+                function openAddGodownModal() {
+            try {
+                const modalElement = document.getElementById('addGodownModal');
+                if (modalElement) {
+                    const modal = new bootstrap.Modal(modalElement);
+                    modal.show();
+                } else {
+                    console.error('Modal element not found');
+                }
+            } catch (error) {
+                console.error('Error opening modal:', error);
+                // Fallback for Bootstrap 4
+                $('#addGodownModal').modal('show');
+            }
+        }
+
+        function transferStock() {
+            alert('Transfer Stock functionality to be implemented');
+        }
+
+        function playVideo() {
+            alert('Video player functionality to be implemented');
+        }
+
+        function editGodown(id) {
+            window.location.href = '/Godown/Edit/' + id;
+        }
+
+        // Form submission
+        $('#addGodownForm').on('submit', function(e) {
+            e.preventDefault();
+
+            // Validate required fields
+            let isValid = true;
+            let errorMessage = '';
+
+            if (!$('#godownName').val().trim()) {
+                isValid = false;
+                errorMessage += 'Godown Name is required.\n';
+            }
+
+            if (!$('#godownType').val()) {
+                isValid = false;
+                errorMessage += 'Godown Type is required.\n';
+            }
+
+            if (!$('#phoneNo').val().trim()) {
+                isValid = false;
+                errorMessage += 'Phone Number is required.\n';
+            }
+
+            if (!isValid) {
+                alert('Please fix the following errors:\n' + errorMessage);
+                return;
+            }
+
+            const formData = {
+                GodownName: $('#godownName').val().trim(),
+                GodownType: $('#godownType').val(),
+                PhoneNo: $('#phoneNo').val().trim(),
+                EmailId: $('#emailId').val().trim() || null,
+                GSTIN: $('#gstin').val().trim() || null,
+                GodownAddress: $('#godownAddress').val().trim() || null,
+                GodownPincode: $('#godownPincode').val().trim() || null
+            };
+
+            // Show loading state
+            const saveBtn = $(this).find('button[type="submit"]');
+            const originalText = saveBtn.html();
+            saveBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Saving...').prop('disabled', true);
+
+            $.ajax({
+                url: '/Godown/CreateAjax',
+                type: 'POST',
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $('#addGodownModal').modal('hide');
+                        // Show success message
+                        $('body').prepend(`
+                            <div class="alert alert-success alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; z-index: 9999;" role="alert">
+                                <i class="fas fa-check-circle me-2"></i>
+                                ${response.message}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        `);
+                        // Reload page after short delay
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        alert('Error: ' + response.message);
+                        if (response.errors) {
+                            console.log('Validation errors:', response.errors);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', {xhr, status, error});
+                    alert('An error occurred while saving the godown. Please try again.');
+                },
+                complete: function() {
+                    // Reset button state
+                    saveBtn.html(originalText).prop('disabled', false);
+                }
+            });
+        });
+
+        // Reset form when modal is closed
+        $('#addGodownModal').on('hidden.bs.modal', function() {
+            $('#addGodownForm')[0].reset();
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .video-thumbnail img {
+            width: 100px;
+            height: 60px;
+            object-fit: cover;
+        }
+
+        .table th {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #6c757d;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .alert-primary {
+            background-color: #cfe2ff;
+            border-color: #b8d4ff;
+            color: #052c65;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+            .btn-danger:hover {
+                background-color: #c82333;
+                border-color: #bd2130;
+            }
+    </style>
+}

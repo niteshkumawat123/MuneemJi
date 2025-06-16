@@ -1,0 +1,403 @@
+﻿@{
+    
+    Layout = "_SettingsLayout";
+}
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .settings-container {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .form-check-label {
+            font-size: 14px;
+            color: #666;
+            margin-left: 8px;
+        }
+
+        .form-control, .form-select {
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .info-icon {
+            color: #6c757d;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .default-badge {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid #ddd;
+        }
+
+        .edit-icon {
+            color: #007bff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .radio-group {
+            margin-bottom: 15px;
+        }
+
+        .description-text {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .checkbox-group {
+            margin-bottom: 15px;
+        }
+
+        .nested-checkbox {
+            margin-left: 25px;
+            margin-top: 8px;
+        }
+
+        .zoom-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .zoom-btn {
+            border: 1px solid #ddd;
+            background: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+            .zoom-btn.active {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+
+        .apply-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 6px 20px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .activate-windows {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #ccc;
+            font-size: 13px;
+        }
+
+            .activate-windows .title {
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+
+            .activate-windows .subtitle {
+                font-size: 12px;
+            }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f8f9fa;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .row {
+            margin-bottom: 25px;
+        }
+
+        .col-4 {
+            padding-right: 30px;
+        }
+    </style>
+
+    <div class="settings-container position-relative">
+        <button class="close-btn">
+            <i class="fas fa-times"></i>
+        </button>
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-4">
+                <div class="section-title">Application</div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="enablePasscode">
+                        <label class="form-check-label" for="enablePasscode">
+                            Enable Passcode
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Business Currency <i class="fas fa-info-circle info-icon"></i></label>
+                    <div class="row">
+                        <div class="col-3">
+                            <select class="form-select">
+                                <option>₹</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Amount <i class="fas fa-info-circle info-icon"></i></label>
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="number" class="form-control" value="2">
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">e.g. 0.00</small>
+                        </div>
+                    </div>
+                    <small class="text-muted">(upto Decimal Places)</small>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="gstinNumber" checked>
+                        <label class="form-check-label" for="gstinNumber">
+                            GSTIN Number
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="stopSale">
+                        <label class="form-check-label" for="stopSale">
+                            Stop Sale on Negative Stock
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="section-title mt-4">More Transactions</div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="estimate" checked>
+                        <label class="form-check-label" for="estimate">
+                            Estimate/Quotation
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="saleOrder" checked>
+                        <label class="form-check-label" for="saleOrder">
+                            Sale/Purchase Order
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="otherIncome" checked>
+                        <label class="form-check-label" for="otherIncome">
+                            Other Income
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="fixedAssets">
+                        <label class="form-check-label" for="fixedAssets">
+                            Fixed Assets (FA)
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="deliveryChallan" checked>
+                        <label class="form-check-label" for="deliveryChallan">
+                            Delivery Challan
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+
+                    <div class="nested-checkbox">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="goodsReturn" checked>
+                            <label class="form-check-label" for="goodsReturn">
+                                Goods return on Delivery Challan
+                                <i class="fas fa-info-circle info-icon"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="nested-checkbox">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="printAmount">
+                            <label class="form-check-label" for="printAmount">
+                                Print amount in Delivery Challan
+                                <i class="fas fa-info-circle info-icon"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Column -->
+            <div class="col-4">
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="multiFirm">
+                        <label class="form-check-label" for="multiFirm">
+                            Multi Firm
+                        </label>
+                    </div>
+                </div>
+
+                <div class="radio-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="firmName" id="hellovezel" checked>
+                        <label class="form-check-label" for="hellovezel">
+                            hellovezel
+                        </label>
+                        <span class="default-badge ms-2">DEFAULT</span>
+                        <i class="fas fa-edit edit-icon ms-2"></i>
+                    </div>
+                </div>
+
+                <div class="section-title mt-4">Stock Transfer Between Godowns</div>
+
+                <div class="description-text">
+                    Manage all your stores/godowns and transfer stock seamlessly between them. Using this feature, you can transfer stock between stores/godowns and manage your inventory more efficiently.
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="godownManagement" checked>
+                        <label class="form-check-label" for="godownManagement">
+                            Godown management & Stock transfer
+                            <i class="fas fa-info-circle info-icon"></i>
+                            <i class="fas fa-video ms-2" style="color: #dc3545;"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-4">
+                <div class="section-title">Backup & History</div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="autoBackup">
+                        <label class="form-check-label" for="autoBackup">
+                            Auto Backup
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Last Backup <i class="fas fa-info-circle info-icon"></i></label>
+                    <div class="text-muted">14/06/2025 | 11:06 AM</div>
+                </div>
+
+                <div class="checkbox-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="auditTrail" checked>
+                        <label class="form-check-label" for="auditTrail">
+                            Audit Trail
+                            <i class="fas fa-info-circle info-icon"></i>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="section-title mt-4">Customize Your View</div>
+
+                <div class="mb-3">
+                    <label class="form-label">Choose Your Screen Zoom/Scale</label>
+                    <div class="description-text">
+                        You can use this setting to resize the Vyapar screen, making it larger or smaller to fit your preferences.
+                    </div>
+
+                    <div class="zoom-buttons">
+                        <button class="zoom-btn">70%</button>
+                        <button class="zoom-btn">80%</button>
+                        <button class="zoom-btn">90%</button>
+                        <button class="zoom-btn active">100%</button>
+                        <button class="zoom-btn">110%</button>
+                        <button class="zoom-btn">115%</button>
+                        <button class="zoom-btn">120%</button>
+                        <button class="zoom-btn">130%</button>
+                    </div>
+
+                    <button class="apply-btn">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Zoom button functionality
+        document.querySelectorAll('.zoom-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.zoom-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Close button functionality
+        document.querySelector('.close-btn').addEventListener('click', function() {
+            window.close();
+        });
+    </script>

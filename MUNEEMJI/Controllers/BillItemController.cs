@@ -55,25 +55,26 @@ namespace MUNEEMJI.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BillItemViewModel model)
+        public async Task<IActionResult> Create(BillItem model)
         {
+            BillItemViewModel viewModel = new BillItemViewModel();
             try
             {
                 if (ModelState.IsValid)
                 {
                     // Set service-specific fields based on item type
-                    if (model.BillItem.ItemType == "Service")
+                    if (model.ItemType == "Service")
                     {
-                        model.BillItem.ServiceName = model.BillItem.ItemName;
-                        model.BillItem.ServiceHsn = model.BillItem.ItemHsn;
-                        model.BillItem.ServiceCode = model.BillItem.ItemCode;
+                        model.ServiceName = model.ItemName;
+                        model.ServiceHsn =  model.ItemHsn;
+                        model.ServiceCode = model.ItemCode;
                     }
 
                     bool result = await _billItemService.SaveBillItemAsync(model);
 
                     if (result)
                     {
-                        TempData["SuccessMessage"] = $"{model.BillItem.ItemType} saved successfully!";
+                        TempData["SuccessMessage"] = $"{model.ItemType} saved successfully!";
                         return RedirectToAction("Create");
                     }
                     else
@@ -81,13 +82,15 @@ namespace MUNEEMJI.Controllers
                         ModelState.AddModelError("", "Failed to save the item. Please try again.");
                     }
                 }
+                
 
+                viewModel.BillItem = model;
                 // Reload dropdown data if validation fails
-                model.Categories = await _billItemService.GetCategoriesAsync();
-                model.Units = await _billItemService.GetUnitsAsync();
-                model.TaxRates = await _billItemService.GetTaxRatesAsync();
+                viewModel.Categories = await _billItemService.GetCategoriesAsync();
+                viewModel.Units = await _billItemService.GetUnitsAsync();
+                viewModel.TaxRates = await _billItemService.GetTaxRatesAsync();
 
-                return View(model);
+                return View(viewModel);
             }
             catch (Exception ex)
             {
@@ -95,11 +98,11 @@ namespace MUNEEMJI.Controllers
                 ModelState.AddModelError("", "An error occurred while saving the item.");
 
                 // Reload dropdown data
-                model.Categories = await _billItemService.GetCategoriesAsync();
-                model.Units = await _billItemService.GetUnitsAsync();
-                model.TaxRates = await _billItemService.GetTaxRatesAsync();
+                viewModel.Categories = await _billItemService.GetCategoriesAsync();
+                viewModel.Units = await _billItemService.GetUnitsAsync();
+                viewModel.TaxRates = await _billItemService.GetTaxRatesAsync();
 
-                return View(model);
+                return View(viewModel);
             }
         }
 

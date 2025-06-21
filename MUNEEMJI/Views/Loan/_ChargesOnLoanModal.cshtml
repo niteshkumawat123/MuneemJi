@@ -1,0 +1,132 @@
+﻿@model LoanChargesViewModel
+
+<!-- Charges on Loan Modal -->
+<div class="modal fade" id="chargesOnLoanModal" tabindex="-1" aria-labelledby="chargesOnLoanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chargesOnLoanModalLabel">Charges on Loan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">×</button>
+            </div>
+            <form asp-action="ChargesOnLoan" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Date</label>
+                        <input asp-for="Date" type="text" class="form-control" value="@Model.Date.ToString("dd/MM/yyyy")" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <input asp-for="TransactionTypeName" type="text" class="form-control" placeholder="Transaction Type Name *" />
+                        <span asp-validation-for="TransactionTypeName" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Amount</label>
+                        <input asp-for="Amount" type="text" class="form-control" placeholder="0" />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Paid From</label>
+                        <select asp-for="PaidFrom" class="form-select">
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">SAVE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 15px 20px;
+    }
+
+    .modal-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: #666;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+        .form-control:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+        }
+
+    .form-select {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-size: 14px;
+        background-color: white;
+    }
+
+    .form-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-primary {
+        background-color: #2196f3;
+        border-color: #2196f3;
+        color: white;
+        padding: 8px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+        .btn-primary:hover {
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+</style>

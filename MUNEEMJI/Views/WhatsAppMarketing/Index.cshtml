@@ -1,0 +1,584 @@
+﻿@{
+    ViewData["Title"] = "WhatsApp Marketing";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .header-section {
+            background: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 25px;
+            padding: 10px 20px;
+            width: 300px;
+        }
+
+        .btn-add-sale {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+        }
+
+        .btn-add-purchase {
+            background: #4dabf7;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+        }
+
+        .nav-tabs {
+            border-bottom: 2px solid #e9ecef;
+            margin-bottom: 30px;
+        }
+
+            .nav-tabs .nav-link {
+                border: none;
+                color: #6c757d;
+                font-weight: 500;
+                padding: 15px 0;
+                margin-right: 40px;
+                position: relative;
+            }
+
+                .nav-tabs .nav-link.active {
+                    color: #dc3545;
+                    background: none;
+                    border: none;
+                }
+
+                    .nav-tabs .nav-link.active::after {
+                        content: '';
+                        position: absolute;
+                        bottom: -2px;
+                        left: 0;
+                        right: 0;
+                        height: 2px;
+                        background: #dc3545;
+                    }
+
+        .category-pills {
+            margin-bottom: 30px;
+        }
+
+        .category-pill {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+            .category-pill.active {
+                background: #2196f3;
+                color: white;
+            }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .template-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            height: 300px;
+        }
+
+            .template-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            }
+
+        .template-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .template-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+        }
+
+        .template-text {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .template-arrow {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        /* Modal Styles */
+        .modal-xl {
+            max-width: 1200px;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #e9ecef;
+            padding: 20px 30px;
+        }
+
+        .modal-body {
+            padding: 0;
+        }
+
+        .editor-container {
+            display: flex;
+            height: 70vh;
+        }
+
+        .editor-left {
+            flex: 1;
+            padding: 30px;
+            background: #f8f9fa;
+            border-right: 1px solid #e9ecef;
+        }
+
+        .editor-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            background: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+
+            .form-control:focus {
+                border-color: #2196f3;
+                box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+            }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .action-buttons {
+            padding: 20px 30px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-download {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <input type="text" class="search-box" placeholder="Search Transactions" />
+                <div>
+                    <button class="btn btn-add-sale me-2">
+                        <i class="fas fa-plus me-1"></i> Add Sale
+                    </button>
+                    <button class="btn btn-add-purchase me-2">
+                        <i class="fas fa-plus me-1"></i> Add Purchase
+                    </button>
+                    <button class="btn btn-outline-secondary">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <button class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+            </div>
+            <h2 class="mb-0">WhatsApp Marketing</h2>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" href="#"><i class="fas fa-heart text-danger me-2"></i>Greetings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fas fa-chart-line me-2"></i>Trending</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fas fa-briefcase me-2"></i>Business</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fas fa-tags me-2"></i>Offers</a>
+            </li>
+        </ul>
+
+        <div class="category-pills">
+            <button class="btn category-pill active">All</button>
+            <button class="btn category-pill">Latest Update</button>
+            <button class="btn category-pill">Gupt Navratri</button>
+            <button class="btn category-pill">Kamakhya Ambubachi Mela</button>
+            <button class="btn category-pill">Good Morning</button>
+            <button class="btn category-pill">Good Thoughts (Suvichar)</button>
+            <button class="btn category-pill">Good Night</button>
+            <button class="btn category-pill">Motivation</button>
+        </div>
+
+        <div class="template-grid">
+            @if (Model != null)
+            {
+                @foreach (var template in Model.Templates)
+                {
+                    <div class="template-card" onclick="openEditor(@template.Id, '@template.ImageUrl', '@template.Title')">
+                        <img src="@template.ImageUrl" alt="@template.Title" class="template-image" />
+                        <div class="template-overlay">
+                            <div class="template-text">@template.Title</div>
+                            <div class="template-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- Default templates when no data -->
+                <div class="template-card" onclick="openEditor(1, '/images/template1.jpg', 'Motivational Quote')">
+                    <img src="/images/template1.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">हार मत मानो</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(2, '/images/template2.jpg', 'Success Quote')">
+                    <img src="/images/template2.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">जिंदगी सिर्फ सोनात से बदलती है</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(3, '/images/template3.jpg', 'Adventure Quote')">
+                    <img src="/images/template3.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">उड़ने का शौक रखो</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(4, '/images/template4.jpg', 'Memory Quote')">
+                    <img src="/images/template4.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">याद रखना कल कभी नहीं आता है</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(5, '/images/template5.jpg', 'Good Night')">
+                    <img src="/images/template5.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">Good Night</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(6, '/images/template6.jpg', 'Good Night Quote')">
+                    <img src="/images/template6.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE, ONLY GOOD NIGHT</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(7, '/images/template7.jpg', 'Talent Quote')">
+                    <img src="/images/template7.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">Hard work beats TALENT</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(8, '/images/template8.jpg', 'Start Quote')">
+                    <img src="/images/template8.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">YOU DON'T HAVE TO BE GREAT TO START</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(9, '/images/template9.jpg', 'Good Morning')">
+                    <img src="/images/template9.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">Good Morning</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" onclick="openEditor(10, '/images/template10.jpg', 'Good Morning Quote')">
+                    <img src="/images/template10.jpg" alt="Template" class="template-image" />
+                    <div class="template-overlay">
+                        <div class="template-text">Good Morning</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Editor Modal -->
+    <div class="modal fade" id="editorModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Share & Download Template</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="editor-container">
+                        <div class="editor-left">
+                            <form id="templateForm">
+                                <div class="form-group">
+                                    <label class="form-label">Business logo</label>
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3" style="width: 50px; height: 50px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                            <i class="fas fa-camera text-muted"></i>
+                                        </div>
+                                        <span class="text-muted">Firm Logo</span>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Business Name</label>
+                                    <input type="text" class="form-control" id="businessName" placeholder="xyz" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Contact person</label>
+                                    <input type="text" class="form-control" id="contactPerson" placeholder="mahendra" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Contact number</label>
+                                    <input type="text" class="form-control" id="contactNumber" placeholder="9887964016" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Additional text</label>
+                                    <textarea class="form-control" id="additionalText" rows="3" placeholder="🎉 Flat 10% discount on Sundays"></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label">Whatsapp text</label>
+                                    <textarea class="form-control" id="whatsappText" rows="4" placeholder="Enter WhatsApp message..."></textarea>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="editor-right">
+                            <div class="preview-container">
+                                <div style="position: relative; display: inline-block;">
+                                    <img id="previewImage" src="" alt="Preview" class="preview-image" />
+                                    <div style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; min-width: 100px;">
+                                        <div style="text-align: center; font-weight: bold; color: #000;" id="companyLogoText">xyz</div>
+                                    </div>
+                                    <div style="position: absolute; bottom: 60px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px;">
+                                        <div id="additionalTextPreview">🎉 Flat 10% discount on Sundays</div>
+                                    </div>
+                                    <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(76,175,80,0.9); color: white; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between;">
+                                        <span id="contactPersonPreview">👤 mahendra</span>
+                                        <span id="contactNumberPreview">📞 9887964016</span>
+                                    </div>
+                                    <div style="position: absolute; bottom: -30px; left: 20px; background: #e8f5e8; color: #2e7d32; padding: 5px 15px; border-radius: 15px; font-size: 14px;">
+                                        <span id="categoryPreview">Motivation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-download" onclick="downloadImage()">
+                        <i class="fas fa-download me-2"></i>Download Image
+                    </button>
+                    <button type="button" class="btn btn-whatsapp" onclick="shareOnWhatsApp()">
+                        <i class="fab fa-whatsapp me-2"></i>Share On WhatsApp
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentTemplateId = 0;
+        let editorModal;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            editorModal = new bootstrap.Modal(document.getElementById('editorModal'));
+
+            // Add event listeners for form inputs
+            document.getElementById('businessName').addEventListener('input', updatePreview);
+            document.getElementById('contactPerson').addEventListener('input', updatePreview);
+            document.getElementById('contactNumber').addEventListener('input', updatePreview);
+            document.getElementById('additionalText').addEventListener('input', updatePreview);
+        });
+
+        function openEditor(templateId, imageUrl, title) {
+            currentTemplateId = templateId;
+            document.getElementById('previewImage').src = imageUrl;
+            editorModal.show();
+            updatePreview();
+        }
+
+        function updatePreview() {
+            const businessName = document.getElementById('businessName').value || 'xyz';
+            const contactPerson = document.getElementById('contactPerson').value || 'mahendra';
+            const contactNumber = document.getElementById('contactNumber').value || '9887964016';
+            const additionalText = document.getElementById('additionalText').value || '🎉 Flat 10% discount on Sundays';
+
+            document.getElementById('companyLogoText').textContent = businessName;
+            document.getElementById('contactPersonPreview').textContent = '👤 ' + contactPerson;
+            document.getElementById('contactNumberPreview').textContent = '📞 ' + contactNumber;
+            document.getElementById('additionalTextPreview').textContent = additionalText;
+        }
+
+        function downloadImage() {
+            // Create form data
+            const formData = {
+                templateId: currentTemplateId,
+                businessName: document.getElementById('businessName').value,
+                contactPerson: document.getElementById('contactPerson').value,
+                contactNumber: document.getElementById('contactNumber').value,
+                additionalText: document.getElementById('additionalText').value,
+                whatsappText: document.getElementById('whatsappText').value
+            };
+
+            // Send to controller for processing
+            fetch('/WhatsAppMarketing/GenerateImage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'whatsapp-template.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function shareOnWhatsApp() {
+            const whatsappText = document.getElementById('whatsappText').value;
+            const message = encodeURIComponent(whatsappText || 'Check out this amazing template!');
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+    </script>
+</body>
+</html>

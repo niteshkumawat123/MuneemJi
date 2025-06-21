@@ -1,0 +1,401 @@
+﻿@model MUNEEMJI.Models.TransactionSettingsModel
+
+@{
+    ViewData["Title"] = "Transaction Settings";
+}
+@{
+
+    Layout = "_SettingsLayout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Transaction Settings</h4>
+                    <button type="button" class="btn-close" aria-label="Close"></button>
+                </div>
+                <div class="card-body">
+                    <form asp-action="SettingTransaction" method="post">
+                        <div class="row">
+                            <!-- Transaction Header Section -->
+                            <div class="col-md-4">
+                                <div class="form-section">
+                                    <h5 class="section-title">Transaction Header</h5>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="InvoiceBillNo" type="checkbox" class="form-check-input" />
+                                        <label asp-for="InvoiceBillNo" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.InvoiceBillNo)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Invoice/Bill No. information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="AddTimeOnTransactions" type="checkbox" class="form-check-input" />
+                                        <label asp-for="AddTimeOnTransactions" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.AddTimeOnTransactions)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Add Time on Transactions information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="CashSaleByDefault" type="checkbox" class="form-check-input" />
+                                        <label asp-for="CashSaleByDefault" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.CashSaleByDefault)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Cash Sale by default information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="BillingNameOfParties" type="checkbox" class="form-check-input" />
+                                        <label asp-for="BillingNameOfParties" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.BillingNameOfParties)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Billing Name of Parties information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-3">
+                                        <input asp-for="CustomersPODetailsOnTransactions" type="checkbox" class="form-check-input" />
+                                        <label asp-for="CustomersPODetailsOnTransactions" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.CustomersPODetailsOnTransactions)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Customers P.O. Details information"></i>
+                                        </label>
+                                    </div>
+
+                                    <h6 class="section-subtitle">More Transaction Features</h6>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="EWayBillNo" type="checkbox" class="form-check-input" />
+                                        <label asp-for="EWayBillNo" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.EWayBillNo)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="E-way bill no information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="QuickEntry" type="checkbox" class="form-check-input" />
+                                        <label asp-for="QuickEntry" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.QuickEntry)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Quick Entry information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="DoNotShowInvoicePreview" type="checkbox" class="form-check-input" />
+                                        <label asp-for="DoNotShowInvoicePreview" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.DoNotShowInvoicePreview)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Do not Show Invoice Preview information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="EnablePasscodeForTransactionEditDelete" type="checkbox" class="form-check-input" />
+                                        <label asp-for="EnablePasscodeForTransactionEditDelete" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.EnablePasscodeForTransactionEditDelete)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Enable Passcode information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="DiscountDuringPayments" type="checkbox" class="form-check-input" />
+                                        <label asp-for="DiscountDuringPayments" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.DiscountDuringPayments)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Discount During Payments information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="LinkPaymentsToInvoices" type="checkbox" class="form-check-input" />
+                                        <label asp-for="LinkPaymentsToInvoices" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.LinkPaymentsToInvoices)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Link Payments to Invoices information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="DueDatesAndPaymentTerms" type="checkbox" class="form-check-input" />
+                                        <label asp-for="DueDatesAndPaymentTerms" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.DueDatesAndPaymentTerms)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Due Dates and Payment Terms information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="ShowProfitWhileMakingSaleInvoice" type="checkbox" class="form-check-input" />
+                                        <label asp-for="ShowProfitWhileMakingSaleInvoice" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.ShowProfitWhileMakingSaleInvoice)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Show Profit information"></i>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Items Table Section -->
+                            <div class="col-md-4">
+                                <div class="form-section">
+                                    <h5 class="section-title">Items Table</h5>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="InclusiveExclusiveTaxOnRate" type="checkbox" class="form-check-input" />
+                                        <label asp-for="InclusiveExclusiveTaxOnRate" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.InclusiveExclusiveTaxOnRate)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Inclusive/Exclusive Tax information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="DisplayPurchasePriceOfItems" type="checkbox" class="form-check-input" />
+                                        <label asp-for="DisplayPurchasePriceOfItems" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.DisplayPurchasePriceOfItems)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Display Purchase Price information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="ShowLast5SalePriceOfItems" type="checkbox" class="form-check-input" />
+                                        <label asp-for="ShowLast5SalePriceOfItems" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.ShowLast5SalePriceOfItems)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Show last 5 Sale Price information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="FreeItemQuantity" type="checkbox" class="form-check-input" />
+                                        <label asp-for="FreeItemQuantity" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.FreeItemQuantity)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Free Item Quantity information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-3">
+                                        <input asp-for="Count" type="checkbox" class="form-check-input" />
+                                        <label asp-for="Count" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.Count)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Count information"></i>
+                                        </label>
+                                    </div>
+
+                                    <h6 class="section-subtitle">Transaction Prefixes</h6>
+
+                                    <div class="mb-3">
+                                        <label asp-for="Firm" class="form-label">Firm</label>
+                                        <select asp-for="Firm" class="form-select">
+                                            <option value="hellovezel">hellovezel</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label asp-for="SalePrefix" class="form-label">Sale</label>
+                                                <select asp-for="SalePrefix" class="form-select">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label asp-for="CreditNotePrefix" class="form-label">Credit Note</label>
+                                                <select asp-for="CreditNotePrefix" class="form-select">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label asp-for="SaleOrderPrefix" class="form-label">Sale Order</label>
+                                                <select asp-for="SaleOrderPrefix" class="form-select">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label asp-for="PurchaseOrderPrefix" class="form-label">Purchase Order</label>
+                                                <select asp-for="PurchaseOrderPrefix" class="form-select">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label asp-for="EstimatePrefix" class="form-label">Estimate</label>
+                                                <select asp-for="EstimatePrefix" class="form-select">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="mb-3">
+                                                <label asp-for="DeliveryChallanPrefix" class="form-label">Delivery Challan</label>
+                                                <select asp-for="DeliveryChallanPrefix" class="form-select">
+                                                    <option value="None">None</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="PaymentInPrefix" class="form-label">Payment In</label>
+                                        <select asp-for="PaymentInPrefix" class="form-select">
+                                            <option value="None">None</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Taxes, Discount & Totals Section -->
+                            <div class="col-md-4">
+                                <div class="form-section">
+                                    <h5 class="section-title">Taxes, Discount & Totals</h5>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="TransactionWiseTax" type="checkbox" class="form-check-input" />
+                                        <label asp-for="TransactionWiseTax" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.TransactionWiseTax)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Transaction wise Tax information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-2">
+                                        <input asp-for="TransactionWiseDiscount" type="checkbox" class="form-check-input" />
+                                        <label asp-for="TransactionWiseDiscount" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.TransactionWiseDiscount)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Transaction wise Discount information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="form-check mb-3">
+                                        <input asp-for="RoundOffTotal" type="checkbox" class="form-check-input" />
+                                        <label asp-for="RoundOffTotal" class="form-check-label">
+                                            @Html.DisplayNameFor(m => m.RoundOffTotal)
+                                            <i class="fas fa-info-circle text-muted ms-1" title="Round Off Total information"></i>
+                                        </label>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-6">
+                                            <label class="form-label">Round Off To</label>
+                                            <select asp-for="RoundOffTo" class="form-select">
+                                                <option value="Nearest">Nearest</option>
+                                                <option value="Up">Up</option>
+                                                <option value="Down">Down</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="form-label">To</label>
+                                            <select asp-for="RoundOffPrecision" class="form-select">
+                                                <option value="1">1</option>
+                                                <option value="0.1">0.1</option>
+                                                <option value="0.01">0.01</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <p class="text-muted">
+                                            <a href="#" class="text-decoration-none">Additional Fields ></a>
+                                        </p>
+                                        <p class="text-muted">
+                                            <a href="#" class="text-decoration-none">Transportation Details ></a>
+                                        </p>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <div class="activate-windows-section">
+                                            <h6 class="text-muted">Activate Windows</h6>
+                                            <p class="text-muted small">Go to Settings to activate Windows.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-secondary">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-section {
+        padding: 20px;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        height: 100%;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #495057;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 8px;
+    }
+
+    .section-subtitle {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #6c757d;
+    }
+
+    .form-check {
+        margin-bottom: 8px;
+    }
+
+    .form-check-label {
+        font-size: 0.9rem;
+        color: #495057;
+    }
+
+    .form-check-input:checked {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .activate-windows-section {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        border-left: 4px solid #17a2b8;
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #6c757d;
+    }
+
+        .btn-close:hover {
+            color: #000;
+        }
+</style>

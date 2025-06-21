@@ -1,13 +1,11 @@
 ﻿@model InventoryViewModel
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+}
+
     <style>
+
         * {
             margin: 0;
             padding: 0;
@@ -18,16 +16,21 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: white;
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
+            margin: 0;
         }
 
         .container {
-            max-width: 1400px;
+            width: 100vw;
+            height: 100vh;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 0;
+            box-shadow: none;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding:0;
         }
 
         .header-tabs {
@@ -35,6 +38,7 @@
             border-bottom: 1px solid #e9ecef;
             display: flex;
             padding: 0;
+            flex-shrink: 0;
         }
 
         .tab {
@@ -58,7 +62,9 @@
 
         .main-content {
             display: flex;
-            min-height: 600px;
+            flex: 1;
+            overflow: hidden;
+            padding-left:0px;
         }
 
         .sidebar {
@@ -66,6 +72,8 @@
             background: #f8f9fa;
             border-right: 1px solid #e9ecef;
             padding: 20px;
+            flex-shrink: 0;
+            overflow-y: auto;
         }
 
         .search-box {
@@ -166,11 +174,12 @@
         .content-area {
             flex: 1;
             padding: 20px;
+            overflow-y: auto;
         }
 
         .product-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
         }
@@ -193,7 +202,6 @@
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s ease;
-            margin-left: auto;
         }
 
             .adjust-btn:hover {
@@ -209,9 +217,8 @@
         }
 
         .info-card {
-            /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
             background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 100%);
-            color:black;
+            color: black;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
@@ -351,18 +358,7 @@
             opacity: 0.7;
         }
 
-        .footer-notice {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        (max-width: 768px) {
+         (max-width: 768px) {
             .main-content
 
         {
@@ -371,16 +367,27 @@
 
         .sidebar {
             width: 100%;
+            max-height: 300px;
         }
 
         .product-info {
             grid-template-columns: 1fr;
         }
 
+        .search-transactions {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
         }
     </style>
-</head>
-<body>
+
+
     <div class="container">
         <div class="header-tabs">
             <div class="tab active">PRODUCTS</div>
@@ -389,7 +396,7 @@
             <div class="tab">UNITS</div>
         </div>
 
-        <div class="main-content">
+        <div class="d-flex">
             <div class="sidebar">
                 <div class="search-box">
                     <i class="fas fa-search"></i>
@@ -513,10 +520,6 @@
         </div>
     </div>
 
-    @*   <div class="footer-notice">
-        <i class="fas fa-info-circle"></i> Activate Windows - Go to Settings to activate Windows.
-    </div> *@
-
     <script>
         // Add some interactive functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -572,5 +575,3 @@
             });
         });
     </script>
-</body>
-</html>	

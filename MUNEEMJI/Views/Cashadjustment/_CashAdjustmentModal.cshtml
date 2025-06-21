@@ -1,0 +1,35 @@
+﻿@model CashAdjustmentViewModel
+
+<form id="adjustmentForm">
+    <div class="form-group">
+        <label class="form-label">ADJUSTMENT</label>
+        <select class="form-select" id="AdjustmentType" name="AdjustmentType">
+            <option value="Add Cash" selected>Add Cash</option>
+            <option value="Remove Cash">Remove Cash</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">ENTER AMOUNT</label>
+        <input type="number" class="form-control" id="AdjustmentAmount" name="AdjustmentAmount"
+               step="0.01" min="0" placeholder="0.00" required>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">ENTER ADJUSTMENT DATE</label>
+        <input type="date" class="form-control" id="AdjustmentDate" name="AdjustmentDate"
+               value="@Model.AdjustmentDate.ToString("yyyy-MM-dd")" required>
+    </div>
+
+    <div class="form-group">
+        <label class="form-label">DESCRIPTION</label>
+        <input type="text" class="form-control" id="Description" name="Description"
+               placeholder="Enter Description" value="@Model.Description">
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-save" onclick="saveAdjustment()">
+            SAVE ADJUSTMENT
+        </button>
+    </div>
+</form>

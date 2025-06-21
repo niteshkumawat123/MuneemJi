@@ -39,7 +39,7 @@ namespace MUNEEMJI.Controllers
             var items = ProductDataAccess.GetByCategory(catId);
             var model = new CategoryViewModel
             {
-                Categories = categories,
+               // Categories = categories,
                 SelectedCategoryId = id,
                 Items = items
             };

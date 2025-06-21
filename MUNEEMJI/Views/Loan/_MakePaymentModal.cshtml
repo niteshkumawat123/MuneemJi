@@ -1,0 +1,159 @@
+﻿@model LoanPaymentViewModel
+
+<!-- Make Payment Modal -->
+<div class="modal fade" id="makePaymentModal" tabindex="-1" aria-labelledby="makePaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="makePaymentModalLabel">Make Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">×</button>
+            </div>
+            <form asp-action="MakePayment" method="post">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <input asp-for="PrincipalAmount" type="text" class="form-control" placeholder="Principal Amount" />
+                                <span asp-validation-for="PrincipalAmount" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label text-muted small">Date</label>
+                                <input asp-for="Date" type="text" class="form-control" value="@Model.Date.ToString("dd/MM/yyyy")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <input asp-for="InterestAmount" type="text" class="form-control" placeholder="Interest Amount" />
+                        <span asp-validation-for="InterestAmount" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Total Amount</label>
+                        <input asp-for="TotalAmount" type="text" class="form-control" placeholder="0" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Paid from</label>
+                        <select asp-for="PaidFrom" class="form-select">
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">SAVE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 15px 20px;
+    }
+
+    .modal-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: #666;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+        .form-control:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+        }
+
+    .form-select {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-size: 14px;
+        background-color: white;
+    }
+
+    .form-label {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-primary {
+        background-color: #2196f3;
+        border-color: #2196f3;
+        color: white;
+        padding: 8px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+        .btn-primary:hover {
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+</style>
+
+<script>
+    // Auto-calculate total amount
+    document.addEventListener('DOMContentLoaded', function() {
+        const principalInput = document.querySelector('input[name="PrincipalAmount"]');
+        const interestInput = document.querySelector('input[name="InterestAmount"]');
+        const totalInput = document.querySelector('input[name="TotalAmount"]');
+
+        function calculateTotal() {
+            const principal = parseFloat(principalInput.value) || 0;
+            const interest = parseFloat(interestInput.value) || 0;
+            totalInput.value = (principal + interest).toFixed(2);
+        }
+
+        principalInput.addEventListener('input', calculateTotal);
+        interestInput.addEventListener('input', calculateTotal);
+    });
+</script>

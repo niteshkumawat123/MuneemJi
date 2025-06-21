@@ -1,0 +1,407 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .logo-container {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e53e3e 0%, #ff6b6b 100%);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+            .logo::before {
+                content: '';
+                width: 35px;
+                height: 35px;
+                background: white;
+                clip-path: polygon(0% 0%, 100% 50%, 0% 100%);
+                margin-right: 8px;
+            }
+
+            .logo::after {
+                content: '';
+                width: 20px;
+                height: 20px;
+                background: #ffd700;
+                clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+                position: absolute;
+                right: 20px;
+                top: 15px;
+            }
+
+        .logo-text {
+            color: #2d3748;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .tagline {
+            color: #4299e1;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .flag {
+            display: inline-block;
+            font-size: 16px;
+            margin-left: 5px;
+        }
+
+        .form-title {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+            .form-group label {
+                display: block;
+                color: #4a5568;
+                font-size: 14px;
+                font-weight: 500;
+                margin-bottom: 8px;
+            }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+            .form-control:focus {
+                outline: none;
+                border-color: #e53e3e;
+                background-color: white;
+                box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+            }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+            .checkbox-group input[type="checkbox"] {
+                margin-top: 3px;
+                accent-color: #e53e3e;
+            }
+
+            .checkbox-group label {
+                font-size: 13px;
+                color: #718096;
+                line-height: 1.4;
+                margin-bottom: 0;
+            }
+
+            .checkbox-group a {
+                color: #e53e3e;
+                text-decoration: none;
+            }
+
+                .checkbox-group a:hover {
+                    text-decoration: underline;
+                }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+            .login-btn:hover {
+                background: linear-gradient(135deg, #c53030 0%, #9c2020 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+            }
+
+            .login-btn:active {
+                transform: translateY(0);
+            }
+
+        .register-link {
+            display: inline-block;
+            background: transparent;
+            color: #e53e3e;
+            border: 2px solid #e53e3e;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+            .register-link:hover {
+                background: #e53e3e;
+                color: white;
+                text-decoration: none;
+            }
+
+        .switch-form {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #718096;
+        }
+
+            .switch-form a {
+                color: #e53e3e;
+                text-decoration: none;
+                font-weight: 500;
+            }
+
+                .switch-form a:hover {
+                    text-decoration: underline;
+                }
+
+        .text-danger {
+            color: #e53e3e;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-danger {
+            background-color: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .alert-success {
+            background-color: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #cbd5e0;
+            font-size: 12px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        media (max-width: 480px) {
+            .login-container
+
+        {
+            padding: 30px 20px;
+        }
+
+        .form-title {
+            font-size: 24px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <div class="logo"></div>
+            <div class="logo-text">MuneemJi</div>
+            <div class="tagline">Har Business Banega Digital 🇮🇳</div>
+        </div>
+
+        <!-- Login Form (Default) -->
+        <div id="loginForm">
+            <h1 class="form-title">LOGIN</h1>
+
+            @* <a href="#" class="register-link" onclick="switchToRegister()">Register Here</a> *@
+
+            @if (ViewBag.SuccessMessage != null)
+            {
+                <div class="alert alert-success">
+                    @ViewBag.SuccessMessage
+                </div>
+            }
+
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+
+            <form asp-action="Login" asp-controller="Account" method="post">
+                <div class="form-group">
+                    <label asp-for="Phone">Phone Number</label>
+                    <input asp-for="Phone" class="form-control" type="tel" placeholder="Enter your phone number" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input asp-for="AcceptTerms" type="checkbox" id="acceptTermsLogin" />
+                    <label for="acceptTermsLogin">
+                        By clicking on the Login button I accept the <a href="#" target="_blank">terms and conditions</a>
+                    </label>
+                </div>
+                <span asp-validation-for="AcceptTerms" class="text-danger"></span>
+
+                <button type="submit" class="login-btn">LOGIN</button>
+            </form>
+
+            <div class="switch-form">
+                Don't have an account? <a href="#" onclick="switchToRegister()">Register here</a>
+            </div>
+        </div>
+
+        <!-- Registration Form (Hidden by default) -->
+        <div id="registerForm" class="hidden">
+            <h1 class="form-title">ADD BUSINESS</h1>
+
+            @if (ViewData.ModelState.ErrorCount > 0)
+            {
+                <div class="alert alert-danger">
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+
+            <form asp-action="Register" asp-controller="Account" method="post">
+                <div class="form-group">
+                    <label for="BusinessName">Business Name</label>
+                    <input name="BusinessName" id="BusinessName" class="form-control" type="text" placeholder="Enter your business name" required />
+                    <span class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Phone">Phone Number</label>
+                    <input asp-for="Phone" class="form-control" type="tel" placeholder="Enter your phone number" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" class="form-control" type="email" placeholder="Enter your email address" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input asp-for="AcceptTerms" type="checkbox" id="acceptTermsRegister" />
+                    <label for="acceptTermsRegister">
+                        By clicking on the Register button I accept the <a href="#" target="_blank">terms and conditions</a>
+                    </label>
+                </div>
+                <span asp-validation-for="AcceptTerms" class="text-danger"></span>
+
+                <button type="submit" class="login-btn">REGISTER</button>
+            </form>
+
+            <div class="switch-form">
+                Already have an account? <a href="#" onclick="switchToLogin()">Login here</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        // Show login form by default
+        // If user comes from successful registration, also show login form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if there's a URL parameter indicating successful registration
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('registered') === 'true') {
+                // Show login form with success message
+                switchToLogin();
+            }
+        });
+
+        function switchToLogin() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+        }
+
+        function switchToRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

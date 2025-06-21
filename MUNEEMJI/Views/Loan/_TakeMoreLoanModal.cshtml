@@ -1,0 +1,134 @@
+﻿@model LoanIncreaseViewModel
+
+<!-- Take More Loan Modal -->
+<div class="modal fade" id="takeMoreLoanModal" tabindex="-1" aria-labelledby="takeMoreLoanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="takeMoreLoanModalLabel">Take more loan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">×</button>
+            </div>
+            <form asp-action="TakeMoreLoan" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-danger">Increase Loan By *</label>
+                        <input asp-for="IncreaseAmount" type="text" class="form-control" placeholder="0" />
+                        <span asp-validation-for="IncreaseAmount" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Date</label>
+                        <input asp-for="Date" type="text" class="form-control" value="@Model.Date.ToString("dd/MM/yyyy")" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-muted small">Loan received In</label>
+                        <select asp-for="LoanReceivedIn" class="form-select">
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">SAVE</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+        padding: 15px 20px;
+    }
+
+    .modal-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: #666;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+        .form-control:focus {
+            border-color: #2196f3;
+            box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: #6c757d;
+        }
+
+    .form-select {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 10px 12px;
+        font-size: 14px;
+        background-color: white;
+    }
+
+    .form-label {
+        font-size: 12px;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+        .form-label.text-danger {
+            color: #dc3545 !important;
+        }
+
+        .form-label.text-muted {
+            color: #666 !important;
+        }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        background-color: #f8f9fa;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .btn-primary {
+        background-color: #2196f3;
+        border-color: #2196f3;
+        color: white;
+        padding: 8px 24px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+        .btn-primary:hover {
+            background-color: #1976d2;
+            border-color: #1976d2;
+        }
+</style>

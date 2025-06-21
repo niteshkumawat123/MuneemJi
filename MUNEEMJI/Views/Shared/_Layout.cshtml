@@ -16,102 +16,287 @@
     <style>
         body {
             overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        /* Sidebar styling to match screenshot */
+
+        /* Enhanced Sidebar Styling */
         #sidebar {
-            min-width: 250px;
-            max-width: 250px;
-            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
-        #sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px; /* Adjust based on your layout */
-    height: 100vh;
-    background-color: #f8f9fa; /* optional */
-    overflow-y: auto; /* if sidebar has scrollable content */
-    z-index: 1000; /* ensures it appears above other elements */
-    height:auto;
-}
 
+        /* Sidebar Header */
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
 
-            #sidebar .nav-link {
+            .sidebar-header h4 {
                 color: #fff;
+                margin: 0;
+                font-weight: 600;
+                font-size: 1.1rem;
             }
 
-                #sidebar .nav-link:hover {
-                    background-color: #1b2736;
-                }
-
-                #sidebar .nav-link i {
-                    margin-right: 8px;
-                }
-
-                #sidebar .nav-link.active {
-                    background-color: #1a3e52;
-                }
-
-            #sidebar .sidebar-header, #sidebar .sidebar-footer {
-                color: #fff;
-                padding: 0.75rem 1rem;
-            }
-
-                #sidebar .sidebar-header a, #sidebar .sidebar-header button {
-                    color: #adb5bd;
-                    margin-right: 1rem;
-                    margin-right: 1rem;
-                }
+        /* Search Input Enhanced */
+        #sidebar .sidebar-search {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+        }
 
             #sidebar .sidebar-search .input-group-text {
-                background-color: #212529;
-                border: none;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
                 color: #adb5bd;
+                border-radius: 8px 0 0 8px;
             }
 
             #sidebar .sidebar-search .form-control {
-                background-color: #212529;
-                border: none;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
                 color: #fff;
+                border-radius: 0;
             }
 
-            #sidebar .sidebar-search .btn {
-                color: #adb5bd;
-                background-color: #212529;
-                border: none;
-            }
-
-            #sidebar .sidebar-footer {
-                position: absolute;
-                bottom: 0;
-                width: 100%;
-                background-color: #2a3a4e;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-
-                #sidebar .sidebar-footer a {
+                #sidebar .sidebar-search .form-control::placeholder {
                     color: #adb5bd;
-                    text-decoration: none;
                 }
 
-                    #sidebar .sidebar-footer a:hover {
-                        color: #fff;
-                    }
+                #sidebar .sidebar-search .form-control:focus {
+                    background: rgba(255, 255, 255, 0.15);
+                    border-color: #4dabf7;
+                    box-shadow: 0 0 0 0.2rem rgba(77, 171, 247, 0.25);
+                    color: #fff;
+                }
+
+            #sidebar .sidebar-search .btn {
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: #adb5bd;
+                border-radius: 0 8px 8px 0;
+            }
+
+                #sidebar .sidebar-search .btn:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    color: #fff;
+                }
+
+        /* Navigation Menu Enhanced */
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0.5rem 0;
+        }
+
+            .sidebar-nav::-webkit-scrollbar {
+                width: 4px;
+            }
+
+            .sidebar-nav::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+            }
+
+            .sidebar-nav::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 4px;
+            }
+
+        #sidebar .nav-link {
+            color: #e9ecef;
+            padding: 0.75rem 1.5rem;
+            margin: 0.2rem 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-weight: 500;
+        }
+
+            #sidebar .nav-link:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: #fff;
+                transform: translateX(5px);
+            }
+
+            #sidebar .nav-link.active {
+                background: linear-gradient(135deg, #4dabf7, #339af0);
+                color: #fff;
+                box-shadow: 0 4px 15px rgba(77, 171, 247, 0.3);
+            }
+
+            #sidebar .nav-link i {
+                margin-right: 10px;
+                width: 20px;
+                text-align: center;
+                font-size: 1.1rem;
+            }
+
+            #sidebar .nav-link .float-end {
+                transition: transform 0.3s ease;
+            }
+
+            #sidebar .nav-link[aria-expanded="true"] .float-end {
+                transform: rotate(180deg);
+            }
+
+        /* Submenu Styling */
+        .btn-toggle-nav {
+            background: rgba(0, 0, 0, 0.2);
+            margin: 0.2rem 0.5rem;
+            border-radius: 8px;
+            padding: 0.5rem 0;
+        }
+
+            .btn-toggle-nav .nav-link {
+                color: #ced4da;
+                padding: 0.5rem 1rem 0.5rem 3rem;
+                font-size: 0.9rem;
+                margin: 0.1rem 0;
+            }
+
+                .btn-toggle-nav .nav-link:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: #fff;
+                    transform: translateX(3px);
+                }
+
+        /* Sidebar Footer Enhanced */
+        .sidebar-footer {
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+        }
+
+            .sidebar-footer a {
+                color: #adb5bd;
+                text-decoration: none;
+                padding: 0.75rem;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+            }
+
+                .sidebar-footer a:hover {
+                    color: #fff;
+                    background: rgba(255, 255, 255, 0.1);
+                }
+
+        /* Logout Button Styling */
+        .logout-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 1rem;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+            .logout-btn:hover {
+                background: linear-gradient(135deg, #c82333, #bd2130);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+                color: white;
+            }
+
+            .logout-btn i {
+                margin-right: 8px;
+            }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: #f8f9fa;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            padding-top: 65px;
+        }
+
+            .main-content > .p-4 {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+        /* Top Header */
+        .top-header {
+            position: fixed;
+            top: 0;
+            left: 280px; /* Same as sidebar width */
+            right: 0;
+            height: 60px; /* Set a fixed height */
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid #e9ecef;
+            z-index: 999; /* Below sidebar but above main content */
+        }
+
+            .top-header a {
+                color: #495057;
+                font-weight: 500;
+            }
+
+                .top-header a:hover {
+                    color: #007bff;
+                }
+
+        media (max-width: 768px) {
+            .top-header
+        {
+            left: 0; /* Full width on mobile */
+        }
+
+        #sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        #sidebar {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+            #sidebar.show {
+                transform: translateX(0);
+            }
+
+        .main-content {
+            margin-left: 0;
+            margin-top: 60px; /* Keep the top margin */
+        }
+
+        }
+        /* Responsive Design */
+
     </style>
 </head>
 <body>
-    <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom bg-light">
+    <!-- Top Header -->
+    <div class="top-header d-flex justify-content-between align-items-center px-3 py-2">
         <div class="d-flex align-items-center">
-            <i class="bi bi-building"></i>
-            <a href="#" class="me-3 text-dark text-decoration-none">Company</a>
-            <a href="#" class="me-3 text-dark text-decoration-none">Help</a>
-            <a href="#" class="me-3 text-dark text-decoration-none">Shortcuts</a>
-            <button class="btn btn-sm text-dark"><i class="bi bi-arrow-clockwise"></i></button>
-        </div>
+            <button class="btn btn-sm d-md-none me-3" id="sidebarToggle">
+                <i class="bi bi-list"></i>
+            </button>
+            <i class="bi bi-building me-2"></i>
+            <a href="#" class="me-3 text-decoration-none">Company</a>
+            <a href="#" class="me-3 text-decoration-none">Help</a>
+            <a href="#" class="me-3 text-decoration-none">Shortcuts</a>
+@*             <button class="btn btn-sm"><i class="bi bi-arrow-clockwise"></i></button>
+ *@        </div>
         <div class="d-flex align-items-center">
-            <span class="me-2 text-dark">Customer Support :</span>
+            <span class="me-2">Customer Support:</span>
             <a href="tel:+916364444752" class="me-3 text-decoration-none text-primary">
                 <i class="bi bi-telephone-fill"></i> (+91)-6364444752
             </a>
@@ -120,27 +305,34 @@
             </a>
         </div>
     </div>
-    <div class="d-flex">
-        <!-- Sidebar -->
-        <nav id="sidebar" class="bg-dark position-relative">
-       
-            <!-- Search Input -->
-            <div class="sidebar-search p-3 border-bottom border-secondary">
-                <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control" placeholder="Open Anything (Ctrl+F)" aria-label="Search" />
-                    <button class="btn"><i class="bi bi-chevron-left"></i></button>
-                </div>
+
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+            <h4><i class="bi bi-speedometer2 me-2"></i>Dashboard</h4>
+        </div>
+
+        <!-- Search Input -->
+        <div class="sidebar-search">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="Open Anything (Ctrl+F)" aria-label="Search" />
+                <button class="btn" type="button"><i class="bi bi-chevron-left"></i></button>
             </div>
-            <!-- Sidebar Navigation Menu -->
-            <ul class="nav nav-pills flex-column mt-3">
+        </div>
+
+        <!-- Sidebar Navigation Menu -->
+        <div class="sidebar-nav">
+            <ul class="nav nav-pills flex-column">
                 <!-- Home -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="bi bi-house"></i> Home
+                    <a class="nav-link active" href="/Home/index">
+                        <i class="bi bi-house-door"></i> Home
                     </a>
                 </li>
-                <!-- Parties (collapsible) -->
+
+                <!-- Parties -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#partiesMenu"
                        role="button" aria-expanded="false" aria-controls="partiesMenu">
@@ -148,27 +340,22 @@
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="partiesMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/party/index" class="nav-link">All Parties</a></li>
                             <li><a href="/party/add" class="nav-link">Add Party</a></li>
                         </ul>
                     </div>
                 </li>
-                <!-- Items (no submenu, has plus icon) -->
-                @* <li class="nav-item"> *@
-                @*     <a class="nav-link" href="#"> *@
-                @*         <i class="bi bi-bag"></i> Items *@
-                @*         <i class="bi bi-plus float-end"></i> *@
-                @*     </a> *@
-                @* </li> *@
+
+                <!-- Items -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#ItemMenu"
                        role="button" aria-expanded="false" aria-controls="ItemMenu">
-                        <i class="bi bi-people"></i> Items
+                        <i class="bi bi-box-seam"></i> Items
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="ItemMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/billitem/Index" class="nav-link">All Items</a></li>
                             <li><a href="/billitem/create" class="nav-link">Add Item</a></li>
                             <li><a href="/godown/index" class="nav-link">Godown Management</a></li>
@@ -177,8 +364,7 @@
                     </div>
                 </li>
 
-
-                <!-- Sale (collapsible) -->
+                <!-- Sale -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#saleMenu"
                        role="button" aria-expanded="false" aria-controls="saleMenu">
@@ -186,11 +372,11 @@
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="saleMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="#" class="nav-link">New Invoice</a></li>
                             <li><a href="#" class="nav-link">View Reports</a></li>
                             <li><a href="#" class="nav-link">Sales Invoices</a></li>
-                            <li><a href="#" class="nav-link">Estimate/Quotaion</a></li>
+                            <li><a href="#" class="nav-link">Estimate/Quotation</a></li>
                             <li><a href="#" class="nav-link">Payment In</a></li>
                             <li><a href="#" class="nav-link">Sale Order</a></li>
                             <li><a href="#" class="nav-link">Delivery Challan</a></li>
@@ -201,15 +387,16 @@
                         </ul>
                     </div>
                 </li>
-                <!-- Purchase & Expense (collapsible, active) -->
+
+                <!-- Purchase & Expense -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#purchaseMenu"
-                       role="button" aria-expanded="true" aria-controls="purchaseMenu">
-                        <i class="bi bi-cart3"></i> Purchase &amp; Expense
+                       role="button" aria-expanded="false" aria-controls="purchaseMenu">
+                        <i class="bi bi-cart3"></i> Purchase & Expense
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="purchaseMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/PurchaseBill/Create" class="nav-link">New Purchase</a></li>
                             <li><a href="#" class="nav-link">Expense Report</a></li>
                             <li><a href="/PurchaseBill/index" class="nav-link">Purchase Bill</a></li>
@@ -221,65 +408,69 @@
                         </ul>
                     </div>
                 </li>
-                <!-- Grow Your Business (collapsible) -->
+
+                <!-- Grow Your Business -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#growMenu"
                        role="button" aria-expanded="false" aria-controls="growMenu">
-                        <i class="bi bi-graph-up"></i> Grow Your Business
+                        <i class="bi bi-graph-up-arrow"></i> Grow Your Business
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="growMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="#" class="nav-link">Business Plan</a></li>
                             <li><a href="#" class="nav-link">Analytics</a></li>
-                            <li><a href="#" class="nav-link">Whatsapp Marketing</a></li>
+                            <li><a href="#" class="nav-link">WhatsApp Marketing</a></li>
                             <li><a href="#" class="nav-link">Online Store</a></li>
                         </ul>
                     </div>
                 </li>
-                <!-- Cash & Bank (collapsible) -->
+
+                <!-- Cash & Bank -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#cashMenu"
                        role="button" aria-expanded="false" aria-controls="cashMenu">
-                        <i class="bi bi-bank"></i> Cash &amp; Bank
+                        <i class="bi bi-bank"></i> Cash & Bank
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="cashMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="#" class="nav-link">Cash Ledger</a></li>
                             <li><a href="/bank/index" class="nav-link">Bank Accounts</a></li>
                             <li><a href="/bank/CashinHand" class="nav-link">Cash In Hand</a></li>
                             <li><a href="#" class="nav-link">Cheques</a></li>
-                            <li><a href="#" class="nav-link">Loan Account</a></li>
+                            <li><a href="/Loan/Index" class="nav-link">Loan Account</a></li>
                             <li><a href="#" class="nav-link">Fixed Asset</a></li>
                         </ul>
                     </div>
                 </li>
-                <!-- Reports (no submenu) -->
+
+                <!-- Reports -->
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="bi bi-bar-chart"></i> Reports
                     </a>
                 </li>
-                <!-- Sync, Share & Backup (collapsible) -->
+
+                <!-- Sync, Share & Backup -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#syncMenu"
                        role="button" aria-expanded="false" aria-controls="syncMenu">
-                        <i class="bi bi-cloud-arrow-up"></i> Sync, Share &amp; Backup
+                        <i class="bi bi-cloud-arrow-up"></i> Sync, Share & Backup
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="syncMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="#" class="nav-link">Cloud Sync</a></li>
                             <li><a href="#" class="nav-link">Backup Now</a></li>
                             <li><a href="#" class="nav-link">Backup to Drive</a></li>
-                            <li><a href="#" class="nav-link">Backup to Computer </a></li>
+                            <li><a href="#" class="nav-link">Backup to Computer</a></li>
                             <li><a href="#" class="nav-link">Auto Backup</a></li>
-                          
                         </ul>
                     </div>
                 </li>
-                <!-- Utilities (collapsible) -->
+
+                <!-- Utilities -->
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#utilsMenu"
                        role="button" aria-expanded="false" aria-controls="utilsMenu">
@@ -287,7 +478,7 @@
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="utilsMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal ps-3">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="#" class="nav-link">Backup Tools</a></li>
                             <li><a href="#" class="nav-link">Config Tools</a></li>
                             <li><a href="#" class="nav-link">Import Items</a></li>
@@ -296,37 +487,90 @@
                         </ul>
                     </div>
                 </li>
-                <!-- Settings (no submenu) -->
-                <li class="nav-item mt-auto">
+
+                <!-- Settings -->
+                <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="bi bi-gear"></i> Settings
                     </a>
                 </li>
-                <!-- Plans & Pricing (no submenu) -->
+
+                <!-- Plans & Pricing -->
                 <li class="nav-item">
                     <a class="nav-link" href="#">
-                        <i class="bi bi-trophy"></i> Plans &amp; Pricing
+                        <i class="bi bi-trophy"></i> Plans & Pricing
                     </a>
                 </li>
             </ul>
-            <!-- Sidebar Footer (Developer Info) -->
-            <div class="sidebar-footer">
-                <a href="BusinessProfile/Edit" class="d-flex align-items-center w-100">
-                    <i class="bi bi-plus-circle me-2"></i> Unlinsoftware Development
-                    <i class="bi bi-chevron-right ms-auto"></i>
-                </a>
-            </div>
-        </nav>
+        </div>
 
-        <!-- Main Content Area -->
-        <div class="flex-grow-1 p-3">
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <a href="/BusinessProfile/Edit" class="mb-2">
+                <i class="bi bi-building me-2"></i>
+                <span>Unlinsoftware Development</span>
+                <i class="bi bi-chevron-right ms-auto"></i>
+            </a>
+        </div>
+
+        <!-- Logout Button -->
+        <button onclick="logout()" class="logout-btn">
+            <i class="bi bi-box-arrow-right"></i>Logout
+        </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <div class="p-4">
             @RenderBody()
         </div>
     </div>
 
-    <!-- Bootstrap Bundle JS (with Popper for collapse) -->
+    <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    @RenderSection("Scripts", required: false)
 
+    <script>
+        // Logout function
+        function logout() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '@Url.Action("Logout", "Account")';
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (token) {
+                const tokenInput = document.createElement('input');
+                tokenInput.type = 'hidden';
+                tokenInput.name = '__RequestVerificationToken';
+                tokenInput.value = token.value;
+                form.appendChild(tokenInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        // Mobile sidebar toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const sidebar = document.getElementById('sidebar');
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('show');
+                });
+            }
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 768) {
+                    if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                        sidebar.classList.remove('show');
+                    }
+                }
+            });
+        });
+    </script>
+
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

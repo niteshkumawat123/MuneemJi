@@ -1,0 +1,577 @@
+﻿@model LoanDashboardViewModel
+@{
+    ViewData["Title"] = "Loan Accounts";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <!-- Use specific Bootstrap version that works well with .NET Core 6 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: #e9ecef;
+            padding: 20px 0;
+            border-right: 1px solid #dee2e6;
+        }
+
+            .sidebar .search-box {
+                padding: 0 20px;
+                margin-bottom: 20px;
+            }
+
+                .sidebar .search-box input {
+                    background-color: white;
+                    border: 1px solid #ced4da;
+                    border-radius: 4px;
+                    padding: 8px 12px;
+                    width: 100%;
+                }
+
+            .sidebar .add-loan-btn {
+                margin: 0 20px 20px 20px;
+            }
+
+            .sidebar .account-section {
+                padding: 0 20px;
+            }
+
+            .sidebar .account-item {
+                background-color: #b3d9ff;
+                padding: 12px 15px;
+                border-radius: 4px;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .sidebar .account-name {
+                font-weight: 500;
+                color: #333;
+            }
+
+            .sidebar .account-amount {
+                color: #d32f2f;
+                font-weight: 500;
+                font-size: 14px;
+            }
+
+        .content-area {
+            flex: 1;
+            padding: 0;
+        }
+
+        .header-section {
+            background-color: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .account-info h4 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .account-details {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .balance-amount {
+            color: #d32f2f;
+            font-weight: 500;
+        }
+
+        .header-actions {
+            position: relative;
+        }
+
+        .make-payment-btn {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .make-payment-btn:hover {
+                background-color: #1976d2;
+                color: white;
+            }
+
+            .make-payment-btn:focus {
+                box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+                color: white;
+            }
+
+        .dropdown-toggle::after {
+            margin-left: 8px;
+        }
+
+        .view-statement-link {
+            color: #2196f3;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+            .view-statement-link:hover {
+                text-decoration: underline;
+                color: #1976d2;
+            }
+
+        .transactions-section {
+            padding: 20px 30px;
+            background-color: white;
+        }
+
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .transactions-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .search-transactions {
+            width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .transactions-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+            .transactions-table th {
+                background-color: #f8f9fa;
+                padding: 12px 15px;
+                text-align: left;
+                font-size: 12px;
+                font-weight: 600;
+                color: #666;
+                text-transform: uppercase;
+                border-bottom: 1px solid #dee2e6;
+            }
+
+            .transactions-table td {
+                padding: 12px 15px;
+                border-bottom: 1px solid #f1f1f1;
+                font-size: 14px;
+                color: #333;
+            }
+
+            .transactions-table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        .amount-cell {
+/*             text-align: right;
+ */            font-weight: 500;
+        }
+
+        .amount-positive {
+            color: #4caf50;
+        }
+
+        .amount-negative {
+            color: #d32f2f;
+        }
+
+        .actions-cell {
+            text-align: center;
+        }
+
+        .actions-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+            .actions-btn:hover {
+                color: #333;
+            }
+
+        .dropdown-menu {
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            z-index: 1050;
+            min-width: 160px;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            font-size: 14px;
+            color: #333;
+        }
+
+            .dropdown-item:hover,
+            .dropdown-item:focus {
+                background-color: #f8f9fa;
+                color: #333;
+                text-decoration: none;
+            }
+
+        .modal-header {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .activate-windows {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #ccc;
+            font-size: 12px;
+            text-align: right;
+        }
+
+        .transactions-table th i {
+            margin-left: 5px;
+            opacity: 0.5;
+        }
+
+        .transactions-table th:hover i {
+            opacity: 1;
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="search-box">
+                <input type="text" placeholder="Search..." class="form-control" />
+            </div>
+
+            <div class="add-loan-btn">
+                <button class="btn btn-warning w-100" style="background-color: #ff9800; border: none; font-weight: 500;">
+                    <i class="fas fa-plus"></i> Add Loan A/C
+                </button>
+            </div>
+
+            <div class="account-section">
+                <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">ACCOUNT</div>
+                <div class="account-item">
+                    <div>
+                        <div class="account-name">@Model.Account.AccountName.ToLower()</div>
+                    </div>
+                    <div class="account-amount">Rs @Model.Account.BalanceAmount.ToString("N2")</div>
+                </div>
+            </div>
+
+            <div style="padding: 0 20px; margin-top: 30px;">
+                <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">AMOUNT</div>
+                <div class="account-amount" style="font-size: 16px;">Rs @Model.Account.BalanceAmount.ToString("N2")</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-area">
+            <!-- Header Section -->
+            <div class="header-section">
+                <div class="account-info">
+                    <h4>@Model.Account.AccountName</h4>
+                    <div class="account-details">
+                        @Model.Account.LendingBank / @Model.Account.Agency<br>
+                        Account Number: @Model.Account.AccountNumber<br>
+                        <span class="balance-amount">Balance Amount: Rs @Model.Account.BalanceAmount.ToString("N2")</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="dropdown">
+                        <button class="btn make-payment-btn dropdown-toggle"
+                                type="button"
+                                id="paymentDropdown"
+                                data-bs-toggle="dropdown"
+                                data-bs-auto-close="true"
+                                aria-expanded="false">
+                            <i class="fas fa-credit-card"></i> Make Payment
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="paymentDropdown">
+                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="openMakePaymentModal()">Make Payment</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="openTakeMoreLoanModal()">Take more loan</a></li>
+                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="openChargesOnLoanModal()">Charges on Loan</a></li>
+                        </ul>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <a href="@Url.Action("ViewLoanStatement")" class="view-statement-link">View Loan Statement</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Section -->
+            <div class="transactions-section">
+                <div class="transactions-header">
+                    <h5 class="transactions-title">TRANSACTIONS</h5>
+                    <input type="text" placeholder="Search transactions..." class="search-transactions" id="transactionSearch" />
+                </div>
+
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th>TYPE <i class="fas fa-sort"></i></th>
+                            <th>DATE <i class="fas fa-sort"></i></th>
+                            <th>PRINCIPAL <i class="fas fa-sort"></i></th>
+                            <th>INTEREST & OTHER CHARGES <i class="fas fa-sort"></i></th>
+                            <th>TOTAL AMOUNT <i class="fas fa-sort"></i></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var transaction in Model.Account.Transactions)
+                        {
+                            <tr>
+                                <td>@transaction.Type</td>
+                                <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
+                                <td class="amount-cell">Rs @transaction.Principal.ToString("N2")</td>
+                                <td class="amount-cell">Rs @transaction.InterestAndOtherCharges.ToString("N2")</td>
+                                <td class="amount-cell">Rs @transaction.TotalAmount.ToString("N2")</td>
+                                <td class="actions-cell">
+                                    <div class="dropdown">
+                                        <button class="actions-btn dropdown-toggle"
+                                                type="button"
+                                                data-bs-toggle="dropdown"
+                                                aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li><a class="dropdown-item" href="#">View Details</a></li>
+                                            <li><a class="dropdown-item" href="#">Download Receipt</a></li>
+                                            <li><a class="dropdown-item" href="#">Print</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <!-- Activate Windows Watermark -->
+    <div class="activate-windows">
+        <div>Activate Windows</div>
+        <div>Go to Settings to activate Windows.</div>
+    </div>
+
+    <!-- Modals Container -->
+    <div id="modalContainer"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- Bootstrap JS - Use version compatible with .NET Core 6 -->
+    <script src="https://cdn.jsdelivr.net/npm/popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+ 
+    <!-- Add jQuery if needed for AJAX (many .NET Core projects use it) -->
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            dropdownElementList.forEach(function (dropdownToggleEl) {
+                new bootstrap.Dropdown(dropdownToggleEl);
+            });
+        });
+    </script>
+
+    <script>
+        console.log('Script loaded - Bootstrap version:', bootstrap.Tooltip.VERSION);
+        console.log('jQuery loaded:', typeof $ !== 'undefined');
+
+        // Ensure DOM is loaded before initializing
+        $(document).ready(function() {
+            console.log('Document ready - initializing components');
+
+            // Initialize all dropdowns explicitly
+            // var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+            // var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+            //     return new bootstrap.Dropdown(dropdownToggleEl);
+            // });
+
+            console.log('Initialized', dropdownList.length, 'dropdowns');
+
+            // Test dropdown click
+            $('.dropdown-toggle').on('click', function(e) {
+                console.log('Dropdown button clicked:', this);
+            });
+        });
+
+        function showLoading() {
+            $('.loading-spinner').show();
+        }
+
+        function hideLoading() {
+            $('.loading-spinner').hide();
+        }
+
+        function openMakePaymentModal() {
+            console.log('Make Payment clicked');
+            showLoading();
+
+            $.get('@Url.Action("MakePayment")')
+                .done(function(data) {
+                    console.log('Modal data received');
+                    $('#modalContainer').html(data);
+                    var modalElement = $('#modalContainer').find('.modal').first();
+                    if (modalElement.length) {
+                        var modal = new bootstrap.Modal(modalElement[0]);
+                        modal.show();
+                    } else {
+                        console.error('Modal element not found in response');
+                        alert('Error: Modal content is invalid');
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    console.error('Error loading modal:', error);
+                    console.error('Status:', status);
+                    console.error('Response:', xhr.responseText);
+                    alert('Error loading payment modal: ' + error);
+                })
+                .always(function() {
+                    hideLoading();
+                });
+        }
+
+        function openTakeMoreLoanModal() {
+            console.log('Take More Loan clicked');
+            showLoading();
+
+            $.get('@Url.Action("TakeMoreLoan")')
+                .done(function(data) {
+                    $('#modalContainer').html(data);
+                    var modalElement = $('#modalContainer').find('.modal').first();
+                    if (modalElement.length) {
+                        var modal = new bootstrap.Modal(modalElement[0]);
+                        modal.show();
+                    } else {
+                        alert('Error: Modal content is invalid');
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    console.error('Error loading modal:', error);
+                    alert('Error loading take more loan modal: ' + error);
+                })
+                .always(function() {
+                    hideLoading();
+                });
+        }
+
+        function openChargesOnLoanModal() {
+            console.log('Charges on Loan clicked');
+            showLoading();
+
+            $.get('@Url.Action("ChargesOnLoan")')
+                .done(function(data) {
+                    $('#modalContainer').html(data);
+                    var modalElement = $('#modalContainer').find('.modal').first();
+                    if (modalElement.length) {
+                        var modal = new bootstrap.Modal(modalElement[0]);
+                        modal.show();
+                    } else {
+                        alert('Error: Modal content is invalid');
+                    }
+                })
+                .fail(function(xhr, status, error) {
+                    console.error('Error loading modal:', error);
+                    alert('Error loading charges modal: ' + error);
+                })
+                .always(function() {
+                    hideLoading();
+                });
+        }
+
+        // Transaction search functionality
+        $('#transactionSearch').on('input', function() {
+            var searchTerm = $(this).val().toLowerCase();
+            $('.transactions-table tbody tr').each(function() {
+                var text = $(this).text().toLowerCase();
+                if (text.indexOf(searchTerm) > -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+        // Handle modal cleanup
+        $(document).on('hidden.bs.modal', '.modal', function () {
+            console.log('Modal hidden, cleaning up');
+            $(this).remove();
+        });
+
+        // Debug dropdown events
+        $(document).on('show.bs.dropdown', '.dropdown', function () {
+            console.log('Dropdown showing');
+        });
+
+        $(document).on('shown.bs.dropdown', '.dropdown', function () {
+            console.log('Dropdown shown');
+        });
+    </script>
+</body>
+</html>

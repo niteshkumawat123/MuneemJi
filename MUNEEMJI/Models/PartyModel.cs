@@ -10,7 +10,7 @@ namespace MUNEEMJI.Models
         public bool EnableOpeningBalance { get; set; }
 
         public int Id { get; set; }
-        public decimal Balance { get; set; }
+        public decimal? Balance { get; set; }
         public string PartyName { get; set; }
         public string GSTIN { get; set; }
         public string PhoneNumber { get; set; }

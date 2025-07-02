@@ -17,6 +17,16 @@ namespace MUNEEMJI.Models
         }
     }
 
+    public class ItemViewModel
+        {
+        public List<BillItem> ItemView { get; set; }
+        public BillItem SelectedItem { get; set; }
+
+
+
+
+    }
+
     public class ProductInfo
     {
         public string Name { get; set; }

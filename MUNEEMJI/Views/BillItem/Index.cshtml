@@ -1,4 +1,4 @@
-﻿@model InventoryViewModel
+﻿@model ItemViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
@@ -403,7 +403,7 @@
                     <input type="text" placeholder="Search items...">
                 </div>
 
-                <button class="add-item-btn">
+            <button class="add-item-btn" onclick="window.location.href='/Web/billitem/create';">
                     <i class="fas fa-plus"></i> Add Item
                 </button>
 
@@ -419,18 +419,25 @@
                         <div class="item-name">ITEM <i class="fas fa-filter"></i></div>
                         <div class="item-quantity">QUANTITY</div>
                     </div>
+                    @foreach (var item in Model.ItemView)
+                {
                     <div class="item-row">
-                        <div class="item-name">demo</div>
-                        <div class="item-quantity">1</div>
+                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
+                       asp-action="Index" asp-route-id="@item.Id">
+                        <div class="item-name">@item.ItemName</div>
+                        <div class="item-quantity">@item.OpeningQuantity</div>
                         <i class="fas fa-ellipsis-v" style="margin-left: auto; color: #6c757d;"></i>
+                        </a>
                     </div>
+                }
+                    
                 </div>
             </div>
 
             <div class="content-area">
                 <div class="product-header">
                     <div class="product-title">
-                        <span>DEMO</span>
+                        <span>@Model.SelectedItem.ItemName</span>
                         <i class="fas fa-external-link-alt" style="color: #007bff; font-size: 16px;"></i>
                     </div>
                     <button class="adjust-btn">
@@ -441,19 +448,19 @@
                 <div class="product-info">
                     <div class="info-card">
                         <div class="info-label">Sale Price</div>
-                        <div class="info-value">₹ 0.00 (excl)</div>
+                    <div class="info-value">₹@Model.SelectedItem.SalePrice (excl)</div>
                     </div>
                     <div class="info-card">
                         <div class="info-label">Purchase Price</div>
-                        <div class="info-value">₹ 0.00 (excl)</div>
+                    <div class="info-value">₹@Model.SelectedItem.PurchasePrice (excl)</div>
                     </div>
                     <div class="info-card">
                         <div class="info-label">Stock Quantity</div>
-                        <div class="info-value">1</div>
+                        <div class="info-value">@Model.SelectedItem.OpeningQuantity</div>
                     </div>
                     <div class="info-card">
                         <div class="info-label">Stock Value</div>
-                        <div class="info-value">₹ 1,233.00</div>
+                        <div class="info-value">₹ @Model.SelectedItem.OnlineStorePrice</div>
                     </div>
                 </div>
 

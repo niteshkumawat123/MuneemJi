@@ -94,7 +94,7 @@
                                             <td>@godown.GodownAddress</td>
                                             <td>
                                                 <button class="btn btn-outline-primary btn-sm" onclick="editGodown(@godown.Id)">
-                                                    <i class="fas fa-edit"></i>
+                                                    <i class="bi bi-pencil"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -126,6 +126,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="addGodownForm">
+                @Html.AntiForgeryToken()
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -183,19 +184,195 @@
 
 @section Scripts {
     <script>
-                function openAddGodownModal() {
+        // Wait for DOM to be ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            initializeFormHandler();
+        });
+
+        function initializeFormHandler() {
+            const form = document.getElementById('addGodownForm');
+            if (!form) {
+                console.error('Form not found');
+                return;
+            }
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('Form submission started');
+
+                try {
+                    // Validate required fields
+                    let isValid = true;
+                    let errorMessage = '';
+
+                    const godownName = document.getElementById('godownName').value.trim();
+                    const godownType = document.getElementById('godownType').value;
+                    const phoneNo = document.getElementById('phoneNo').value.trim();
+
+                    if (!godownName) {
+                        isValid = false;
+                        errorMessage += 'Godown Name is required.\n';
+                    }
+
+                    if (!godownType) {
+                        isValid = false;
+                        errorMessage += 'Godown Type is required.\n';
+                    }
+
+                    if (!phoneNo) {
+                        isValid = false;
+                        errorMessage += 'Phone Number is required.\n';
+                    }
+
+                    if (!isValid) {
+                        alert('Please fix the following errors:\n' + errorMessage);
+                        return;
+                    }
+
+                    // Create the data object
+                    const formData = {
+                        GodownName: godownName,
+                        GodownType: godownType,
+                        PhoneNo: phoneNo,
+                        EmailId: document.getElementById('emailId').value.trim() || null,
+                        GSTIN: document.getElementById('gstin').value.trim() || null,
+                        GodownAddress: document.getElementById('godownAddress').value.trim() || null,
+                        GodownPincode: document.getElementById('godownPincode').value.trim() || null
+                    };
+
+                    console.log('Form data:', formData);
+
+                    // Show loading state
+                    const saveBtn = form.querySelector('button[type="submit"]');
+                    const originalText = saveBtn.innerHTML;
+                    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+                    saveBtn.disabled = true;
+
+                    // Get anti-forgery token
+                    const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+                    const token = tokenInput ? tokenInput.value : '';
+
+                    // Create XMLHttpRequest
+                    const xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/Godown/CreateAjax', true);
+                    xhr.setRequestHeader('Content-Type', 'application/json; charset=utf-8');
+                    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                    if (token) {
+                        xhr.setRequestHeader('RequestVerificationToken', token);
+                    }
+
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            // Reset button state
+                            saveBtn.innerHTML = originalText;
+                            saveBtn.disabled = false;
+
+                            if (xhr.status === 200) {
+                                try {
+                                    const response = JSON.parse(xhr.responseText);
+                                    console.log('Success response:', response);
+
+                                    if (response.success) {
+                                        // Hide modal
+                                        const modal = bootstrap.Modal.getInstance(document.getElementById('addGodownModal'));
+                                        if (modal) {
+                                            modal.hide();
+                                        }
+
+                                        // Show success message
+                                        showSuccessMessage(response.message);
+
+                                        // Reload page after delay
+                                        setTimeout(() => location.reload(), 1500);
+                                    } else {
+                                        console.error('Server error:', response);
+                                        alert('Error: ' + response.message);
+                                    }
+                                } catch (parseError) {
+                                    console.error('Error parsing response:', parseError);
+                                    alert('Error parsing server response');
+                                }
+                            } else {
+                                console.error('AJAX Error:');
+                                console.error('Status:', xhr.status);
+                                console.error('Response:', xhr.responseText);
+
+                                let errorMessage = 'An error occurred while saving the godown.';
+
+                                switch (xhr.status) {
+                                    case 404:
+                                        errorMessage = 'Endpoint not found. Check your routing.';
+                                        break;
+                                    case 400:
+                                        errorMessage = 'Bad request. Check your data format.';
+                                        break;
+                                    case 500:
+                                        errorMessage = 'Server error. Check server logs.';
+                                        break;
+                                }
+
+                                alert(errorMessage + ' Status: ' + xhr.status);
+                            }
+                        }
+                    };
+
+                    xhr.onerror = function() {
+                        saveBtn.innerHTML = originalText;
+                        saveBtn.disabled = false;
+                        alert('Network error occurred');
+                    };
+
+                    xhr.send(JSON.stringify(formData));
+
+                } catch (err) {
+                    console.error("Error in submit handler:", err);
+                    alert("An unexpected error occurred: " + err.message);
+                }
+            });
+
+            // Reset form when modal is closed
+            const modal = document.getElementById('addGodownModal');
+            if (modal) {
+                modal.addEventListener('hidden.bs.modal', function() {
+                    document.getElementById('addGodownForm').reset();
+                });
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
+            alertDiv.setAttribute('role', 'alert');
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+        }
+
+        function openAddGodownModal() {
             try {
                 const modalElement = document.getElementById('addGodownModal');
-                if (modalElement) {
+                if (modalElement && typeof bootstrap !== 'undefined') {
                     const modal = new bootstrap.Modal(modalElement);
                     modal.show();
                 } else {
-                    console.error('Modal element not found');
+                    console.error('Bootstrap is not available or modal element not found');
+                    alert('Unable to open modal. Please check if Bootstrap is loaded.');
                 }
             } catch (error) {
                 console.error('Error opening modal:', error);
-                // Fallback for Bootstrap 4
-                $('#addGodownModal').modal('show');
+                alert('Error opening modal: ' + error.message);
             }
         }
 
@@ -210,93 +387,6 @@
         function editGodown(id) {
             window.location.href = '/Godown/Edit/' + id;
         }
-
-        // Form submission
-        $('#addGodownForm').on('submit', function(e) {
-            e.preventDefault();
-
-            // Validate required fields
-            let isValid = true;
-            let errorMessage = '';
-
-            if (!$('#godownName').val().trim()) {
-                isValid = false;
-                errorMessage += 'Godown Name is required.\n';
-            }
-
-            if (!$('#godownType').val()) {
-                isValid = false;
-                errorMessage += 'Godown Type is required.\n';
-            }
-
-            if (!$('#phoneNo').val().trim()) {
-                isValid = false;
-                errorMessage += 'Phone Number is required.\n';
-            }
-
-            if (!isValid) {
-                alert('Please fix the following errors:\n' + errorMessage);
-                return;
-            }
-
-            const formData = {
-                GodownName: $('#godownName').val().trim(),
-                GodownType: $('#godownType').val(),
-                PhoneNo: $('#phoneNo').val().trim(),
-                EmailId: $('#emailId').val().trim() || null,
-                GSTIN: $('#gstin').val().trim() || null,
-                GodownAddress: $('#godownAddress').val().trim() || null,
-                GodownPincode: $('#godownPincode').val().trim() || null
-            };
-
-            // Show loading state
-            const saveBtn = $(this).find('button[type="submit"]');
-            const originalText = saveBtn.html();
-            saveBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Saving...').prop('disabled', true);
-
-            $.ajax({
-                url: '/Godown/CreateAjax',
-                type: 'POST',
-                data: JSON.stringify(formData),
-                contentType: 'application/json',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                success: function(response) {
-                    if (response.success) {
-                        $('#addGodownModal').modal('hide');
-                        // Show success message
-                        $('body').prepend(`
-                            <div class="alert alert-success alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; z-index: 9999;" role="alert">
-                                <i class="fas fa-check-circle me-2"></i>
-                                ${response.message}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        `);
-                        // Reload page after short delay
-                        setTimeout(() => location.reload(), 1500);
-                    } else {
-                        alert('Error: ' + response.message);
-                        if (response.errors) {
-                            console.log('Validation errors:', response.errors);
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error:', {xhr, status, error});
-                    alert('An error occurred while saving the godown. Please try again.');
-                },
-                complete: function() {
-                    // Reset button state
-                    saveBtn.html(originalText).prop('disabled', false);
-                }
-            });
-        });
-
-        // Reset form when modal is closed
-        $('#addGodownModal').on('hidden.bs.modal', function() {
-            $('#addGodownForm')[0].reset();
-        });
     </script>
 }
 

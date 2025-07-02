@@ -23,8 +23,7 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public IActionResult Add(PartyModel model, string save)
         {
-            if (ModelState.IsValid)
-            {
+            
                 try
                 {
                     using (var conn = new NpgsqlConnection(_connectionString))
@@ -82,8 +81,11 @@ namespace MUNEEMJI.Controllers
                                 : DBNull.Value);
 
                             cmd.ExecuteNonQuery();
+                            
                         }
+
                     }
+
                     if (save == "new")
                     {
                         TempData["Message"] = "Party saved. Ready to add new.";
@@ -96,7 +98,7 @@ namespace MUNEEMJI.Controllers
                 {
                     ModelState.AddModelError("", "Database error: " + ex.Message);
                 }
-            }
+            
             return View(model);
         }
 
@@ -257,7 +259,7 @@ namespace MUNEEMJI.Controllers
             {
                 conn.Open();  // establish PostgreSQL connection:contentReference[oaicite:3]{index=3}
                               // 1) Query all parties
-                string sql = "SELECT id, party_name, balance FROM parties ORDER BY party_name";
+                string sql = "SELECT id, party_name,opening_balance FROM parties ORDER BY party_name";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
                     using (var reader = cmd.ExecuteReader())
@@ -268,17 +270,21 @@ namespace MUNEEMJI.Controllers
                             {
                                 Id = reader.GetInt32(0),
                                 PartyName = reader.GetString(1),
-                                Balance = 100 /*reader.GetDecimal(2)*/
+                                Balance =   reader.IsDBNull(2)?(decimal?)null: reader.GetDecimal(2),
+                                OpeningBalance = reader.IsDBNull(2)?(decimal?)null:reader.GetDecimal(2),
                             });
                         }
                     }
                 }
 
-                id = model.Parties.Select(x => x.Id).FirstOrDefault();
-                // 2) If a party is selected (id passed), fetch its details
-                if (id.HasValue)
+                if (id == 0 || id == null)
                 {
-                    string detailSql = "SELECT phone_number, email, gstin, billing_address FROM parties WHERE id = @id";
+                    id = model.Parties.Select(x => x.Id).FirstOrDefault();
+                }
+                // 2) If a party is selected (id passed), fetch its details
+                if (id > 0)
+                {
+                    string detailSql = "SELECT phone_number, email, gstin, billing_address,party_name,opening_balance FROM parties WHERE id = @id";
                     using (var cmd2 = new NpgsqlCommand(detailSql, conn))
                     {
                         cmd2.Parameters.AddWithValue("id", id.Value);
@@ -292,7 +298,10 @@ namespace MUNEEMJI.Controllers
                                     PhoneNumber = reader2.GetString(0),
                                     Email = reader2.GetString(1),
                                     GSTIN = reader2.GetString(2),
-                                    BillingAddress = reader2.GetString(3)
+                                    BillingAddress = reader2.GetString(3),
+                                    PartyName = reader2.GetString(4),
+                                    OpeningBalance= reader2.IsDBNull(5)?(decimal?)null:reader2.GetDecimal(5)
+
                                 };
                             }
                         }

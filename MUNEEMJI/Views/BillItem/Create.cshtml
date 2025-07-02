@@ -291,7 +291,7 @@
         .search-icon {
             position: absolute;
             right: 12px;
-            top: 50%;
+            top: 70%;
             transform: translateY(-50%);
             color: #999;
         }
@@ -368,7 +368,7 @@
         </div>
 
         <div class="page-body">
-            <form id="itemForm" method="post" action="/BillItem/Create">
+            <form id="itemForm" method="post" action="/Web/BillItem/Create">
                 <!-- Item Type Toggle -->
                 <div class="item-type-toggle">
                     <button type="button" class="toggle-option active" onclick="switchType('product')">Product</button>
@@ -411,7 +411,7 @@
                         <div class="form-group input-with-icon">
                             <label class="form-label">Item Code</label>
                             <input type="text" name="ItemCode" class="form-input" style="padding-right: 100px;">
-                            <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
+                            <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
                         </div>
                     </div>
 
@@ -642,7 +642,121 @@
         </div>
     </div>
 
-    <script>
+    <script>               // Add this updated JavaScript section to replace the existing script in your HTML
+
+        function serializeFormToJSON() {
+            debugger;
+            const form = document.getElementById('itemForm');
+            const formData = new FormData(form);
+            const itemType = document.getElementById('itemTypeInput').value;
+
+            // Base JSON structure matching your C# model
+            const jsonData = {
+                ItemType: itemType
+            };
+
+            // Handle Product data
+            if (itemType === 'product') {
+                // Basic product information
+                jsonData.ItemName = formData.get('ItemName') || '';
+                jsonData.ItemHsn = formData.get('ItemHSN') || '';
+                jsonData.Category = formData.get('Category') || '';
+                jsonData.ItemCode = formData.get('ItemCode') || '';
+
+                // Pricing information
+                jsonData.SalePrice = parseFloat(formData.get('SalePrice')) || null;
+                jsonData.SalePriceTaxType = formData.get('SalePriceTax') || 'Without Tax';
+                jsonData.DiscountOnSalePrice = parseFloat(formData.get('SaleDiscount')) || null;
+                jsonData.DiscountType = formData.get('SaleDiscountType') || 'Percentage';
+                jsonData.PurchasePrice = parseFloat(formData.get('PurchasePrice')) || null;
+                jsonData.PurchasePriceTaxType = formData.get('PurchasePriceTax') || 'Without Tax';
+                jsonData.TaxRate = formData.get('TaxRate') || 'None';
+
+                // Stock information
+                jsonData.OpeningQuantity = parseInt(formData.get('OpeningQuantity')) || 0;
+                jsonData.AtPrice = parseFloat(formData.get('AtPrice')) || null;
+                jsonData.AsOfDate = formData.get('AsOfDate') || null;
+                jsonData.MinStockToMaintain = parseInt(formData.get('MinStock')) || 0;
+                jsonData.Location = formData.get('Location') || '';
+
+                // Online store information
+                jsonData.OnlineStorePrice = parseFloat(formData.get('OnlineStorePrice')) || null;
+                jsonData.Description = formData.get('Description') || '';
+
+                // Manufacturing/Raw Materials Array
+                jsonData.Manufacturing = [];
+
+                // Get all raw material data
+                const rawMaterialNames = formData.getAll('RawMaterial[]');
+                const rawMaterialQtys = formData.getAll('RawMaterialQty[]');
+                const rawMaterialUnits = formData.getAll('RawMaterialUnit[]');
+                const rawMaterialPrices = formData.getAll('RawMaterialPrice[]');
+                const rawMaterialCosts = formData.getAll('RawMaterialCost[]');
+
+                // Process each raw material row
+                for (let i = 0; i < rawMaterialNames.length; i++) {
+                    // Only add row if at least the name is provided
+                    if (rawMaterialNames[i] && rawMaterialNames[i].trim() !== '') {
+                        jsonData.Manufacturing.push({
+                            Name: rawMaterialNames[i].trim(),
+                            Quantity: parseInt(rawMaterialQtys[i]) || 0,
+                            Unit: rawMaterialUnits[i] || 'None',
+                            PurchasePricePerUnit: parseFloat(rawMaterialPrices[i]) || 0,
+                            EstimatedCost: parseFloat(rawMaterialCosts[i]) || 0
+                        });
+                    }
+                }
+            }
+            // Handle Service data
+            else if (itemType === 'service') {
+                jsonData.ServiceName = formData.get('ServiceName') || '';
+                jsonData.ServiceHsn = formData.get('ServiceHSN') || '';
+                jsonData.SalePrice = parseFloat(formData.get('ServiceSalePrice')) || null;
+                jsonData.TaxRate = formData.get('ServiceTaxRate') || 'None';
+            }
+
+            return jsonData;
+        }
+
+        // Function to submit form as JSON
+        async function submitFormAsJSON() {
+            try {
+                const jsonData = serializeFormToJSON();
+
+                console.log('Submitting JSON data:', jsonData); // For debugging
+
+                const response = await fetch('/Web/BillItem/Create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Add anti-forgery token if you're using it
+                        // 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(jsonData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Success:', result);
+                    // Handle success (redirect, show message, etc.)
+                    window.location.href = '/Web/BillItem'; // Redirect to list page
+                } else {
+                    const error = await response.text();
+                    console.error('Error:', error);
+                    alert('Error submitting form: ' + error);
+                }
+            } catch (error) {
+                console.error('Network error:', error);
+                alert('Network error: ' + error.message);
+            }
+        }
+
+        // Prevent default form submission and use JSON instead
+        document.getElementById('itemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitFormAsJSON();
+        });
+
         function switchType(type) {
             // Update toggle buttons
             document.querySelectorAll('.toggle-option').forEach(btn => btn.classList.remove('active'));

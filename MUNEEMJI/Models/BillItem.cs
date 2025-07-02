@@ -19,13 +19,20 @@ namespace MUNEEMJI.Models
         public string? ItemImageUrl { get; set; }
 
         // Pricing Information
-        public decimal? SalePrice { get; set; }
+        //sale section 
+        public decimal? SalePrice { get; set; }        
         public string SalePriceTaxType { get; set; } = "Without Tax";
         public decimal? DiscountOnSalePrice { get; set; }
         public string DiscountType { get; set; } = "Percentage";
+
+
+        // purchase price section 
         public decimal? PurchasePrice { get; set; }
         public string PurchasePriceTaxType { get; set; } = "Without Tax";
         public string TaxRate { get; set; } = "None";
+
+
+
         public decimal? WholesalePrice { get; set; }
 
         // Stock Information (for Products)
@@ -44,6 +51,8 @@ namespace MUNEEMJI.Models
         public string? AdditionalCosts { get; set; } // JSON string
         public decimal TotalEstimatedCost { get; set; }
 
+        public List<RawMaterial> Manufacturing { get; set; }
+
         // Service specific fields
         public string? ServiceName { get; set; }
         public string? ServiceHsn { get; set; }
@@ -57,6 +66,7 @@ namespace MUNEEMJI.Models
     public class RawMaterial
     {
         public int Id { get; set; }
+        public int ItemBillingId { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Quantity { get; set; }
         public string Unit { get; set; } = string.Empty;

@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
+using Npgsql;
 using System.Transactions;
+using Insight.Database;
+
 
 namespace MUNEEMJI.Controllers
 {
@@ -9,12 +12,14 @@ namespace MUNEEMJI.Controllers
     {
         private readonly IBillItemService _billItemService;
         private readonly ILogger<BillItemController> _logger;
+        string _connectionString = string.Empty;
 
 
         public BillItemController(IBillItemService billItemService, ILogger<BillItemController> logger)
         {
             _billItemService = billItemService;
             _logger = logger;
+            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
         }
 
         [HttpGet]
@@ -54,8 +59,7 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BillItem model)
+        public async Task<IActionResult> Create([FromBody]BillItem model)
         {
             BillItemViewModel viewModel = new BillItemViewModel();
             try
@@ -460,31 +464,128 @@ namespace MUNEEMJI.Controllers
                 return System.Text.Encoding.UTF8.GetBytes(csv);
             }
         }
-        public ActionResult Index()
+
+        public async Task<List<BillItem>> GetBillItemsAsync()
+        {
+            List<BillItem> items = new List<BillItem>();
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            // ✅ Query to get all bill items
+            var billItemSql = @"
+        SELECT 
+            id AS ""Id"",
+            item_type AS ""ItemType"",
+            item_name AS ""ItemName"",
+            item_hsn AS ""ItemHsn"",
+            item_code AS ""ItemCode"",
+            category AS ""Category"",
+            unit AS ""Unit"",
+            item_image_url AS ""ItemImageUrl"",
+            sale_price AS ""SalePrice"",
+            sale_price_tax_type AS ""SalePriceTaxType"",
+            discount_on_sale_price AS ""DiscountOnSalePrice"",
+            discount_type AS ""DiscountType"",
+            purchase_price AS ""PurchasePrice"",
+            purchase_price_tax_type AS ""PurchasePriceTaxType"",
+            tax_rate AS ""TaxRate"",
+            wholesale_price AS ""WholesalePrice"",
+            opening_quantity AS ""OpeningQuantity"",
+            at_price AS ""AtPrice"",
+            as_of_date AS ""AsOfDate"",
+            location AS ""Location"",
+            min_stock_to_maintain AS ""MinStockToMaintain"",
+            online_store_price AS ""OnlineStorePrice"",
+            description AS ""Description"",
+            raw_materials AS ""RawMaterials"",
+            additional_costs AS ""AdditionalCosts"",
+            total_estimated_cost AS ""TotalEstimatedCost"",
+            service_name AS ""ServiceName"",
+            service_hsn AS ""ServiceHsn"",
+            service_code AS ""ServiceCode"",
+            created_at AS ""CreatedAt"",
+            updated_at AS ""UpdatedAt""
+        FROM billitem
+        ORDER BY id;
+    ";
+
+            // ✅ Fetch bill items
+            var billItems = connection.QuerySql<BillItem>(billItemSql).ToList();
+
+            if (billItems != null && billItems.Count > 0)
+            {
+                foreach (var billItem in billItems)
+                {
+                    // ✅ Query to fetch manufacturing data for each bill item
+                    var manufacturingSql = @"
+                SELECT 
+                    id AS ""Id"",
+                    itembillingid AS ""ItemBillingId"",
+                    name AS ""Name"",
+                    quantity AS ""Quantity"",
+                    unit AS ""Unit"",
+                    purchasepriceperunit AS ""PurchasePricePerUnit"",
+                    estimatedcost AS ""EstimatedCost""
+                FROM manufacturing
+                WHERE itembillingid = @_itembillingid;
+            ";
+
+                    var manufacturing = connection
+                        .QuerySql<RawMaterial>(manufacturingSql, new { _itembillingid = billItem.Id })
+                        .ToList();
+
+                    billItem.Manufacturing = manufacturing;
+                    items.Add(billItem);
+                }
+            }
+
+            return items;
+        }
+
+
+        public async Task<IActionResult> Index(int? id)
         {
             string godown = "All Godowns"; string search = ""; string sortBy = "date"; string sortDirection = "desc";
             try
             {
-                MockInventoryService mock = new MockInventoryService();
-                var viewModel = new InventoryViewModel
-                {
-                    Product = GetProductById("demo"),
-                    Transactions = mock.GetTransactions("demo", search, sortBy, sortDirection),
-                    Godowns = mock.GetGodowns(),
-                    SelectedGodown = godown
-                };
 
-                //if (Request.IsAjaxRequest())
+
+                var viewModel = await GetBillItemsAsync();
+
+                ItemViewModel itemViewModel = new ItemViewModel();
+                itemViewModel.ItemView = viewModel;
+                if (id > 0)
+                {
+                    itemViewModel.SelectedItem = new BillItem();
+                    itemViewModel.SelectedItem = viewModel.Where(x => x.Id == id).FirstOrDefault();
+                }
+                else {
+
+                    itemViewModel.SelectedItem = new BillItem();
+                    itemViewModel.SelectedItem = viewModel.FirstOrDefault();
+
+                }
+                //MockInventoryService mock = new MockInventoryService();
+                //var viewModel = new InventoryViewModel
+                //{
+                //    Product = GetProductById("demo"),
+                //    Transactions = mock.GetTransactions("demo", search, sortBy, sortDirection),
+                //    Godowns = mock.GetGodowns(),
+                //    SelectedGodown = godown
+                //};
+
+                ////if (Request.IsAjaxRequest())
+                ////{
+                ////    return PartialView("_TransactionsPartial", viewModel);
+                ////}
+
+                //if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 //{
                 //    return PartialView("_TransactionsPartial", viewModel);
                 //}
 
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return PartialView("_TransactionsPartial", viewModel);
-                }
-
-                return View(viewModel);
+                return View(itemViewModel);
             }
             catch (Exception ex)
             {

@@ -25,6 +25,9 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UsePathBase("/Web"); 
+
+
 app.UseStaticFiles();
 app.UseRouting();
 

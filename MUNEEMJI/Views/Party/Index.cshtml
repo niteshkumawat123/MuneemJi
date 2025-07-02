@@ -2,71 +2,229 @@
 @{
     ViewData["Title"] = "Parties";
 }
-<div class="container-fluid mt-3">
-    <div class="row">
-        <!-- Sidebar: Party Search and List -->
-        <div class="col-md-3 border-end">
-            <h5 class="mb-3">Parties</h5>
-            <input type="text" class="form-control mb-2" placeholder="Search Party Name" />
-            <div class="list-group">
+
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
+        <div class="d-flex align-items-center">
+            <h4 class="mb-0 me-2">Parties</h4>
+            <i class="bi bi-chevron-down"></i>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="window.location.href='/Web/party/add'">
+            <i class="bi bi-plus"></i> Add Party
+        </button>
+    </div>
+
+    <div class="row g-0">
+        <!-- Left Sidebar: Party Search and List -->
+        <div class="col-md-4 border-end" style="height: calc(100vh - 120px); overflow-y: auto;">
+            <!-- Search Box -->
+            <div class="p-3 border-bottom">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
+                    <input type="text" class="form-control ps-4" placeholder="Search Party Name" />
+                </div>
+            </div>
+
+            <!-- Party List Header -->
+            <div class="d-flex justify-content-between align-items-center p-3 bg-light small text-muted border-bottom">
+                <div class="d-flex align-items-center">
+                    <span>Party Name</span>
+                    <i class="bi bi-funnel ms-1"></i>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span>Amount</span>
+                    <i class="bi bi-funnel ms-1"></i>
+                </div>
+            </div>
+
+            <!-- Party List -->
+            <div class="list-group list-group-flush">
                 @foreach (var party in Model.Parties)
                 {
-                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center @(party.Id == Model.SelectedParty?.Id ? "active" : "")"
+                    <a class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center py-3 @(party.Id == Model.SelectedParty?.Id ? "bg-primary text-white" : "")"
                        asp-action="Index" asp-route-id="@party.Id">
-                        @party.PartyName
-                        <span class="badge bg-primary rounded-pill">
-                            @party.Balance.ToString("0.00")
+                        <span>@party.PartyName</span>
+                        <span class="fw-bold">
+                            ₹ @((party?.OpeningBalance ?? 0) > 0
+                              ? party?.OpeningBalance?.ToString("0.00") ?? "0.00"
+                              : "0.00")
                         </span>
                     </a>
                 }
             </div>
         </div>
-        <!-- Main panel: Party Details and Transactions -->
-        <div class="col-md-9">
+
+        <!-- Right Panel: Party Details and Transactions -->
+        <div class="col-md-8">
             @if (Model.SelectedParty != null)
             {
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title d-flex align-items-center">
+                <!-- Party Details Header -->
+                <div class="p-4 border-bottom">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="mb-0 d-flex align-items-center">
                             @Model.SelectedParty.PartyName
-                            <a asp-action="Edit" asp-route-id="@Model.SelectedParty.Id" class="btn btn-sm btn-outline-secondary ms-3">
+                            <a asp-action="Edit" asp-route-id="@Model.SelectedParty.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
                                 <i class="bi bi-pencil"></i>
                             </a>
                         </h5>
-                        <div class="row mt-2">
-                            <div class="col"><strong>Phone Number:</strong><br /> @Model.SelectedParty.PhoneNumber</div>
-                            <div class="col"><strong>Email:</strong><br /> @Model.SelectedParty.Email</div>
-                            <div class="col"><strong>GSTIN:</strong><br /> @Model.SelectedParty.GSTIN</div>
-                            <div class="col"><strong>Billing Address:</strong><br /> @Model.SelectedParty.BillingAddress</div>
+                        <div class="d-flex gap-2">
+                            <span class="badge bg-warning text-dark">0</span>
+                            <i class="bi bi-whatsapp text-success" style="font-size: 1.2rem;"></i>
+                            <i class="bi bi-bell text-muted" style="font-size: 1.2rem;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Party Information Grid -->
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <small class="text-muted">Phone Number</small>
+                            <div class="fw-medium">@(Model.SelectedParty.PhoneNumber ?? "N/A")</div>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Email</small>
+                            <div class="fw-medium">@(Model.SelectedParty.Email ?? "N/A")</div>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">GSTIN</small>
+                            <div class="fw-medium">@(Model.SelectedParty.GSTIN ?? "N/A")</div>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Billing Address</small>
+                            <div class="fw-medium">@(Model.SelectedParty.BillingAddress ?? "N/A")</div>
                         </div>
                     </div>
                 </div>
-            }
-            <div class="card">
-                <div class="card-body">
-                    <h6 class="card-subtitle mb-3">Transactions</h6>
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Number</th>
-                                <th>Date</th>
-                                <th>Total</th>
-                                <th>Balance</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="5" class="text-center text-muted py-5">
-                                    <div class="mb-2"><i class="bi bi-receipt" style="font-size:2rem;"></i></div>
-                                    <div>No Transactions to Show</div>
-                                    <div class="small">You haven't added any transactions yet.</div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+
+                <!-- Transactions Section -->
+                <div class="p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">Transactions</h6>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-search"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-printer"></i>
+                            </button>
+                            <button class="btn btn-sm btn-success">
+                                <i class="bi bi-file-earmark-excel"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Transactions Table -->
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0">
+                                        <div class="d-flex align-items-center">
+                                            <span>Type</span>
+                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                        </div>
+                                    </th>
+                                    <th class="border-0">
+                                        <div class="d-flex align-items-center">
+                                            <span>Number</span>
+                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                        </div>
+                                    </th>
+                                    <th class="border-0">
+                                        <div class="d-flex align-items-center">
+                                            <span>Date</span>
+                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                        </div>
+                                    </th>
+                                    <th class="border-0">
+                                        <div class="d-flex align-items-center">
+                                            <span>Total</span>
+                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                        </div>
+                                    </th>
+                                    <th class="border-0">
+                                        <div class="d-flex align-items-center">
+                                            <span>Balance</span>
+                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                        </div>
+                                    </th>
+                                    <th class="border-0"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.SelectedParty != null )
+                                {
+                                        <tr>
+                                        <td>@(Model.SelectedParty?.PartyName != null ? Model.SelectedParty.PartyName : "Opening Balance")</td>
+                                        <td> -</td>
+                                            <td>@(Model.SelectedParty?.AsOfDate?.ToString("dd/MM/yyyy") ?? "")</td>
+                                            <td>₹ @(Model.SelectedParty?.OpeningBalance?.ToString("0.00") ?? "0.00")</td>
+                                        <td>
+                                            ₹ @((Model.SelectedParty?.OpeningBalance ?? 0) > 0
+                                              ? (Model.SelectedParty?.OpeningBalance.Value.ToString("0.00") ?? "0.00")
+                                              : "0.00")
+                                        </td>
+                                        <td>
+                                                <button class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    
+                                }
+                                else
+                                {
+                                    <!-- Opening Balance Row (if any) -->
+                                    @if (Model.SelectedParty.Balance != 0)
+                                    {
+                                        <tr class="bg-light">
+                                            <td>Receivable Opening Balance</td>
+                                            <td></td>
+                                            <td>02/07/2025</td>
+                                            <td>₹ @Model.SelectedParty.Balance.Value.ToString("0.00")</td>
+                                            <td>₹ @Model.SelectedParty.Balance.Value.ToString("0.00")</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-secondary">
+                                                    <i class="bi bi-three-dots"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <!-- No Party Selected State -->
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <div class="text-center text-muted">
+                        <i class="bi bi-person-plus" style="font-size: 3rem;"></i>
+                        <div class="mt-2">Select a party to view details</div>
+                    </div>
+                </div>
+            }
         </div>
     </div>
 </div>
+
+
+
+<style>
+    .list-group-item.active {
+        background-color: #0d6efd !important;
+        border-color: #0d6efd !important;
+    }
+
+    .table th {
+        font-weight: 500;
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+</style>

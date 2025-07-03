@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
@@ -29,67 +30,111 @@ namespace MUNEEMJI.Controllers
                 DateTime? endDate = DateTime.UtcNow;
                 string firmFilter = "ALL FIRMS";
                 string vendorFilter = null;
-                // Set default date range if not provided
-                if (!startDate.HasValue || !endDate.HasValue)
-                {
-                    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                    endDate = startDate.Value.AddMonths(1).AddDays(-1);
-                }
-                var query = @"
-                                SELECT 
-                                    pb.""id"",
-                                    pb.""bill_number"",
-                                    pb.""bill_date"",
-                                    pb.""payment_type"",
-                                    pb.""total"",
-                                    pb.""created_date"",
-                                    COALESCE(SUM(CASE WHEN pb.""payment_type"" = 'Cash' THEN pb.""total"" ELSE 0 END), 0) AS ""PaidAmount"",
-                                    COALESCE(SUM(CASE WHEN pb.""payment_type"" != 'Cash' THEN pb.""total"" ELSE 0 END), 0) AS ""UnpaidAmount""
-                                FROM ""purchasebills"" pb
-                                WHERE pb.""bill_date"" >= @StartDate::date AND pb.""bill_date"" <= @EndDate::date";
-
-                                            if (firmFilter != "ALL FIRMS")
-                                            {
-                                                query += " AND pb.\"state_of_supply\" = @FirmFilter";
-                                            }
-
-                                            query += @"
-                                GROUP BY 
-                                    pb.""id"", 
-                                    pb.""bill_number"", 
-                                    pb.""bill_date"", 
-                                    pb.""payment_type"", 
-                                    pb.""total"", 
-                                    pb.""created_date""
-                                ORDER BY pb.""bill_date"" DESC";
-
-
                 using var connection = new NpgsqlConnection(_connectionString);
-                var bills = await connection.QueryAsync<dynamic>(query, new
-                {
-                    StartDate = startDate.Value,
-                    EndDate = endDate.Value,
-                    FirmFilter = firmFilter
-                });
+
+
+                string query = @"
+                SELECT 
+                    td.id AS ""Id"",
+                    td.bill_number AS ""BillNumber"",
+                    td.bill_date AS ""BillDate"",
+                    td.state_of_supply AS ""StateOfSupply"",
+                    td.phone_no AS ""PhoneNo"",
+                    td.po_no AS ""PONo"",
+                    td.po_date AS ""PODate"",
+                    td.eway_bill_no AS ""EWayBillNo"",
+                    td.transport_name AS ""TransportName"",
+                    td.delivery_location AS ""DeliveryLocation"",
+                    td.vehicle_number AS ""VehicleNumber"",
+                    td.delivery_date AS ""DeliveryDate"",
+                    td.payment_type AS ""PaymentType"",
+                    td.description AS ""Description"",
+                    td.image_path AS ""ImagePath"",
+                    td.round_off AS ""RoundOff"",
+                    td.total AS ""Total"",
+                    td.paidreciveamount AS ""paidReciveamount"",
+                    td.partyid AS ""PartyId"",
+                    pt.party_name as PartyName
+                FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id;
+            ";
+
+                var PurchaseBill =  connection.QuerySql<PurchaseBill>(query).ToList();
+
+
+
+
+
+
+
+
+
+                // Set default date range if not provided
+                //if (!startDate.HasValue || !endDate.HasValue)
+                //{
+                //    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                //    endDate = startDate.Value.AddMonths(1).AddDays(-1);
+                //}
+                //var query = @"
+                //                SELECT 
+                //                    pb.""id"",
+                //                    pb.""bill_number"",
+                //                    pb.""bill_date"",
+                //                    pb.""payment_type"",
+                //                    pb.""total"",
+                //                    pb.""created_date"",
+                //                    COALESCE(SUM(CASE WHEN pb.""payment_type"" = 'Cash' THEN pb.""total"" ELSE 0 END), 0) AS ""PaidAmount"",
+                //                    COALESCE(SUM(CASE WHEN pb.""payment_type"" != 'Cash' THEN pb.""total"" ELSE 0 END), 0) AS ""UnpaidAmount""
+                //                FROM ""purchasebills"" pb
+                //                WHERE pb.""bill_date"" >= @StartDate::date AND pb.""bill_date"" <= @EndDate::date";
+
+                //                            if (firmFilter != "ALL FIRMS")
+                //                            {
+                //                                query += " AND pb.\"state_of_supply\" = @FirmFilter";
+                //                            }
+
+                //                            query += @"
+                //                GROUP BY 
+                //                    pb.""id"", 
+                //                    pb.""bill_number"", 
+                //                    pb.""bill_date"", 
+                //                    pb.""payment_type"", 
+                //                    pb.""total"", 
+                //                    pb.""created_date""
+                //                ORDER BY pb.""bill_date"" DESC";
+
+
+                //var bills = await connection.QueryAsync<dynamic>(query, new
+                //{
+                //    StartDate = startDate.Value,
+                //    EndDate = endDate.Value,
+                //    FirmFilter = firmFilter
+                //});
 
                 // Calculate summary
-                var paidTotal = bills.Where(b => b.payment_type == "Cash" && b.total != null).Sum(b => (decimal)b.total);
-                //var unpaidTotal = bills.Where(b => b.PaymentType != "Cash").Sum(b => (decimal)b.Total);
-                var unpaidTotal = bills
-                                       .Where(b => b != null && b.payment_type != "Cash" && b.total != null)
-                                       .Sum(b => (decimal)b.total);
+                if (PurchaseBill != null && PurchaseBill.Count() > 0)
+                {
 
-                var grandTotal = paidTotal + unpaidTotal;
 
-                ViewBag.PaidTotal = paidTotal;
-                ViewBag.UnpaidTotal = unpaidTotal;
-                ViewBag.GrandTotal = grandTotal;
-                ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
-                ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
-                ViewBag.FirmFilter = firmFilter;
-                ViewBag.VendorFilter = vendorFilter;
+                    var paidTotal = PurchaseBill.Sum(b => b.paidReciveamount);
+                    //var unpaidTotal = bills.Where(b => b.PaymentType != "Cash").Sum(b => (decimal)b.Total);
+                    var unpaidTotal = PurchaseBill.Sum(x => x.Total) - paidTotal;
 
-                return View(bills);
+                    var grandTotal = paidTotal + unpaidTotal;
+
+                    ViewBag.PaidTotal = paidTotal;
+                    ViewBag.UnpaidTotal = unpaidTotal;
+                    ViewBag.GrandTotal = grandTotal;
+                    ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
+                    ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
+                    ViewBag.FirmFilter = firmFilter;
+                    ViewBag.VendorFilter = vendorFilter;
+                }
+                else
+                {
+                    PurchaseBill = new List<PurchaseBill>();
+                }
+
+                return View(PurchaseBill);
             }
             catch (Exception ex)
             {
@@ -159,7 +204,7 @@ namespace MUNEEMJI.Controllers
 
                     var billId = await _billService.CreateBillAsync(viewModel.Bill);
                     TempData["SuccessMessage"] = "Bill created successfully!";
-                    return RedirectToAction(nameof(Details), new { id = billId });
+                    return RedirectToAction(nameof(Index));
                 }
             }
             catch (Exception ex)

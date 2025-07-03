@@ -1,4 +1,4 @@
-﻿@model IEnumerable<dynamic>
+﻿@model List<PurchaseBill>
 @{
     ViewData["Title"] = "Purchase Bills";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -67,13 +67,16 @@
             <span class="btn btn-secondary">Between</span>
         </div>
         <div class="col-md-2">
-            <input type="date" class="form-control" value="@ViewBag.StartDate" id="startDate">
+            <input type="date" class="form-control"
+                    id="startDate"
+                    value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+
         </div>
         <div class="col-md-1 text-center">
             <span>To</span>
         </div>
         <div class="col-md-2">
-            <input type="date" class="form-control" value="@ViewBag.EndDate" id="endDate">
+            <input type="date" class="form-control" value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")" id="endDate">
         </div>
         <div class="col-md-2">
             <select class="form-select">
@@ -194,13 +197,14 @@
                         {
                             @foreach (var bill in Model)
                             {
-                                <tr class="@(bill.payment_type == "Cash" ? "table-success" : "table-info")">
-                                    <td>@((DateTime)bill.bill_date)</td>
-                                    <td>@bill.bill_number </td>
-                                    <td>test</td>
-                                    <td>@bill.payment_type</td>
-                                    <td>@((decimal)bill.total)</td>
-                                    <td>@((decimal)bill.total)</td>
+                                <tr class="@("Cash" == "Cash" ? "table-success" : "table-info")">
+                                    <td>@(bill.BillDate != null ? ((DateTime)bill.BillDate).ToString("dd-MM-yyyy") : "-")</td>
+                                    <td>@(bill.BillNumber ?? "-")</td>
+                                    <td>@(bill.PartyName ?? "-")</td>
+                                    <td>@(bill.PaymentType ?? "-")</td>
+                                    <td>@(bill.Total != null ? ((decimal)bill.Total).ToString("0.00") : "-")</td>
+                                    <td>@(bill.paidReciveamount != null ? ((decimal)bill.paidReciveamount).ToString("0.00") : "-")</td>
+
                                     <td>
                                         <button class="btn border-0 me-2" title="Print">
                                             <!-- Option 1: FontAwesome Icon -->

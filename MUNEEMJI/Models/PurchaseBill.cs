@@ -56,6 +56,8 @@ namespace MUNEEMJI.Models
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
         public decimal paidReciveamount { get; set; }
+        public int PartyId { get; set; }
+        public string PartyName { get; set; }
 
         public List<PurchaseBillItem> BillItems { get; set; } = new List<PurchaseBillItem>();
 

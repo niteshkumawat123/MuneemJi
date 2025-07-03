@@ -36,11 +36,11 @@ namespace MUNEEMJI.Repositories
                     INSERT INTO TradeDocuments (bill_number, bill_date, state_of_supply, phone_no, po_no, po_date, 
                                      eway_bill_no, transport_name, delivery_location, vehicle_number, 
                                      delivery_date, payment_type, description, image_path, round_off, 
-                                     total, created_date,paidReciveamount,TradeDocumentTypesid)
+                                     total, created_date,paidReciveamount,TradeDocumentTypesid,PartyId)
                     VALUES (@BillNumber, @BillDate, @StateOfSupply, @PhoneNo, @PONo, @PODate, 
                            @EWayBillNo, @TransportName, @DeliveryLocation, @VehicleNumber, 
                            @DeliveryDate, @PaymentType, @Description, @ImagePath, @RoundOff, 
-                           @Total, @CreatedDate,@paidReciveamount,@TradeDocumentTypesid)
+                           @Total, @CreatedDate,@paidReciveamount,@TradeDocumentTypesid,@PartyId)
                     RETURNING id";
 
                 using var billCommand = new NpgsqlCommand(billQuery, connection, transaction);
@@ -63,6 +63,7 @@ namespace MUNEEMJI.Repositories
                 billCommand.Parameters.AddWithValue("@CreatedDate", bill.CreatedDate); // assuming DateTime (not nullable)
                 billCommand.Parameters.AddWithValue("@paidReciveamount", bill.paidReciveamount);
                 billCommand.Parameters.AddWithValue("@TradeDocumentTypesid", (int)TradeDocumentTypes.PurchaseChallan);
+                billCommand.Parameters.AddWithValue("@PartyId", bill.PartyId);
 
 
 

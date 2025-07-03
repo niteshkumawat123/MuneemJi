@@ -10,13 +10,14 @@ namespace MUNEEMJI.Controllers
     {
         private readonly IPurchaseBillService _billService;
         private readonly IWebHostEnvironment _environment;
+        private readonly IBillItemService _IBillItemService;
         string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
 
-        public PurchaseBillController(IPurchaseBillService billService, IWebHostEnvironment environment)
+        public PurchaseBillController(IPurchaseBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService)
         {
             _billService = billService;
             _environment = environment;
-
+            _IBillItemService = iBillItemService;
         }
 
         // GET: Bill
@@ -117,7 +118,8 @@ namespace MUNEEMJI.Controllers
                         new PurchaseBillItem(),
                         new PurchaseBillItem()
                     }
-                }
+                },
+                DropDownItem = await _IBillItemService.GetItems()
             };
             ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
             return View(viewModel);

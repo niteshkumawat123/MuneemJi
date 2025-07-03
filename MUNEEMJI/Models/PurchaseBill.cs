@@ -51,9 +51,11 @@ namespace MUNEEMJI.Models
         [Display(Name = "Round Off")]
         public bool RoundOff { get; set; } = true;
 
+        public decimal RoundOffValue { get; set; }
         public decimal Total { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public decimal paidReciveamount { get; set; }
 
         public List<PurchaseBillItem> BillItems { get; set; } = new List<PurchaseBillItem>();
 
@@ -64,7 +66,14 @@ namespace MUNEEMJI.Models
         public int BillId { get; set; }
 
         [Display(Name = "Item")]
-        public string Item { get; set; } = string.Empty;
+        public string? Item { get; set; } = string.Empty;
+        public int ItemId { get; set; }
+        public string serialno { get; set; }
+        public string batchno { get; set; }
+        public string modelno { get; set; }
+        public string expirydate { get; set; }
+        public string mfgdate { get; set; }
+        public int categoryid { get; set; }
 
         [Display(Name = "QTY")]
         public decimal Quantity { get; set; }
@@ -106,5 +115,17 @@ namespace MUNEEMJI.Models
             "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
             "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
         };
+        public List<BillItem> DropDownItem { get; set; }
+    }
+    public enum TradeDocumentTypes
+    {
+        PurchaseOrder = 1,
+        SalesOrder = 2,
+        DeliveryChallan = 3,
+        PurchaseChallan = 4,
+        SalesChallan = 5,
+        PurchaseDebitNote = 6,
+        SalesDebitNote = 7,
+        CreditNote = 8
     }
 }

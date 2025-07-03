@@ -208,7 +208,10 @@
                     <thead>
                         <tr>
                             <th style="width: 5%">#</th>
-                            <th style="width: 25%">ITEM</th>
+                            <th style="width: 25%">
+                                ITEM<br />
+                               
+                            </th>
                             <th style="width: 8%">QTY</th>
                             <th style="width: 10%">UNIT</th>
                             <th style="width: 12%">PRICE/UNIT<br />Without Tax</th>
@@ -226,7 +229,10 @@
                             <tr class="item-row" data-index="@i">
                                 <td>@(i + 1)</td>
                                 <td>
-                                    <input asp-for="Bill.BillItems[i].Item" class="form-control-sm" />
+                                    @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
+                                             new SelectList(Model.DropDownItem, "Id", "ItemName"),
+                                             "-- Select Item --",
+                                             new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
                                 </td>
                                 <td>
                                     <input asp-for="Bill.BillItems[i].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(@i)" />
@@ -344,7 +350,24 @@
 </div>
 
 <script>
-    let itemIndex = @Model.Bill.BillItems.Count;
+
+     var itemOptions = @Html.Raw(Json.Serialize(Model.DropDownItem));
+     let itemIndex = @Model.Bill.BillItems.Count;
+
+     let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
+    itemDropdown += `<option value="">-- Select Item --</option>`;
+    itemOptions.forEach(item => {
+        itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
+    });
+    itemDropdown += `</select>`;
+
+     function onItemChange(selectElem, rowIndex) {
+        let selectedItemId = selectElem.value;
+        console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);
+        // Do something like auto-fill price, etc.
+    }
+
+    
 
     function addNewRow() {
         const tbody = document.getElementById('itemsTableBody');
@@ -354,7 +377,8 @@
 
         newRow.innerHTML = `
             <td>${itemIndex + 1}</td>
-            <td><input name="Bill.BillItems[${itemIndex}].Item" class="form-control-sm" /></td>
+            @* <td><input name="Bill.BillItems[${itemIndex}].Item" class="form-control-sm" /></td> *@
+            <td>${itemDropdown}</td>
             <td><input name="Bill.BillItems[${itemIndex}].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(${itemIndex})" /></td>
             <td>
                 <select name="Bill.BillItems[${itemIndex}].Unit" class="form-control-sm">

@@ -33,59 +33,74 @@ namespace MUNEEMJI.Repositories
             {
                 // Insert Bill
                 var billQuery = @"
-                    INSERT INTO bills (bill_number, bill_date, state_of_supply, phone_no, po_no, po_date, 
+                    INSERT INTO TradeDocuments (bill_number, bill_date, state_of_supply, phone_no, po_no, po_date, 
                                      eway_bill_no, transport_name, delivery_location, vehicle_number, 
                                      delivery_date, payment_type, description, image_path, round_off, 
-                                     total, created_date)
+                                     total, created_date,paidReciveamount,TradeDocumentTypesid)
                     VALUES (@BillNumber, @BillDate, @StateOfSupply, @PhoneNo, @PONo, @PODate, 
                            @EWayBillNo, @TransportName, @DeliveryLocation, @VehicleNumber, 
                            @DeliveryDate, @PaymentType, @Description, @ImagePath, @RoundOff, 
-                           @Total, @CreatedDate)
+                           @Total, @CreatedDate,@paidReciveamount,@TradeDocumentTypesid)
                     RETURNING id";
 
                 using var billCommand = new NpgsqlCommand(billQuery, connection, transaction);
-                billCommand.Parameters.AddWithValue("@BillNumber", bill.BillNumber);
-                billCommand.Parameters.AddWithValue("@BillDate", bill.BillDate);
-                billCommand.Parameters.AddWithValue("@StateOfSupply", bill.StateOfSupply);
-                billCommand.Parameters.AddWithValue("@PhoneNo", bill.PhoneNo);
-                billCommand.Parameters.AddWithValue("@PONo", bill.PONo);
+                billCommand.Parameters.AddWithValue("@BillNumber", bill.BillNumber ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@BillDate", bill.BillDate); // assuming DateTime (not nullable)
+                billCommand.Parameters.AddWithValue("@StateOfSupply", bill.StateOfSupply ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@PhoneNo", bill.PhoneNo ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@PONo", bill.PONo ?? string.Empty);
                 billCommand.Parameters.AddWithValue("@PODate", (object?)bill.PODate ?? DBNull.Value);
-                billCommand.Parameters.AddWithValue("@EWayBillNo", bill.EWayBillNo);
-                billCommand.Parameters.AddWithValue("@TransportName", bill.TransportName);
-                billCommand.Parameters.AddWithValue("@DeliveryLocation", bill.DeliveryLocation);
-                billCommand.Parameters.AddWithValue("@VehicleNumber", bill.VehicleNumber);
+                billCommand.Parameters.AddWithValue("@EWayBillNo", bill.EWayBillNo ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@TransportName", bill.TransportName ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@DeliveryLocation", bill.DeliveryLocation ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@VehicleNumber", bill.VehicleNumber ?? string.Empty);
                 billCommand.Parameters.AddWithValue("@DeliveryDate", (object?)bill.DeliveryDate ?? DBNull.Value);
-                billCommand.Parameters.AddWithValue("@PaymentType", bill.PaymentType);
-                billCommand.Parameters.AddWithValue("@Description", bill.Description);
-                billCommand.Parameters.AddWithValue("@ImagePath", bill.ImagePath);
-                billCommand.Parameters.AddWithValue("@RoundOff", bill.RoundOff);
+                billCommand.Parameters.AddWithValue("@PaymentType", bill.PaymentType ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@Description", bill.Description ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@ImagePath", bill.ImagePath ?? string.Empty);
+                billCommand.Parameters.AddWithValue("@RoundOff", bill.RoundOffValue);
                 billCommand.Parameters.AddWithValue("@Total", bill.Total);
-                billCommand.Parameters.AddWithValue("@CreatedDate", bill.CreatedDate);
+                billCommand.Parameters.AddWithValue("@CreatedDate", bill.CreatedDate); // assuming DateTime (not nullable)
+                billCommand.Parameters.AddWithValue("@paidReciveamount", bill.paidReciveamount);
+                billCommand.Parameters.AddWithValue("@TradeDocumentTypesid", (int)TradeDocumentTypes.PurchaseChallan);
+
+
 
                 var billId = (int)(await billCommand.ExecuteScalarAsync() ?? 0);
 
                 // Insert Bill Items
                 foreach (var item in bill.BillItems)
                 {
-                    var itemQuery = @"
-                        INSERT INTO bill_items (bill_id, item, quantity, unit, price_per_unit, 
+                    if (item.ItemId > 0)
+                    {
+                        var itemQuery = @"
+                        INSERT INTO TradeDocumentItems (TradeDocumentsid, itemid,serialno,batchno,modelno,expirydate,mfgdate,item,categoryid, quantity, unit, price_per_unit, 
                                               discount_percentage, discount_amount, tax, tax_amount, amount)
-                        VALUES (@BillId, @Item, @Quantity, @Unit, @PricePerUnit, 
+                        VALUES (@TradeDocumentsid, @itemid,@serialno,@batchno,@modelno,@expirydate,@mfgdate,@item,@categoryid, @Quantity, @Unit, @PricePerUnit, 
                                @DiscountPercentage, @DiscountAmount, @Tax, @TaxAmount, @Amount)";
 
-                    using var itemCommand = new NpgsqlCommand(itemQuery, connection, transaction);
-                    itemCommand.Parameters.AddWithValue("@BillId", billId);
-                    itemCommand.Parameters.AddWithValue("@Item", item.Item);
-                    itemCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
-                    itemCommand.Parameters.AddWithValue("@Unit", item.Unit);
-                    itemCommand.Parameters.AddWithValue("@PricePerUnit", item.PricePerUnit);
-                    itemCommand.Parameters.AddWithValue("@DiscountPercentage", item.DiscountPercentage);
-                    itemCommand.Parameters.AddWithValue("@DiscountAmount", item.DiscountAmount);
-                    itemCommand.Parameters.AddWithValue("@Tax", item.Tax);
-                    itemCommand.Parameters.AddWithValue("@TaxAmount", item.TaxAmount);
-                    itemCommand.Parameters.AddWithValue("@Amount", item.Amount);
+                        using var itemCommand = new NpgsqlCommand(itemQuery, connection, transaction);
+                        itemCommand.Parameters.AddWithValue("@TradeDocumentsid", billId);
+                        itemCommand.Parameters.AddWithValue("@itemid", item.ItemId);
+                        itemCommand.Parameters.AddWithValue("@serialno", item.serialno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@batchno", item.batchno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@modelno", item.modelno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@expirydate", item.expirydate ?? (object)DBNull.Value);
+                        itemCommand.Parameters.AddWithValue("@mfgdate", item.mfgdate ?? (object)DBNull.Value);
+                        itemCommand.Parameters.AddWithValue("@item", item.Item ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@categoryid", item.categoryid);
+                        itemCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
+                        itemCommand.Parameters.AddWithValue("@Unit", item.Unit ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@PricePerUnit", item.PricePerUnit);
+                        itemCommand.Parameters.AddWithValue("@DiscountPercentage", item.DiscountPercentage);
+                        itemCommand.Parameters.AddWithValue("@DiscountAmount", item.DiscountAmount);
+                        itemCommand.Parameters.AddWithValue("@Tax", item.Tax);
+                        itemCommand.Parameters.AddWithValue("@TaxAmount", item.TaxAmount);
+                        itemCommand.Parameters.AddWithValue("@Amount", item.Amount);
 
-                    await itemCommand.ExecuteNonQueryAsync();
+
+                        await itemCommand.ExecuteNonQueryAsync();
+                    }
                 }
 
                 await transaction.CommitAsync();
@@ -108,7 +123,7 @@ namespace MUNEEMJI.Repositories
                        eway_bill_no, transport_name, delivery_location, vehicle_number, 
                        delivery_date, payment_type, description, image_path, round_off, 
                        total, created_date
-                FROM bills 
+                FROM TradeDocuments 
                 WHERE id = @Id";
 
             using var billCommand = new NpgsqlCommand(billQuery, connection);
@@ -136,7 +151,7 @@ namespace MUNEEMJI.Repositories
                 PaymentType = billReader.GetString("payment_type"),
                 Description = billReader.GetString("description"),
                 ImagePath = billReader.GetString("image_path"),
-                RoundOff = billReader.GetBoolean("round_off"),
+                RoundOffValue = billReader.GetDecimal("round_off"),
                 Total = billReader.GetDecimal("total"),
                 CreatedDate = billReader.GetDateTime("created_date")
             };
@@ -145,10 +160,10 @@ namespace MUNEEMJI.Repositories
 
             // Get Bill Items
             var itemsQuery = @"
-                SELECT id, bill_id, item, quantity, unit, price_per_unit, 
+                SELECT id, tradedocumentsid, item, quantity, unit, price_per_unit, 
                        discount_percentage, discount_amount, tax, tax_amount, amount
-                FROM bill_items 
-                WHERE bill_id = @BillId";
+                FROM TradeDocumentItems 
+                WHERE tradedocumentsid = @BillId";
 
             using var itemsCommand = new NpgsqlCommand(itemsQuery, connection);
             itemsCommand.Parameters.AddWithValue("@BillId", id);
@@ -160,7 +175,7 @@ namespace MUNEEMJI.Repositories
                 bill.BillItems.Add(new PurchaseBillItem
                 {
                     Id = itemsReader.GetInt32("id"),
-                    BillId = itemsReader.GetInt32("bill_id"),
+                    BillId = itemsReader.GetInt32("tradedocumentsid"),
                     Item = itemsReader.GetString("item"),
                     Quantity = itemsReader.GetDecimal("quantity"),
                     Unit = itemsReader.GetString("unit"),

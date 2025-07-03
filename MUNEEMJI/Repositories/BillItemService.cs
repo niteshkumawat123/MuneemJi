@@ -1,4 +1,5 @@
-﻿using MUNEEMJI.Models;
+﻿using Insight.Database;
+using MUNEEMJI.Models;
 using Newtonsoft.Json;
 using Npgsql;
 using System.Data;
@@ -11,6 +12,7 @@ namespace MUNEEMJI.Repositories
         Task<List<string>> GetCategoriesAsync();
         Task<List<string>> GetUnitsAsync();
         Task<List<string>> GetTaxRatesAsync();
+        Task<List<BillItem>> GetItems();
     }
     public class BillItemService : IBillItemService
     {
@@ -197,5 +199,55 @@ namespace MUNEEMJI.Repositories
                 return new List<string>();
             }
         }
+
+        public async Task<List<BillItem>> GetItems()
+        {
+            List<BillItem> items = new List<BillItem>();
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            // ✅ Query to get all bill items
+            var billItemSql = @"
+                               SELECT 
+                                   id AS ""Id"",
+                                   item_type AS ""ItemType"",
+                                   item_name AS ""ItemName"",
+                                   item_hsn AS ""ItemHsn"",
+                                   item_code AS ""ItemCode"",
+                                   category AS ""Category"",
+                                   unit AS ""Unit"",
+                                   item_image_url AS ""ItemImageUrl"",
+                                   sale_price AS ""SalePrice"",
+                                   sale_price_tax_type AS ""SalePriceTaxType"",
+                                   discount_on_sale_price AS ""DiscountOnSalePrice"",
+                                   discount_type AS ""DiscountType"",
+                                   purchase_price AS ""PurchasePrice"",
+                                   purchase_price_tax_type AS ""PurchasePriceTaxType"",
+                                   tax_rate AS ""TaxRate"",
+                                   wholesale_price AS ""WholesalePrice"",
+                                   opening_quantity AS ""OpeningQuantity"",
+                                   at_price AS ""AtPrice"",
+                                   as_of_date AS ""AsOfDate"",
+                                   location AS ""Location"",
+                                   min_stock_to_maintain AS ""MinStockToMaintain"",
+                                   online_store_price AS ""OnlineStorePrice"",
+                                   description AS ""Description"",
+                                   raw_materials AS ""RawMaterials"",
+                                   additional_costs AS ""AdditionalCosts"",
+                                   total_estimated_cost AS ""TotalEstimatedCost"",
+                                   service_name AS ""ServiceName"",
+                                   service_hsn AS ""ServiceHsn"",
+                                   service_code AS ""ServiceCode"",
+                                   created_at AS ""CreatedAt"",
+                                   updated_at AS ""UpdatedAt""
+                               FROM billitem
+                               ORDER BY id;
+";
+
+            // ✅ Fetch bill items
+            items = connection.QuerySql<BillItem>(billItemSql).ToList();
+            return items;
+        }
     }
 }
+

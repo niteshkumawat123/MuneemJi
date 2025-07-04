@@ -1,0 +1,447 @@
+﻿@using MUNEEMJI.Controllers
+@model IEnumerable<PaymentInOutViewModel>
+
+@{
+    ViewBag.Title = "Payment-In";
+    decimal totalAmount = Model?.Sum(x => x.Total) ?? 0;
+    decimal totalBalance = Model?.Sum(x => x.Balance) ?? 0;
+}
+
+<style>
+    .header-container {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #dee2e6;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .header-controls {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .time-filter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .time-filter select,
+        .time-filter input {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .time-filter .btn {
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-excel, .btn-print {
+        background-color: #ffffff;
+        border: 1px solid #dee2e6;
+        padding: 8px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        text-decoration: none;
+        color: #495057;
+        font-size: 14px;
+    }
+
+        .btn-excel:hover, .btn-print:hover {
+            background-color: #f8f9fa;
+            text-decoration: none;
+            color: #495057;
+        }
+
+    .content-container {
+        padding: 20px;
+    }
+
+    .search-add-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .search-box {
+        padding: 10px 15px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        width: 300px;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>');
+        background-repeat: no-repeat;
+        background-position: 10px center;
+        padding-left: 40px;
+    }
+
+    .btn-add-payment {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add-payment:hover {
+            background-color: #0056b3;
+        }
+
+    .table-container {
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+        .data-table th {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: 600;
+            color: #495057;
+            cursor: pointer;
+            position: relative;
+        }
+
+            .data-table th:hover {
+                background-color: #e9ecef;
+            }
+
+            .data-table th::after {
+                content: '↕';
+                position: absolute;
+                right: 8px;
+                color: #6c757d;
+                font-size: 12px;
+            }
+
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f3f4;
+            color: #495057;
+        }
+
+        .data-table tr:hover {
+            background-color: #f8f9fa;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        color: #6c757d;
+    }
+
+        .empty-state img {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            margin: 0 0 10px 0;
+            color: #495057;
+        }
+
+        .empty-state p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+    .footer-summary {
+        background-color: #f8f9fa;
+        padding: 15px 20px;
+        border-top: 1px solid #dee2e6;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .windows-activate {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: rgba(0,0,0,0.1);
+        color: #6c757d;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-size: 12px;
+        text-align: center;
+    }
+
+        .windows-activate div:first-child {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.5);
+    }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+    .modal-content {
+        background-color: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    @@media (max-width: 768px) {
+        .header-container
+
+    {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-add-container {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .data-table {
+        font-size: 12px;
+    }
+
+        .data-table th,
+        .data-table td {
+            padding: 8px 10px;
+        }
+
+    }
+</style>
+
+<div class="header-container">
+    <div class="header-controls">
+        <div class="time-filter">
+            <select id="timeFilter">
+                <option value="thisMonth">This Month</option>
+                <option value="lastMonth">Last Month</option>
+                <option value="thisYear">This Year</option>
+                <option value="custom">Custom</option>
+            </select>
+            <button class="btn">Between</button>
+            <input type="date" id="startDate" value="2025-07-01">
+            <span>To</span>
+            <input type="date" id="endDate" value="2025-07-31">
+        </div>
+        <div class="time-filter">
+            <select id="firmFilter">
+                <option value="all">ALL FIRMS</option>
+            </select>
+        </div>
+        <div class="time-filter">
+            <select id="paymentFilter">
+                <option value="paymentIn">Payment-In</option>
+                <option value="paymentOut">Payment-Out</option>
+            </select>
+        </div>
+    </div>
+    <div class="header-actions">
+        <a href="#" class="btn-excel">
+            📊 Excel Report
+        </a>
+        <a href="#" class="btn-print">
+            🖨️ Print
+        </a>
+    </div>
+</div>
+
+<div class="content-container">
+    <div class="search-add-container">
+        <input type="text" class="search-box" placeholder="Search..." id="searchInput">
+        <button class="btn-add-payment" onclick="openAddPaymentModal()">
+            ➕ Add Payment-In
+        </button>
+    </div>
+
+    <div class="table-container">
+        @if (Model != null && Model.Any())
+        {
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>DATE</th>
+                        <th>REF NO.</th>
+                        <th>PARTY NAME</th>
+                        <th>CATEGORY NAME</th>
+                        <th>TYPE</th>
+                        <th>TOTAL</th>
+                        <th>RECEIVED/PAID</th>
+                        <th>BALANCE</th>
+                        <th>PRINT / SHARE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int counter = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr onclick="openEditPaymentModal(@item.Id)">
+                            <td>@counter</td>
+                            <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                            <td>@item.RefNo</td>
+                            <td>@item.PartyName</td>
+                            <td>@item.CategoryName</td>
+                            <td>@item.Type</td>
+                            <td>₹ @item.Total.ToString("N2")</td>
+                            <td>₹ @item.ReceivedPaid.ToString("N2")</td>
+                            <td>₹ @item.Balance.ToString("N2")</td>
+                            <td>
+                                🖨️&nbsp;&nbsp;&nbsp;🔗&nbsp;&nbsp;&nbsp;✏
+                            </td>
+                        </tr>
+                        counter++;
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div style="font-size: 60px; margin-bottom: 20px;">📄</div>
+                <h3>No data is available for Payment-In.</h3>
+                <p>Please try again after making relevant changes.</p>
+            </div>
+        }
+    </div>
+
+    <div class="footer-summary">
+        <div>Total Amount: ₹ @totalAmount.ToString("N2")</div>
+        <div>Balance: ₹ @totalBalance.ToString("N2")</div>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<script>
+    function openAddPaymentModal() {
+        fetch('/PaymentIn/Create')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('modalContent').innerHTML = html;
+                document.getElementById('paymentModal').classList.add('show');
+            });
+    }
+
+    function openEditPaymentModal(id) {
+        fetch('/PaymentIn/Edit/' + id)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('modalContent').innerHTML = html;
+                document.getElementById('paymentModal').classList.add('show');
+            });
+    }
+
+    function closeModal() {
+        document.getElementById('paymentModal').classList.remove('show');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const rows = document.querySelectorAll('.data-table tbody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+
+    // Handle form submission
+    function handleFormSubmit(form) {
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                closeModal();
+                location.reload();
+            } else {
+                alert('An error occurred. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
+        });
+    }
+</script>

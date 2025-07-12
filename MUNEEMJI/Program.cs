@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using MUNEEMJI.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +20,16 @@ builder.Services.AddSession(options =>
 });
 
 // Add Authentication services
-builder.Services.AddAuthentication("CookieAuth")
-    .AddCookie("CookieAuth", options =>
+// Add Cookie Authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login"; // Redirect to login page
-        options.AccessDeniedPath = "/Account/AccessDenied"; // Redirect to access denied page
+        options.LoginPath = "/Account/Login"; // Change this to your login controller/action
+        options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     });
 
 var app = builder.Build();

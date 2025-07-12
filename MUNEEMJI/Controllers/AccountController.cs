@@ -1,12 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MUNEEMJI.Models;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Net;
 using System.Net.Mail;
+using System.Security.Claims;
 using System.Text;
-
 
 namespace MUNEEMJI.Controllers
 {
@@ -20,9 +21,10 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Login(bool otpSent=false)
+        public IActionResult Login(bool otpSent = false, string email = null)
         {
             ViewBag.otpsent = otpSent;
+            ViewBag.Email = email;
             return View();
         }
 
@@ -64,8 +66,8 @@ namespace MUNEEMJI.Controllers
                     // Send OTP to email
                     await SendEmailAsync(model.Email, "Your OTP Code", $"Your OTP is: {otp}");
 
-                    ViewBag.Email = model.Email;
-                    return RedirectToAction("Login", new { otpSent = true });
+                    // Redirect to login with OTP sent flag and email
+                    return RedirectToAction("Login", new { otpSent = true, email = model.Email });
                 }
                 else
                 {
@@ -90,6 +92,7 @@ namespace MUNEEMJI.Controllers
             if (string.IsNullOrEmpty(storedOtp) || string.IsNullOrEmpty(storedEmail))
             {
                 ViewBag.OtpError = "OTP has expired. Please request a new one.";
+                ViewBag.otpsent = false;
                 return View("Login");
             }
 
@@ -102,6 +105,7 @@ namespace MUNEEMJI.Controllers
                     HttpContext.Session.Remove("Email");
                     HttpContext.Session.Remove("OtpGeneratedAt");
                     ViewBag.OtpError = "OTP has expired. Please request a new one.";
+                    ViewBag.otpsent = false;
                     return View("Login");
                 }
             }
@@ -113,15 +117,12 @@ namespace MUNEEMJI.Controllers
                 {
                     using var connection = new NpgsqlConnection(_connectionString);
                     await connection.OpenAsync();
-
                     var query = @"
-                        SELECT id, business_name, phone, email, created_at, updated_at 
-                        FROM businesses 
-                        WHERE email = @Email";
-
+                SELECT id, business_name, phone, email, created_at, updated_at 
+                FROM businesses 
+                WHERE email = @Email";
                     using var command = new NpgsqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Email", email);
-
                     using var reader = await command.ExecuteReaderAsync();
 
                     if (await reader.ReadAsync())
@@ -136,7 +137,21 @@ namespace MUNEEMJI.Controllers
                             UpdatedAt = reader.GetDateTime("updated_at")
                         };
 
-                        // Store business info in session
+                        // Create authentication cookie
+                        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, business.Id.ToString()),
+                    new Claim(ClaimTypes.Name, business.BusinessName),
+                    new Claim(ClaimTypes.Email, business.Email),
+                    new Claim("Phone", business.Phone)
+                };
+
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+
+                        // Store business info in session (optional, since you have claims now)
                         HttpContext.Session.SetString("BusinessId", business.Id.ToString());
                         HttpContext.Session.SetString("BusinessName", business.BusinessName);
                         HttpContext.Session.SetString("Phone", business.Phone);
@@ -152,6 +167,8 @@ namespace MUNEEMJI.Controllers
                 catch (Exception ex)
                 {
                     ViewBag.OtpError = "An error occurred during login. Please try again.";
+                    ViewBag.Email = email;
+                    ViewBag.otpsent = true;
                     return View("Login");
                 }
             }
@@ -159,13 +176,18 @@ namespace MUNEEMJI.Controllers
             // OTP is invalid
             ViewBag.OtpError = "Invalid OTP. Please try again.";
             ViewBag.Email = email;
-            return RedirectToAction("Login", new { otpSent = true });
+            ViewBag.otpsent = true;
+            return View("Login");
         }
-
         [HttpPost]
         public IActionResult Logout()
         {
+            // Clear session data
             HttpContext.Session.Clear();
+
+            // Sign out from cookie authentication (synchronous)
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
+
             return RedirectToAction("Login");
         }
 
@@ -304,57 +326,53 @@ namespace MUNEEMJI.Controllers
             }
         }
     }
-
-   
-
-namespace MUNEEMJI.Models
-    {
-        public class LoginViewModel
-        {
-            [Required(ErrorMessage = "Email is required")]
-            [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-            public string Email { get; set; }
-
-            public bool AcceptTerms { get; set; }
-        }
-
-        public class RegisterViewModel
-        {
-            [Required(ErrorMessage = "Business name is required")]
-            [StringLength(100, ErrorMessage = "Business name cannot exceed 100 characters")]
-            public string BusinessName { get; set; }
-
-            [Required(ErrorMessage = "Phone number is required")]
-            [Phone(ErrorMessage = "Please enter a valid phone number")]
-            [StringLength(15, ErrorMessage = "Phone number cannot exceed 15 characters")]
-            public string Phone { get; set; }
-
-            [Required(ErrorMessage = "Email is required")]
-            [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-            public string Email { get; set; }
-
-            [Required(ErrorMessage = "You must accept the terms and conditions")]
-            public bool AcceptTerms { get; set; }
-        }
-
-        public class Business
-        {
-            public int Id { get; set; }
-            public string BusinessName { get; set; }
-            public string Phone { get; set; }
-            public string Email { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public DateTime UpdatedAt { get; set; }
-        }
-
-        public class OtpViewModel
-        {
-            [Required(ErrorMessage = "OTP is required")]
-            [StringLength(6, MinimumLength = 6, ErrorMessage = "OTP must be 6 digits")]
-            public string Otp { get; set; }
-
-            [Required(ErrorMessage = "Email is required")]
-            public string Email { get; set; }
-        }
-    }
 }
+
+
+    public class LoginViewModel
+    {
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        public string Email { get; set; }
+
+        public bool AcceptTerms { get; set; }
+    }
+
+    public class RegisterViewModel
+    {
+        [Required(ErrorMessage = "Business name is required")]
+        [StringLength(100, ErrorMessage = "Business name cannot exceed 100 characters")]
+        public string BusinessName { get; set; }
+
+        [Required(ErrorMessage = "Phone number is required")]
+        [Phone(ErrorMessage = "Please enter a valid phone number")]
+        [StringLength(15, ErrorMessage = "Phone number cannot exceed 15 characters")]
+        public string Phone { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "You must accept the terms and conditions")]
+        public bool AcceptTerms { get; set; }
+    }
+
+    public class Business
+    {
+        public int Id { get; set; }
+        public string BusinessName { get; set; }
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+    }
+
+    public class OtpViewModel
+    {
+        [Required(ErrorMessage = "OTP is required")]
+        [StringLength(6, MinimumLength = 6, ErrorMessage = "OTP must be 6 digits")]
+        public string Otp { get; set; }
+
+        [Required(ErrorMessage = "Email is required")]
+        public string Email { get; set; }
+    }

@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Login";
     Layout = null;
+    bool otpSent = Convert.ToBoolean(ViewBag.otpsent);
+    string email = ViewBag.Email?.ToString() ?? "";
 }
 
 <!DOCTYPE html>
@@ -259,7 +261,7 @@
             display: none;
         }
 
-        media (max-width: 480px) {
+        @@media (max-width: 480px) {
             .login-container
 
         {
@@ -282,10 +284,8 @@
         </div>
 
         <!-- Login Form (Default) -->
-        <div id="loginForm">
+        <div id="loginForm" class="@(otpSent ? "hidden" : "")">
             <h1 class="form-title">LOGIN</h1>
-
-            @* <a href="#" class="register-link" onclick="switchToRegister()">Register Here</a> *@
 
             @if (ViewBag.SuccessMessage != null)
             {
@@ -294,7 +294,7 @@
                 </div>
             }
 
-            @if (ViewData.ModelState.ErrorCount > 0)
+            @if (ViewData.ModelState.ErrorCount > 0 && !otpSent)
             {
                 <div class="alert alert-danger">
                     @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
@@ -304,22 +304,13 @@
                 </div>
             }
 
-            <form asp-action="Login" asp-controller="Account" method="post">
+            <form asp-action="SendOtp" asp-controller="Account" method="post">
                 <div class="form-group">
-                    <label asp-for="Phone">Phone Number</label>
-                    <input asp-for="Phone" class="form-control" type="tel" placeholder="Enter your phone number" />
-                    <span asp-validation-for="Phone" class="text-danger"></span>
+                    <label asp-for="Email">Email</label>
+                    <input asp-for="Email" class="form-control" type="email" placeholder="Enter your email" required />
+                    <span asp-validation-for="Email" class="text-danger"></span>
                 </div>
-
-                <div class="checkbox-group">
-                    <input asp-for="AcceptTerms" type="checkbox" id="acceptTermsLogin" />
-                    <label for="acceptTermsLogin">
-                        By clicking on the Login button I accept the <a href="#" target="_blank">terms and conditions</a>
-                    </label>
-                </div>
-                <span asp-validation-for="AcceptTerms" class="text-danger"></span>
-
-                <button type="submit" class="login-btn">LOGIN</button>
+                <button type="submit" class="login-btn">Send OTP</button>
             </form>
 
             <div class="switch-form">
@@ -327,11 +318,36 @@
             </div>
         </div>
 
+        <!-- OTP Form -->
+        <div id="otpForm" class="@(otpSent ? "" : "hidden")">
+            <h1 class="form-title">VERIFY OTP</h1>
+
+            @if (ViewBag.OtpError != null)
+            {
+                <div class="alert alert-danger">
+                    @ViewBag.OtpError
+                </div>
+            }
+
+            <form asp-action="VerifyOtp" asp-controller="Account" method="post">
+                <input type="hidden" name="Email" value="@email" />
+                <div class="form-group">
+                    <label for="Otp">Enter OTP</label>
+                    <input name="Otp" id="Otp" class="form-control" type="text" maxlength="6" placeholder="Enter 6-digit OTP" required />
+                    <span class="text-danger"></span>
+                </div>
+                <button type="submit" class="login-btn">Verify OTP</button>
+                <div class="switch-form">
+                    <a href="#" onclick="switchToLogin()">Back to Login</a>
+                </div>
+            </form>
+        </div>
+
         <!-- Registration Form (Hidden by default) -->
         <div id="registerForm" class="hidden">
             <h1 class="form-title">ADD BUSINESS</h1>
 
-            @if (ViewData.ModelState.ErrorCount > 0)
+            @if (ViewData.ModelState.ErrorCount > 0 && !otpSent)
             {
                 <div class="alert alert-danger">
                     @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
@@ -382,26 +398,32 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
 
     <script>
-        // Show login form by default
-        // If user comes from successful registration, also show login form
-        document.addEventListener('DOMContentLoaded', function() {
-            // Check if there's a URL parameter indicating successful registration
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('registered') === 'true') {
-                // Show login form with success message
-                switchToLogin();
-            }
-        });
-
         function switchToLogin() {
             document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.add('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
         }
 
         function switchToRegister() {
             document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.add('hidden');
             document.getElementById('registerForm').classList.remove('hidden');
         }
+
+        function switchToOtpForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.remove('hidden');
+        }
+
+        // Handle URL parameters for form switching
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            if (urlParams.get('registered') === 'true') {
+                switchToLogin();
+            }
+        });
     </script>
 </body>
 </html>

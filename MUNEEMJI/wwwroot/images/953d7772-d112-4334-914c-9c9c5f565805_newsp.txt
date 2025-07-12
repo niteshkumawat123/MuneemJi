@@ -1,0 +1,159 @@
+-- FUNCTION: public.get_monthly_attendnance_reporttest(character varying, character varying, character varying, integer, integer, timestamp with time zone, timestamp with time zone, character varying, integer, integer, integer)
+
+-- DROP FUNCTION IF EXISTS public.get_monthly_attendnance_reporttest(character varying, character varying, character varying, integer, integer, timestamp with time zone, timestamp with time zone, character varying, integer, integer, integer);
+
+CREATE OR REPLACE FUNCTION public.get_monthly_attendnance_reporttest(
+	searchtextin character varying,
+	sortbyin character varying,
+	sortdirectionin character varying,
+	limitvaluein integer,
+	offsetvaluein integer,
+	firstdayofmonth timestamp with time zone,
+	lastdayofmonth timestamp with time zone,
+	departmentidin character varying,
+	designationidin integer,
+	locationidin integer,
+	p_companyid integer)
+    RETURNS TABLE(employeeid integer, employeecode character varying, employeename text, departmentname character varying, designationname character varying, employeeimagepath character varying, employeeimagename character varying, departmentid integer, locationname character varying, filtercount bigint, attendancejson jsonb) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
+DECLARE
+    employeecount int[];
+    filtercount bigint;
+BEGIN
+    -- Calculate the count of employees matching the criteria
+    SELECT ARRAY_AGG(DISTINCT tl.employeeid) INTO employeecount
+    FROM public.appattendance AS tl
+    LEFT JOIN trans_employee_officialinfo AS te ON te.employeeid = tl.employeeid
+    LEFT JOIN trans_employee_info AS ti ON ti.employeeid = tl.employeeid
+    LEFT JOIN (
+        SELECT * FROM dblink('commoncore', 'SELECT ct.departmentid, ct.departmentname FROM master_department AS ct WHERE ct.isdeleted = false') 
+        AS Data(departmentid INT, departmentname varchar)
+    ) AS departmentdata ON departmentdata.departmentid = te.departmentid
+    LEFT JOIN (
+        SELECT * FROM dblink('commoncore', 'SELECT ct.designationid, ct.designationname FROM master_designation AS ct WHERE ct.isdeleted = false') 
+        AS Data(designationid INT, designationname varchar)
+    ) AS designationdata ON designationdata.designationid = te.designationid
+    LEFT JOIN trans_employee_documentinfo AS td ON td.employeeid = tl.employeeid AND td.documenttypeid = 4
+    LEFT JOIN (
+        SELECT * FROM dblink('dmsdb', 'SELECT ct.documentpathdms, ct.documentname, documentid FROM trans_document_info AS ct WHERE ct.isdeleted = false') 
+        AS Data(documentpathdms varchar, documentname varchar, documentid integer)
+    ) AS documentdata ON documentdata.documentid = td.documentid
+    WHERE Date(tl.createddate) >= Date(firstdayofmonth)
+    AND Date(tl.createddate) <= Date(lastdayofmonth)
+    AND tl.companyid = p_companyid
+    AND (designationidin > 0 AND te.designationid = designationidin OR designationidin = 0)
+    AND (locationidin > 0 AND te.employmentlocationid = locationidin OR locationidin = 0)
+    AND (departmentidin <> '' AND te.departmentid = ANY(string_to_array(departmentidin, ',')::int[]) OR departmentidin = '')
+    AND (
+        ti.firstname ILIKE CONCAT('%', COALESCE(NULLIF(searchtextin, ''), ti.firstname), '%')
+        OR CONCAT(ti.firstname, ' ', ti.middlename) ILIKE CONCAT('%', COALESCE(NULLIF(searchtextin, ''), ti.firstname), '%')
+        OR CONCAT(ti.firstname, ' ', ti.lastname) ILIKE CONCAT('%', COALESCE(NULLIF(searchtextin, ''), ti.firstname), '%')
+        OR CONCAT(ti.firstname, ' ', ti.middlename, ' ', ti.lastname) ILIKE CONCAT('%', COALESCE(NULLIF(searchtextin, ''), ti.firstname), '%')
+    );
+
+    -- Calculate the filter count
+    SELECT COUNT(*) INTO filtercount
+    FROM (
+        SELECT 1 
+        FROM public.appattendance AS tl
+        WHERE tl.employeeid = ANY(employeecount)
+        GROUP BY tl.employeeid
+    ) AS val;
+
+    -- Return the final query result
+    RETURN QUERY
+    SELECT
+        tl.employeeid,
+        te.employeecode,
+        CONCAT(ti.firstname, ' ', ti.middlename, ' ', ti.lastname) AS employee_name,
+        departmentdata.departmentname,
+        designationdata.designationname,
+        documentdata.documentpathdms AS employeeimagepath,
+        documentdata.documentname AS employeeimagename,
+        te.departmentid,
+        cbl.location AS locationname,
+        filtercount,
+        (
+            SELECT jsonb_agg(jsonb_build_object(
+                'Date', tb_sub.createddate,
+                'StatusId', 1001,
+                'InTime', COALESCE(tb_sub.punchin, '00:00:00')::time,
+                'OutTime', COALESCE(tb_sub.punchout, '00:00:00')::time,
+                'TotalHours', 
+                    ROUND(EXTRACT(EPOCH FROM (COALESCE(tb_sub.punchout, '00:00:00')::time - COALESCE(tb_sub.punchin, '00:00:00')::time)), 2),
+                'DelayedTime', 
+                    CASE 
+                        WHEN (EXTRACT(EPOCH FROM (COALESCE(tb_sub.punchout, '00:00:00')::time - COALESCE(tb_sub.punchin, '00:00:00')::time)) - 1800) / 3600.0 < 8.5 
+                        THEN ROUND(8.5 - ((EXTRACT(EPOCH FROM (COALESCE(tb_sub.punchout, '00:00:00')::time - COALESCE(tb_sub.punchin, '00:00:00')::time)) - 1800) / 3600.0), 2)
+                        ELSE 0
+                    END
+            ))
+            FROM (
+                SELECT  tb.createddate, tb.punchin, tb.punchout
+                FROM public.appattendance AS tb
+                LEFT JOIN public.appattendance AS tc ON tb.employeeid = tc.employeeid AND
+				tb.createddate::date = tc.createddate::date
+                WHERE tb.employeeid = tc.employeeid and tb.employeeid=tl.employeeid
+                
+				
+                AND Date(tb.createddate) BETWEEN Date(firstdayofmonth) AND Date(lastdayofmonth)
+-- 				GROUP BY tb.employeeid, tb.punchin, tb.punchout, tb.createddate
+--                 HAVING ((tb.punchin IS NOT NULL AND tb.punchout IS NOT NULL)or tb.punchout is null)
+--                 ORDER BY tb.createddate DESC 
+				ORDER BY 
+                    CASE 
+                        WHEN tb.punchin IS NOT NULL or tb.punchout IS NOT NULL THEN 1 
+                        ELSE 2 
+                    END ASC, tb.createddate DESC
+                LIMIT 1
+            ) AS tb_sub
+        ) AS attendancejson
+    FROM
+        public.appattendance AS tl
+    LEFT JOIN trans_employee_officialinfo AS te ON te.employeeid = tl.employeeid
+    LEFT JOIN trans_employee_info AS ti ON ti.employeeid = tl.employeeid
+    LEFT JOIN (
+        SELECT * FROM dblink('commoncore', 'SELECT ct.departmentid, ct.departmentname FROM master_department AS ct WHERE ct.isdeleted = false') 
+        AS Data(departmentid INT, departmentname varchar)
+    ) AS departmentdata ON departmentdata.departmentid = te.departmentid
+    LEFT JOIN (
+        SELECT * FROM dblink('commoncore', 'SELECT ct.designationid, ct.designationname FROM master_designation AS ct WHERE ct.isdeleted = false') 
+        AS Data(designationid INT, designationname varchar)
+    ) AS designationdata ON designationdata.designationid = te.designationid
+    LEFT JOIN trans_employee_documentinfo AS td ON td.employeeid = tl.employeeid AND td.documenttypeid = 4
+    LEFT JOIN (
+        SELECT * FROM dblink('dmsdb', 'SELECT ct.documentpathdms, ct.documentname, documentid FROM trans_document_info AS ct WHERE ct.isdeleted = false') 
+        AS Data(documentpathdms varchar, documentname varchar, documentid integer)
+    ) AS documentdata ON documentdata.documentid = td.documentid
+    LEFT JOIN (
+        SELECT * FROM dblink('commoncore', 'SELECT cbsl.location, cbsl.sublocationid FROM public.trans_companybranchsublocation AS cbsl WHERE cbsl.isdeleted = false') 
+        AS Data(location character varying, sublocationid integer)
+    ) AS cbl ON cbl.sublocationid = te.employmentlocationid
+    WHERE Date(tl.createddate) >= Date(firstdayofmonth)
+    AND Date(tl.createddate) <= Date(lastdayofmonth)
+    AND tl.companyid = p_companyid
+    AND (designationidin > 0 AND te.designationid = designationidin OR designationidin = 0)
+    AND (locationidin > 0 AND te.employmentlocationid = locationidin OR locationidin = 0)
+    AND (departmentidin <> '' AND te.departmentid = ANY(string_to_array(departmentidin, ',')::int[]) OR departmentidin = '')
+    AND (
+        ti.firstname ILIKE CONCAT('%', COALESCE(NULLIF(searchtextin, ''), ti.firstname), '%')
+        OR CONCAT(ti.firstname, ' ', ti.middlename) ILIKE CONCAT('%', COALESCE(NULLIF(searchtextin, ''), ti.firstname), '%')
+        OR CONCAT(ti.firstname, ' ', ti.lastname) ILIKE CONCAT('%', COALESCE(NULLIF(searchtextin, ''), ti.firstname), '%')
+        OR CONCAT(ti.firstname, ' ', ti.middlename, ' ', ti.lastname) ILIKE CONCAT('%', COALESCE(NULLIF(searchtextin, ''), ti.firstname), '%')
+    )
+    GROUP BY tl.employeeid, te.employeecode, ti.firstname, ti.middlename, ti.lastname,employee_name, te.departmentid, te.designationid,
+             td.documentid, departmentdata.departmentname, designationdata.designationname,
+             documentdata.documentpathdms, documentdata.documentname, cbl.location
+    ORDER BY employee_name asc
+    LIMIT limitvaluein OFFSET offsetvaluein;
+			
+END;
+$BODY$;
+
+ALTER FUNCTION public.get_monthly_attendnance_reporttest(character varying, character varying, character varying, integer, integer, timestamp with time zone, timestamp with time zone, character varying, integer, integer, integer)
+    OWNER TO postgres;

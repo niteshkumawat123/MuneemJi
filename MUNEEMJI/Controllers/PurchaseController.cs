@@ -186,33 +186,33 @@ namespace MUNEEMJI.Controllers
             _repo = new PurchaseRepository(config);
         }
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            ViewBag.Items = SalesRepository.GetItems();   // Replace with DB call if needed
-            ViewBag.Units = SalesRepository.GetUnits();
-            ViewBag.Taxes = SalesRepository.GetTaxes();
+        //[HttpGet]
+        //public IActionResult Index()
+        //{
+        //    ViewBag.Items = SalesBillService.GetItems();   // Replace with DB call if needed
+        //    ViewBag.Units = SalesBillService.GetUnits();
+        //    ViewBag.Taxes = SalesBillService.GetTaxes();
 
-            return View(new Purchase
-            {
-                InvoiceDate = DateTime.Today
-            });
-        }
+        //    return View(new Purchase
+        //    {
+        //        InvoiceDate = DateTime.Today
+        //    });
+        //}
 
-        [HttpPost]
-        public IActionResult Index(Purchase model)
-        {
-            if (ModelState.IsValid)
-            {
-                _repo.InsertPurchase(model);
-                return RedirectToAction("Create");
-            }
+        //[HttpPost]
+        //public IActionResult Index(Purchase model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        _repo.InsertPurchase(model);
+        //        return RedirectToAction("Create");
+        //    }
 
-            ViewBag.Items = SalesRepository.GetItems();   // Replace with DB call if needed
-            ViewBag.Units = SalesRepository.GetUnits();
-            ViewBag.Taxes = SalesRepository.GetTaxes();
-            return View(model);
-        }
+        //    ViewBag.Items = SalesBillService.GetItems();   // Replace with DB call if needed
+        //    ViewBag.Units = SalesBillService.GetUnits();
+        //    ViewBag.Taxes = SalesBillService.GetTaxes();
+        //    return View(model);
+        //}
 
     //    private List<ItemDropdownModel> GetDummyItems() => new()
     //{

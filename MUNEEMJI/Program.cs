@@ -6,6 +6,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IPurchaseBillService, PurchaseBillService>();
 builder.Services.AddScoped<IBillItemService, BillItemService>();
 builder.Services.AddScoped<IGodownService, GodownService>();
+builder.Services.AddScoped<ISalesBillService, SalesBillService>();
 
 // Add Session services
 builder.Services.AddDistributedMemoryCache(); // Required for session

@@ -55,10 +55,10 @@ namespace MUNEEMJI.Controllers
                     td.paidreciveamount AS ""paidReciveamount"",
                     td.partyid AS ""PartyId"",
                     pt.party_name as PartyName
-                FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id;
+                FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id where td.TradeDocumentTypesid=@TradeDocumentTypesid;
             ";
 
-                var PurchaseBill =  connection.QuerySql<PurchaseBill>(query).ToList();
+                var PurchaseBill =  connection.QuerySql<PurchaseBill>(query,new { TradeDocumentTypesid  = (int)TradeDocumentTypes.PurchaseChallan }).ToList();
 
 
 

@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 
 namespace MUNEEMJI.Controllers
 {
     public class LoanController : Controller
     {
+        [Authorize]
         public IActionResult Index()
         {
             var model = new LoanDashboardViewModel

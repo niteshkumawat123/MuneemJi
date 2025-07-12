@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Insight.Database;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
 using Npgsql;
 using System.Transactions;
-using Insight.Database;
 
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class BillItemController : Controller
     {
         private readonly IBillItemService _billItemService;

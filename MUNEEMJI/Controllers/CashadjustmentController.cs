@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Models.BusinessDashboard.Models;
 using System.Transactions;
@@ -6,6 +7,7 @@ using System.Transactions;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class CashadjustmentController : Controller
     {
         private static List<CashAdjustmentModel> _transactions = new List<CashAdjustmentModel>

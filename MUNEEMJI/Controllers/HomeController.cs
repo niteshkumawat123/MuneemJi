@@ -1,10 +1,12 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Models.BusinessDashboard.Models;
+using System.Diagnostics;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

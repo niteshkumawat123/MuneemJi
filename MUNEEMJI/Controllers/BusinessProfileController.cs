@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MUNEEMJI.Models;
 using Npgsql;
@@ -6,6 +7,7 @@ using System;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class BusinessProfileController : Controller
     {
         private readonly IWebHostEnvironment _env;

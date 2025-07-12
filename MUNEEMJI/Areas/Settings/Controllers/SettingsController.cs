@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 
 namespace MUNEEMJI.Areas.Settings.Controllers
 {
     [Area("Settings")]
+    [Authorize]
     public class SettingsController : Controller
     {
         private readonly ITransactionSettingsService _transactionSettingsService;

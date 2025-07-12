@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using Npgsql;
@@ -6,7 +7,7 @@ using System.IO;
 
 namespace MUNEEMJI.Controllers
 {
-
+    [Authorize]
     public class PartyController : Controller
     {
 

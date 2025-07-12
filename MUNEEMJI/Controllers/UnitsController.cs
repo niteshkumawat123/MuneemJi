@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Repositories;
 using static MUNEEMJI.Models.ItemModel;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class UnitsController : Controller
     {
         [HttpPost]

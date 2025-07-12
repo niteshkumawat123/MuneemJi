@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using static MUNEEMJI.Models.ItemModel;
-using System.Globalization;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Repositories;
+using System.Globalization;
+using static MUNEEMJI.Models.ItemModel;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class ItemsController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnv;

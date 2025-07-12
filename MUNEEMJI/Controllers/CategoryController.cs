@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Repositories;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class CategoryController : Controller
     {
         [HttpPost]

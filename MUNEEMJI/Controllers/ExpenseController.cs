@@ -1,4 +1,5 @@
 ﻿using Insight.Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using MUNEEMJI.Models;
@@ -9,6 +10,7 @@ using System.Data;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class ExpenseController : Controller
     {
         private readonly string _connectionString;

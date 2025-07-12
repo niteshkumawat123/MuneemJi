@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MUNEEMJI.Models.BankAccount;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class BankController: Controller
     {
         private readonly string _connStr = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";

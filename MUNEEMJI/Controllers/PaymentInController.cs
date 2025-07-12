@@ -1,13 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
+﻿using Dapper;
 using Insight.Database;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using MUNEEMJI.Models;
-using Dapper;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class PaymentInController : Controller
     {
         private readonly string _connectionString;

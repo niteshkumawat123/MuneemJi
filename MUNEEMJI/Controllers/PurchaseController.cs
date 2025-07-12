@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
 {
+    [Authorize]
     public class PurchaseController:Controller
     {
         #region Codecommented

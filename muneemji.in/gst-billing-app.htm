@@ -150,6 +150,26 @@
     <style id='global-styles-inline-css' type='text/css'>
         /* 10Web Booster optimized this CSS file */
 
+        #chatbot, .chatbot, .chatbot-container {
+  display: none !important;
+}
+* Hide common floating chat widgets */
+iframe[src*="chat"], 
+iframe[src*="bot"], 
+iframe[src*="tawk"], 
+iframe[src*="intercom"], 
+
+iframe[src*="freshchat"], 
+iframe[src*="crisp"], 
+iframe[src*="zendesk"], 
+div[style*="z-index"][style*="fixed"][style*="bottom"], 
+div[style*="position: fixed"][style*="bottom"][style*="right"] {
+  display: none !important;
+}
+.tawk {
+    display:none !important;
+}
+
         body {
             --wp--preset--color--black: #000000;
             --wp--preset--color--cyan-bluish-gray: #abb8c3;
@@ -12983,10 +13003,7 @@ self.postMessage(data)}
         
         </style>
         <section id="mobile-download-strip">
-            // <a href="https://app.adjust.com/16wo9grj?campaign=InstallStripeAtMobileView">
-            //     <div id="mobile-strip">
-            //     </div>
-            // </a>
+           
         </section>
 
         <link rel="stylesheet preload" href="css/scroll-popup-desktop-v2-3.css?v=1.0" fetchpriority="low" as="style">

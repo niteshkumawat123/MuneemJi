@@ -134,6 +134,7 @@
     <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
         <div class="form-container">
             <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
+
             <!-- Search Section -->
             <div class="search-section">
                 <div class="row">
@@ -152,6 +153,12 @@
 
                                 @foreach (var party in ViewBag.PartyList)
                                 {
+                                    @* <option value="@party.id" data-phone="@party.phonenumber" data-balance="@party.balance" class="party-option">
+                                        <span class="party-name">@party.partyname</span>
+                                        <span class="party-phone">@party.phonenumber</span>
+                                        <span class="party-balance">@party.balance</span>
+                                    </option> *@
+
                                     @if (Model.Bill.PartyId == party.id)
                                     {
                                         <option value="@party.id"
@@ -178,8 +185,7 @@
                                 }
                             }
                         </select>
-                    </div> 
-                    <div class="col-md-2">
+                    </div>                    <div class="col-md-2">
                         <label>Phone No.</label>
                         <input asp-for="Bill.PhoneNo" class="form-control form-control-sm" placeholder="Phone No." />
                     </div>

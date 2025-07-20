@@ -1,0 +1,646 @@
+﻿@model ExpenseViewModel
+
+<style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    }
+
+    /* Override layout styles for this page */
+    .main-content {
+    margin-left: 280px !important;
+    padding-top: 65px !important;
+    background: #f5f5f5 !important;
+    min-height: 100vh;
+    }
+
+    .expense-container {
+    display: flex;
+    height: calc(100vh - 65px); /* Subtract header height */
+    max-width: none;
+    margin: 0;
+    background: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    .expense-sidebar {
+    width: 300px;
+    background: #fff;
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
+    overflow-y: auto;
+    }
+
+    .expense-main-content {
+    flex: 1;
+    padding: 20px;
+    background: #f9f9f9;
+    overflow-y: auto;
+    }
+
+    .add-expense-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    width: 100%;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    }
+
+    .add-expense-btn:hover {
+    background: #c82333;
+    }
+
+    .add-expense-btn::before {
+    content: '+';
+    font-size: 16px;
+    font-weight: bold;
+    }
+
+    .category-list {
+    list-style: none;
+    }
+
+    .category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    color: #666;
+    }
+
+    .category-item:hover {
+    background: #f8f9fa;
+    margin: 0 -10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    }
+
+    .category-item.active {
+    background: #e3f2fd;
+    color: #1976d2;
+    font-weight: 500;
+    margin: 0 -10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    }
+
+    .category-count {
+    background: #e0e0e0;
+    color: #666;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    }
+
+    .active .category-count {
+    background: #1976d2;
+    color: white;
+    }
+
+    .expense-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    }
+
+    .category-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    }
+
+    .expense-type {
+    color: #666;
+    font-size: 14px;
+    }
+
+    .totals {
+    text-align: right;
+    font-size: 14px;
+    }
+
+    .total-amount {
+    color: #dc3545;
+    font-weight: 600;
+    }
+
+    .balance {
+    color: #666;
+    margin-top: 5px;
+    }
+
+    .search-box {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    }
+
+    .expense-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .expense-table th {
+    background: #f8f9fa;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #666;
+    font-size: 12px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e0e0e0;
+    }
+
+    .expense-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+    }
+
+    .expense-table tr:hover {
+    background: #f8f9fa;
+    }
+
+    .expense-table tr.highlighted {
+    background: #e3f2fd;
+    }
+
+    .menu-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #666;
+    font-size: 16px;
+    }
+
+    .menu-btn:hover {
+    color: #333;
+    }
+
+    .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 0;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    }
+
+    .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    }
+
+    .close {
+    color: #666;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    }
+
+    .close:hover {
+    color: #333;
+    }
+
+    .modal-body {
+    padding: 20px;
+    }
+
+    .form-group {
+    margin-bottom: 20px;
+    }
+
+    .form-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+    }
+
+    .form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+    outline: none;
+    border-color: #2196F3;
+    }
+
+    .form-row {
+    display: flex;
+    gap: 15px;
+    }
+
+    .form-col {
+    flex: 1;
+    }
+
+    .modal-footer {
+    padding: 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    }
+
+    .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    }
+
+    .btn-secondary {
+    background: #6c757d;
+    color: white;
+    }
+
+    .btn-secondary:hover {
+    background: #5a6268;
+    }
+
+    .btn-primary {
+    background: #007bff;
+    color: white;
+    }
+
+    .btn-primary:hover {
+    background: #0056b3;
+    }
+
+    .btn-danger {
+    background: #dc3545;
+    color: white;
+    }
+
+    .btn-danger:hover {
+    background: #c82333;
+    }
+
+    .pricing-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    }
+
+    .pricing-label {
+    color: #2196F3;
+    font-weight: 500;
+    margin-bottom: 10px;
+    font-size: 14px;
+    }
+
+    .search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #666;
+    }
+
+    .hsn-group {
+    position: relative;
+    }
+
+    .search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #2196F3;
+    cursor: pointer;
+    padding: 5px;
+    }
+
+    .dropdown-arrow::after {
+    content: '▼';
+    font-size: 10px;
+    color: #666;
+    margin-left: 5px;
+    }
+
+    .expense-date {
+    color: #666;
+    font-size: 13px;
+    }
+
+    .amount-cell {
+    text-align: right;
+    font-weight: 500;
+    }
+
+    .balance-cell {
+    text-align: right;
+    font-weight: 500;
+    }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+    .expense-container
+
+    {
+    flex-direction: column;
+    height: auto;
+    }
+
+    .expense-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+    }
+
+    .expense-main-content {
+    padding: 15px;
+    }
+
+    .expense-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    }
+
+    .totals {
+    text-align: left;
+    }
+
+    .expense-table {
+    font-size: 12px;
+    }
+
+    .expense-table th,
+    .expense-table td {
+    padding: 8px;
+    }
+
+    }
+</style>
+
+<div class="expense-container">
+    <div class="expense-sidebar">
+        <button class="add-expense-btn" onclick="location.href='/Web/Expense/create'">
+            Add Expense
+        </button>
+
+        <div style="margin-bottom: 10px;">
+            <span style="font-weight: 600; color: #666; font-size: 12px; text-transform: uppercase;">CATEGORY</span>
+            <span style="float: right; font-weight: 600; color: #666; font-size: 12px; text-transform: uppercase;">AMOUNT</span>
+        </div>
+
+        <ul class="category-list">
+            @foreach (var item in Model.expenseCategories)
+            {
+                <li class="category-item @(Model.SelectedCategoryId == item.id ? "active" : "")" onclick="selectCategory(@item.id)">
+                    <span >@item.Category</span>
+                    <span class="category-count">@(Model.CategoryTotals.FirstOrDefault(x => x.CategoryId == item.id)?.count ?? 0)</span>
+
+                </li>
+                @* <li class="category-item @(Model.SelectedCategory == "Rent" ? "active" : "")" onclick="selectCategory('Rent')">
+                    <span>Rent</span>
+                    <span class="category-count">@(Model.CategoryTotals.ContainsKey("Rent") ? Model.CategoryTotals["Rent"] : 0)</span>
+                </li>
+                <li class="category-item @(Model.SelectedCategory == "Salary" ? "active" : "")" onclick="selectCategory('Salary')">
+                    <span>Salary</span>
+                    <span class="category-count">@(Model.CategoryTotals.ContainsKey("Salary") ? Model.CategoryTotals["Salary"] : 0)</span>
+                </li>
+                <li class="category-item @(Model.SelectedCategory == "Tea" ? "active" : "")" onclick="selectCategory('Tea')">
+                    <span>Tea</span>
+                    <span class="category-count">@(Model.CategoryTotals.ContainsKey("Tea") ? Model.CategoryTotals["Tea"] : 0)</span>
+                </li>
+                <li class="category-item @(Model.SelectedCategory == "Transport" ? "active" : "")" onclick="selectCategory('Transport')">
+                    <span>Transport</span>
+                <span class="category-count">@(Model.CategoryTotals.ContainsKey("Transport") ? Model.CategoryTotals["Transport"] : 0)</span> *@
+            @* </li> *@
+            }
+        </ul>
+    </div>
+
+    <div class="expense-main-content">
+        <div class="expense-header">
+            <div>
+                <h2 class="category-title">@((Model.expenseCategories.FirstOrDefault(x => x.id == Model.SelectedCategoryId)?.Category ?? "Unknown").ToUpper())</h2>
+                <p class="expense-type">Direct Expense</p>
+            </div>
+            <div class="totals">
+                <div class="total-amount">Total: ₹ @Model.TotalAmount.ToString("0.00")</div>
+                <div class="balance">Balance: ₹ @Model.TotalBalance.ToString("0.00")</div>
+            </div>
+        </div>
+
+        <input type="text" class="search-box" placeholder="Search..." id="searchInput">
+
+        <table class="expense-table">
+            <thead>
+                <tr>
+                    <th>DATE</th>
+                    <th>EXP NO.</th>
+                    <th>PARTY</th>
+                    <th>PAYMENT TYPE</th>
+                    <th>AMOUNT</th>
+                    <th>BALANCE</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var expense in Model.ExpensesList)
+                {
+                    <tr>
+                        <td class="expense-date">@expense.ExpenseDate.ToString("dd/MM/yyyy")</td>
+                        <td>@expense.ExpenseNo</td>
+                        <td>@expense.Party</td>
+                        <td>@expense.PaymentType</td>
+                        <td class="amount-cell">@expense.Amount</td>    
+                        <td class="balance-cell">@expense.Balance</td>
+                        <td>
+                            <button class="menu-btn" onclick="openEditModal(@expense.Id)">⋮</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add Expense Modal -->
+<div id="addExpenseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Expense Item</h3>
+            <button class="close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label class="form-label" style="color: #2196F3;">Item Name *</label>
+                    <input type="text" class="form-control" id="itemName" name="itemName" required>
+                </div>
+
+                <div class="form-group hsn-group">
+                    <label class="form-label" style="color: #666;">Item HSN/ SAC</label>
+                    <div style="position: relative;">
+                        <input type="text" class="form-control" id="itemHsnSac" name="itemHsnSac" value="84304120">
+                        <button type="button" class="search-btn">🔍</button>
+                    </div>
+                </div>
+
+                <div class="pricing-section">
+                    <div class="pricing-label">Pricing</div>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <label class="form-label">Price</label>
+                            <input type="number" class="form-control" id="price" name="price" step="0.01" required>
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Tax Rate</label>
+                            <select class="form-control" id="taxRate" name="taxRate">
+                                <option value="IGST@0.25%">IGST@0.25%</option>
+                                <option value="IGST@5%">IGST@5%</option>
+                                <option value="IGST@12%">IGST@12%</option>
+                                <option value="IGST@18%">IGST@18%</option>
+                                <option value="IGST@28%">IGST@28%</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="margin-top: 10px;">
+                        <div class="form-col">
+                            <select class="form-control" id="taxType" name="taxType">
+                                <option value="Tax Excluded">Tax Excluded</option>
+                                <option value="Tax Included">Tax Included</option>
+                            </select>
+                        </div>
+                        <div class="form-col">
+                            <input type="hidden" id="category" name="category" value="@Model.SelectedCategoryId">
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-danger">Delete</button>
+            <button type="button" class="btn btn-primary" onclick="saveExpense()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAddExpenseModal() {
+        document.getElementById('addExpenseModal').style.display = 'block';
+        document.getElementById('expenseForm').reset();
+        document.getElementById('category').value = '@Model.SelectedCategoryId';
+    }
+
+    function closeModal() {
+        document.getElementById('addExpenseModal').style.display = 'none';
+    }
+
+    function openEditModal(id) {
+        // For now, just open the add modal - you can extend this to load existing data
+        openAddExpenseModal();
+    }
+    debugger;
+    function selectCategory(category) {
+        window.location.href = '/Web/Expense/Index?category=' + category;
+    }
+
+    function saveExpense() {
+        const formData = new FormData(document.getElementById('expenseForm'));
+        const data = Object.fromEntries(formData);
+
+        fetch('/Web/Expense/AddExpense', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Expense added successfully!');
+                closeModal();
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving the expense.');
+        });
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        const modal = document.getElementById('addExpenseModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    }
+
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('.expense-table tbody tr');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+</script>

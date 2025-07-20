@@ -1,4 +1,4 @@
-﻿@model PurchaseBillViewModel
+﻿@model ExpenseViewModel
 
 @{
     ViewData["Title"] = "Create Bill";
@@ -133,73 +133,53 @@
 <div class="container-fluid">
     <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
         <div class="form-container">
-            <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
+
             <!-- Search Section -->
             <div class="search-section">
                 <div class="row">
                     <div class="col-md-2">
                         <label>Search by Name/Phone</label>
-                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="Bill.PartyId">
+                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="Expenses.CategoryId">
                             <option value="">Select</option>
-                            @if (ViewBag.PartyList != null)
+                            @if (Model.expenseCategories!= null)
                             {
                                 <!-- Header Option (disabled and styled) -->
                                 <option disabled class="dropdown-header">
-                                    <span class="header-item">Party Name</span>
+                                @*     <span class="header-item">Party Name</span>
                                     <span class="header-item">Mobile Number</span>
-                                    <span class="header-item">Balance</span>
+                                    <span class="header-item">Balance</span> *@
                                 </option>
 
-                                @foreach (var party in ViewBag.PartyList)
+                                @foreach (var party in Model.expenseCategories)
                                 {
-                                    @if (Model.Bill.PartyId == party.id)
-                                    {
-                                        <option value="@party.id"
-                                                data-phone="@party.phonenumber"
-                                                data-balance="@party.balance"
-                                                class="party-option"
-                                                selected="selected">
-                                            <span class="party-name">@party.partyname</span>
-                                            <span class="party-phone">@party.phonenumber</span>
-                                            <span class="party-balance">@party.balance</span>
-                                        </option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@party.id"
-                                                data-phone="@party.phonenumber"
-                                                data-balance="@party.balance"
-                                                class="party-option">
-                                            <span class="party-name">@party.partyname</span>
-                                            <span class="party-phone">@party.phonenumber</span>
-                                            <span class="party-balance">@party.balance</span>
-                                        </option>
-                                    }
+                                    <option value="@party.id" class="party-option">
+                                        <span class="party-name">@party.Category</span>
+                                     
+                                    </option>
                                 }
                             }
                         </select>
-                    </div> 
-                    <div class="col-md-2">
-                        <label>Phone No.</label>
-                        <input asp-for="Bill.PhoneNo" class="form-control form-control-sm" placeholder="Phone No." />
+                    </div>                    <div class="col-md-2">
+                        <label>Expense No.</label>
+                        <input asp-for="Expenses.ExpenseNo" class="form-control form-control-sm" placeholder="Expense No." />
                     </div>
                     <div class="col-md-2">
-                        <label>P.O No.</label>
-                        <input asp-for="Bill.PONo" class="form-control form-control-sm" placeholder="P.O No." />
+                        <label>Date.</label>
+                        <input asp-for="Expenses.ExpenseDate" type="date" class="form-control form-control-sm" placeholder="Date." />
                     </div>
-                    <div class="col-md-2">
-                        <label>P.O Date</label>
+                   @*  <div class="col-md-2">
+                        <label>Date</label>
                         <input asp-for="Bill.PODate" type="date" class="form-control form-control-sm" />
                     </div>
                     <div class="col-md-2">
                         <label>E-Way Bill No.</label>
                         <input asp-for="Bill.EWayBillNo" class="form-control form-control-sm" placeholder="E-Way Bill No." />
-                    </div>
+                    </div> *@
                 </div>
             </div>
 
             <!-- Bill Info Section -->
-            <div class="bill-info-section">
+        @*     <div class="bill-info-section">
                 <div class="row">
                     <div class="col-md-3">
                         <label>Bill Number</label>
@@ -219,7 +199,7 @@
                         </select>
                     </div>
                 </div>
-            </div>
+            </div> *@
 
             <!-- Items Section -->
             <div class="items-section">
@@ -227,47 +207,51 @@
                     <thead>
                         <tr>
                             <th style="width: 5%">#</th>
-                            <th style="width: 25%">
+                            <th style="width: 45%">
                                 ITEM<br />
                                
                             </th>
-                            <th style="width: 8%">QTY</th>
-                            <th style="width: 10%">UNIT</th>
-                            <th style="width: 12%">PRICE/UNIT<br />Without Tax</th>
-                            <th style="width: 8%">DISCOUNT<br />%</th>
-                            <th style="width: 10%">AMOUNT</th>
-                            <th style="width: 8%">TAX</th>
+                            <th style="width: 18%">QTY</th>
+                            <th style="width: 20%">PRICE/UNIT</th>
+@*                             <th style="width: 12%">PRICE/UNIT<br />Without Tax</th>
+ *@@*                             <th style="width: 8%">DISCOUNT<br />%</th>
+ *@                            <th style="width: 10%">AMOUNT</th>
+                               <th style="width: 2%">⊕</th>
+                          @*   <th style="width: 8%">TAX</th>
                             <th style="width: 10%">AMOUNT</th>
                             <th style="width: 4%">AMOUNT</th>
-                            <th style="width: 2%">⊕</th>
+                            <th style="width: 2%">⊕</th> *@
                         </tr>
                     </thead>
                     <tbody id="itemsTableBody">
-                        @for (int i = 0; i < Model.Bill.BillItems.Count; i++)
+                        @for (int i = 0; i < Model.ItemTransection.Count; i++)
                         {
                             <tr class="item-row" data-index="@i">
                                 <td>@(i + 1)</td>
                                 <td>
-                                    @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
-                                             new SelectList(Model.DropDownItem, "Id", "ItemName"),
+                                    @Html.DropDownListFor(model => model.ItemTransection[i].ItemId,
+                                             new SelectList(Model.ExpenseDropDownItem, "Id", "Name"),
                                              "-- Select Item --",
                                              new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
                                 </td>
                                 <td>
-                                    <input asp-for="Bill.BillItems[i].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(@i)" />
+                                     <input asp-for="@Model.ItemTransection[i].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(@i)" />
+
+
                                 </td>
-                                <td>
+                             @*    <td>
                                     <select asp-for="Bill.BillItems[i].Unit" class="form-control-sm">
                                         @foreach (var unit in Model.UnitOptions)
                                         {
                                             <option value="@unit">@unit</option>
                                         }
                                     </select>
-                                </td>
+                                </td> *@
                                 <td>
-                                    <input asp-for="Bill.BillItems[i].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(@i)" />
+                                     <input asp-for="@Model.ItemTransection[i].Price" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(@i)" />
+
                                 </td>
-                                <td>
+                                @* <td>
                                     <input asp-for="Bill.BillItems[i].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(@i)" />
                                 </td>
                                 <td>
@@ -283,9 +267,9 @@
                                 </td>
                                 <td>
                                     <input asp-for="Bill.BillItems[i].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly />
-                                </td>
+                                </td> *@
                                 <td>
-                                    <input asp-for="Bill.BillItems[i].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly />
+                                    <input asp-for="@Model.ItemTransection[i].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly />
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
@@ -305,7 +289,7 @@
             </div>
 
             <!-- Transport Section -->
-            <div class="transport-section">
+  @*           <div class="transport-section">
                 <div class="row">
                     <div class="col-md-3">
                         <label>Transport Name</label>
@@ -324,14 +308,14 @@
                         <input asp-for="Bill.DeliveryDate" type="date" class="form-control form-control-sm" />
                     </div>
                 </div>
-            </div>
+            </div> *@
 
             <!-- Payment Section -->
             <div class="payment-section">
                 <div class="row">
                     <div class="col-md-3">
                         <label>Payment Type</label>
-                        <select asp-for="Bill.PaymentType" class="form-control form-control-sm">
+                        <select asp-for="Expenses.PaymentType" class="form-control form-control-sm">
                             @foreach (var payment in Model.PaymentTypes)
                             {
                                 <option value="@payment">@payment</option>
@@ -341,7 +325,7 @@
                     </div>
                     <div class="col-md-3">
                         <label>ADD DESCRIPTION</label>
-                        <textarea asp-for="Bill.Description" class="form-control form-control-sm" rows="2" placeholder="Add description"></textarea>
+                        <textarea asp-for="Expenses.Description" class="form-control form-control-sm" rows="2" placeholder="Add description"></textarea>
                     </div>
                     <div class="col-md-3">
                         <label>ADD IMAGE</label>
@@ -349,10 +333,21 @@
                     </div>
                     <div class="col-md-3">
                         <div class="checkbox-container">
-                            <input asp-for="Bill.RoundOff" type="checkbox" checked />
-                            <label asp-for="Bill.RoundOff">Round Off</label>
+                            <input asp-for="Expenses.Isroundoff" type="checkbox" checked />
+                            <label asp-for="Expenses.roundoffvalue">Round Off</label>
                             <span id="roundOffAmount">0</span>
-                            <span style="margin-left: 20px;">Total: <strong id="finalTotal">0</strong></span>
+@*                             <span style="margin-left: 20px;">Total: <strong id="finalTotal">0</strong></span>  
+ *@                           
+
+                            <span style="margin-left: 20px;">
+                                Total:
+
+                                <input type="text" id="finalTotal" name="Expenses.Amount"
+                                       class="form-control form-control-sm d-inline-block"
+                                       style="width: 100px;" placeholder="0.00" value="0.00" />
+                            </span>
+
+
                         </div>
                     </div>
                 </div>
@@ -370,13 +365,13 @@
 
 <script>
 
-     var itemOptions = @Html.Raw(Json.Serialize(Model.DropDownItem));
-     let itemIndex = @Model.Bill.BillItems.Count;
+     var itemOptions = @Html.Raw(Json.Serialize(Model.ExpenseDropDownItem));
+     let itemIndex = @Model.ItemTransection.Count;
 
-     let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
+     let itemDropdown = `<select name="ItemTransection[${itemIndex}].ItemId" class="form-control-sm">`;
     itemDropdown += `<option value="">-- Select Item --</option>`;
     itemOptions.forEach(item => {
-        itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
+        itemDropdown += `<option value="${item.id}">${item.name}</option>`;
     });
     itemDropdown += `</select>`;
 
@@ -398,17 +393,17 @@
             <td>${itemIndex + 1}</td>
             @* <td><input name="Bill.BillItems[${itemIndex}].Item" class="form-control-sm" /></td> *@
             <td>${itemDropdown}</td>
-            <td><input name="Bill.BillItems[${itemIndex}].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(${itemIndex})" /></td>
-            <td>
+                <td><input name="ItemTransection[${itemIndex}].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(${itemIndex})" /></td>
+           @*  <td>
                 <select name="Bill.BillItems[${itemIndex}].Unit" class="form-control-sm">
-    @foreach (var unit in Model.UnitOptions)
-    {
-                            <option value="@unit">@unit</option>
-    }
+                     @foreach (var unit in Model.UnitOptions)
+                     {
+                                             <option value="@unit">@unit</option>
+                     }
                 </select>
-            </td>
-            <td><input name="Bill.BillItems[${itemIndex}].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(${itemIndex})" /></td>
-            <td><input name="Bill.BillItems[${itemIndex}].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(${itemIndex})" /></td>
+            </td> *@
+                    <td><input name="ItemTransection[${itemIndex}].Price" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(${itemIndex})" /></td>
+         @*    <td><input name="Bill.BillItems[${itemIndex}].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(${itemIndex})" /></td>
             <td><input name="Bill.BillItems[${itemIndex}].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly /></td>
             <td>
                 <select name="Bill.BillItems[${itemIndex}].Tax" class="form-control-sm tax-select" onchange="calculateItemAmount(${itemIndex})">
@@ -417,9 +412,9 @@
                             <option value="@tax">@tax</option>
     }
                 </select>
-            </td>
-            <td><input name="Bill.BillItems[${itemIndex}].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly /></td>
-            <td><input name="Bill.BillItems[${itemIndex}].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly /></td>
+            </td> *@
+@*             <td><input name="Bill.BillItems[${itemIndex}].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly /></td>
+ *@            <td><input name="ItemTransection[${itemIndex}].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly /></td>
             <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${itemIndex})">×</button></td>
         `;
 
@@ -436,28 +431,34 @@
     }
 
     function calculateItemAmount(index) {
+        debugger;
         const row = document.querySelector(`tr[data-index="${index}"]`);
         if (!row) return;
 
         const quantity = parseFloat(row.querySelector('.qty-input').value) || 0;
         const pricePerUnit = parseFloat(row.querySelector('.price-input').value) || 0;
-        const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
-        const taxSelect = row.querySelector('.tax-select').value;
 
+@*          const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
+ *@  
+
+@*         const taxSelect = row.querySelector('.tax-select').value;
+ *@ 
         const subtotal = quantity * pricePerUnit;
-        const discountAmount = subtotal * (discountPercentage / 100);
-        const afterDiscount = subtotal - discountAmount;
 
-        let taxRate = 0;
+       @*  const discountAmount = subtotal * (discountPercentage / 100);
+        const afterDiscount = subtotal - discountAmount; *@
+
+       @*  let taxRate = 0;
         if (taxSelect && taxSelect !== 'Select') {
             taxRate = parseFloat(taxSelect.replace('%', '')) || 0;
-        }
+        } *@
 
-        const taxAmount = afterDiscount * (taxRate / 100);
-        const finalAmount = afterDiscount + taxAmount;
+  @*       const taxAmount = afterDiscount * (taxRate / 100); *@
+            const finalAmount = subtotal;
 
-        row.querySelector('.discount-amount').value = discountAmount.toFixed(2);
-        row.querySelector('.tax-amount').value = taxAmount.toFixed(2);
+       @*  row.querySelector('.discount-amount').value = discountAmount.toFixed(2);
+        row.querySelector('.tax-amount').value = taxAmount.toFixed(2); *@
+
         row.querySelector('.item-amount').value = finalAmount.toFixed(2);
 
         updateGrandTotal();
@@ -468,15 +469,17 @@
         document.querySelectorAll('.item-amount').forEach(input => {
             total += parseFloat(input.value) || 0;
         });
-
+        
+        debugger;
         document.getElementById('grandTotal').textContent = total.toFixed(2);
 
-        const roundOff = document.querySelector('input[name="Bill.RoundOff"]').checked;
+                const roundOff = document.querySelector('input[name="Expenses.Isroundoff"]').checked;
         let finalTotal = roundOff ? Math.round(total) : total;
         let roundOffAmount = finalTotal - total;
-
+        
         document.getElementById('roundOffAmount').textContent = roundOffAmount.toFixed(2);
         document.getElementById('finalTotal').textContent = finalTotal.toFixed(2);
+            document.getElementById('finalTotal').value = finalTotal.toFixed(2);
     }
 
     // Initialize calculations on page load
@@ -487,5 +490,5 @@
     });
 
     // Handle round off checkbox change
-    document.querySelector('input[name="Bill.RoundOff"]').addEventListener('change', updateGrandTotal);
+        document.querySelector('input[name="Expenses.Isroundoff"]').addEventListener('change', updateGrandTotal);
 </script>

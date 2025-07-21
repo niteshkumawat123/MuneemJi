@@ -1,0 +1,361 @@
+﻿@model OtherIncomeModel
+
+@{
+    ViewData["Title"] = "Create Bill";
+}
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+}
+
+<style>
+    .form-container {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+    }
+
+    .search-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .bill-info-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .items-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .transport-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .payment-section {
+        background: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
+
+    .items-table {
+        width: 100%;
+        margin-top: 15px;
+    }
+
+        .items-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            font-size: 12px;
+        }
+
+        .items-table td {
+            padding: 5px;
+            border: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        .items-table input, .items-table select {
+            width: 100%;
+            border: none;
+            padding: 5px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+    .total-row {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    .btn-add-row {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        margin-top: 10px;
+    }
+
+    .form-control-sm {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    .checkbox-container {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .action-buttons {
+        text-align: right;
+        margin-top: 20px;
+    }
+
+    .btn-share {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
+
+    .btn-save {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 4px;
+    }
+</style>
+
+<div class="container-fluid">
+    <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
+        <div class="form-container">
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Category</label>
+                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="OtherIncomeView.CategoryId">
+                            <option value="">Select</option>
+                            @if (Model.Categories != null)
+                            {
+                                <!-- Header Option (disabled and styled) -->
+                                <option disabled class="dropdown-header">
+                                    <span class="header-item">Category Name</span>
+                                </option>
+
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <option value="@category.Id" data-name="@category.Name" class="category-option">
+                                        @category.Name
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label>Date</label>
+                        <input asp-for="OtherIncomeView.EntryDate" type="date" class="form-control form-control-sm" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Section -->
+            <div class="items-section">
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 45%">ITEM NAME</th>
+                            <th style="width: 15%">QTY</th>
+                            <th style="width: 15%">PRICE/UNIT<br />Without Tax</th>
+                            <th style="width: 15%">AMOUNT</th>
+                            <th style="width: 5%">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemsTableBody">
+                        @if (Model.OtherIncomeView?.Items != null)
+                        {
+                            @for (int i = 0; i < Model.OtherIncomeView.Items.Count; i++)
+                            {
+                                <tr class="item-row" data-index="@i">
+                                    <td>@(i + 1)</td>
+                                    <td>
+                                        <input asp-for="OtherIncomeView.Items[i].ItemName" type="text" class="form-control-sm item-name-input" />
+                                    </td>
+                                    <td>
+                                        <input asp-for="OtherIncomeView.Items[i].Qty" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(@i)" />
+                                    </td>
+                                    <td>
+                                        <input asp-for="OtherIncomeView.Items[i].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(@i)" />
+                                    </td>
+                                    <td>
+                                        <input asp-for="OtherIncomeView.Items[i].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly />
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="total-row">
+                            <td colspan="5" style="text-align: right; font-weight: bold;">TOTAL</td>
+                            <td><span id="grandTotal">0</span></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <button type="button" class="btn-add-row" onclick="addNewRow()">ADD ROW</button>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Payment Type</label>
+                        <select asp-for="OtherIncomeView.PaymentType" class="form-control form-control-sm">
+                            <option value="Cash">Cash</option>
+                            <option value="Check">Check</option>
+                        </select>
+                        <a href="#" style="color: #007bff; font-size: 12px;">+ Add Payment type</a>
+                    </div>
+                    <div class="col-md-3">
+                        <label>ADD DESCRIPTION</label>
+                        <textarea asp-for="OtherIncomeView.Description" class="form-control form-control-sm" rows="2" placeholder="Add description"></textarea>
+                    </div>
+                    <div class="col-md-3">
+                        <label>ADD IMAGE</label>
+                        <input type="file" name="imageFile" class="form-control form-control-sm" accept="image/*" />
+                    </div>
+                    <div class="col-md-3">
+                        <div class="checkbox-container">
+                            <input asp-for="OtherIncomeView.IsRoundOff" type="checkbox" checked />
+                            <label asp-for="OtherIncomeView.RoundOff">Round Off</label>
+                            <span id="roundOffAmount">0</span>
+                            <span style="margin-left: 20px;">Total: <strong id="finalTotal">0</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button type="button" class="btn-share">Share ▼</button>
+                <button type="submit" class="btn-save">Save</button>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+<script>
+    let itemIndex = @(Model.OtherIncomeView?.Items?.Count ?? 0);
+
+    function addNewRow() {
+        const tbody = document.getElementById('itemsTableBody');
+        const newRow = document.createElement('tr');
+        newRow.className = 'item-row';
+        newRow.setAttribute('data-index', itemIndex);
+
+        newRow.innerHTML = `
+            <td>${itemIndex + 1}</td>
+            <td><input name="OtherIncomeView.Items[${itemIndex}].ItemName" type="text" class="form-control-sm item-name-input" /></td>
+            <td><input name="OtherIncomeView.Items[${itemIndex}].Qty" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(${itemIndex})" /></td>
+            <td><input name="OtherIncomeView.Items[${itemIndex}].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(${itemIndex})" /></td>
+            <td><input name="OtherIncomeView.Items[${itemIndex}].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly /></td>
+            <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${itemIndex})">×</button></td>
+        `;
+
+        tbody.appendChild(newRow);
+        itemIndex++;
+        updateRowNumbers();
+    }
+
+    function removeRow(index) {
+        const row = document.querySelector(`tr[data-index="${index}"]`);
+        if (row) {
+            row.remove();
+            updateGrandTotal();
+            updateRowNumbers();
+        }
+    }
+
+    function updateRowNumbers() {
+        const rows = document.querySelectorAll('#itemsTableBody .item-row');
+        rows.forEach((row, index) => {
+            const firstCell = row.querySelector('td:first-child');
+            if (firstCell) {
+                firstCell.textContent = index + 1;
+            }
+        });
+    }
+
+    function calculateItemAmount(index) {
+        const row = document.querySelector(`tr[data-index="${index}"]`);
+        if (!row) return;
+
+        const quantityInput = row.querySelector('.qty-input');
+        const priceInput = row.querySelector('.price-input');
+        const amountInput = row.querySelector('.item-amount');
+
+        if (!quantityInput || !priceInput || !amountInput) return;
+
+        const quantity = parseFloat(quantityInput.value) || 0;
+        const pricePerUnit = parseFloat(priceInput.value) || 0;
+        const amount = quantity * pricePerUnit;
+
+        amountInput.value = amount.toFixed(2);
+        updateGrandTotal();
+    }
+
+    function updateGrandTotal() {
+        let total = 0;
+        const amountInputs = document.querySelectorAll('.item-amount');
+
+        amountInputs.forEach(input => {
+            const value = parseFloat(input.value) || 0;
+            total += value;
+        });
+
+        const grandTotalElement = document.getElementById('grandTotal');
+        if (grandTotalElement) {
+            grandTotalElement.textContent = total.toFixed(2);
+        }
+
+        const roundOffCheckbox = document.querySelector('input[name="OtherIncomeView.RoundOff"]');
+        const roundOffAmountElement = document.getElementById('roundOffAmount');
+        const finalTotalElement = document.getElementById('finalTotal');
+
+        if (roundOffCheckbox && roundOffAmountElement && finalTotalElement) {
+            const roundOff = roundOffCheckbox.checked;
+            let finalTotal = roundOff ? Math.round(total) : total;
+            let roundOffAmount = finalTotal - total;
+
+            roundOffAmountElement.textContent = roundOffAmount.toFixed(2);
+            finalTotalElement.textContent = finalTotal.toFixed(2);
+        }
+    }
+
+    // Initialize calculations on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate initial amounts for existing rows
+        const existingRows = document.querySelectorAll('.item-row');
+        existingRows.forEach((row, index) => {
+            const dataIndex = row.getAttribute('data-index');
+            if (dataIndex !== null) {
+                calculateItemAmount(parseInt(dataIndex));
+            }
+        });
+
+        // Handle round off checkbox change
+        const roundOffCheckbox = document.querySelector('input[name="OtherIncomeView.RoundOff"]');
+        if (roundOffCheckbox) {
+            roundOffCheckbox.addEventListener('change', updateGrandTotal);
+        }
+    });
+</script>

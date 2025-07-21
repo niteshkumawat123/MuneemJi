@@ -8,6 +8,13 @@ builder.Services.AddScoped<IPurchaseBillService, PurchaseBillService>();
 builder.Services.AddScoped<IBillItemService, BillItemService>();
 builder.Services.AddScoped<IGodownService, GodownService>();
 builder.Services.AddScoped<ISalesBillService, SalesBillService>();
+builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
+builder.Services.AddScoped<ISalesOrderService, SalesOrderService>();
+builder.Services.AddScoped<IDeliveryChallanService, DeliveryChallanService>();
+builder.Services.AddScoped<IDebitNoteRepository, DebitNoteRepository>();
+builder.Services.AddScoped<ICreditNoteRepository, CreditNoteRepository>();
+builder.Services.AddScoped<IEstimate_QuotationsRepository, Estimate_QuotationsRepository>();
+builder.Services.AddScoped<IOtherIncomeRepository, OtherIncomeRepository>();
 builder.Services.AddRazorPages();
 
 // Add Session services

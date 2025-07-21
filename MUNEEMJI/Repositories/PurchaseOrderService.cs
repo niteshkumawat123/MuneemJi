@@ -36,11 +36,11 @@ namespace MUNEEMJI.Repositories
                     INSERT INTO TradeDocuments (bill_number, bill_date, state_of_supply, phone_no, po_no, po_date, 
                                      eway_bill_no, transport_name, delivery_location, vehicle_number, 
                                      delivery_date, payment_type, description, image_path, round_off, 
-                                     total, created_date,paidReciveamount,TradeDocumentTypesid,PartyId)
+                                     total, created_date,paidReciveamount,TradeDocumentTypesid,PartyId,orderstatusid,OrderDate,OrderNo,duedate)
                     VALUES (@BillNumber, @BillDate, @StateOfSupply, @PhoneNo, @PONo, @PODate, 
                            @EWayBillNo, @TransportName, @DeliveryLocation, @VehicleNumber, 
                            @DeliveryDate, @PaymentType, @Description, @ImagePath, @RoundOff, 
-                           @Total, @CreatedDate,@paidReciveamount,@TradeDocumentTypesid,@PartyId)
+                           @Total, @CreatedDate,@paidReciveamount,@TradeDocumentTypesid,@PartyId,@orderstatusid,@OrderDate,@OrderNo,@duedate)
                     RETURNING id";
 
                 using var billCommand = new NpgsqlCommand(billQuery, connection, transaction);
@@ -62,11 +62,12 @@ namespace MUNEEMJI.Repositories
                 billCommand.Parameters.AddWithValue("@Total", bill.Total);
                 billCommand.Parameters.AddWithValue("@CreatedDate", bill.CreatedDate); // assuming DateTime (not nullable)
                 billCommand.Parameters.AddWithValue("@paidReciveamount", bill.paidReciveamount);
-                billCommand.Parameters.AddWithValue("@TradeDocumentTypesid", (int)TradeDocumentTypes.PurchaseChallan);
+                billCommand.Parameters.AddWithValue("@TradeDocumentTypesid", (int)TradeDocumentTypes.PurchaseOrder);
                 billCommand.Parameters.AddWithValue("@PartyId", bill.PartyId);
-
-
-
+                billCommand.Parameters.AddWithValue("@orderstatusid",(int)TradeDocumentStatusEnum.OrderOverdue);
+                billCommand.Parameters.AddWithValue("@OrderDate", bill.OrderDate);
+                billCommand.Parameters.AddWithValue("@OrderNo",bill.OrderNo??string.Empty);
+                billCommand.Parameters.AddWithValue("@duedate",bill.DueDate);
                 var billId = (int)(await billCommand.ExecuteScalarAsync() ?? 0);
 
                 // Insert Bill Items
@@ -98,8 +99,6 @@ namespace MUNEEMJI.Repositories
                         itemCommand.Parameters.AddWithValue("@Tax", item.Tax);
                         itemCommand.Parameters.AddWithValue("@TaxAmount", item.TaxAmount);
                         itemCommand.Parameters.AddWithValue("@Amount", item.Amount);
-
-
                         await itemCommand.ExecuteNonQueryAsync();
                     }
                 }

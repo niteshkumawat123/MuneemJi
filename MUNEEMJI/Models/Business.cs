@@ -32,6 +32,7 @@ namespace MUNEEMJI.Models
      
         public string Email { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "You must accept the terms and conditions.")]
         public bool AcceptTerms { get; set; }
     }
     public class RegisterViewModel

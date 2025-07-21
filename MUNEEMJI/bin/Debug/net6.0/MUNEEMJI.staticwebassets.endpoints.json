@@ -29,7 +29,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 11 Jul 2025 05:03:49 GMT"
+          "Value": "Sun, 20 Jul 2025 23:26:29 GMT"
         }
       ],
       "EndpointProperties": [
@@ -66,7 +66,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Fri, 11 Jul 2025 05:03:49 GMT"
+          "Value": "Sun, 20 Jul 2025 23:26:29 GMT"
         }
       ],
       "EndpointProperties": [
@@ -491,6 +491,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-krA48UYvmvyiqci2XY1pmzu7N1qXpHiaDqdb7yi2J2s="
+        }
+      ]
+    },
+    {
+      "Route": "images/LoginLogo.itxgmjf7uo.png",
+      "AssetFile": "images/LoginLogo.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12230"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"NsENlbC/+HUjCaRiWhzun/bH4Z/WVrzTAn9nTU/0Wi0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 18 Jul 2025 05:09:29 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "itxgmjf7uo"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-NsENlbC/+HUjCaRiWhzun/bH4Z/WVrzTAn9nTU/0Wi0="
+        },
+        {
+          "Name": "label",
+          "Value": "images/LoginLogo.png"
+        }
+      ]
+    },
+    {
+      "Route": "images/LoginLogo.png",
+      "AssetFile": "images/LoginLogo.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12230"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"NsENlbC/+HUjCaRiWhzun/bH4Z/WVrzTAn9nTU/0Wi0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 18 Jul 2025 05:09:29 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-NsENlbC/+HUjCaRiWhzun/bH4Z/WVrzTAn9nTU/0Wi0="
         }
       ]
     },

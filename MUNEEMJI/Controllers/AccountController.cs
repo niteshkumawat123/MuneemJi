@@ -71,8 +71,9 @@ namespace MUNEEMJI.Controllers
                 }
                 else
                 {
+                    TempData["EmailNotFound"] = "Email not found. Please register first.";
                     ModelState.AddModelError("Email", "Email not found. Please register first.");
-                    return View("Login", model);
+                    return RedirectToAction("Login", new { otpSent = false, email = model.Email });
                 }
             }
             catch (Exception ex)
@@ -179,16 +180,20 @@ namespace MUNEEMJI.Controllers
             ViewBag.otpsent = true;
             return View("Login");
         }
-        [HttpPost]
+        [HttpPost]     
         public IActionResult Logout()
         {
             // Clear session data
             HttpContext.Session.Clear();
+            // Clear TempData (optional but recommended)
+            TempData.Clear();
+            ViewData.Clear();          
 
-            // Sign out from cookie authentication (synchronous)
+            // Sign out from cookie authentication (synchronous wait)
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
 
-            return RedirectToAction("Login");
+            // Redirect to Login view or action
+            return RedirectToAction("Login", "Account");
         }
 
         [HttpPost]
@@ -201,8 +206,15 @@ namespace MUNEEMJI.Controllers
 
             if (!model.AcceptTerms)
             {
-                ModelState.AddModelError("AcceptTerms", "You must accept the terms and conditions");
-                return View("Login", model);
+                TempData["Error"] = "You must accept the terms and conditions";
+                ViewData.ModelState.AddModelError("AcceptTerms", "You must accept the terms and conditions");
+                ViewBag.ShowRegisterForm = true;
+                ViewBag.RegisterError = "You must accept the terms and conditions.";
+                ViewBag.BusinessName = model.BusinessName;
+                ViewBag.Phone = model.Phone;
+                ViewBag.Email = model.Email;
+                //return View("Login", model);
+                return RedirectToAction("Login", "Account");
             }
 
             try
@@ -242,14 +254,31 @@ namespace MUNEEMJI.Controllers
 
                         if (existingPhone == model.Phone)
                         {
-                            ModelState.AddModelError("Phone", "This phone number is already registered");
+                            TempData["Error"] = "This phone number is already registered";
+
+                            ViewData.ModelState.AddModelError("Phone", "This phone number is already registered");
+                            ViewBag.RegisterError = "This phone number is already registered.";
+                            TempData["BusinessName"] = model.BusinessName;
+                            TempData["Phone"] = model.Phone;
+                            TempData["Email"] = model.Email;
+                            TempData["ShowRegisterForm"] = true;
+
                         }
                         if (existingEmail == model.Email)
                         {
-                            ModelState.AddModelError("Email", "This email address is already registered");
+                            TempData["Error"] = "This email address is already registered";
+                            ViewBag.RegisterError = "This email address is already registered.";
+                            TempData["BusinessName"] = model.BusinessName;
+                            TempData["Phone"] = model.Phone;
+                            TempData["Email"] = model.Email;
+                            TempData["ShowRegisterForm"] = true;
+
+                            ViewData.ModelState.AddModelError("Email", "This email address is already registered");
                         }
                     }
-                    return View("Login", model);
+                    //return View("Login", loginViewModel);
+                    
+                    return RedirectToAction("Login", "Account");
                 }
 
                 // Insert new business
@@ -275,13 +304,15 @@ namespace MUNEEMJI.Controllers
                 else
                 {
                     ModelState.AddModelError("", "Failed to create business account. Please try again.");
-                    return View("Login", model);
+                    //return View("Login", model);
+                    return RedirectToAction("Login", "Account");
                 }
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "An error occurred during registration. Please try again.");
-                return View("Login", model);
+                //return View("Login", model);
+                return RedirectToAction("Login", "Account");
             }
         }
 

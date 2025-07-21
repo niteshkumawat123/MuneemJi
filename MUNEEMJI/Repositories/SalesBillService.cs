@@ -104,7 +104,14 @@ namespace MUNEEMJI.Repositories
                         await itemCommand.ExecuteNonQueryAsync();
                     }
                 }
-
+                if (bill.Id > 0)
+                {
+                    var UpdateQuery = "update TradeDocuments  set orderstatusid = @p_orderstatusid where id = @p_id";
+                    using var UpdateCommand = new NpgsqlCommand(UpdateQuery, connection, transaction);
+                    UpdateCommand.Parameters.AddWithValue("@p_orderstatusid", (int)TradeDocumentStatusEnum.OrderCompleted);
+                    UpdateCommand.Parameters.AddWithValue("@p_id", bill.Id);
+                    await UpdateCommand.ExecuteNonQueryAsync();
+                }
                 await transaction.CommitAsync();
                 return billId;
             }
@@ -124,7 +131,7 @@ namespace MUNEEMJI.Repositories
                 SELECT id, bill_number, bill_date, state_of_supply, phone_no, po_no, po_date, 
                        eway_bill_no, transport_name, delivery_location, vehicle_number, 
                        delivery_date, payment_type, description, image_path, round_off, 
-                       total, created_date
+                       total, created_date,partyid
                 FROM TradeDocuments 
                 WHERE id = @Id";
 
@@ -155,7 +162,8 @@ namespace MUNEEMJI.Repositories
                 ImagePath = billReader.GetString("image_path"),
                 RoundOffValue = billReader.GetDecimal("round_off"),
                 Total = billReader.GetDecimal("total"),
-                CreatedDate = billReader.GetDateTime("created_date")
+                CreatedDate = billReader.GetDateTime("created_date"),
+                PartyId = billReader.GetInt32("partyid")
             };
 
             await billReader.CloseAsync();
@@ -163,7 +171,7 @@ namespace MUNEEMJI.Repositories
             // Get Bill Items
             var itemsQuery = @"
                 SELECT id, tradedocumentsid, item, quantity, unit, price_per_unit, 
-                       discount_percentage, discount_amount, tax, tax_amount, amount
+                       discount_percentage, discount_amount, tax, tax_amount, amount,itemid
                 FROM TradeDocumentItems 
                 WHERE tradedocumentsid = @BillId";
 
@@ -186,7 +194,8 @@ namespace MUNEEMJI.Repositories
                     DiscountAmount = itemsReader.GetDecimal("discount_amount"),
                     Tax = itemsReader.GetString("tax"),
                     TaxAmount = itemsReader.GetDecimal("tax_amount"),
-                    Amount = itemsReader.GetDecimal("amount")
+                    Amount = itemsReader.GetDecimal("amount"),
+                    ItemId = itemsReader.GetInt32("itemid"),
                 });
             }
 

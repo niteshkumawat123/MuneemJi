@@ -230,6 +230,8 @@ namespace MUNEEMJI.Controllers
         // GET: Bill/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
+            PartyController partyController = new PartyController();
+
             var bill = await _billService.GetBillByIdAsync(id);
             if (bill == null)
             {
@@ -238,10 +240,13 @@ namespace MUNEEMJI.Controllers
 
             var viewModel = new PurchaseBillViewModel
             {
-                Bill = bill
+                Bill = bill,
+                DropDownItem = await _IBillItemService.GetItems()
             };
+            ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
 
-            return View(viewModel);
+
+            return View("create", viewModel);
         }
 
         // POST: Bill/Edit/5

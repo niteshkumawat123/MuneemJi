@@ -52,93 +52,32 @@ namespace MUNEEMJI.Controllers
                     td.total AS ""Total"",
                     td.paidreciveamount AS ""paidReciveamount"",
                     td.partyid AS ""PartyId"",
-                    pt.party_name as PartyName
+                    pt.party_name as PartyName,
+                    td.orderstatusid,
+                    td.orderno,
+                    td.orderdate,
+                    td.duedate
                 FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id where td.TradeDocumentTypesid=@TradeDocumentTypesid;
             ";
 
-                var PurchaseBill = connection.QuerySql<PurchaseBill>(query, new { TradeDocumentTypesid = (int)TradeDocumentTypes.PurchaseChallan }).ToList();
+                List<PurchaseBill> PurchaseList = connection.QuerySql<PurchaseBill>(query, new { TradeDocumentTypesid = (int)TradeDocumentTypes.PurchaseOrder }).ToList();
 
-
-
-
-
-
-
-
-
-                // Set default date range if not provided
-                //if (!startDate.HasValue || !endDate.HasValue)
-                //{
-                //    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                //    endDate = startDate.Value.AddMonths(1).AddDays(-1);
-                //}
-                //var query = @"
-                //                SELECT 
-                //                    pb.""id"",
-                //                    pb.""bill_number"",
-                //                    pb.""bill_date"",
-                //                    pb.""payment_type"",
-                //                    pb.""total"",
-                //                    pb.""created_date"",
-                //                    COALESCE(SUM(CASE WHEN pb.""payment_type"" = 'Cash' THEN pb.""total"" ELSE 0 END), 0) AS ""PaidAmount"",
-                //                    COALESCE(SUM(CASE WHEN pb.""payment_type"" != 'Cash' THEN pb.""total"" ELSE 0 END), 0) AS ""UnpaidAmount""
-                //                FROM ""purchasebills"" pb
-                //                WHERE pb.""bill_date"" >= @StartDate::date AND pb.""bill_date"" <= @EndDate::date";
-
-                //                            if (firmFilter != "ALL FIRMS")
-                //                            {
-                //                                query += " AND pb.\"state_of_supply\" = @FirmFilter";
-                //                            }
-
-                //                            query += @"
-                //                GROUP BY 
-                //                    pb.""id"", 
-                //                    pb.""bill_number"", 
-                //                    pb.""bill_date"", 
-                //                    pb.""payment_type"", 
-                //                    pb.""total"", 
-                //                    pb.""created_date""
-                //                ORDER BY pb.""bill_date"" DESC";
-
-
-                //var bills = await connection.QueryAsync<dynamic>(query, new
-                //{
-                //    StartDate = startDate.Value,
-                //    EndDate = endDate.Value,
-                //    FirmFilter = firmFilter
-                //});
-
-                // Calculate summary
-                if (PurchaseBill != null && PurchaseBill.Count() > 0)
+                if (PurchaseList != null && PurchaseList.Count() > 0)
                 {
 
-
-                    var paidTotal = PurchaseBill.Sum(b => b.paidReciveamount);
-                    //var unpaidTotal = bills.Where(b => b.PaymentType != "Cash").Sum(b => (decimal)b.Total);
-                    var unpaidTotal = PurchaseBill.Sum(x => x.Total) - paidTotal;
-
-                    var grandTotal = paidTotal + unpaidTotal;
-
-                    ViewBag.PaidTotal = paidTotal;
-                    ViewBag.UnpaidTotal = unpaidTotal;
-                    ViewBag.GrandTotal = grandTotal;
-                    ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
-                    ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
-                    ViewBag.FirmFilter = firmFilter;
-                    ViewBag.VendorFilter = vendorFilter;
                 }
                 else
                 {
-                    PurchaseBill = new List<PurchaseBill>();
+                    PurchaseList = new List<PurchaseBill>();
                 }
 
-                return View(PurchaseBill);
+                return View(PurchaseList);
             }
             catch (Exception ex)
             {
                 // Log error
                 ViewBag.Error = "An error occurred while loading purchase bills.";
-                return View(new List<dynamic>());
+                return View(new List<PurchaseBill>());
             }
         }
 

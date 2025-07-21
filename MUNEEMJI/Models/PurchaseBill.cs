@@ -58,6 +58,12 @@ namespace MUNEEMJI.Models
         public decimal paidReciveamount { get; set; }
         public int PartyId { get; set; }
         public string PartyName { get; set; }
+        public int orderstatusid { get; set; }
+        public DateTime DueDate { get; set; } = DateTime.Now;
+        public string OrderNo { get; set; }
+        public DateTime OrderDate { get; set; } = DateTime.Now;
+        public string ChallanNo { get; set;  }
+        public DateTime Challandate { get; set; } = DateTime.Now;
 
         public List<PurchaseBillItem> BillItems { get; set; } = new List<PurchaseBillItem>();
 
@@ -126,8 +132,20 @@ namespace MUNEEMJI.Models
         DeliveryChallan = 3,
         PurchaseChallan = 4,
         SalesChallan = 5,
-        PurchaseDebitNote = 6,
-        SalesDebitNote = 7,
-        CreditNote = 8
+        DebitNote = 6,
+        CreditNote = 7,
+        Estimation=8
     }
+
+    public enum TradeDocumentStatusEnum
+    {
+        OrderOverdue=1,
+        OrderCompleted=2,
+        open = 3,
+        Closed = 4
+
+
+
+    }
+
 }

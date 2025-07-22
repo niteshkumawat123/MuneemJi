@@ -18,8 +18,9 @@
     }
 
     .dropdown-container {
-        position: relative;
+        position: absolute;
         display: inline-block;
+        right:27px;
     }
 
     .dropdown-btn {
@@ -252,7 +253,7 @@
             <button class="btn btn-warning w-100 mb-3">
                 @* <i class="bi bi-plus" href="/Bank/AddBankAccount"></i> Add Bank *@
 
-                <a href="/Bank/AddBankAccount" class="text-decoration-none">
+                <a href="Web/Bank/AddBankAccount" class="text-decoration-none">
                     <i class="bi bi-plus"></i> Add Bank
                 </a>
             </button>
@@ -278,7 +279,22 @@
                                 </a>
                             </td>
                             <td>₹@acc.OpeningBalance.Value.ToString("N2")</td>
-                            <td><i class="bi bi-three-dots-vertical"></i></td>
+                            <td>
+                                <button class="btn border-0 me-2" type="button" data-bs-toggle="dropdown" title="More Options">
+                                    <img src="~/images/ThreeDots.png" alt="Share" style="width: 16px; height: 16px;">
+
+                                    <!-- Option 1: FontAwesome Icon -->
+                                    @*  <i class="fas fa-ellipsis-v" style="color: #6c757d; font-size: 16px;"></i> *@
+                                    <!-- Option 2: Custom Image Icon -->
+                                    <!-- <img src="~/images/icons/more-icon.png" alt="More" style="width: 16px; height: 16px;"> -->
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/Web/DeliveryChallan/GetById?id=@(acc.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
+                                    <li><a class="dropdown-item" href="/Web/DeliveryChallan/GetById?id=@(acc.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                    <li><a class="dropdown-item" href="/Web/DeliveryChallan/DeleteConfirmed?id=@(acc.Id)">Delete</a></li>
+                                </ul>
+                                                               
+                            </td>
                         </tr>
                     }
                 </tbody>

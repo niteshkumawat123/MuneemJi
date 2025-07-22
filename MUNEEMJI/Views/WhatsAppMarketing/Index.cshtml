@@ -177,7 +177,7 @@
 
         .editor-container {
             display: flex;
-            height: 70vh;
+            
         }
 
         .editor-left {
@@ -221,9 +221,10 @@
 
         .preview-image {
             max-width: 100%;
-            max-height: 500px;
+          /*   max-height: 500px; */
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            min-width:500px
         }
 
         .action-buttons {
@@ -323,7 +324,7 @@
             {
                 <!-- Default templates when no data -->
                 <div class="template-card" onclick="openEditor(1, '/images/template1.jpg', 'Motivational Quote')">
-                    <img src="/images/template1.jpg" alt="Template" class="template-image" />
+                    <img src="/Web/images/template1.jpg" alt="Template" class="template-image" />
                     <div class="template-overlay">
                         <div class="template-text">हार मत मानो</div>
                         <div class="template-arrow">

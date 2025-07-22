@@ -40,7 +40,7 @@
             <button class="btn btn-outline-danger me-2">
                 <i class="fa fa-upload"></i> Upload Bill
             </button>
-            <a href="/PurchaseBill/Create">
+            <a href="/Web/Sales/Create">
                 <button class="btn btn-danger">
                     <i class="fa fa-plus"></i> Add Sales
                 </button>
@@ -229,8 +229,9 @@
                                                 <!-- <img src="~/images/icons/more-icon.png" alt="More" style="width: 16px; height: 16px;"> -->
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="#">View</a></li>
-                                                <li><a class="dropdown-item" href="#">Edit</a></li>
+                                                <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
+                                                <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                                <li><a class="dropdown-item" href="/Web/Sales/DeleteConfirmed?id=@(bill.Id)">Delete</a></li>
                                             </ul>
                                         </div>
 

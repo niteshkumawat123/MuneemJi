@@ -64,7 +64,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h5 class="mb-0 d-flex align-items-center">
                             @Model.SelectedParty.PartyName
-                            <a asp-action="Edit" asp-route-id="@Model.SelectedParty.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                                <a asp-action="Add" asp-route-id="@Model.SelectedParty.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
                                 <i class="bi bi-pencil"></i>
                             </a>
                         </h5>
@@ -83,7 +83,7 @@
                         </div>
                         <div class="col-md-3">
                             <small class="text-muted">Email</small>
-                            <div class="fw-medium">@(Model.SelectedParty.Email ?? "N/A")</div>
+                            <div class="fw-medium" style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">@(Model.SelectedParty.Email ?? "N/A")</div>
                         </div>
                         <div class="col-md-3">
                             <small class="text-muted">GSTIN</small>

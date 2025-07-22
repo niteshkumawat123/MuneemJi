@@ -96,6 +96,9 @@
                                                 <button class="btn btn-outline-primary btn-sm" onclick="editGodown(@godown.Id)">
                                                     <i class="bi bi-pencil"></i>
                                                 </button>
+                                                <button class="btn btn-outline-danger btn-sm" onclick="deleteGodown(@godown.Id)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     }
@@ -385,7 +388,10 @@
         }
 
         function editGodown(id) {
-            window.location.href = '/Godown/Edit/' + id;
+            window.location.href = '/Web/Godown/Edit/' + id;
+        }
+         function deleteGodown(id) {
+            window.location.href = '/Web/Godown/DeleteConfirmed/' + id;
         }
     </script>
 }

@@ -6,6 +6,9 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
 }
+@{
+    string formAction = Model.ViewTypeId == (int)ViewTypeEnum.Edit ? "UpdateEntries" : "Create";
+}
 
 <style>
     .form-container {
@@ -131,8 +134,9 @@
 </style>
 
 <div class="container-fluid">
-    <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
+    <form asp-action="@formAction" method="post" enctype="multipart/form-data" id="billForm">
         <div class="form-container">
+            <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
 
             <!-- Search Section -->
             <div class="search-section">
@@ -152,11 +156,34 @@
 
                                 @foreach (var party in ViewBag.PartyList)
                                 {
-                                    <option value="@party.id" data-phone="@party.phonenumber" data-balance="@party.balance" class="party-option">
+                                   @*  <option value="@party.id" data-phone="@party.phonenumber" data-balance="@party.balance" class="party-option">
                                         <span class="party-name">@party.partyname</span>
                                         <span class="party-phone">@party.phonenumber</span>
                                         <span class="party-balance">@party.balance</span>
-                                    </option>
+                                    </option> *@
+                                    @if (Model.Bill.PartyId == party.id)
+                                    {
+                                        <option value="@party.id"
+                                                data-phone="@party.phonenumber"
+                                                data-balance="@party.balance"
+                                                class="party-option"
+                                                selected="selected">
+                                            <span class="party-name">@party.partyname</span>
+                                            <span class="party-phone">@party.phonenumber</span>
+                                            <span class="party-balance">@party.balance</span>
+                                        </option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@party.id"
+                                                data-phone="@party.phonenumber"
+                                                data-balance="@party.balance"
+                                                class="party-option">
+                                            <span class="party-name">@party.partyname</span>
+                                            <span class="party-phone">@party.phonenumber</span>
+                                            <span class="party-balance">@party.balance</span>
+                                        </option>
+                                    }
                                 }
                             }
                         </select>
@@ -340,11 +367,31 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="action-buttons">
+            @* <div class="action-buttons">
                 <button type="button" class="btn-share">Share ▼</button>
                 <button type="submit" class="btn-save">Save</button>
-            </div>
-
+            </div> *@
+            @if (Model.ViewTypeId == (int)ViewTypeEnum.View)
+            {
+                @*  <div class="action-buttons">
+                    <button type="button" class="btn-share">Share ▼</button>
+                    <button type="submit" class="btn-save">Save</button>
+                </div> *@
+            }
+            @if (Model.ViewTypeId == (int)ViewTypeEnum.Edit)
+            {
+                <div class="action-buttons">
+                    <button type="button" class="btn-share">Share ▼</button>
+                    <button type="submit" class="btn-edit">Edit</button>
+                </div>
+            }
+            @if (Model.ViewTypeId == (int)ViewTypeEnum.Create)
+            {
+                <div class="action-buttons">
+                    <button type="button" class="btn-share">Share ▼</button>
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
+            }
         </div>
     </form>
 </div>

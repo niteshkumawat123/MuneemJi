@@ -25,31 +25,60 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int id=0)
         {
             try
             {
-                var model = new BillItemViewModel
+                BillItem billItem = new BillItem();
+                var model = new BillItemViewModel();
+                if (id > 0)
                 {
-                    BillItem = new BillItem
+                    var data = await GetBillItemsAsync();
+                    if(data!=null && data.Count()>0)
                     {
-                        ItemType = "Product",
-                        AsOfDate = DateTime.Today,
-                        SalePriceTaxType = "Without Tax",
-                        PurchasePriceTaxType = "Without Tax",
-                        DiscountType = "Percentage",
-                        TaxRate = "None"
-                    },
-                    Categories = await _billItemService.GetCategoriesAsync(),
-                    Units = await _billItemService.GetUnitsAsync(),
-                    TaxRates = await _billItemService.GetTaxRatesAsync(),
-                    RawMaterials = new List<RawMaterial>
+                        billItem = data.Where(x => x.Id == id).FirstOrDefault();
+                    }
+
+
+                }
+                if (billItem != null && billItem.Id > 0)
+                {
+                    model = new BillItemViewModel
+                    {
+
+                        BillItem = billItem,
+                        Categories = await _billItemService.GetCategoriesAsync(),
+                        Units = await _billItemService.GetUnitsAsync(),
+                        TaxRates = await _billItemService.GetTaxRatesAsync(),
+                        RawMaterials = billItem.Manufacturing,
+                        AdditionalCosts = new List<AdditionalCost>()
+                    };
+                }
+                else
+                {
+                     model = new BillItemViewModel
+                    {
+
+                        BillItem = new BillItem
+                        {
+                            ItemType = "Product",
+                            AsOfDate = DateTime.Today,
+                            SalePriceTaxType = "Without Tax",
+                            PurchasePriceTaxType = "Without Tax",
+                            DiscountType = "Percentage",
+                            TaxRate = "None"
+                        },
+                        Categories = await _billItemService.GetCategoriesAsync(),
+                        Units = await _billItemService.GetUnitsAsync(),
+                        TaxRates = await _billItemService.GetTaxRatesAsync(),
+                        RawMaterials = new List<RawMaterial>
                     {
                         new RawMaterial { Id = 1 },
                         new RawMaterial { Id = 2 }
                     },
-                    AdditionalCosts = new List<AdditionalCost>()
-                };
+                        AdditionalCosts = new List<AdditionalCost>()
+                    };
+                }
 
                 return View(model);
             }
@@ -61,6 +90,7 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         public async Task<IActionResult> Create([FromBody]BillItem model)
         {
             BillItemViewModel viewModel = new BillItemViewModel();
@@ -80,8 +110,8 @@ namespace MUNEEMJI.Controllers
 
                     if (result)
                     {
-                        TempData["SuccessMessage"] = $"{model.ItemType} saved successfully!";
-                        return RedirectToAction("Create");
+                        //TempData["SuccessMessage"] = $"{model.ItemType} saved successfully!";
+                        return RedirectToAction("index");
                     }
                     else
                     {

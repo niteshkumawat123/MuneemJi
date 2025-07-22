@@ -232,7 +232,22 @@
                                 <a></a>
                             }
                         </td>
-                        <td class="more-actions">⋮</td>
+                        <td>
+                              <button class="btn border-0 me-2" type="button" data-bs-toggle="dropdown" title="More Options">
+                                    <img src="~/images/ThreeDots.png" alt="Share" style="width: 16px; height: 16px;">
+
+                                    <!-- Option 1: FontAwesome Icon -->
+                                    @*  <i class="fas fa-ellipsis-v" style="color: #6c757d; font-size: 16px;"></i> *@
+                                    <!-- Option 2: Custom Image Icon -->
+                                    <!-- <img src="~/images/icons/more-icon.png" alt="More" style="width: 16px; height: 16px;"> -->
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
+                                    <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                    <li><a class="dropdown-item" href="/Web/Sales/DeleteConfirmed?id=@(item.Id)">Delete</a></li>
+                                </ul>
+                            
+                        </td>
                     </tr>
                 }
 

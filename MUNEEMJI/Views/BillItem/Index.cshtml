@@ -438,8 +438,11 @@
                 <div class="product-header">
                     <div class="product-title">
                         <span>@Model.SelectedItem.ItemName</span>
-                        <i class="fas fa-external-link-alt" style="color: #007bff; font-size: 16px;"></i>
-                    </div>
+                    <a asp-action="Create" asp-route-id="@Model.SelectedItem.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+@*                         <i class="fas fa-external-link-alt" style="color: #007bff; font-size: 16px;"></i>
+ *@                    </div>
                     <button class="adjust-btn">
                         <i class="fas fa-sliders-h"></i> ADJUST ITEM
                     </button>

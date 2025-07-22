@@ -1,5 +1,6 @@
 ﻿@model PaymentInOutModel
 
+
 <style>
     .modal-header {
         display: flex;
@@ -31,10 +32,10 @@
         border-radius: 50%;
     }
 
-    .modal-close:hover {
-        background-color: #e9ecef;
-        color: #495057;
-    }
+        .modal-close:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
 
     .modal-body {
         padding: 25px;
@@ -50,22 +51,22 @@
         flex: 1;
     }
 
-    .form-group.full-width {
-        flex: 1 1 100%;
-    }
+        .form-group.full-width {
+            flex: 1 1 100%;
+        }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-        color: #495057;
-        font-size: 14px;
-    }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 14px;
+        }
 
-    .form-group label.required::after {
-        content: ' *';
-        color: #dc3545;
-    }
+            .form-group label.required::after {
+                content: ' *';
+                color: #dc3545;
+            }
 
     .form-control {
         width: 100%;
@@ -76,15 +77,15 @@
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
 
-    .form-control:focus {
-        outline: none;
-        border-color: #80bdff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
+        .form-control:focus {
+            outline: none;
+            border-color: #80bdff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
 
-    .form-control select {
-        cursor: pointer;
-    }
+        .form-control select {
+            cursor: pointer;
+        }
 
     .btn-link {
         color: #007bff;
@@ -96,9 +97,9 @@
         cursor: pointer;
     }
 
-    .btn-link:hover {
-        text-decoration: underline;
-    }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
 
     .description-container {
         margin-top: 20px;
@@ -108,9 +109,9 @@
         border: 1px solid #dee2e6;
     }
 
-    .description-container.hidden {
-        display: none;
-    }
+        .description-container.hidden {
+            display: none;
+        }
 
     .description-textarea {
         width: 100%;
@@ -135,10 +136,10 @@
         background-color: #f8f9fa;
     }
 
-    .image-upload:hover {
-        background-color: #e9ecef;
-        border-color: #ced4da;
-    }
+        .image-upload:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+        }
 
     .modal-footer {
         display: flex;
@@ -167,10 +168,10 @@
         color: #ffffff;
     }
 
-    .btn-danger:hover {
-        background-color: #c82333;
-        border-color: #bd2130;
-    }
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
 
     .btn-secondary {
         background-color: #6c757d;
@@ -178,10 +179,10 @@
         color: #ffffff;
     }
 
-    .btn-secondary:hover {
-        background-color: #5a6268;
-        border-color: #545b62;
-    }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
 
     .btn-primary {
         background-color: #007bff;
@@ -189,10 +190,10 @@
         color: #ffffff;
     }
 
-    .btn-primary:hover {
-        background-color: #0056b3;
-        border-color: #004085;
-    }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
 
     .right-side-fields {
         display: flex;
@@ -214,20 +215,20 @@
         margin-bottom: 10px;
     }
 
-    .receipt-row:last-child {
-        margin-bottom: 0;
-    }
+        .receipt-row:last-child {
+            margin-bottom: 0;
+        }
 
-    .receipt-row label {
-        margin-bottom: 0;
-        font-weight: 500;
-        color: #495057;
-    }
+        .receipt-row label {
+            margin-bottom: 0;
+            font-weight: 500;
+            color: #495057;
+        }
 
-    .receipt-row input {
-        width: 120px;
-        text-align: center;
-    }
+        .receipt-row input {
+            width: 120px;
+            text-align: center;
+        }
 
     .footer-actions {
         display: flex;
@@ -265,9 +266,12 @@
     <button type="button" class="modal-close" onclick="closeModal()">×</button>
 </div>
 
-<form id="paymentInEditForm" action="/PaymentIn/Edit" method="post" onsubmit="event.preventDefault(); handleFormSubmit(this);">
-    <input type="hidden" name="Id" value="@Model.Id">
-    
+<form asp-action="Edit" method="post" enctype="multipart/form-data" id="paymentInEditForm">
+
+    @* <form id="paymentInEditForm" action="/PaymentIn/Edit" method="post" onsubmit="event.preventDefault();">
+ *@    
+ <input type="hidden" name="Id" value="@Model.Id">
+
     <div class="modal-body">
         <div class="form-row">
             <div class="form-group" style="flex: 2;">
@@ -276,7 +280,15 @@
                     <option value="">Select Party</option>
                     @foreach (var party in ViewBag.Parties)
                     {
-                        <option value="@party.Value">@party.Text</option>
+                        if (Model.PartyId == Convert.ToInt32(party.Value))
+                        {
+                            <option value="@party.Value" selected="selected">@party.Text</option>
+                        }
+                        else
+                        {
+                            <option value="@party.Value">@party.Text</option>
+
+                        }
                     }
                 </select>
             </div>
@@ -298,10 +310,10 @@
             <div class="form-group">
                 <label for="PaymentType">Payment Type</label>
                 <select name="PaymentType" id="PaymentType" class="form-control">
-                    <option value="Cash" ></option>
-                    <option value="Bank" ></option>
-                    <option value="Card" ></option>
-                    <option value="Online"> </option>
+                    <option value="Cash">Cash</option>
+                    <option value="Bank">Bank</option>
+                    <option value="Card">Card</option>
+                    <option value="Online">Online</option>
                 </select>
             </div>
             <div class="form-group">
@@ -360,13 +372,25 @@
         </div>
     </div>
 
-    <div class="modal-footer">
-        <button type="button" class="btn btn-danger" onclick="deletePayment(@Model.Id)">Delete</button>
-        <div class="footer-actions">
-            <button type="button" class="btn btn-secondary" onclick="closeModal()">Share</button>
-            <button type="submit" class="btn btn-primary">Save</button>
+    @if (Model.ViewTypeId == (int)ViewTypeEnum.View)
+    {
+        @*  <div class="modal-footer">
+            <button type="button" class="btn btn-danger" onclick="deletePayment(@Model.Id)">Delete</button>
+            <div class="footer-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Share</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </div> *@
+    }
+    @if (Model.ViewTypeId == (int)ViewTypeEnum.Edit)
+    {
+        <div class="modal-footer">
+            <div class="footer-actions">
+                <button type="submit" class="btn btn-primary">Edit</button>
+            </div>
         </div>
-    </div>
+    }
+
 </form>
 
 <script>

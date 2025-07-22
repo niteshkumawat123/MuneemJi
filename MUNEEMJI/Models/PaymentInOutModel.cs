@@ -7,9 +7,9 @@ namespace MUNEEMJI.Models
       
         public int Id { get; set; }
 
-        
+
         [Display(Name = "Date")]
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.UtcNow;
 
       
         [Display(Name = "Reference No")]
@@ -55,6 +55,7 @@ namespace MUNEEMJI.Models
         public string PrintShare { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public int ViewTypeId { get; set; }
     }
 }
 

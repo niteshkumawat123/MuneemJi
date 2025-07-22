@@ -239,32 +239,29 @@
     }
 
     @@media (max-width: 768px) {
-        .header-container
-
-    {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .search-add-container {
-        flex-direction: column;
-        gap: 15px;
-        align-items: stretch;
-    }
-
-    .search-box {
-        width: 100%;
-    }
-
-    .data-table {
-        font-size: 12px;
-    }
-
-        .data-table th,
-        .data-table td {
-            padding: 8px 10px;
+        .header-container {
+            flex-direction: column;
+            align-items: stretch;
         }
 
+        .search-add-container {
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+
+        .data-table {
+            font-size: 12px;
+        }
+
+            .data-table th,
+            .data-table td {
+                padding: 8px 10px;
+            }
     }
 </style>
 
@@ -336,7 +333,8 @@
                     }
                     @foreach (var item in Model)
                     {
-                        <tr onclick="openEditPaymentModal(@item.Id)">
+                        @*                         <tr onclick="openEditPaymentModal(@item.Id)">
+ *@                         <tr>
                             <td>@counter</td>
                             <td>@item.Date.ToString("dd/MM/yyyy")</td>
                             <td>@item.RefNo</td>
@@ -347,7 +345,17 @@
                             <td>₹ @item.ReceivedPaid.ToString("N2")</td>
                             <td>₹ @item.Balance.ToString("N2")</td>
                             <td>
-                                🖨️&nbsp;&nbsp;&nbsp;🔗&nbsp;&nbsp;&nbsp;✏
+                                🖨️&nbsp;&nbsp;&nbsp;🔗&nbsp;&nbsp;&nbsp;<div class="dropdown d-inline">
+                                    <button class="btn border-0 me-2" type="button" data-bs-toggle="dropdown" title="More Options">
+                                        <img src="~/images/ThreeDots.png" alt="Share" style="width: 16px; height: 16px;">
+
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="/Web/PaymentIn/GetById?id=@(item.Id)">View</a></li>
+                                        <li><a class="dropdown-item" href="/Web/PaymentIn/Edit?id=@(item.Id)">Edit</a></li>
+                                        <li><a class="dropdown-item" href="/Web/PaymentIn/Delete?id=@(item.Id)">Delete</a></li>
+                                    </ul>
+                                </div>
                             </td>
                         </tr>
                         counter++;
@@ -382,7 +390,7 @@
 
 <script>
     function openAddPaymentModal() {
-        fetch('/PaymentIn/Create')
+        fetch('/Web/PaymentIn/Create')
             .then(response => response.text())
             .then(html => {
                 document.getElementById('modalContent').innerHTML = html;
@@ -391,7 +399,7 @@
     }
 
     function openEditPaymentModal(id) {
-        fetch('/PaymentIn/Edit/' + id)
+        fetch('/Web/PaymentIn/Edit/' + id)
             .then(response => response.text())
             .then(html => {
                 document.getElementById('modalContent').innerHTML = html;

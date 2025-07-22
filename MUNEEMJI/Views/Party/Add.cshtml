@@ -1,4 +1,4 @@
-﻿@model MUNEEMJI.Models.PartyModel
+﻿@model PartyModel
 
 @{
     ViewData["Title"] = "Add Party";
@@ -87,6 +87,8 @@
     <h2>Add Party</h2>
     <form asp-action="Add" method="post">
         <div class="row mb-3">
+            <input type="hidden" name="Id" value="@Model.Id" />
+
             <div class="col-md-4 field">
                 <label asp-for="PartyName">Party Name *</label>
                 <input asp-for="PartyName" class="form-control" required />

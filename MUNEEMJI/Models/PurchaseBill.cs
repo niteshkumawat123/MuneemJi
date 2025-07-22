@@ -93,7 +93,7 @@ namespace MUNEEMJI.Models
         public decimal PricePerUnit { get; set; }
 
         [Display(Name = "Discount %")]
-        public decimal DiscountPercentage { get; set; }
+        public decimal DiscountPercentage { get; set; } = 0;
 
         [Display(Name = "Discount Amount")]
         public decimal DiscountAmount { get; set; }
@@ -124,6 +124,7 @@ namespace MUNEEMJI.Models
             "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
         };
         public List<BillItem> DropDownItem { get; set; }
+        public int ViewTypeId { get; set; }
     }
     public enum TradeDocumentTypes
     {
@@ -144,8 +145,15 @@ namespace MUNEEMJI.Models
         open = 3,
         Closed = 4
 
-
-
     }
+    public enum ViewTypeEnum
+    { 
+      Create=0,
+      View=1,
+      Edit=2,
+      Delete=3
+    
+    }
+
 
 }

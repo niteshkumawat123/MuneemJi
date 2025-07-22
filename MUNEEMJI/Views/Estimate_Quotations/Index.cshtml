@@ -6,242 +6,242 @@
 
 <style>
     .transaction-container {
-    background-color: #f5f6fa;
-    padding: 20px;
-    min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f6fa;
+        padding: 20px;
+        min-height: 100vh;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     .header-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    background: white;
-    padding: 15px 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        background: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .date-filter-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .dropdown-button {
-    background: #6c757d;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
     }
 
-    .dropdown-button:hover {
-    background: #5a6268;
-    }
+        .dropdown-button:hover {
+            background: #5a6268;
+        }
 
     .date-input {
-    border: 1px solid #ced4da;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    width: 120px;
+        border: 1px solid #ced4da;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 120px;
     }
 
     .firm-select {
-    border: 1px solid #ced4da;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    width: 150px;
+        border: 1px solid #ced4da;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 150px;
     }
 
     .action-buttons {
-    display: flex;
-    gap: 10px;
+        display: flex;
+        gap: 10px;
     }
 
     .excel-btn {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
 
     .print-btn {
-    background: #6c757d;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
     }
 
     .transactions-section {
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    overflow: hidden;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
     }
 
     .transactions-header {
-    padding: 20px;
-    border-bottom: 1px solid #e9ecef;
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
     }
 
     .transactions-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #333;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
     }
 
     .search-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
     }
 
     .search-input {
-    border: 1px solid #ced4da;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    width: 250px;
+        border: 1px solid #ced4da;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 250px;
     }
 
     .bulk-actions {
-    display: flex;
-    gap: 10px;
+        display: flex;
+        gap: 10px;
     }
 
     .bulk-convert-btn {
-    background: white;
-    color: #dc3545;
-    border: 2px solid #dc3545;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
+        background: white;
+        color: #dc3545;
+        border: 2px solid #dc3545;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
     }
 
     .add-delivery-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
     }
 
     .transactions-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
     }
 
-    .transactions-table th {
-    background: #f8f9fa;
-    padding: 12px;
-    text-align: left;
-    font-weight: 600;
-    color: #495057;
-    border-bottom: 1px solid #e9ecef;
-    font-size: 14px;
-    }
+        .transactions-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+        }
 
-    .transactions-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e9ecef;
-    font-size: 14px;
-    color: #333;
-    }
+        .transactions-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 14px;
+            color: #333;
+        }
 
-    .transactions-table tbody tr:hover {
-    background-color: #f8f9fa;
-    }
+        .transactions-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
 
     .row-highlight {
-    background-color: #cce5ff !important;
+        background-color: #cce5ff !important;
     }
 
     .status-closed {
-    color: #28a745;
-    font-weight: 500;
+        color: #28a745;
+        font-weight: 500;
     }
 
     .converted-link {
-    color: #007bff;
-    text-decoration: none;
-    font-size: 12px;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 12px;
     }
 
-    .converted-link:hover {
-    text-decoration: underline;
-    }
+        .converted-link:hover {
+            text-decoration: underline;
+        }
 
     .actions-cell {
-    text-align: center;
+        text-align: center;
     }
 
     .menu-dots {
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    color: #6c757d;
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #6c757d;
     }
 
-    .menu-dots:hover {
-    color: #333;
-    }
+        .menu-dots:hover {
+            color: #333;
+        }
 
     .activate-windows {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    color: #ccc;
-    font-size: 12px;
-    text-align: right;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        color: #ccc;
+        font-size: 12px;
+        text-align: right;
     }
 
-    .activate-windows div:first-child {
-    font-weight: 600;
-    margin-bottom: 5px;
-    }
+        .activate-windows div:first-child {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
 
     .filter-icon {
-    margin-left: 5px;
-    font-size: 12px;
+        margin-left: 5px;
+        font-size: 12px;
     }
 
     .between-label {
-    background: #6c757d;
-    color: white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    margin: 0 5px;
+        background: #6c757d;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        margin: 0 5px;
     }
 
     .to-label {
-    margin: 0 10px;
-    font-weight: 500;
+        margin: 0 10px;
+        font-weight: 500;
     }
 </style>
 
@@ -311,13 +311,25 @@
                         <td>@item.DueDate</td>
                         <td>@item.Total</td>
                         <td>
-                            <span class="status-closed">@Enum.GetName(typeof(TradeDocumentStatusEnum), item.orderstatusid);</span>
-                            <div style="font-size: 12px; color: #6c757d;">-</div>
-
+                            <span class="status-closed">@Enum.GetName(typeof(TradeDocumentStatusEnum), item.orderstatusid)</span>
+@*                             <div style="font-size: 12px; color: #6c757d;">-</div>
+ *@
                         </td>
                         <td class="actions-cell">
                             <a href="/Web/Sales/Edit?id=@item.Id" class="converted-link">@(item.orderstatusid == 3 ? "CONVERT TO SALE" : "Convert To Invoice")</a>
-                            <button class="menu-dots" onclick="showActionMenu(this)">⋮</button>
+                            @* <button class="menu-dots" onclick="showActionMenu(this)">⋮</button> *@
+
+                            <div class="dropdown d-inline">
+                                <button class="btn border-0 me-2" type="button" data-bs-toggle="dropdown" title="More Options">
+                                    <img src="~/images/ThreeDots.png" alt="Share" style="width: 16px; height: 16px;">
+
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/Web/Estimate_Quotations/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
+                                    <li><a class="dropdown-item" href="/Web/Estimate_Quotations/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                    <li><a class="dropdown-item" href="/Web/Estimate_Quotations/DeleteConfirmed?id=@(item.Id)">Delete</a></li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 }

@@ -1,4 +1,5 @@
-﻿@{
+﻿@model BillItemViewModel
+@{
     Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
 }
 <!DOCTYPE html>
@@ -359,288 +360,300 @@
     </style>
 </head>
 <body>
-    <div class="page-container">
-        <div class="page-header">
-            <h1 class="page-title">Add Item</h1>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <span class="settings-icon">⚙️</span>
-            </div>
+    
+<div class="page-container">
+    <div class="page-header">
+        <h1 class="page-title">Add Item</h1>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span class="settings-icon">⚙️</span>
         </div>
+    </div>
 
-        <div class="page-body">
-            <form id="itemForm" method="post" action="/Web/BillItem/Create">
-                <!-- Item Type Toggle -->
-                <div class="item-type-toggle">
-                    <button type="button" class="toggle-option active" onclick="switchType('product')">Product</button>
-                    <button type="button" class="toggle-option" onclick="switchType('service')">Service</button>
+    <div class="page-body">
+@*         <form id="itemForm" method="post" action="/Web/BillItem/Create">
+ *@            <!-- Item Type Toggle -->
+            <form id="itemForm">
+            <div class="item-type-toggle">
+                    <input type="hidden" name="Id" value="@Model.BillItem.Id" />
+
+                    @if (!string.IsNullOrEmpty(Model.BillItem.ItemType))
+                    {
+                        Model.BillItem.ItemType = "product";
+                    }
+
+                <button type="button" class="toggle-option @(Model.BillItem.ItemType == "product" ? "active" : "")" onclick="switchType('product')">Product</button>
+                    <button type="button" class="toggle-option @(Model.BillItem.ItemType == "service" ? "active" : "")" onclick="switchType('service')">Service</button>
+            </div>
+
+            <!-- Product Form -->
+                <div id="productForm" class="item-form" style="display:@(Model.BillItem.ItemType == "product" ? "block" : "none");">
+                <!-- Basic Info Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Item Name *</label>
+                            <input type="text" name="ItemName" class="form-input" required value="@Model.BillItem.ItemName">
+                    </div>
+                    <div class="form-group input-with-icon">
+                        <label class="form-label">Item HSN</label>
+                            <input type="text" name="ItemHSN" class="form-input" value="@Model.BillItem.ItemHsn">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    <div class="form-group small">
+                        <button type="button" class="btn-primary">Select Unit</button>
+                    </div>
+                    <div class="form-group small">
+                        <button type="button" class="btn-link">📷 Add Item Image</button>
+                    </div>
                 </div>
 
-                <!-- Product Form -->
-                <div id="productForm" class="item-form">
-                    <!-- Basic Info Row -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Item Name *</label>
-                            <input type="text" name="ItemName" class="form-input" required>
-                        </div>
-                        <div class="form-group input-with-icon">
-                            <label class="form-label">Item HSN</label>
-                            <input type="text" name="ItemHSN" class="form-input">
-                            <span class="search-icon">🔍</span>
-                        </div>
-                        <div class="form-group small">
-                            <button type="button" class="btn-primary">Select Unit</button>
-                        </div>
-                        <div class="form-group small">
-                            <button type="button" class="btn-link">📷 Add Item Image</button>
-                        </div>
+                <!-- Category and Code Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select name="Category" class="form-select">
+                                <option value="" selected="@(string.IsNullOrEmpty(Model.BillItem.Category))">Select Category</option>
+                                <option value="electronics" selected="@(Model.BillItem.Category == "electronics")">Electronics</option>
+                                <option value="clothing" selected="@(Model.BillItem.Category == "clothing")">Clothing</option>
+                                <option value="food" selected="@(Model.BillItem.Category == "food")">Food & Beverages</option>
+                        </select>
                     </div>
-
-                    <!-- Category and Code Row -->
-                    <!-- Category and Code Row -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Category</label>
-                            <select name="Category" class="form-select">
-                                <option value="">Select Category</option>
-                                <option value="electronics">Electronics</option>
-                                <option value="clothing">Clothing</option>
-                                <option value="food">Food & Beverages</option>
-                            </select>
-                        </div>
-                        <div class="form-group input-with-icon">
-                            <label class="form-label">Item Code</label>
-                            <input type="text" name="ItemCode" class="form-input" style="padding-right: 100px;">
-                            <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
-                        </div>
+                    <div class="form-group input-with-icon">
+                        <label class="form-label">Item Code</label>
+                            <input type="text" name="ItemCode" class="form-input" style="padding-right: 100px;" value="@Model.BillItem.ItemCode">
+                        <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
                     </div>
+                </div>
 
-                    <!-- Tabs -->
-                    <div class="tabs">
-                        <button type="button" class="tab active" onclick="showTab('pricing')">Pricing</button>
-                        <button type="button" class="tab" onclick="showTab('stock')">Stock</button>
-                        <button type="button" class="tab" onclick="showTab('online-store')">Online Store</button>
-                        <button type="button" class="tab" onclick="showTab('manufacturing')">Manufacturing</button>
-                    </div>
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button type="button" class="tab active" onclick="showTab('pricing')">Pricing</button>
+                    <button type="button" class="tab" onclick="showTab('stock')">Stock</button>
+                    <button type="button" class="tab" onclick="showTab('online-store')">Online Store</button>
+                    <button type="button" class="tab" onclick="showTab('manufacturing')">Manufacturing</button>
+                </div>
 
-                    <!-- Pricing Tab -->
-                    <div id="pricing" class="tab-content active">
-                        <div class="pricing-section">
-                            <h3 class="pricing-title">Sale Price</h3>
-                            <div class="pricing-row">
-                                <div class="input-group">
-                                    <label class="form-label">Sale Price</label>
-                                    <input type="number" name="SalePrice" class="form-input" step="0.01">
-                                </div>
-                                <div class="input-group small">
-                                    <label class="form-label"></label>
-                                    <select name="SalePriceTax" class="form-select">
-                                        <option>Without Tax</option>
-                                        <option>With Tax</option>
-                                    </select>
-                                </div>
-                                <div class="input-group">
-                                    <label class="form-label">Disc. On Sale Price</label>
-                                    <input type="number" name="SaleDiscount" class="form-input" step="0.01">
-                                </div>
-                                <div class="input-group small">
-                                    <label class="form-label"></label>
-                                    <select name="SaleDiscountType" class="form-select">
-                                        <option>Percentage</option>
-                                        <option>Amount</option>
-                                    </select>
-                                </div>
+                <!-- Pricing Tab -->
+                <div id="pricing" class="tab-content active">
+                    <div class="pricing-section">
+                        <h3 class="pricing-title">Sale Price</h3>
+                        <div class="pricing-row">
+                            <div class="input-group">
+                                <label class="form-label">Sale Price</label>
+                                    <input type="number" name="SalePrice" class="form-input" step="0.01" value="@Model.BillItem.SalePrice">
                             </div>
-                            <a href="#" class="wholesale-link">+ Add Wholesale Price</a>
-                        </div>
-
-                        <div class="pricing-section">
-                            <h3 class="pricing-title">Purchase Price</h3>
-                            <div class="pricing-row">
-                                <div class="input-group">
-                                    <label class="form-label">Purchase Price</label>
-                                    <input type="number" name="PurchasePrice" class="form-input" step="0.01">
-                                </div>
-                                <div class="input-group small">
-                                    <select name="PurchasePriceTax" class="form-select">
-                                        <option>Without Tax</option>
-                                        <option>With Tax</option>
-                                    </select>
-                                </div>
+                            <div class="input-group small">
+                                <label class="form-label"></label>
+                                <select name="SalePriceTax" class="form-select">
+                                        <option value="Without Tax" selected="@(Model.BillItem.SalePriceTaxType == "Without Tax")">Without Tax</option>
+                                        <option value="With Tax" selected="@(Model.BillItem.SalePriceTaxType == "With Tax")">With Tax</option>
+                                </select>
                             </div>
-                        </div>
-
-                        <div class="pricing-section">
-                            <h3 class="pricing-title">Taxes</h3>
-                            <div class="form-group" style="max-width: 300px;">
-                                <label class="form-label">Tax Rate</label>
-                                <select name="TaxRate" class="form-select">
-                                    <option>None</option>
-                                    <option>5%</option>
-                                    <option>12%</option>
-                                    <option>18%</option>
-                                    <option>28%</option>
+                            <div class="input-group">
+                                <label class="form-label">Disc. On Sale Price</label>
+                                    <input type="number" name="SaleDiscount" class="form-input" step="0.01" value="@Model.BillItem.DiscountOnSalePrice">
+                            </div>
+                            <div class="input-group small">
+                                <label class="form-label"></label>
+                                <select name="SaleDiscountType" class="form-select">
+                                        <option value="Percentage" selected="@(Model.BillItem.DiscountType == "Percentage")">Percentage</option>
+                                        <option value="Amount" selected="@(Model.BillItem.DiscountType == "Amount")">Amount</option>
                                 </select>
                             </div>
                         </div>
+                        <a href="#" class="wholesale-link">+ Add Wholesale Price</a>
                     </div>
 
-                    <!-- Stock Tab -->
-                    <div id="stock" class="tab-content">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Opening Quantity</label>
-                                <input type="number" name="OpeningQuantity" class="form-input">
+                    <div class="pricing-section">
+                        <h3 class="pricing-title">Purchase Price</h3>
+                        <div class="pricing-row">
+                            <div class="input-group">
+                                <label class="form-label">Purchase Price</label>
+                                    <input type="number" name="PurchasePrice" class="form-input" step="0.01" value="@Model.BillItem.PurchasePrice">
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">At Price</label>
-                                <input type="number" name="AtPrice" class="form-input" step="0.01">
+                            <div class="input-group small">
+                                <select name="PurchasePriceTax" class="form-select">
+                                        <option value="Without Tax" selected="@(Model.BillItem.PurchasePriceTaxType == "Without Tax")">Without Tax</option>
+                                        <option value="With Tax" selected="@(Model.BillItem.PurchasePriceTaxType == "With Tax")">With Tax</option>
+                                </select>
                             </div>
-                            <div class="form-group">
-                                <label class="form-label">As Of Date</label>
-                                <input type="date" name="AsOfDate" class="date-input" value="2025-06-15">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Min Stock To Maintain</label>
-                                <input type="number" name="MinStock" class="form-input">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Location</label>
-                                <input type="text" name="Location" class="form-input">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Online Store Tab -->
-                    <div id="online-store" class="tab-content">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Online Store Price</label>
-                                <input type="number" name="OnlineStorePrice" class="form-input" step="0.01">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Description</label>
-                                <textarea name="Description" class="form-textarea" rows="4"></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Manufacturing Tab -->
-                    <div id="manufacturing" class="tab-content">
-                        <div class="pricing-section">
-                            <h3 class="pricing-title">Raw Material</h3>
-                            <table class="manufacturing-table">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 40px;">#</th>
-                                        <th>RAW MATERIAL</th>
-                                        <th>QTY</th>
-                                        <th>UNIT</th>
-                                        <th>PURCHASE PRICE/UNIT (₹)</th>
-                                        <th>ESTIMATED COST (₹)</th>
-                                        <th style="width: 40px;">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="rawMaterialTable">
-                                    <tr>
-                                        <td>1</td>
-                                        <td><input type="text" name="RawMaterial[]" class="form-input"></td>
-                                        <td><input type="number" name="RawMaterialQty[]" class="form-input"></td>
-                                        <td>
-                                            <select name="RawMaterialUnit[]" class="form-select">
-                                                <option>None</option>
-                                                <option>Kg</option>
-                                                <option>Pieces</option>
-                                                <option>Liters</option>
-                                            </select>
-                                        </td>
-                                        <td><input type="number" name="RawMaterialPrice[]" class="form-input" step="0.01" value="0"></td>
-                                        <td><input type="number" name="RawMaterialCost[]" class="form-input" step="0.01" value="0" readonly></td>
-                                        <td><button type="button" class="delete-row-btn" onclick="deleteRawMaterialRow(this)">🗑️</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td><input type="text" name="RawMaterial[]" class="form-input"></td>
-                                        <td><input type="number" name="RawMaterialQty[]" class="form-input"></td>
-                                        <td>
-                                            <select name="RawMaterialUnit[]" class="form-select">
-                                                <option>None</option>
-                                                <option>Kg</option>
-                                                <option>Pieces</option>
-                                                <option>Liters</option>
-                                            </select>
-                                        </td>
-                                        <td><input type="number" name="RawMaterialPrice[]" class="form-input" step="0.01" value="0"></td>
-                                        <td><input type="number" name="RawMaterialCost[]" class="form-input" step="0.01" value="0" readonly></td>
-                                        <td><button type="button" class="delete-row-btn" onclick="deleteRawMaterialRow(this)">🗑️</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <button type="button" class="add-row-btn" onclick="addRawMaterialRow()">+ Add Row</button>
-                            <div style="text-align: right; margin-bottom: 20px;">
-                                <strong id="rawMaterialTotal">TOTAL: ₹ 0.00</strong>
-                            </div>
-                        </div>
-
-                        <div class="cost-summary">
-                            <strong id="totalCostSummary">Total Estimated Cost (Raw Material + Additional Cost) = ₹ 0.00</strong>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Service Form -->
-                <div id="serviceForm" class="item-form" style="display: none;">
-                    <!-- Service form content similar to product but simplified -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Service Name *</label>
-                            <input type="text" name="ServiceName" class="form-input">
-                        </div>
-                        <div class="form-group input-with-icon">
-                            <label class="form-label">Service HSN</label>
-                            <input type="text" name="ServiceHSN" class="form-input">
-                            <span class="search-icon">🔍</span>
                         </div>
                     </div>
 
                     <div class="pricing-section">
-                        <h3 class="pricing-title">Service Pricing</h3>
-                        <div class="pricing-row">
-                            <div class="input-group">
-                                <label class="form-label">Sale Price</label>
-                                <input type="number" name="ServiceSalePrice" class="form-input" step="0.01">
-                            </div>
-                            <div class="input-group">
-                                <label class="form-label">Tax Rate</label>
-                                <select name="ServiceTaxRate" class="form-select">
-                                    <option>None</option>
-                                    <option>5%</option>
-                                    <option>12%</option>
-                                    <option>18%</option>
-                                    <option>28%</option>
-                                </select>
-                            </div>
+                        <h3 class="pricing-title">Taxes</h3>
+                        <div class="form-group" style="max-width: 300px;">
+                            <label class="form-label">Tax Rate</label>
+                            <select name="TaxRate" class="form-select">
+                                    <option value="None" selected="@(Model.BillItem.TaxRate == "None")">None</option>
+                                    <option value="5%" selected="@(Model.BillItem.TaxRate == "5%")">5%</option>
+                                    <option value="12%" selected="@(Model.BillItem.TaxRate == "12%")">12%</option>
+                                    <option value="18%" selected="@(Model.BillItem.TaxRate == "18%")">18%</option>
+                                    <option value="28%" selected="@(Model.BillItem.TaxRate == "28%")">28%</option>
+                            </select>
                         </div>
                     </div>
                 </div>
 
-                <input type="hidden" name="ItemType" id="itemTypeInput" value="product">
-            </form>
-        </div>
+                <!-- Stock Tab -->
+                <div id="stock" class="tab-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Opening Quantity</label>
+                                <input type="number" name="OpeningQuantity" class="form-input" value="@Model.BillItem.OpeningQuantity">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">At Price</label>
+                                <input type="number" name="AtPrice" class="form-input" step="0.01" value="@Model.BillItem.AtPrice">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">As Of Date</label>
+                                <input type="date" name="AsOfDate" class="date-input" value="@(Model.BillItem.AsOfDate.Value.ToString("yyyy-MM-dd"))">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Min Stock To Maintain</label>
+                                <input type="number" name="MinStock" class="form-input" value="@Model.BillItem.MinStockToMaintain">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Location</label>
+                                <input type="text" name="Location" class="form-input" value="@Model.BillItem.Location">
+                        </div>
+                    </div>
+                </div>
 
-        <div class="page-footer">
-            <div class="help-section">
-                <span>Learn how to use Manufacturing</span>
-                <a href="#" class="video-link">▶️ Watch Video</a>
+                <!-- Online Store Tab -->
+                <div id="online-store" class="tab-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Online Store Price</label>
+                                <input type="number" name="OnlineStorePrice" class="form-input" step="0.01" value="@Model.BillItem.OnlineStorePrice">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                                <textarea name="Description" class="form-textarea" rows="4">@Model.BillItem.Description</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manufacturing Tab -->
+                <div id="manufacturing" class="tab-content">
+                    <div class="pricing-section">
+                        <h3 class="pricing-title">Raw Material</h3>
+                        <table class="manufacturing-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 40px;">#</th>
+                                    <th>RAW MATERIAL</th>
+                                    <th>QTY</th>
+                                    <th>UNIT</th>
+                                    <th>PURCHASE PRICE/UNIT (₹)</th>
+                                    <th>ESTIMATED COST (₹)</th>
+                                    <th style="width: 40px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rawMaterialTable">
+                                <tr>
+                                    <td>1</td>
+                                        <td><input type="text" name="RawMaterial[]" class="form-input" value="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 0 ? Model.BillItem.Manufacturing[0].Name : "")"></td>
+                                    <td><input type="number" name="RawMaterialQty[]" class="form-input" value="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 0 ? Model.BillItem.Manufacturing[0].Quantity.ToString() : "")"></td>
+                                    <td>
+                                        <select name="RawMaterialUnit[]" class="form-select">
+                                                <option value="None" selected="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 0 && Model.BillItem.Manufacturing[0].Unit == "None")">None</option>
+                                                <option value="Kg" selected="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 0 && Model.BillItem.Manufacturing[0].Unit == "Kg")">Kg</option>
+                                                <option value="Pieces" selected="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 0 && Model.BillItem.Manufacturing[0].Unit == "Pieces")">Pieces</option>
+                                                <option value="Liters" selected="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 0 && Model.BillItem.Manufacturing[0].Unit == "Liters")">Liters</option>ion>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="RawMaterialPrice[]" class="form-input" step="0.01" value="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 0 ? Model.BillItem.Manufacturing[0].PurchasePricePerUnit.ToString("0.##") : "0")"></td>
+                                    <td><input type="number" name="RawMaterialCost[]" class="form-input" step="0.01" value="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 0 ? Model.BillItem.Manufacturing[0].EstimatedCost.ToString("0.##") : "0")" readonly></td>
+                                    <td><button type="button" class="delete-row-btn" onclick="deleteRawMaterialRow(this)">🗑️</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td><input type="text" name="RawMaterial[]" class="form-input" value="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 1 ? Model.BillItem.Manufacturing[1].Name : "")"></td>
+                                    <td><input type="number" name="RawMaterialQty[]" class="form-input" value="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 1 ? Model.BillItem.Manufacturing[1].Quantity.ToString() : "")"></td>
+                                    <td>
+                                        <select name="RawMaterialUnit[]" class="form-select">
+                                                <option value="None" selected="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 1 && Model.BillItem.Manufacturing[1].Unit == "None")">None</option>
+                                                <option value="Kg" selected="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 1 && Model.BillItem.Manufacturing[1].Unit == "Kg")">Kg</option>
+                                                <option value="Pieces" selected="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 1 && Model.BillItem.Manufacturing[1].Unit == "Pieces")">Pieces</option>
+                                                <option value="Liters" selected="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 1 && Model.BillItem.Manufacturing[1].Unit == "Liters")">Liters</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="RawMaterialPrice[]" class="form-input" step="0.01" value="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 1 ? Model.BillItem.Manufacturing[1].PurchasePricePerUnit.ToString("0.##") : "0")"></td>
+                                    <td><input type="number" name="RawMaterialCost[]" class="form-input" step="0.01" value="@(Model.BillItem.Manufacturing != null && Model.BillItem.Manufacturing.Count > 1 ? Model.BillItem.Manufacturing[1].EstimatedCost.ToString("0.##") : "0")" readonly></td>
+                                    <td><button type="button" class="delete-row-btn" onclick="deleteRawMaterialRow(this)">🗑️</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="add-row-btn" onclick="addRawMaterialRow()">+ Add Row</button>
+                        <div style="text-align: right; margin-bottom: 20px;">
+                            <strong id="rawMaterialTotal">TOTAL: ₹ 0.00</strong>
+                        </div>
+                    </div>
+
+                    <div class="cost-summary">
+                        <strong id="totalCostSummary">Total Estimated Cost (Raw Material + Additional Cost) = ₹ 0.00</strong>
+                    </div>
+                </div>
             </div>
-            <div>
-                <button type="button" class="btn-secondary" onclick="history.back()">Cancel</button>
-                <button type="submit" form="itemForm" class="btn-primary">Save</button>
+
+            <!-- Service Form -->
+            <div id="serviceForm" class="item-form" style="display:@(Model.BillItem.ItemType == "service" ? "block" : "none");">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Service Name *</label>
+                        <input type="text" name="ServiceName" class="form-input" value="@Model.BillItem.ServiceName">
+                    </div>
+                    <div class="form-group input-with-icon">
+                        <label class="form-label">Service HSN</label>
+                        <input type="text" name="ServiceHSN" class="form-input" value="@Model.BillItem.ServiceHsn">
+                        <span class="search-icon">🔍</span>
+                    </div>
+                </div>
+
+                <div class="pricing-section">
+                    <h3 class="pricing-title">Service Pricing</h3>
+                    <div class="pricing-row">
+                        <div class="input-group">
+                            <label class="form-label">Sale Price</label>
+                            <input type="number" name="ServiceSalePrice" class="form-input" step="0.01" value="">
+                        </div>
+                        <div class="input-group">
+                            <label class="form-label">Tax Rate</label>
+                            <select name="ServiceTaxRate" class="form-select">
+                                    <option value="None" selected="@(Model.BillItem.ServiceCode == "None")">None</option>
+                                    <option value="5%" selected="@(Model.BillItem.ServiceCode == "5%")">5%</option>
+                                    <option value="12%" selected="@(Model.BillItem.ServiceCode == "12%")">12%</option>
+                                    <option value="18%" selected="@(Model.BillItem.ServiceCode == "18%")">18%</option>
+                                    <option value="28%" selected="@(Model.BillItem.ServiceCode == "28%")">28%</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <input type="hidden" name="ItemType" id="itemTypeInput" value="@Model.BillItem.ItemType" />
+        </form>
+    </div>
+
+    <div class="page-footer">
+        <div class="help-section">
+            <span>Learn how to use Manufacturing</span>
+            <a href="#" class="video-link">▶️ Watch Video</a>
+        </div>
+        <div>
+            <button type="button" class="btn-secondary" onclick="history.back()">Cancel</button>
+@*             <button type="submit" form="itemForm" class="btn-primary">Save</button>
+
+ *@        <button type="button" class="btn-primary" onclick="submitFormAsJSON()">Save</button>
+
+
         </div>
     </div>
+</div>
+
 
     <script>               // Add this updated JavaScript section to replace the existing script in your HTML
 
@@ -658,6 +671,7 @@
             // Handle Product data
             if (itemType === 'product') {
                 // Basic product information
+                jsonData.Id  =  formData.get('Id') || 0;
                 jsonData.ItemName = formData.get('ItemName') || '';
                 jsonData.ItemHsn = formData.get('ItemHSN') || '';
                 jsonData.Category = formData.get('Category') || '';
@@ -721,25 +735,26 @@
         // Function to submit form as JSON
         async function submitFormAsJSON() {
             try {
+                debugger
                 const jsonData = serializeFormToJSON();
 
-                console.log('Submitting JSON data:', jsonData); // For debugging
-
-                const response = await fetch('/Web/BillItem/Create', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        // Add anti-forgery token if you're using it
-                        // 'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                    },
-                    body: JSON.stringify(jsonData)
-                });
+                 console.log('JSON Data being sent:', JSON.stringify(jsonData, null, 2));
+                 console.log('Data to send:', jsonData);
+                 console.log('JSON string:', JSON.stringify(jsonData));
+                 
+                      const response = await fetch('/Web/BillItem/Create', {
+                                 method: 'POST',
+                                 headers: {
+                                     'Content-Type': 'application/json'
+                                 },
+                                 body: JSON.stringify(jsonData)
+                                 });
 
                 if (response.ok) {
-                    const result = await response.json();
-                    console.log('Success:', result);
+                    // const result = await response.json();
+                    // console.log('Success:', result);
                     // Handle success (redirect, show message, etc.)
-                    window.location.href = '/Web/BillItem'; // Redirect to list page
+                    window.location.href = '/Web/BillItem/index'; // Redirect to list page
                 } else {
                     const error = await response.text();
                     console.error('Error:', error);

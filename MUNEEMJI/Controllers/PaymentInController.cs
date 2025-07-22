@@ -86,12 +86,11 @@ namespace MUNEEMJI.Controllers
             {
 
             }
-
-                return Json(new { success = true, message = "Payment-In saved successfully!" });
+                //return Json(new { success = true, message = "Payment-In saved successfully!" });
             
 
-           await  LoadViewBag();
-            return PartialView("_Create", model);
+           //await  LoadViewBag();
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -105,7 +104,23 @@ namespace MUNEEMJI.Controllers
 
             if (paymentInOut == null)
                 return NotFound();
+            paymentInOut.ViewTypeId = (int)ViewTypeEnum.Edit;
+            await LoadViewBag();
+            return PartialView("_Edit", paymentInOut);
+        }
 
+        [HttpGet]
+        public async Task<IActionResult>GetById(int id)
+        {
+            using var connection = new NpgsqlConnection(_connectionString);
+
+            var paymentInOut = await connection.QuerySingleOrDefaultAsync<PaymentInOutModel>(@"
+                SELECT * FROM PaymentInOut WHERE Id = @Id
+            ", new { Id = id });
+
+            if (paymentInOut == null)
+                return NotFound();
+            paymentInOut.ViewTypeId = (int)ViewTypeEnum.View;
             await LoadViewBag();
             return PartialView("_Edit", paymentInOut);
         }
@@ -115,33 +130,62 @@ namespace MUNEEMJI.Controllers
         {
             if (ModelState.IsValid)
             {
-                using var connection = new SqlConnection(_connectionString);
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
 
-                await connection.ExecuteSqlAsync(@"
-                    UPDATE PaymentInOut 
-                    SET Date = @Date, RefNo = @RefNo, PartyId = @PartyId, CategoryName = @CategoryName, 
-                        Type = @Type, Total = @Total, ReceivedPaid = @ReceivedPaid, Balance = @Balance, 
-                        PrintShare = @PrintShare, PaymentType = @PaymentType, Description = @Description
-                    WHERE Id = @Id
-                ", model);
 
-                return Json(new { success = true, message = "Payment-In updated successfully!" });
+                    var sql = @"
+                                UPDATE paymentinout 
+                                SET 
+                                    date = @Date,
+                                    refno = @RefNo,
+                                    partyid = @PartyId,
+                                    categoryname = @CategoryName,
+                                    type = @Type,
+                                    total = @Total,
+                                    receivedpaid = @ReceivedPaid,
+                                    balance = @Balance,
+                                    printshare = @PrintShare,
+                                    paymenttype = @PaymentType,
+                                    description = @Description
+                                WHERE id = @Id;
+                                 ";
+
+                     connection.ExecuteSql(sql, new
+                    {
+                         Id = model.Id,
+                         Date = model.Date.ToUniversalTime(), // Ensures UTC
+                         RefNo = model.RefNo,
+                         PartyId = model.PartyId,
+                         CategoryName = model.CategoryName,
+                         Type = model.Type,
+                         Total = model.Total,
+                         ReceivedPaid = model.ReceivedPaid,
+                         Balance = model.Balance,
+                         PrintShare = model.PrintShare,
+                         PaymentType = model.PaymentType,
+                         Description = model.Description
+
+                     });
+                }
+
+                return RedirectToAction(nameof(Index));
             }
 
             await LoadViewBag();
-            return PartialView("_Edit", model);
+            return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
+
         public async Task<IActionResult> Delete(int id)
         {
-            using var connection = new SqlConnection(_connectionString);
+            using var connection = new NpgsqlConnection(_connectionString);
 
             await connection.ExecuteScalarAsync(@"
                 DELETE FROM PaymentInOut WHERE Id = @Id
             ", new { Id = id });
 
-            return Json(new { success = true, message = "Payment-In deleted successfully!" });
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task LoadViewBag()

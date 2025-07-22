@@ -20,20 +20,20 @@ namespace MUNEEMJI.Models
         public string Email { get; set; }
         public string BillingAddress { get; set; }
         public string ShippingAddress { get; set; }
-        public bool IsShippingDisabled { get; set; }
+        public bool IsShippingDisabled { get; set; } = false;
         // New Credit & Balance properties
         public decimal? OpeningBalance { get; set; }
         public DateTime? AsOfDate { get; set; }
         public bool HasCustomCreditLimit { get; set; }
         public decimal? CreditLimit { get; set; }
         // New Additional Fields
-        public bool AdditionalField1Enabled { get; set; }
+        public bool AdditionalField1Enabled { get; set; } = false;
         public string AdditionalField1Value { get; set; }
-        public bool AdditionalField2Enabled { get; set; }
+        public bool AdditionalField2Enabled { get; set; } = false;
         public string AdditionalField2Value { get; set; }
-        public bool AdditionalField3Enabled { get; set; }
+        public bool AdditionalField3Enabled { get; set; } = false;
         public string AdditionalField3Value { get; set; }
-        public bool AdditionalField4Enabled { get; set; }
+        public bool AdditionalField4Enabled { get; set; } = false;
         public DateTime? AdditionalField4Value { get; set; }
     }
 

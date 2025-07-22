@@ -12,6 +12,7 @@ namespace MUNEEMJI.Repositories
         Task<bool> UpdateBillAsync(PurchaseBill bill);
         Task<bool> DeleteBillAsync(int id);
         string GenerateBillNumber();
+        Task<int> UpdateEntries(PurchaseBill bill);
     }
     public class SalesOrderService: ISalesOrderService
     {
@@ -113,6 +114,83 @@ namespace MUNEEMJI.Repositories
             }
         }
 
+        //public async Task<PurchaseBill?> GetBillByIdAsync(int id)
+        //{
+        //    using var connection = new NpgsqlConnection(_connectionString);
+        //    await connection.OpenAsync();
+
+        //    var billQuery = @"
+        //        SELECT id, bill_number, bill_date, state_of_supply, phone_no, po_no, po_date, 
+        //               eway_bill_no, transport_name, delivery_location, vehicle_number, 
+        //               delivery_date, payment_type, description, image_path, round_off, 
+        //               total, created_date
+        //        FROM TradeDocuments 
+        //        WHERE id = @Id";
+
+        //    using var billCommand = new NpgsqlCommand(billQuery, connection);
+        //    billCommand.Parameters.AddWithValue("@Id", id);
+
+        //    using var billReader = await billCommand.ExecuteReaderAsync();
+
+        //    if (!await billReader.ReadAsync())
+        //        return null;
+
+        //    var bill = new PurchaseBill
+        //    {
+        //        Id = billReader.GetInt32("id"),
+        //        BillNumber = billReader.GetString("bill_number"),
+        //        BillDate = billReader.GetDateTime("bill_date"),
+        //        StateOfSupply = billReader.GetString("state_of_supply"),
+        //        PhoneNo = billReader.GetString("phone_no"),
+        //        PONo = billReader.GetString("po_no"),
+        //        PODate = billReader.IsDBNull("po_date") ? null : billReader.GetDateTime("po_date"),
+        //        EWayBillNo = billReader.GetString("eway_bill_no"),
+        //        TransportName = billReader.GetString("transport_name"),
+        //        DeliveryLocation = billReader.GetString("delivery_location"),
+        //        VehicleNumber = billReader.GetString("vehicle_number"),
+        //        DeliveryDate = billReader.IsDBNull("delivery_date") ? null : billReader.GetDateTime("delivery_date"),
+        //        PaymentType = billReader.GetString("payment_type"),
+        //        Description = billReader.GetString("description"),
+        //        ImagePath = billReader.GetString("image_path"),
+        //        RoundOffValue = billReader.GetDecimal("round_off"),
+        //        Total = billReader.GetDecimal("total"),
+        //        CreatedDate = billReader.GetDateTime("created_date")
+        //    };
+
+        //    await billReader.CloseAsync();
+
+        //    // Get Bill Items
+        //    var itemsQuery = @"
+        //        SELECT id, tradedocumentsid, item, quantity, unit, price_per_unit, 
+        //               discount_percentage, discount_amount, tax, tax_amount, amount
+        //        FROM TradeDocumentItems 
+        //        WHERE tradedocumentsid = @BillId";
+
+        //    using var itemsCommand = new NpgsqlCommand(itemsQuery, connection);
+        //    itemsCommand.Parameters.AddWithValue("@BillId", id);
+
+        //    using var itemsReader = await itemsCommand.ExecuteReaderAsync();
+
+        //    while (await itemsReader.ReadAsync())
+        //    {
+        //        bill.BillItems.Add(new PurchaseBillItem
+        //        {
+        //            Id = itemsReader.GetInt32("id"),
+        //            BillId = itemsReader.GetInt32("tradedocumentsid"),
+        //            Item = itemsReader.GetString("item"),
+        //            Quantity = itemsReader.GetDecimal("quantity"),
+        //            Unit = itemsReader.GetString("unit"),
+        //            PricePerUnit = itemsReader.GetDecimal("price_per_unit"),
+        //            DiscountPercentage = itemsReader.GetDecimal("discount_percentage"),
+        //            DiscountAmount = itemsReader.GetDecimal("discount_amount"),
+        //            Tax = itemsReader.GetString("tax"),
+        //            TaxAmount = itemsReader.GetDecimal("tax_amount"),
+        //            Amount = itemsReader.GetDecimal("amount")
+        //        });
+        //    }
+
+        //    return bill;
+        //}
         public async Task<PurchaseBill?> GetBillByIdAsync(int id)
         {
             using var connection = new NpgsqlConnection(_connectionString);
@@ -122,7 +200,7 @@ namespace MUNEEMJI.Repositories
                 SELECT id, bill_number, bill_date, state_of_supply, phone_no, po_no, po_date, 
                        eway_bill_no, transport_name, delivery_location, vehicle_number, 
                        delivery_date, payment_type, description, image_path, round_off, 
-                       total, created_date
+                       total, created_date,partyid
                 FROM TradeDocuments 
                 WHERE id = @Id";
 
@@ -153,7 +231,8 @@ namespace MUNEEMJI.Repositories
                 ImagePath = billReader.GetString("image_path"),
                 RoundOffValue = billReader.GetDecimal("round_off"),
                 Total = billReader.GetDecimal("total"),
-                CreatedDate = billReader.GetDateTime("created_date")
+                CreatedDate = billReader.GetDateTime("created_date"),
+                PartyId = billReader.GetInt32("partyid")
             };
 
             await billReader.CloseAsync();
@@ -161,7 +240,7 @@ namespace MUNEEMJI.Repositories
             // Get Bill Items
             var itemsQuery = @"
                 SELECT id, tradedocumentsid, item, quantity, unit, price_per_unit, 
-                       discount_percentage, discount_amount, tax, tax_amount, amount
+                       discount_percentage, discount_amount, tax, tax_amount, amount,itemid
                 FROM TradeDocumentItems 
                 WHERE tradedocumentsid = @BillId";
 
@@ -184,7 +263,8 @@ namespace MUNEEMJI.Repositories
                     DiscountAmount = itemsReader.GetDecimal("discount_amount"),
                     Tax = itemsReader.GetString("tax"),
                     TaxAmount = itemsReader.GetDecimal("tax_amount"),
-                    Amount = itemsReader.GetDecimal("amount")
+                    Amount = itemsReader.GetDecimal("amount"),
+                    ItemId = itemsReader.GetInt32("itemid"),
                 });
             }
 
@@ -328,13 +408,13 @@ namespace MUNEEMJI.Repositories
             try
             {
                 // Delete bill items first
-                var deleteItemsQuery = "DELETE FROM bill_items WHERE bill_id = @BillId";
+                var deleteItemsQuery = "DELETE FROM TradeDocumentItems WHERE TradeDocumentsid = @BillId";
                 using var deleteItemsCommand = new NpgsqlCommand(deleteItemsQuery, connection, transaction);
                 deleteItemsCommand.Parameters.AddWithValue("@BillId", id);
                 await deleteItemsCommand.ExecuteNonQueryAsync();
 
                 // Delete bill
-                var deleteBillQuery = "DELETE FROM bills WHERE id = @Id";
+                var deleteBillQuery = "DELETE FROM TradeDocuments WHERE id = @Id";
                 using var deleteBillCommand = new NpgsqlCommand(deleteBillQuery, connection, transaction);
                 deleteBillCommand.Parameters.AddWithValue("@Id", id);
                 var rowsAffected = await deleteBillCommand.ExecuteNonQueryAsync();
@@ -352,6 +432,115 @@ namespace MUNEEMJI.Repositories
         public string GenerateBillNumber()
         {
             return $"BILL-{DateTime.Now:yyyyMMdd}-{DateTime.Now.Ticks.ToString().Substring(10)}";
+        }
+        public async Task<int> UpdateEntries(PurchaseBill bill)
+        {
+            if (bill.Id <= 0)
+                throw new ArgumentException("Invalid bill ID for update");
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                // 🔁 Update existing bill
+                var updateQuery = @"
+            UPDATE TradeDocuments 
+            SET bill_number = @BillNumber,
+                bill_date = @BillDate,
+                state_of_supply = @StateOfSupply,
+                phone_no = @PhoneNo,
+                po_no = @PONo,
+                po_date = @PODate,
+                eway_bill_no = @EWayBillNo,
+                transport_name = @TransportName,
+                delivery_location = @DeliveryLocation,
+                vehicle_number = @VehicleNumber,
+                delivery_date = @DeliveryDate,
+                payment_type = @PaymentType,
+                description = @Description,
+                image_path = @ImagePath,
+                round_off = @RoundOff,
+                total = @Total,
+                created_date = @CreatedDate,
+                paidReciveamount = @paidReciveamount,
+                PartyId = @PartyId
+            WHERE id = @Id";
+
+                using var updateCommand = new NpgsqlCommand(updateQuery, connection, transaction);
+                updateCommand.Parameters.AddWithValue("@Id", bill.Id);
+                updateCommand.Parameters.AddWithValue("@BillNumber", bill.BillNumber ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@BillDate", bill.BillDate);
+                updateCommand.Parameters.AddWithValue("@StateOfSupply", bill.StateOfSupply ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@PhoneNo", bill.PhoneNo ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@PONo", bill.PONo ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@PODate", (object?)bill.PODate ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@EWayBillNo", bill.EWayBillNo ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@TransportName", bill.TransportName ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@DeliveryLocation", bill.DeliveryLocation ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@VehicleNumber", bill.VehicleNumber ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@DeliveryDate", (object?)bill.DeliveryDate ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@PaymentType", bill.PaymentType ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@Description", bill.Description ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@ImagePath", bill.ImagePath ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@RoundOff", bill.RoundOffValue);
+                updateCommand.Parameters.AddWithValue("@Total", bill.Total);
+                updateCommand.Parameters.AddWithValue("@CreatedDate", bill.CreatedDate);
+                updateCommand.Parameters.AddWithValue("@paidReciveamount", bill.paidReciveamount);
+                updateCommand.Parameters.AddWithValue("@PartyId", bill.PartyId);
+
+                await updateCommand.ExecuteNonQueryAsync();
+
+                // ❌ Delete existing items for this bill (clean slate approach)
+                var deleteItemsQuery = "DELETE FROM TradeDocumentItems WHERE TradeDocumentsid = @BillId";
+                using var deleteCommand = new NpgsqlCommand(deleteItemsQuery, connection, transaction);
+                deleteCommand.Parameters.AddWithValue("@BillId", bill.Id);
+                await deleteCommand.ExecuteNonQueryAsync();
+
+                // ➕ Re-insert bill items
+                foreach (var item in bill.BillItems)
+                {
+                    if (item.ItemId > 0)
+                    {
+                        var itemQuery = @"
+                    INSERT INTO TradeDocumentItems (TradeDocumentsid, itemid, serialno, batchno, modelno, expirydate, mfgdate, item, categoryid, quantity, unit, price_per_unit, 
+                                                    discount_percentage, discount_amount, tax, tax_amount, amount)
+                    VALUES (@TradeDocumentsid, @itemid, @serialno, @batchno, @modelno, @expirydate, @mfgdate, @item, @categoryid, @Quantity, @Unit, @PricePerUnit, 
+                            @DiscountPercentage, @DiscountAmount, @Tax, @TaxAmount, @Amount)";
+
+                        using var itemCommand = new NpgsqlCommand(itemQuery, connection, transaction);
+                        itemCommand.Parameters.AddWithValue("@TradeDocumentsid", bill.Id);
+                        itemCommand.Parameters.AddWithValue("@itemid", item.ItemId);
+                        itemCommand.Parameters.AddWithValue("@serialno", item.serialno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@batchno", item.batchno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@modelno", item.modelno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@expirydate", item.expirydate ?? (object)DBNull.Value);
+                        itemCommand.Parameters.AddWithValue("@mfgdate", item.mfgdate ?? (object)DBNull.Value);
+                        itemCommand.Parameters.AddWithValue("@item", item.Item ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@categoryid", item.categoryid);
+                        itemCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
+                        itemCommand.Parameters.AddWithValue("@Unit", item.Unit ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@PricePerUnit", item.PricePerUnit);
+                        itemCommand.Parameters.AddWithValue("@DiscountPercentage", item.DiscountPercentage);
+                        itemCommand.Parameters.AddWithValue("@DiscountAmount", item.DiscountAmount);
+                        itemCommand.Parameters.AddWithValue("@Tax", item.Tax);
+                        itemCommand.Parameters.AddWithValue("@TaxAmount", item.TaxAmount);
+                        itemCommand.Parameters.AddWithValue("@Amount", item.Amount);
+
+                        await itemCommand.ExecuteNonQueryAsync();
+                    }
+                }
+
+                await transaction.CommitAsync();
+                return bill.Id;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
     }
 }

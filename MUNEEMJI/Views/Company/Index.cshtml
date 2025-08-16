@@ -1,0 +1,710 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company List - Help</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vyapar-logo {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #ff4444, #cc3333);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        .help-title {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .customer-support {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .phone-number {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .instant-support {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        /* Main Container */
+        .main-container {
+            background-color: #3a3f4a;
+            min-height: calc(100vh - 60px);
+            padding: 0;
+        }
+
+        /* Company List Header */
+        .company-header {
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .company-title {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            background-color: #4a5058;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 40px 8px 16px;
+            color: white;
+            width: 300px;
+            font-size: 14px;
+        }
+
+            .search-input::placeholder {
+                color: #9ca3af;
+            }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background-color: #3a3f4a;
+            padding: 0 20px;
+        }
+
+        .tab {
+            padding: 12px 20px;
+            color: #9ca3af;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+            .tab.active {
+                color: white;
+                border-bottom-color: #007bff;
+            }
+
+            .tab:hover {
+                color: white;
+            }
+
+        /* Content Area */
+        .content-area {
+            background-color: white;
+            margin: 0;
+            min-height: 500px;
+            padding: 20px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .content-title {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .browse-files {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 10px;
+        }
+
+        /* Company Items */
+        .company-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .company-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .company-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .current-company-badge {
+            background-color: #ffa500;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .company-details {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .company-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 33px;
+            font-size: 22px;
+            color: #666;
+        }
+
+        .sync-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        
+
+        .open-btn {
+            background-color: white;
+            color: #007bff;
+            padding: 8px 39px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: 1px solid #ccc;
+        }
+
+        .more-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            position: relative;
+        }
+
+        /* Dropdown Menu */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
+        }
+
+            .dropdown-menu.show {
+                display: block;
+            }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+            .dropdown-item:hover {
+                background-color: #f8f9fa;
+            }
+
+            .dropdown-item:last-child {
+                border-bottom: none;
+            }
+
+        /* Bottom Actions */
+        .bottom-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 20px;
+        }
+
+        .restore-btn {
+            background: white;
+            color: #007bff;
+            border: 1px solid #007bff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .new-company-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-section {
+            text-align: right;
+        }
+
+        .logout-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .logout-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Video Section */
+        .video-section {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .video-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .video-container {
+            position: relative;
+            display: inline-block;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .video-thumbnail {
+            width: 400px;
+            height: 225px;
+            background: linear-gradient(135deg, #ff4444, #cc3333);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .video-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            color: white;
+        }
+
+        .video-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .vyapar-video-logo {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+            .vyapar-video-logo::after {
+                content: '';
+                width: 20px;
+                height: 20px;
+                background: linear-gradient(135deg, #ff4444, #cc3333);
+                clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            }
+
+        .video-text {
+            text-align: left;
+        }
+
+        .video-title-text {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .video-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .play-button {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+            .play-button::after {
+                content: '';
+                width: 0;
+                height: 0;
+                border-left: 15px solid #ff4444;
+                border-top: 10px solid transparent;
+                border-bottom: 10px solid transparent;
+                margin-left: 3px;
+            }
+
+        .laptop-image {
+            position: absolute;
+            bottom: -10px;
+            right: 20px;
+            width: 120px;
+            height: 80px;
+        }
+
+        /* Empty state for shared companies */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .search-input
+
+        {
+            width: 200px;
+        }
+
+        .video-thumbnail {
+            width: 300px;
+            height: 169px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <div class="vyapar-logo"></div>
+            <span class="help-title">Help</span>
+        </div>
+        <div class="header-right">
+            <div class="customer-support">
+                Customer Support:
+                <a href="tel:+916364444752" class="phone-number">📞 (+91)-636444752</a>
+            </div>
+            <a href="#" class="instant-support">Get Instant Online Support</a>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Company Header -->
+        <div class="company-header">
+            <h1 class="company-title">Company List</h1>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="Search Company">
+                <span class="search-icon">🔍</span>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab" id="sharedTab">Companies Shared with Me</div>
+            <div class="tab active" id="myCompaniesTab">My Companies</div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- My Companies Content -->
+            <div id="myCompaniesContent">
+                <div class="content-header">
+                    <span class="content-title">Below are the company that are created by you</span>
+                    <div>
+                        <a href="#" class="browse-files">Browse Files (.vyp)</a>
+                        <button class="refresh-btn">🔄</button>
+                    </div>
+                </div>
+
+                <!-- Company List -->
+                <div class="company-item">
+                    <div class="company-info">
+                        <div class="company-name">
+                            <span class="current-company-badge">Current Company</span>
+                            IBM
+                        </div>
+                        <div class="company-details">My Account, (+91)-8690562456@vyaparapp.in, 9461772421</div>
+                    </div>
+                    <div class="company-actions">
+                        <div class="sync-status">
+                            <span class="sync-icon">
+                                <img src="/images/pcmobile.png" alt="Mobile Icon" class="icon-img">
+                            </span>
+                            <span>SYNC ON</span>
+                        </div>
+                        <button class="open-btn">Open</button>
+                        <div class="more-btn" onclick="toggleDropdown(this)">
+                            ⋮
+                            <div class="dropdown-menu">
+                                <div class="dropdown-item" onclick="renameCompany()">Rename Company</div>
+                                <div class="dropdown-item" onclick="openCompany()">Open</div>
+                                <div class="dropdown-item" onclick="deleteCompany()">Delete</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="company-item">
+                    <div class="company-info">
+                        <div class="company-name">abcd1753265988372</div>
+                        <div class="company-details"></div>
+                    </div>
+                    <div class="company-actions">
+                        <div class="sync-status">
+                            <span class="sync-icon">📱</span>
+                            <span>SYNC OFF</span>
+                        </div>
+                        <button class="open-btn">Open</button>
+                        <div class="more-btn" onclick="toggleDropdown(this)">
+                            ⋮
+                            <div class="dropdown-menu">
+                                <div class="dropdown-item" onclick="renameCompany()">Rename Company</div>
+                                <div class="dropdown-item" onclick="openCompany()">Open</div>
+                                <div class="dropdown-item" onclick="deleteCompany()">Delete</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-actions">
+                    <div>
+                        <button class="restore-btn">Restore backup</button>
+                        <button class="new-company-btn">New Company</button>
+                    </div>
+                    <div class="logout-section">
+                        <a href="#" class="logout-link">Logout</a>
+                        <div class="logout-text">Logging out will stop syncing data</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shared Companies Content -->
+            <div id="sharedCompaniesContent" style="display: none;">
+                <div class="content-header">
+                    <span class="content-title">Below are the company that are shared with you</span>
+                    <div>
+                        <a href="#" class="browse-files">Browse Files (.vyp)</a>
+                        <button class="refresh-btn">🔄</button>
+                    </div>
+                </div>
+
+                <!-- Video Section -->
+                <div class="video-section">
+                    <div class="video-title">Watch this video to understand how sync works on Vyapar</div>
+
+                    <div class="video-container" onclick="playVideo()">
+                        <div class="video-thumbnail">
+                            <div class="video-content">
+                                <div class="video-left">
+                                    <div class="vyapar-video-logo"></div>
+                                    <div class="video-text">
+                                        <div class="video-title-text">मल्टी-यूजर सिंकोनाइजेशन</div>
+                                        <div class="video-subtitle">कैसे एक्टिवेट करें</div>
+                                        <div class="video-subtitle">How to activate Multi-user Synchronization</div>
+                                        <div class="video-subtitle">(हिंदी)</div>
+                                    </div>
+                                </div>
+                                <div class="play-button"></div>
+                            </div>
+                            <div class="laptop-image">💻</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-actions">
+                    <div>
+                        <button class="restore-btn">Restore backup</button>
+                        <button class="new-company-btn">New Company</button>
+                    </div>
+                    <div class="logout-section">
+                        <a href="#" class="logout-link">Logout</a>
+                        <div class="logout-text">Logging out will stop syncing data</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; font-size: 12px; color: #666;">
+                    Note: These companies are not owned by you and are only available for working when internet connection is available.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching functionality
+        document.getElementById('myCompaniesTab').addEventListener('click', function() {
+            switchTab('myCompanies');
+        });
+
+        document.getElementById('sharedTab').addEventListener('click', function() {
+            switchTab('shared');
+        });
+
+        function switchTab(tabName) {
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+            // Hide all content
+            document.getElementById('myCompaniesContent').style.display = 'none';
+            document.getElementById('sharedCompaniesContent').style.display = 'none';
+
+            if (tabName === 'myCompanies') {
+                document.getElementById('myCompaniesTab').classList.add('active');
+                document.getElementById('myCompaniesContent').style.display = 'block';
+            } else {
+                document.getElementById('sharedTab').classList.add('active');
+                document.getElementById('sharedCompaniesContent').style.display = 'block';
+            }
+        }
+
+        // Dropdown functionality
+        function toggleDropdown(element) {
+            const dropdown = element.querySelector('.dropdown-menu');
+            const isVisible = dropdown.classList.contains('show');
+
+            // Close all other dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+
+            if (!isVisible) {
+                dropdown.classList.add('show');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.more-btn')) {
+                document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+
+        // Dropdown menu actions
+        function renameCompany() {
+            alert('Rename Company functionality');
+        }
+
+        function openCompany() {
+            alert('Open Company functionality');
+        }
+
+        function deleteCompany() {
+            alert('Delete Company functionality');
+        }
+
+        // Video play functionality
+        function playVideo() {
+            alert('Video play functionality - This would typically open a video player or navigate to YouTube');
+        }
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            // Add search functionality here
+            console.log('Searching for:', searchTerm);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,823 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            font-size: 14px;
+        }
+
+        .container {
+            padding: 10px;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .sale-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #007bff;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            .toggle-switch.cash {
+                background: #28a745;
+            }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.cash .toggle-slider {
+            transform: translateX(30px);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+            .form-group label {
+                font-size: 12px;
+                color: #666;
+                margin-bottom: 5px;
+            }
+
+            .form-group input, .form-group select {
+                padding: 8px 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+
+        .customer-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .address-field {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .invoice-info {
+            text-align: right;
+            min-width: 200px;
+            flex-shrink: 0;
+            margin-left: auto;
+        }
+
+            .invoice-info div {
+                margin-bottom: 10px;
+            }
+
+            .invoice-info span {
+                color: #666;
+                font-size: 12px;
+            }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1500px;
+        }
+
+        .items-section {
+            width: 100%;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+            .items-table th,
+            .items-table td {
+                padding: 8px;
+                border: 1px solid #dee2e6;
+                vertical-align: middle;
+                text-align: center;
+            }
+
+            .items-table th {
+                background: #f8f9fa;
+                font-weight: 600;
+                font-size: 12px;
+                color: #495057;
+            }
+
+        .form-control-sm {
+            width: 100%;
+            padding: 4px 6px;
+            font-size: 12px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+        }
+
+        .btn-add-row {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 10px 0;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .total-row {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .footer-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .payment-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .payment-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .payment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .total-section {
+            text-align: right;
+            border-top: 1px solid #dee2e6;
+            padding-top: 15px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 100px;
+            margin-bottom: 8px;
+        }
+
+        .balance-row {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .column-settings {
+            position: relative;
+            display: inline-block;
+        }
+
+        .settings-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 200px;
+            display: none;
+        }
+
+            .settings-dropdown.show {
+                display: block;
+            }
+
+        .dropdown-item {
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+            .dropdown-item:hover {
+                background: #f8f9fa;
+            }
+
+        .plus-icon {
+            width: 20px;
+            height: 20px;
+            background: #28a745;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .checkmark-icon {
+            width: 20px;
+            height: 20px;
+            background: #007bff;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .column-header {
+            position: relative;
+        }
+
+        .hidden-column {
+            display: none;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+            .close:hover {
+                color: black;
+            }
+
+        .party-balance {
+            background: #e3f2fd;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #1976d2;
+        }
+
+        .activate-windows {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <div class="sale-toggle">
+                    <span>Sale</span>
+                    <div class="toggle-switch" id="paymentToggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span id="paymentMode">Credit</span>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Customer *</label>
+                    <select>
+                        <option>dummy</option>
+                    </select>
+                    <div style="font-size: 12px; color: #007bff; margin-top: 5px;">BAL: 101079</div>
+                    <div class="party-balance" id="partyBalance" style="display: none;">
+                        Party Balance: 101079 ₹
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Billing Name(Optional)</label>
+                    <input type="text" value="dummy">
+                </div>
+                <div class="form-group">
+                    <label>Phone No.</label>
+                    <input type="text" value="9057443423">
+                </div>
+                <div class="form-group">
+                    <label>E-Way Bill No.</label>
+                    <input type="text">
+                </div>
+                <div class="invoice-info">
+                    <div><span>Invoice Number</span><br>2</div>
+                    <div><span>Invoice Date</span><br>24/07/2025</div>
+                    <div>
+                        <span>State of supply</span><br>
+                        <select style="width: 100px;">
+                            <option>Select</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Billing Address</label>
+                    <textarea class="address-field" placeholder="dummy address"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Shipping Address</label>
+                    <textarea class="address-field"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>P.O No.</label>
+                    <input type="text">
+                </div>
+                <div class="form-group">
+                    <label>P.O Date.</label>
+                    <input type="date">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-wrapper">
+                <div class="items-section">
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%">#</th>
+                                <th style="width: 25%">
+                                    ITEM<br />
+                                </th>
+                                <th style="width: 8%">QTY</th>
+                                <th style="width: 10%">UNIT</th>
+                                <th style="width: 12%">PRICE/UNIT<br />Without Tax</th>
+                                <th style="width: 8%">DISCOUNT<br />%</th>
+                                <th style="width: 10%">AMOUNT</th>
+                                <th style="width: 8%">TAX</th>
+                                <th style="width: 10%">AMOUNT</th>
+                                <th style="width: 4%">AMOUNT</th>
+                                <th style="width: 2%">⊕</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                            <tr class="item-row" data-index="0">
+                                <td>1</td>
+                                <td>
+                                    <select class="form-control-sm">
+                                        <option>-- Select Item --</option>
+                                        <option>Milestone plastic</option>
+                                        <option>Mouse</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm qty-input" value="2" />
+                                </td>
+                                <td>
+                                    <select class="form-control-sm">
+                                        <option>NO</option>
+                                        <option>Pcs</option>
+                                        <option>Kg</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm price-input" value="5.329" />
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm discount-input" value="24.62" />
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm discount-amount" value="438.47" readonly />
+                                </td>
+                                <td>
+                                    <select class="form-control-sm tax-select">
+                                        <option>GST@0</option>
+                                        <option>GST@5</option>
+                                        <option>GST@12</option>
+                                        <option>GST@18</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm tax-amount" value="1.09" readonly />
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm item-amount" value="438.47" readonly />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger">×</button>
+                                </td>
+                            </tr>
+                            <tr class="item-row" data-index="1" id="duplicatedRow2" style="display: none;">
+                                <td>2</td>
+                                <td>
+                                    <select class="form-control-sm">
+                                        <option>-- Select Item --</option>
+                                        <option selected>Mouse</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm qty-input" value="1" />
+                                </td>
+                                <td>
+                                    <select class="form-control-sm">
+                                        <option>NO</option>
+                                        <option selected>Pcs</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm price-input" value="1526.18" />
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm discount-input" value="0" />
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm discount-amount" value="996030" readonly />
+                                </td>
+                                <td>
+                                    <select class="form-control-sm tax-select">
+                                        <option selected>GST@0</option>
+                                        <option>GST@5</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm tax-amount" value="2483.87" readonly />
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" class="form-control-sm item-amount" value="996030" readonly />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-danger">×</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="total-row">
+                                <td colspan="9" style="text-align: right; font-weight: bold;">TOTAL</td>
+                                <td><span id="grandTotal">996030</span></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <button type="button" class="btn-add-row" onclick="addNewRow()">ADD ROW</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-section">
+            <div class="payment-row">
+                <div class="payment-left">
+                    <div class="form-group">
+                        <label>Payment Type</label>
+                        <select>
+                            <option>Cash</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" style="background: transparent; color: #007bff; border: 1px solid #007bff;">+ Add Payment type</button>
+                </div>
+
+                <div class="payment-right">
+                    <div class="payment-item">
+                        <span>Discount</span>
+                        <input type="text" value="4" style="width: 60px;">
+                        <span>%</span>
+                        <span>39841.2 ₹</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checkbox-group" id="receivedSection">
+                <input type="checkbox" id="roundOff" checked>
+                <label for="roundOff">Round Off</label>
+                <span>0.2</span>
+                <span style="margin-left: 50px;">Total</span>
+                <span>956189</span>
+            </div>
+
+            <div class="checkbox-group" id="receivedCheckbox">
+                <input type="checkbox" id="received" checked>
+                <label for="received">Received</label>
+                <span style="margin-left: 200px;">956189</span>
+            </div>
+
+            <div class="total-section">
+                <div class="total-row balance-row" id="balanceSection">
+                    <span>Balance</span>
+                    <span>0</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary">ADD DESCRIPTION</button>
+                <button class="btn btn-secondary">ADD IMAGE</button>
+                <button class="btn btn-secondary">ADD DOCUMENT</button>
+            </div>
+
+            <div style="text-align: right; margin-top: 20px;">
+                <button class="btn btn-secondary">Share ▼</button>
+                <button class="btn btn-success">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="activate-windows">
+        Activate Windows<br>
+        Go to Settings to activate...
+    </div>
+
+    <!-- Column Settings Dropdown -->
+    <div class="column-settings">
+        <div class="settings-dropdown" id="columnSettings">
+            <div class="dropdown-item">
+                <input type="checkbox" id="itemCategory" checked onchange="toggleColumn('item-category')">
+                <label for="itemCategory">Item Category</label>
+            </div>
+            <div class="dropdown-item">
+                <input type="checkbox" id="itemCode" checked onchange="toggleColumn('item-code')">
+                <label for="itemCode">Item Code</label>
+            </div>
+            <div class="dropdown-item">
+                <input type="checkbox" id="hsnCode" checked onchange="toggleColumn('hsn-code')">
+                <label for="hsnCode">HSN/SAC Code</label>
+            </div>
+            <div class="dropdown-item">
+                <input type="checkbox" id="description" checked onchange="toggleColumn('description-col')">
+                <label for="description">Description</label>
+            </div>
+            <div class="dropdown-item">
+                <input type="checkbox" id="discount" checked onchange="toggleColumn('discount-col')">
+                <label for="discount">Discount</label>
+            </div>
+            <div class="dropdown-item" style="border-bottom: none; color: #007bff;">
+                <span>⚙️ More Settings</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle between Credit and Cash
+        document.getElementById('paymentToggle').addEventListener('click', function() {
+            const toggle = this;
+            const modeText = document.getElementById('paymentMode');
+            const receivedSection = document.getElementById('receivedCheckbox');
+            const balanceSection = document.getElementById('balanceSection');
+            const partyBalance = document.getElementById('partyBalance');
+
+            toggle.classList.toggle('cash');
+
+            if (toggle.classList.contains('cash')) {
+                modeText.textContent = 'Cash';
+                receivedSection.style.display = 'none';
+                balanceSection.style.display = 'none';
+                partyBalance.style.display = 'block';
+            } else {
+                modeText.textContent = 'Credit';
+                receivedSection.style.display = 'flex';
+                balanceSection.style.display = 'flex';
+                partyBalance.style.display = 'none';
+            }
+        });
+
+        // Show column settings dropdown
+        function showColumnSettings() {
+            const dropdown = document.getElementById('columnSettings');
+            dropdown.classList.toggle('show');
+        }
+
+        // Toggle column visibility
+        function toggleColumn(columnClass) {
+            const columns = document.querySelectorAll('.' + columnClass);
+            const checkbox = event.target;
+
+            columns.forEach(column => {
+                if (checkbox.checked) {
+                    column.classList.remove('hidden-column');
+                } else {
+                    column.classList.add('hidden-column');
+                }
+            });
+        }
+
+        // Duplicate row functionality
+        function duplicateRow() {
+            const duplicatedRow = document.getElementById('duplicatedRow2');
+            duplicatedRow.style.display = duplicatedRow.style.display === 'none' ? 'table-row' : 'none';
+        }
+
+        // Add new row function
+        function addNewRow() {
+            const tbody = document.getElementById('itemsTableBody');
+            const rowCount = tbody.rows.length + 1;
+            const newRow = `
+                <tr class="item-row" data-index="${rowCount}">
+                    <td>${rowCount}</td>
+                    <td>
+                        <select class="form-control-sm">
+                            <option>-- Select Item --</option>
+                            <option>Milestone plastic</option>
+                            <option>Mouse</option>
+                        </select>
+                    </td>
+                    <td><input type="number" step="0.01" class="form-control-sm qty-input" value="0" /></td>
+                    <td>
+                        <select class="form-control-sm">
+                            <option>NO</option>
+                            <option>Pcs</option>
+                            <option>Kg</option>
+                        </select>
+                    </td>
+                    <td><input type="number" step="0.01" class="form-control-sm price-input" value="0" /></td>
+                    <td><input type="number" step="0.01" class="form-control-sm discount-input" value="0" /></td>
+                    <td><input type="number" step="0.01" class="form-control-sm discount-amount" value="0" readonly /></td>
+                    <td>
+                        <select class="form-control-sm tax-select">
+                            <option>GST@0</option>
+                            <option>GST@5</option>
+                            <option>GST@12</option>
+                            <option>GST@18</option>
+                        </select>
+                    </td>
+                    <td><input type="number" step="0.01" class="form-control-sm tax-amount" value="0" readonly /></td>
+                    <td><input type="number" step="0.01" class="form-control-sm item-amount" value="0" readonly /></td>
+                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${rowCount})">×</button></td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', newRow);
+        }
+
+        // Remove row function
+        function removeRow(index) {
+            const row = document.querySelector(`[data-index="${index}"]`);
+            if (row) {
+                row.remove();
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const settings = document.getElementById('columnSettings');
+            const plusIcon = event.target.closest('.plus-icon');
+
+            if (!plusIcon && !settings.contains(event.target)) {
+                settings.classList.remove('show');
+            }
+        });
+
+        // Initialize page with credit mode
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set initial state to credit mode
+            document.getElementById('paymentMode').textContent = 'Credit';
+        });
+    </script>
+</body>
+</html>

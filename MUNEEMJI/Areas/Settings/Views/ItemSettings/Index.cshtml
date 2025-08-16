@@ -1,0 +1,389 @@
+﻿@using MUNEEMJI.Models.Setting
+@model PartySettingsViewModel;
+
+@{
+    ViewData["Title"] = "Item Settings";
+}
+
+<style>
+    .settings-container {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .settings-section {
+        margin-bottom: 25px;
+    }
+
+    .section-header {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 15px;
+        color: #333;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 8px;
+    }
+
+    .form-check {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .form-check-input {
+        margin-right: 8px;
+        width: 16px;
+        height: 16px;
+    }
+
+    .form-check-label {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+    .form-control {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    .form-select {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 14px;
+        background-color: white;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+        .input-group .form-check {
+            margin-bottom: 0;
+        }
+
+        .input-group .form-control,
+        .input-group .form-select {
+            width: 120px;
+            flex-shrink: 0;
+        }
+
+    .custom-fields-section {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+    }
+
+    .add-custom-fields {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .add-custom-fields:hover {
+            text-decoration: underline;
+        }
+
+    .btn-save {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+        .btn-save:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #999;
+        cursor: pointer;
+    }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: 300px 300px 300px;
+        gap: 30px;
+    }
+
+    .help-icon {
+        color: #6c757d;
+        margin-left: 5px;
+        font-size: 12px;
+    }
+
+    .alert {
+        margin-bottom: 20px;
+    }
+</style>
+
+<div class="settings-container">
+    <button type="button" class="close-btn">&times;</button>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <form asp-action="SaveOrUpdate" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="settings-grid">
+            <!-- Item Settings Column -->
+            <div class="settings-section">
+                <div class="section-header">Item Settings</div>
+
+                <div class="form-check">
+                    <input asp-for="EnableItem" class="form-check-input" type="checkbox" />
+                    <label asp-for="EnableItem" class="form-check-label">Enable Item</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="input-group">
+                    <label class="form-check-label">What do you sell?</label>
+                    <span class="help-icon">ⓘ</span>
+                    <select asp-for="WhatDoYouSell" class="form-select">
+                        <option value="Product/Service">Product/Service</option>
+                        <option value="Product">Product</option>
+                        <option value="Service">Service</option>
+                    </select>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="BarcodeScanning" class="form-check-input" type="checkbox" />
+                    <label asp-for="BarcodeScanning" class="form-check-label">Barcode Scan</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="DirectBarcodeScanning" class="form-check-input" type="checkbox" />
+                    <label asp-for="DirectBarcodeScanning" class="form-check-label">Direct Barcode Scan</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="StockMaintenance" class="form-check-input" type="checkbox" />
+                    <label asp-for="StockMaintenance" class="form-check-label">Stock Maintenance</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="Manufacturing" class="form-check-input" type="checkbox" />
+                    <label asp-for="Manufacturing" class="form-check-label">Manufacturing</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="ShowLowStockDialog" class="form-check-input" type="checkbox" />
+                    <label asp-for="ShowLowStockDialog" class="form-check-label">Show Low Stock Dialog</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="ItemsUnit" class="form-check-input" type="checkbox" />
+                    <label asp-for="ItemsUnit" class="form-check-label">Items Unit</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" checked />
+                        <label class="form-check-label">Default Unit</label>
+                    </div>
+                    <input asp-for="DefaultUnit" class="form-control" placeholder="Add Default Unit" />
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="ItemCategory" class="form-check-input" type="checkbox" />
+                    <label asp-for="ItemCategory" class="form-check-label">Item Category</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="PartyWiseItemRate" class="form-check-input" type="checkbox" />
+                    <label asp-for="PartyWiseItemRate" class="form-check-label">Party Wise Item Rate</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input asp-for="Description" class="form-check-input" type="checkbox" />
+                        <label asp-for="Description" class="form-check-label">Description</label>
+                    </div>
+                    <select class="form-select">
+                        <option>Change Text</option>
+                    </select>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="ItemWiseTax" class="form-check-input" type="checkbox" />
+                    <label asp-for="ItemWiseTax" class="form-check-label">Item wise Tax</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="ItemWiseDiscount" class="form-check-input" type="checkbox" />
+                    <label asp-for="ItemWiseDiscount" class="form-check-label">Item wise Discount</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="UpdateSalePriceFromTransaction" class="form-check-input" type="checkbox" />
+                    <label asp-for="UpdateSalePriceFromTransaction" class="form-check-label">Update Sale Price from Transaction</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+            </div>
+
+            <!-- Additional Item Fields Column -->
+            <div class="settings-section">
+                <div class="section-header">Additional Item Fields</div>
+
+                <div class="section-header" style="font-size: 14px; margin-top: 20px;">MRP/Price</div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input asp-for="MrpEnabled" class="form-check-input" type="checkbox" />
+                        <label asp-for="MrpEnabled" class="form-check-label">MRP</label>
+                    </div>
+                    <input class="form-control" placeholder="MRP" />
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="CalculateSalePriceFromMrp" class="form-check-input" type="checkbox" />
+                    <label asp-for="CalculateSalePriceFromMrp" class="form-check-label">Calculate Sale Price From MRP & Disc.</label>
+                    <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="form-check">
+                    <input asp-for="UseMrpForBatchTracking" class="form-check-input" type="checkbox" />
+                    <label asp-for="UseMrpForBatchTracking" class="form-check-label">Use MRP for Batch Tracking</label>
+                </div>
+
+                <div class="section-header" style="font-size: 14px; margin-top: 25px;">Serial No. Tracking <span class="help-icon">ⓘ</span></div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input asp-for="SerialNoTracking" class="form-check-input" type="checkbox" />
+                        <label asp-for="SerialNoTracking" class="form-check-label">Serial No. / IMEI No. etc</label>
+                    </div>
+                    <input class="form-control" placeholder="Serial No." />
+                </div>
+
+                <div class="section-header" style="font-size: 14px; margin-top: 25px;">Batch Tracking <span class="help-icon">ⓘ</span></div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input asp-for="BatchNoEnabled" class="form-check-input" type="checkbox" />
+                        <label asp-for="BatchNoEnabled" class="form-check-label">Batch No.</label>
+                    </div>
+                    <input class="form-control" placeholder="Batch No." />
+                </div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input asp-for="ExpDateEnabled" class="form-check-input" type="checkbox" />
+                        <label asp-for="ExpDateEnabled" class="form-check-label">Exp Date</label>
+                    </div>
+                    <select class="form-select">
+                        <option>mm/yy</option>
+                        <option>dd/mm/yy</option>
+                    </select>
+                    <input class="form-control" placeholder="Exp. Date" />
+                </div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input asp-for="MfgDateEnabled" class="form-check-input" type="checkbox" />
+                        <label asp-for="MfgDateEnabled" class="form-check-label">Mfg Date</label>
+                    </div>
+                    <select class="form-select">
+                        <option>dd/mm/yy</option>
+                        <option>mm/yy</option>
+                    </select>
+                    <input class="form-control" placeholder="Mfg. Date" />
+                </div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input asp-for="ModelNoEnabled" class="form-check-input" type="checkbox" />
+                        <label asp-for="ModelNoEnabled" class="form-check-label">Model No.</label>
+                    </div>
+                    <input class="form-control" placeholder="Model No." />
+                </div>
+
+                <div class="input-group">
+                    <div class="form-check">
+                        <input asp-for="SizeEnabled" class="form-check-input" type="checkbox" />
+                        <label asp-for="SizeEnabled" class="form-check-label">Size</label>
+                    </div>
+                    <input class="form-control" placeholder="Size" />
+                </div>
+            </div>
+
+            <!-- Item Custom Fields Column -->
+            <div class="settings-section">
+                <div class="section-header">
+                    Item Custom Fields <span class="help-icon">ⓘ</span>
+                </div>
+
+                <div class="custom-fields-section">
+                    <a href="#" class="add-custom-fields">Add Custom Fields ></a>
+                </div>
+
+                <div style="margin-top: 100px;">
+                    <div style="color: #999; font-size: 18px; font-weight: 500;">Activate Windows</div>
+                    <div style="color: #666; font-size: 14px;">Go to Settings to activate Windows</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+            <button type="submit" class="btn btn-save">Save Settings</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Close button functionality
+    document.querySelector('.close-btn').addEventListener('click', function() {
+        window.close();
+    });
+
+    // Auto-dismiss alerts
+    setTimeout(function() {
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            var bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 3000);
+</script>

@@ -5,7 +5,7 @@ using MUNEEMJI.Models.Setting;
 namespace MUNEEMJI.Areas.Settings.Controllers
 {
     [Area("Settings")]
-    [Authorize]
+    
     public class GeneralController : Controller
     {
         public IActionResult Index()

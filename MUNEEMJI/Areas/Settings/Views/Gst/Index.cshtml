@@ -1,0 +1,456 @@
+﻿@using MUNEEMJI.Models.Setting
+@model GstSettingsViewModel;
+
+@{
+    ViewData["Title"] = "GST Settings";
+    Layout = "~/Areas/Settings/Views/Shared/_SettingsLayout.cshtml";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .gst-settings-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        padding: 30px;
+        max-width: 500px;
+        position: relative;
+    }
+
+    .settings-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .form-check {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        border: 2px solid #007bff;
+        border-radius: 3px;
+        background-color: white;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+        .form-check-input:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+        }
+
+    .form-check-label {
+        color: #333;
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 1.4;
+        cursor: pointer;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .help-icon {
+        color: #6c757d;
+        font-size: 12px;
+        cursor: help;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #6c757d;
+        color: white;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .composite-scheme-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .composite-dropdown {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 14px;
+        background-color: white;
+        min-width: 140px;
+    }
+
+        .composite-dropdown:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            outline: none;
+        }
+
+    .manage-link {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+        .manage-link:hover {
+            text-decoration: underline;
+        }
+
+    .tax-list-link {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 20px;
+        display: inline-block;
+    }
+
+        .tax-list-link:hover {
+            text-decoration: underline;
+        }
+
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        background: #6c757d;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+        .close-btn:hover {
+            background: #5a6268;
+        }
+
+    .save-btn {
+        background: #28a745;
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 30px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .save-btn:hover {
+            background: #218838;
+        }
+
+        .save-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+    .loading-spinner {
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #ffffff;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    .alert {
+        padding: 12px 20px;
+        margin: 20px 0;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+
+    .activation-notice {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-size: 13px;
+        color: #6c757d;
+        max-width: 250px;
+    }
+
+        .activation-notice .title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+</style>
+
+<form id="gstSettingsForm">
+    <div class="gst-settings-container">
+        <button type="button" class="close-btn" onclick="window.close()">×</button>
+
+        <h2 class="settings-title">GST Settings</h2>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="EnableGst" id="enableGst" @(Model?.EnableGst == true ? "checked" : "")>
+            <label class="form-check-label" for="enableGst">
+                Enable GST
+                <span class="help-icon">i</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="EnableHsnSacCode" id="enableHsnSacCode" @(Model?.EnableHsnSacCode == true ? "checked" : "")>
+            <label class="form-check-label" for="enableHsnSacCode">
+                Enable HSN/SAC Code
+                <span class="help-icon">i</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="AdditionalCessOnItem" id="additionalCessOnItem" @(Model?.AdditionalCessOnItem == true ? "checked" : "")>
+            <label class="form-check-label" for="additionalCessOnItem">
+                Additional Cess On Item
+                <span class="help-icon">i</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="ReverseCharge" id="reverseCharge" @(Model?.ReverseCharge == true ? "checked" : "")>
+            <label class="form-check-label" for="reverseCharge">
+                Reverse Charge
+                <span class="help-icon">i</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="EnablePlaceOfSupply" id="enablePlaceOfSupply" @(Model?.EnablePlaceOfSupply == true ? "checked" : "")>
+            <label class="form-check-label" for="enablePlaceOfSupply">
+                Enable Place of Supply
+                <span class="help-icon">i</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="CompositeScheme" id="compositeScheme" @(Model?.CompositeScheme == true ? "checked" : "")>
+            <label class="form-check-label" for="compositeScheme">
+                <div class="composite-scheme-section">
+                    <span>Composite Scheme</span>
+                    <span class="help-icon">i</span>
+                    <select name="CompositeSchemeType" class="composite-dropdown" id="compositeSchemeDropdown">
+                        <option value="Manufacturer 1.0%" @(Model?.CompositeSchemeType == "Manufacturer 1.0%" ? "selected" : "")>Manufacturer 1.0%</option>
+                        <option value="Trader 0.5%" @(Model?.CompositeSchemeType == "Trader 0.5%" ? "selected" : "")>Trader 0.5%</option>
+                        <option value="Service Provider 6%" @(Model?.CompositeSchemeType == "Service Provider 6%" ? "selected" : "")>Service Provider 6%</option>
+                        <option value="Restaurant 5%" @(Model?.CompositeSchemeType == "Restaurant 5%" ? "selected" : "")>Restaurant 5%</option>
+                    </select>
+                </div>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="EnableTcs" id="enableTcs" @(Model?.EnableTcs == true ? "checked" : "")>
+            <label class="form-check-label" for="enableTcs">
+                Enable TCS
+                <a href="#" class="manage-link">Manage TCS Rates</a>
+                <span class="help-icon">i</span>
+            </label>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="EnableTds" id="enableTds" @(Model?.EnableTds == true ? "checked" : "")>
+            <label class="form-check-label" for="enableTds">
+                Enable TDS
+                <a href="#" class="manage-link">Manage TDS Rates</a>
+                <span class="help-icon">i</span>
+                <span style="color: #dc3545; font-size: 12px;">🔒</span>
+            </label>
+        </div>
+
+        <a href="#" class="tax-list-link">Tax List ></a>
+
+        <button type="submit" class="save-btn" id="saveBtn">
+            <span id="saveText">Save Settings</span>
+        </button>
+    </div>
+</form>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips/popovers if using Bootstrap
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('.help-icon'));
+        // Add tooltip functionality here if needed
+    });
+
+    // Form submission handler
+    document.getElementById('gstSettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        saveGstSettings();
+    });
+
+    function saveGstSettings() {
+        const saveBtn = document.getElementById('saveBtn');
+        const saveText = document.getElementById('saveText');
+        const alertContainer = document.getElementById('alertContainer');
+
+        // Show loading state
+        saveBtn.disabled = true;
+        saveText.innerHTML = '<div class="loading-spinner"></div>Saving...';
+
+        // Clear previous alerts
+        alertContainer.innerHTML = '';
+
+        // Collect form data
+        const formData = new FormData(document.getElementById('gstSettingsForm'));
+
+        // Convert FormData to object and handle checkboxes
+        const data = {};
+
+        // Handle checkboxes - they need special treatment
+        const checkboxes = [
+            'EnableGst', 'EnableHsnSacCode', 'AdditionalCessOnItem', 'ReverseCharge',
+            'EnablePlaceOfSupply', 'CompositeScheme', 'EnableTcs', 'EnableTds'
+        ];
+
+        // Set all checkboxes to false first
+        checkboxes.forEach(name => {
+            data[name] = false;
+        });
+
+        // Then set checked ones to true and collect other form data
+        for (const [key, value] of formData.entries()) {
+            if (checkboxes.includes(key)) {
+                data[key] = true;
+            } else {
+                data[key] = value;
+            }
+        }
+
+        // Make AJAX request
+        fetch('/Settings/Gst/SaveGstSettings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            // Reset button state
+            saveBtn.disabled = false;
+            saveText.innerHTML = 'Save Settings';
+
+            // Show result message
+            if (result.success) {
+                showAlert('success', result.message || 'GST settings saved successfully!');
+            } else {
+                showAlert('danger', result.message || 'Failed to save GST settings.');
+            }
+        })
+        .catch(error => {
+            // Reset button state
+            saveBtn.disabled = false;
+            saveText.innerHTML = 'Save Settings';
+
+            // Show error message
+            showAlert('danger', 'An error occurred while saving GST settings. Please try again.');
+            console.error('Error:', error);
+        });
+    }
+
+    function showAlert(type, message) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.innerHTML = message;
+
+        alertContainer.innerHTML = '';
+        alertContainer.appendChild(alertDiv);
+
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+
+        // Scroll to top to show the message
+        document.querySelector('.gst-settings-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Enable/disable composite scheme dropdown based on checkbox
+    document.getElementById('compositeScheme').addEventListener('change', function() {
+        const dropdown = document.getElementById('compositeSchemeDropdown');
+        dropdown.disabled = !this.checked;
+        if (!this.checked) {
+            dropdown.style.opacity = '0.5';
+        } else {
+            dropdown.style.opacity = '1';
+        }
+    });
+
+    // Initialize composite scheme dropdown state
+    document.addEventListener('DOMContentLoaded', function() {
+        const compositeCheckbox = document.getElementById('compositeScheme');
+        const dropdown = document.getElementById('compositeSchemeDropdown');
+        dropdown.disabled = !compositeCheckbox.checked;
+        dropdown.style.opacity = compositeCheckbox.checked ? '1' : '0.5';
+    });
+</script>

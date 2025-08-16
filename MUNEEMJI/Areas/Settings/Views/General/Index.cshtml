@@ -1,403 +1,474 @@
 ﻿@{
-    
-    Layout = "_SettingsLayout";
+    ViewData["Title"] = "General Settings";
+    Layout = "~/Areas/Settings/Views/Shared/_SettingsLayout.cshtml";
 }
 
+<style>
+    .settings-container {
+        padding: 20px;
+        background-color: #fff;
+        max-width: 1200px;
+    }
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    .settings-row {
+        display: flex;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .settings-column {
+        flex: 1;
+    }
+
+    .settings-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+    }
+
+        .form-group label {
+            font-size: 14px;
+            color: #555;
+            margin-right: 10px;
+            min-width: 120px;
         }
 
-        .settings-container {
-            background: white;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin: 20px;
+    .form-control {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        width: 200px;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,.25);
         }
 
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            transform: scale(1.2);
+        }
+
+        .checkbox-group label {
+            font-size: 14px;
+            color: #555;
+            margin: 0;
+            cursor: pointer;
+            min-width: auto;
+        }
+
+    .info-icon {
+        margin-left: 5px;
+        color: #999;
+        cursor: help;
+        font-size: 12px;
+        background: #f0f0f0;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .radio-group {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border: 2px solid #007bff;
+        border-radius: 6px;
+        background-color: #f8f9ff;
+        margin-bottom: 15px;
+    }
+
+        .radio-group input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        .radio-group label {
+            font-size: 14px;
             color: #333;
-            margin-bottom: 20px;
+            font-weight: 500;
+            margin: 0;
         }
 
-        .form-check-label {
-            font-size: 14px;
-            color: #666;
-            margin-left: 8px;
+    .default-badge {
+        background-color: #28a745;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        margin-left: 10px;
+    }
+
+    .edit-icon {
+        margin-left: 10px;
+        color: #007bff;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .amount-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .amount-input {
+        width: 60px;
+        text-align: center;
+    }
+
+    .decimal-input {
+        width: 100px;
+    }
+
+    .description-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 8px;
+        line-height: 1.4;
+    }
+
+    .zoom-slider {
+        width: 300px;
+        margin: 10px 0;
+    }
+
+    .zoom-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 10px;
+    }
+
+    .apply-btn {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 6px 16px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+
+        .apply-btn:hover {
+            background-color: #0056b3;
         }
 
-        .form-control, .form-select {
-            font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: #666;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        font-size: 14px;
+    }
 
-        .info-icon {
-            color: #6c757d;
-            font-size: 12px;
-            margin-left: 5px;
-        }
+    .activate-windows {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 12px;
+        text-align: center;
+    }
 
-        .default-badge {
-            background-color: #f8f9fa;
-            color: #6c757d;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-        }
+    .activate-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
 
-        .edit-icon {
-            color: #007bff;
-            font-size: 14px;
-            cursor: pointer;
-        }
+    .nested-checkbox {
+        margin-left: 20px;
+        margin-top: 8px;
+    }
 
-        .radio-group {
-            margin-bottom: 15px;
-        }
+    .stock-transfer-description {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.4;
+        margin-bottom: 15px;
+    }
 
-        .description-text {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.4;
-        }
+    .danger-icon {
+        color: #dc3545;
+        margin-left: 5px;
+        font-size: 14px;
+    }
+</style>
 
-        .checkbox-group {
-            margin-bottom: 15px;
-        }
+<div class="settings-container">
+    <button class="close-btn">×</button>
 
-        .nested-checkbox {
-            margin-left: 25px;
-            margin-top: 8px;
-        }
-
-        .zoom-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .zoom-btn {
-            border: 1px solid #ddd;
-            background: white;
-            padding: 5px 10px;
-            font-size: 12px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-            .zoom-btn.active {
-                background-color: #007bff;
-                color: white;
-                border-color: #007bff;
-            }
-
-        .apply-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 6px 20px;
-            font-size: 12px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .activate-windows {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            color: #ccc;
-            font-size: 13px;
-        }
-
-            .activate-windows .title {
-                font-weight: 600;
-                margin-bottom: 5px;
-            }
-
-            .activate-windows .subtitle {
-                font-size: 12px;
-            }
-
-        .close-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #f8f9fa;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            cursor: pointer;
-        }
-
-        .row {
-            margin-bottom: 25px;
-        }
-
-        .col-4 {
-            padding-right: 30px;
-        }
-    </style>
-
-    <div class="settings-container position-relative">
-        <button class="close-btn">
-            <i class="fas fa-times"></i>
-        </button>
-
-        <div class="row">
-            <!-- Left Column -->
-            <div class="col-4">
-                <div class="section-title">Application</div>
+    <div class="settings-row">
+        <!-- Left Column -->
+        <div class="settings-column">
+            <!-- Application Section -->
+            <div class="settings-section">
+                <h3 class="section-title">Application</h3>
 
                 <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="enablePasscode">
-                        <label class="form-check-label" for="enablePasscode">
-                            Enable Passcode
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
+                    <input type="checkbox" id="enablePasscode">
+                    <label for="enablePasscode">Enable Passcode</label>
+                    <span class="info-icon">i</span>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Business Currency <i class="fas fa-info-circle info-icon"></i></label>
-                    <div class="row">
-                        <div class="col-3">
-                            <select class="form-select">
-                                <option>₹</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label>Business Currency</label>
+                    <span class="info-icon">i</span>
+                    <select class="form-control" style="width: 80px;">
+                        <option value="INR">₹</option>
+                    </select>
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Amount <i class="fas fa-info-circle info-icon"></i></label>
-                    <div class="row">
-                        <div class="col-6">
-                            <input type="number" class="form-control" value="2">
-                        </div>
-                        <div class="col-6">
-                            <small class="text-muted">e.g. 0.00</small>
-                        </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <span class="info-icon">i</span>
+                    <div class="amount-group">
+                        <input type="number" class="form-control amount-input" value="2">
+                        <span style="color: #007bff; cursor: pointer;">⚙</span>
+                        <span style="margin: 0 10px;">e.g. 0.00</span>
                     </div>
-                    <small class="text-muted">(upto Decimal Places)</small>
+                </div>
+                <div style="font-size: 11px; color: #666; margin-left: 130px;">(upto Decimal Places)</div>
+
+                <div class="checkbox-group" style="margin-top: 15px;">
+                    <input type="checkbox" id="gstinNumber" checked>
+                    <label for="gstinNumber">GSTIN Number</label>
+                    <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="gstinNumber" checked>
-                        <label class="form-check-label" for="gstinNumber">
-                            GSTIN Number
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
+                    <input type="checkbox" id="stopSale">
+                    <label for="stopSale">Stop Sale on Negative Stock</label>
+                    <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="stopSale">
-                        <label class="form-check-label" for="stopSale">
-                            Stop Sale on Negative Stock
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="section-title mt-4">More Transactions</div>
-
-                <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="estimate" checked>
-                        <label class="form-check-label" for="estimate">
-                            Estimate/Quotation
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
+                    <input type="checkbox" id="blockNewItems">
+                    <label for="blockNewItems">Block New Items from Txn Form</label>
+                    <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="saleOrder" checked>
-                        <label class="form-check-label" for="saleOrder">
-                            Sale/Purchase Order
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="otherIncome" checked>
-                        <label class="form-check-label" for="otherIncome">
-                            Other Income
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="fixedAssets">
-                        <label class="form-check-label" for="fixedAssets">
-                            Fixed Assets (FA)
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="deliveryChallan" checked>
-                        <label class="form-check-label" for="deliveryChallan">
-                            Delivery Challan
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
-
-                    <div class="nested-checkbox">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="goodsReturn" checked>
-                            <label class="form-check-label" for="goodsReturn">
-                                Goods return on Delivery Challan
-                                <i class="fas fa-info-circle info-icon"></i>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="nested-checkbox">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="printAmount">
-                            <label class="form-check-label" for="printAmount">
-                                Print amount in Delivery Challan
-                                <i class="fas fa-info-circle info-icon"></i>
-                            </label>
-                        </div>
-                    </div>
+                    <input type="checkbox" id="blockNewParties">
+                    <label for="blockNewParties">Block New Parties from Txn Form</label>
+                    <span class="info-icon">i</span>
                 </div>
             </div>
 
-            <!-- Middle Column -->
-            <div class="col-4">
+            <!-- More Transactions Section -->
+            <div class="settings-section">
+                <h3 class="section-title">More Transactions</h3>
+
                 <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="multiFirm">
-                        <label class="form-check-label" for="multiFirm">
-                            Multi Firm
-                        </label>
+                    <input type="checkbox" id="estimate" checked>
+                    <label for="estimate">Estimate/Quotation</label>
+                    <span class="info-icon">i</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="proforma" checked>
+                    <label for="proforma">Proforma Invoice</label>
+                    <span class="info-icon">i</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="saleOrder" checked>
+                    <label for="saleOrder">Sale/Purchase Order</label>
+                    <span class="info-icon">i</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="otherIncome">
+                    <label for="otherIncome">Other Income</label>
+                    <span class="info-icon">i</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="fixedAssets">
+                    <label for="fixedAssets">Fixed Assets (FA)</label>
+                    <span class="info-icon">i</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="deliveryChallan" checked>
+                    <label for="deliveryChallan">Delivery Challan</label>
+                    <span class="info-icon">i</span>
+                </div>
+
+                <div class="nested-checkbox">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="goodsReturn" checked>
+                        <label for="goodsReturn">Goods return on <strong>Delivery Challan</strong></label>
+                        <span class="info-icon">i</span>
                     </div>
+
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="printAmount" checked>
+                        <label for="printAmount">Print amount in <strong>Delivery Challan</strong></label>
+                        <span class="info-icon">i</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Column -->
+        <div class="settings-column">
+            <!-- Multi Firm Section -->
+            <div class="settings-section">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <input type="checkbox" id="multiFirm" style="margin-right: 8px;">
+                    <label for="multiFirm" style="font-size: 16px; font-weight: 600; min-width: auto;">Multi Firm</label>
                 </div>
 
                 <div class="radio-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="firmName" id="hellovezel" checked>
-                        <label class="form-check-label" for="hellovezel">
-                            hellovezel
-                        </label>
-                        <span class="default-badge ms-2">DEFAULT</span>
-                        <i class="fas fa-edit edit-icon ms-2"></i>
-                    </div>
+                    <input type="radio" id="orasoftUnique" name="firmType" checked>
+                    <label for="orasoftUnique">ORASOFT UNIQUE PVT. LTD.</label>
+                    <span class="default-badge">DEFAULT</span>
+                    <span class="edit-icon">✏</span>
                 </div>
+            </div>
 
-                <div class="section-title mt-4">Stock Transfer Between Godowns</div>
+            <!-- Stock Transfer Section -->
+            <div class="settings-section">
+                <h3 class="section-title">Stock Transfer Between Godowns</h3>
 
-                <div class="description-text">
+                <div class="stock-transfer-description">
                     Manage all your stores/godowns and transfer stock seamlessly between them. Using this feature, you can transfer stock between stores/godowns and manage your inventory more efficiently.
                 </div>
 
                 <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="godownManagement" checked>
-                        <label class="form-check-label" for="godownManagement">
-                            Godown management & Stock transfer
-                            <i class="fas fa-info-circle info-icon"></i>
-                            <i class="fas fa-video ms-2" style="color: #dc3545;"></i>
-                        </label>
-                    </div>
+                    <input type="checkbox" id="godownManagement" checked>
+                    <label for="godownManagement">Godown management & Stock transfer</label>
+                    <span class="info-icon">i</span>
+                    <span class="danger-icon">🔍</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="settings-column">
+            <!-- Backup & History Section -->
+            <div class="settings-section">
+                <h3 class="section-title">Backup & History</h3>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="autoBackup">
+                    <label for="autoBackup">Auto Backup</label>
+                    <span class="info-icon">i</span>
+                </div>
+
+                <div style="font-size: 14px; color: #555; margin: 15px 0;">
+                    <strong>Last Backup</strong> 29/12/2024 | 01:12 AM
+                    <span class="info-icon">i</span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="auditTrail" checked>
+                    <label for="auditTrail">Audit Trail</label>
+                    <span class="info-icon">i</span>
                 </div>
             </div>
 
-            <!-- Right Column -->
-            <div class="col-4">
-                <div class="section-title">Backup & History</div>
+            <!-- Customize Your View Section -->
+            <div class="settings-section">
+                <h3 class="section-title">Customize Your View</h3>
 
-                <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="autoBackup">
-                        <label class="form-check-label" for="autoBackup">
-                            Auto Backup
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
+                <div style="font-size: 14px; color: #333; font-weight: 600; margin-bottom: 10px;">
+                    Choose Your Screen Zoom/Scale
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Last Backup <i class="fas fa-info-circle info-icon"></i></label>
-                    <div class="text-muted">14/06/2025 | 11:06 AM</div>
+                <div class="description-text" style="margin-bottom: 15px;">
+                    You can use this setting to resize the Vyapar screen, making it larger or smaller to fit your preferences.
                 </div>
 
-                <div class="checkbox-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="auditTrail" checked>
-                        <label class="form-check-label" for="auditTrail">
-                            Audit Trail
-                            <i class="fas fa-info-circle info-icon"></i>
-                        </label>
-                    </div>
+                <div class="zoom-labels">
+                    <span>70%</span>
+                    <span>80%</span>
+                    <span>90%</span>
+                    <span>100%</span>
+                    <span>110%</span>
+                    <span>115%</span>
+                    <span>120%</span>
+                    <span>130%</span>
                 </div>
 
-                <div class="section-title mt-4">Customize Your View</div>
-
-                <div class="mb-3">
-                    <label class="form-label">Choose Your Screen Zoom/Scale</label>
-                    <div class="description-text">
-                        You can use this setting to resize the Vyapar screen, making it larger or smaller to fit your preferences.
-                    </div>
-
-                    <div class="zoom-buttons">
-                        <button class="zoom-btn">70%</button>
-                        <button class="zoom-btn">80%</button>
-                        <button class="zoom-btn">90%</button>
-                        <button class="zoom-btn active">100%</button>
-                        <button class="zoom-btn">110%</button>
-                        <button class="zoom-btn">115%</button>
-                        <button class="zoom-btn">120%</button>
-                        <button class="zoom-btn">130%</button>
-                    </div>
-
-                    <button class="apply-btn">Apply</button>
-                </div>
+                <input type="range" class="zoom-slider" min="70" max="130" value="100" step="5">
+                <button class="apply-btn">Apply</button>
             </div>
         </div>
     </div>
 
-    
+    <!-- Activate Windows notification -->
+    <div class="activate-windows">
+        <div class="activate-title">Activate Windows</div>
+        <div>Go to Settings to activate Windows.</div>
+    </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Zoom button functionality
-        document.querySelectorAll('.zoom-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.zoom-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle nested checkboxes for Delivery Challan
+        const deliveryCheckbox = document.getElementById('deliveryChallan');
+        const nestedCheckboxes = document.querySelectorAll('.nested-checkbox input[type="checkbox"]');
+
+        deliveryCheckbox.addEventListener('change', function() {
+            nestedCheckboxes.forEach(checkbox => {
+                checkbox.disabled = !this.checked;
+                if (!this.checked) {
+                    checkbox.checked = false;
+                }
             });
+        });
+
+        // Handle zoom slider
+        const zoomSlider = document.querySelector('.zoom-slider');
+        const applyBtn = document.querySelector('.apply-btn');
+
+        applyBtn.addEventListener('click', function() {
+            const zoomValue = zoomSlider.value;
+            // Apply zoom logic here
+            alert(`Applied zoom: ${zoomValue}%`);
         });
 
         // Close button functionality
         document.querySelector('.close-btn').addEventListener('click', function() {
-            window.close();
+            // Close modal or navigate back
+            window.history.back();
         });
-    </script>
+    });
+</script>

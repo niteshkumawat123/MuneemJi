@@ -1,0 +1,612 @@
+﻿@using MUNEEMJI.Models.Setting
+@model PartySettingsViewModel;
+@{
+    ViewData["Title"] = "Party Settings";
+    Layout = "~/Areas/Settings/Views/Shared/_SettingsLayout.cshtml";
+}
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    .party-settings-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        padding: 30px;
+        max-width: 1000px;
+        position: relative;
+    }
+
+    .settings-sections {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 40px;
+    }
+
+    .settings-section {
+        min-height: 400px;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 25px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .form-check {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .form-check-input {
+        width: 18px;
+        height: 18px;
+        margin: 0;
+        border: 2px solid #007bff;
+        border-radius: 3px;
+        background-color: white;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+        .form-check-input:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+        }
+
+    .form-check-label {
+        color: #333;
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 1.4;
+        cursor: pointer;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .help-icon {
+        color: #6c757d;
+        font-size: 12px;
+        cursor: help;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #6c757d;
+        color: white;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .additional-field-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .additional-field-checkbox {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #ccc;
+        border-radius: 3px;
+        background-color: white;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+        .additional-field-checkbox:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
+        }
+
+    .additional-field-input {
+        flex: 1;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 14px;
+        background-color: white;
+    }
+
+        .additional-field-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            outline: none;
+        }
+
+        .additional-field-input::placeholder {
+            color: #adb5bd;
+        }
+
+    .show-in-print-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .toggle-switch {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background-color: #ccc;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .toggle-switch.active {
+            background-color: #007bff;
+        }
+
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::before {
+            transform: translateX(20px);
+        }
+
+    .toggle-label {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .date-type-dropdown {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 14px;
+        background-color: white;
+        min-width: 100px;
+        margin-left: 5px;
+    }
+
+        .date-type-dropdown:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            outline: none;
+        }
+
+    .payment-reminder-section {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+    }
+
+    .reminder-input-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .reminder-text {
+        font-size: 14px;
+        color: #495057;
+    }
+
+    .reminder-days-input {
+        width: 60px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        padding: 6px 8px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+        .reminder-days-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+            outline: none;
+        }
+
+    .reminder-link {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        margin-top: 10px;
+        display: inline-block;
+    }
+
+        .reminder-link:hover {
+            text-decoration: underline;
+        }
+
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 25px;
+        background: #6c757d;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+        .close-btn:hover {
+            background: #5a6268;
+        }
+
+    .save-btn {
+        background: #28a745;
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 30px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+        .save-btn:hover {
+            background: #218838;
+        }
+
+        .save-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+    .loading-spinner {
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #ffffff;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    .alert {
+        padding: 12px 20px;
+        margin: 20px 0;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+
+    .activation-notice {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 15px 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-size: 13px;
+        color: #6c757d;
+        max-width: 250px;
+    }
+
+        .activation-notice .title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+</style>
+
+<form id="partySettingsForm">
+    <div class="party-settings-container">
+        <button type="button" class="close-btn" onclick="window.close()">×</button>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+
+        <div class="settings-sections">
+            <!-- Party Settings Section -->
+            <div class="settings-section">
+                <h3 class="section-title">Party Settings</h3>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="PartyGrouping" id="partyGrouping" @(Model?.PartyGrouping == true ? "checked" : "")>
+                    <label class="form-check-label" for="partyGrouping">
+                        Party Grouping
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="ShippingAddress" id="shippingAddress" @(Model?.ShippingAddress == true ? "checked" : "")>
+                    <label class="form-check-label" for="shippingAddress">
+                        Shipping Address
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="PrintShippingAddress" id="printShippingAddress" @(Model?.PrintShippingAddress == true ? "checked" : "")>
+                    <label class="form-check-label" for="printShippingAddress">
+                        Print Shipping Address
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="ManagePartyStatus" id="managePartyStatus" @(Model?.ManagePartyStatus == true ? "checked" : "")>
+                    <label class="form-check-label" for="managePartyStatus">
+                        Manage Party Status
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="EnablePaymentReminder" id="enablePaymentReminder" @(Model?.EnablePaymentReminder == true ? "checked" : "")>
+                    <label class="form-check-label" for="enablePaymentReminder">
+                        Enable Payment Reminder
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="payment-reminder-section">
+                    <div class="reminder-input-group">
+                        <span class="reminder-text">Remind me for payment due in</span>
+                        <span class="help-icon">i</span>
+                        <input type="number" name="PaymentReminderDays" id="paymentReminderDays" class="reminder-days-input" value="@(Model?.PaymentReminderDays ?? 1)" min="1" max="365">
+                        <span class="reminder-text">(days)</span>
+                    </div>
+                    <a href="#" class="reminder-link">Reminder Message ></a>
+                </div>
+            </div>
+
+            <!-- Additional Fields Section -->
+            <div class="settings-section">
+                <h3 class="section-title">Additional fields <span class="help-icon">i</span></h3>
+
+                <div class="additional-field-row">
+                    <input class="additional-field-checkbox" type="checkbox" name="AdditionalField1Enabled" id="additionalField1Enabled" @(Model?.AdditionalField1Enabled == true ? "checked" : "")>
+                    <input type="text" name="AdditionalField1" id="additionalField1" class="additional-field-input" placeholder="Additional Field 1" value="@(Model?.AdditionalField1 ?? "")">
+                    <div class="show-in-print-toggle">
+                        <div class="toggle-switch @(Model?.AdditionalField1ShowInPrint == true ? "active" : "")" data-field="additionalField1ShowInPrint"></div>
+                        <span class="toggle-label">Show In Print</span>
+                    </div>
+                    <input type="hidden" name="AdditionalField1ShowInPrint" id="additionalField1ShowInPrint" value="@(Model?.AdditionalField1ShowInPrint == true ? "true" : "false")">
+                </div>
+
+                <div class="additional-field-row">
+                    <input class="additional-field-checkbox" type="checkbox" name="AdditionalField2Enabled" id="additionalField2Enabled" @(Model?.AdditionalField2Enabled == true ? "checked" : "")>
+                    <input type="text" name="AdditionalField2" id="additionalField2" class="additional-field-input" placeholder="Additional Field 2" value="@(Model?.AdditionalField2 ?? "")">
+                    <div class="show-in-print-toggle">
+                        <div class="toggle-switch @(Model?.AdditionalField2ShowInPrint == true ? "active" : "")" data-field="additionalField2ShowInPrint"></div>
+                        <span class="toggle-label">Show In Print</span>
+                    </div>
+                    <input type="hidden" name="AdditionalField2ShowInPrint" id="additionalField2ShowInPrint" value="@(Model?.AdditionalField2ShowInPrint == true ? "true" : "false")">
+                </div>
+
+                <div class="additional-field-row">
+                    <input class="additional-field-checkbox" type="checkbox" name="AdditionalField3Enabled" id="additionalField3Enabled" @(Model?.AdditionalField3Enabled == true ? "checked" : "")>
+                    <input type="text" name="AdditionalField3" id="additionalField3" class="additional-field-input" placeholder="Additional Field 3" value="@(Model?.AdditionalField3 ?? "")">
+                    <div class="show-in-print-toggle">
+                        <div class="toggle-switch @(Model?.AdditionalField3ShowInPrint == true ? "active" : "")" data-field="additionalField3ShowInPrint"></div>
+                        <span class="toggle-label">Show In Print</span>
+                    </div>
+                    <input type="hidden" name="AdditionalField3ShowInPrint" id="additionalField3ShowInPrint" value="@(Model?.AdditionalField3ShowInPrint == true ? "true" : "false")">
+                </div>
+
+                <div class="additional-field-row">
+                    <input class="additional-field-checkbox" type="checkbox" name="AdditionalField4Enabled" id="additionalField4Enabled" @(Model?.AdditionalField4Enabled == true ? "checked" : "")>
+                    <input type="text" name="AdditionalField4" id="additionalField4" class="additional-field-input" placeholder="Additional Field 4" value="@(Model?.AdditionalField4 ?? "")">
+                    <select name="AdditionalField4Type" class="date-type-dropdown">
+                        <option value="dd/mm/yy" @(Model?.AdditionalField4Type == "dd/mm/yy" ? "selected" : "")>dd/mm/yy</option>
+                        <option value="mm/dd/yy" @(Model?.AdditionalField4Type == "mm/dd/yy" ? "selected" : "")>mm/dd/yy</option>
+                        <option value="yy/mm/dd" @(Model?.AdditionalField4Type == "yy/mm/dd" ? "selected" : "")>yy/mm/dd</option>
+                    </select>
+                    <div class="show-in-print-toggle">
+                        <div class="toggle-switch @(Model?.AdditionalField4ShowInPrint == true ? "active" : "")" data-field="additionalField4ShowInPrint"></div>
+                        <span class="toggle-label">Show In Print</span>
+                    </div>
+                    <input type="hidden" name="AdditionalField4ShowInPrint" id="additionalField4ShowInPrint" value="@(Model?.AdditionalField4ShowInPrint == true ? "true" : "false")">
+                </div>
+            </div>
+
+            <!-- Enable Loyalty Point Section -->
+            <div class="settings-section">
+                <h3 class="section-title">Enable Loyalty Point</h3>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="EnableLoyaltyPoint" id="enableLoyaltyPoint" @(Model?.EnableLoyaltyPoint == true ? "checked" : "")>
+                    <label class="form-check-label" for="enableLoyaltyPoint">
+                        Enable Loyalty Point
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <button type="submit" class="save-btn" id="saveBtn">
+            <span id="saveText">Save Settings</span>
+        </button>
+    </div>
+</form>
+
+<div class="activation-notice">
+    <div class="title">Activate Windows</div>
+    <div>Go to Settings to activate Windows.</div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize toggle switches
+        document.querySelectorAll('.toggle-switch').forEach(function(toggle) {
+            toggle.addEventListener('click', function() {
+                const fieldName = this.getAttribute('data-field');
+                const hiddenInput = document.getElementById(fieldName);
+
+                this.classList.toggle('active');
+                const isActive = this.classList.contains('active');
+                hiddenInput.value = isActive ? 'true' : 'false';
+            });
+        });
+
+        // Initialize tooltips if using Bootstrap
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('.help-icon'));
+        // Add tooltip functionality here if needed
+    });
+
+    // Form submission handler
+    document.getElementById('partySettingsForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        savePartySettings();
+    });
+
+    function savePartySettings() {
+        const saveBtn = document.getElementById('saveBtn');
+        const saveText = document.getElementById('saveText');
+        const alertContainer = document.getElementById('alertContainer');
+
+        // Show loading state
+        saveBtn.disabled = true;
+        saveText.innerHTML = '<div class="loading-spinner"></div>Saving...';
+
+        // Clear previous alerts
+        alertContainer.innerHTML = '';
+
+        // Collect form data
+        const formData = new FormData(document.getElementById('partySettingsForm'));
+
+        // Convert FormData to object and handle checkboxes
+        const data = {};
+
+        // Handle checkboxes - they need special treatment
+        const checkboxes = [
+            'PartyGrouping', 'ShippingAddress', 'PrintShippingAddress', 'ManagePartyStatus',
+            'EnablePaymentReminder', 'AdditionalField1Enabled', 'AdditionalField2Enabled',
+            'AdditionalField3Enabled', 'AdditionalField4Enabled', 'EnableLoyaltyPoint'
+        ];
+
+        // Set all checkboxes to false first
+        checkboxes.forEach(name => {
+            data[name] = false;
+        });
+
+        // Then set checked ones to true and collect other form data
+        for (const [key, value] of formData.entries()) {
+            if (checkboxes.includes(key)) {
+                data[key] = true;
+            } else {
+                data[key] = value;
+            }
+        }
+
+        // Handle toggle switches (hidden inputs)
+        data.AdditionalField1ShowInPrint = document.getElementById('additionalField1ShowInPrint').value === 'true';
+        data.AdditionalField2ShowInPrint = document.getElementById('additionalField2ShowInPrint').value === 'true';
+        data.AdditionalField3ShowInPrint = document.getElementById('additionalField3ShowInPrint').value === 'true';
+        data.AdditionalField4ShowInPrint = document.getElementById('additionalField4ShowInPrint').value === 'true';
+
+        // Make AJAX request
+        fetch('/Settings/Party/SavePartySettings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            // Reset button state
+            saveBtn.disabled = false;
+            saveText.innerHTML = 'Save Settings';
+
+            // Show result message
+            if (result.success) {
+                showAlert('success', result.message || 'Party settings saved successfully!');
+            } else {
+                showAlert('danger', result.message || 'Failed to save party settings.');
+            }
+        })
+        .catch(error => {
+            // Reset button state
+            saveBtn.disabled = false;
+            saveText.innerHTML = 'Save Settings';
+
+            // Show error message
+            showAlert('danger', 'An error occurred while saving party settings. Please try again.');
+            console.error('Error:', error);
+        });
+    }
+
+    function showAlert(type, message) {
+        const alertContainer = document.getElementById('alertContainer');
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.innerHTML = message;
+
+        alertContainer.innerHTML = '';
+        alertContainer.appendChild(alertDiv);
+
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+
+        // Scroll to top to show the message
+        document.querySelector('.party-settings-container').scrollIntoView({ behavior: 'smooth' });
+    }
+</script>

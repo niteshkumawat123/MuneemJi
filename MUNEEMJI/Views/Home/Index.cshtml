@@ -429,10 +429,77 @@
         }
 
         }
+
+        .ShortCutmodal-content {
+            background: white;
+/*             border-radius: 10px;
+ */          /*   width: 90%;
+            max-width: 500px; */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .h5, h5 {
+            font-size: 1.25rem;
+            text-align:left;
+        }
+
+        .list-unstyled {
+            padding-left: 0;
+            text-align: left;
+            list-style: none;
+        }
     </style>
 </head>
 <body>
     <div class="container-fluid">
+
+        <div id="quickActionPopup" class="modal" tabindex="-1" role="dialog" style="display:none;">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="ShortCutmodal-content" style="border-radius: 8px;">
+                    <div class="modal-body">
+                        <div class="row p-3">
+                            <div class="col-md-4">
+                                <h5><strong>SALE</strong></h5>
+                                <ul class="list-unstyled">
+                                    <li><a href="Web/Sales/Create">Sale Invoice <span class="text-muted">ALT + S</span></a></li>
+                                    <li><a href="Web/PaymentIn/Create">Payment-In <span class="text-muted">ALT + I</span></a></li>
+                                    <li><a href="Web/CreditNote/Create">Sale Return <small>Cr Note</small> <span class="text-muted">ALT + R</span></a></li>
+                                    <li><a href="Web/SalesOrder/Create">Sale Order <span class="text-muted">ALT + F</span></a></li>
+                                    <li><a href="Web/Estimate_Quotations/Create">Estimate/Quotation <span class="text-muted">ALT + M</span></a></li>
+                                    <li><a href="Web/Sales/Proforma">Proforma Invoice <span class="text-muted">ALT + K</span></a></li>
+                                    <li><a href="Web/DeliveryChallan/Create">Delivery Challan <span class="text-muted">ALT + D</span></a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h5><strong>PURCHASE</strong></h5>
+                                <ul class="list-unstyled">
+                                    <li><a href="/Web/Purchase/Bill">Purchase Bill <span class="text-muted">ALT + P</span></a></li>
+                                    <li><a href="/Web/PaymentOut/Create">Payment-Out <span class="text-muted">ALT + O</span></a></li>
+                                    <li><a href="/Web/DebitNote/Create">Purchase Return <small>Dr Note</small> <span class="text-muted">ALT + L</span></a></li>
+                                    <li><a href="/Web/PurchaseOrder/Create">Purchase Order <span class="text-muted">ALT + G</span></a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-4">
+                                <h5><strong>OTHERS</strong></h5>
+                                <ul class="list-unstyled">
+                                    <li><a href="/Expenses">Expenses <span class="text-muted">ALT + E</span></a></li>
+                                    <li><a href="/Web/OtherIncome/Create">Other Income <span class="text-muted">ALT + Q</span></a></li>
+                                    <li><a href="/Web/Party/Add">Party To Party Transfer <span class="text-muted">ALT + J</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="text-center p-2 bg-warning mt-2 rounded">
+                            <small>Shortcut to open this menu: <kbd>Ctrl</kbd> + <kbd>Enter</kbd></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
         <!-- Header -->
         <div class="header">
           @*   <div class="search-container">
@@ -442,7 +509,7 @@
             <div class="header-actions">
                 <button class="btn btn-sale" onclick="window.location.href='/Web/Sales/Create'">+ Add Sale</button>
                 <button class="btn btn-purchase" onclick="window.location.href='/Web/PurchaseBill/Create'">+ Add Purchase</button>
-                <button class="btn btn-primary">+</button>
+                <button class="btn btn-primary" id="plusButton">+</button>
                 <button class="menu-btn">⋮</button>
             </div>
         </div>
@@ -556,5 +623,90 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const plusButton = document.getElementById('plusButton');
+            const popup = document.getElementById('quickActionPopup');
+
+            // Plus button click
+            plusButton.addEventListener('click', function () {
+                popup.style.display = 'block';
+            });
+
+            // Click outside to close
+            popup.addEventListener('click', function (e) {
+                if (e.target === popup) {
+                    popup.style.display = 'none';
+                }
+            });
+
+            // Shortcut Ctrl + Enter to open popup
+            document.addEventListener('keydown', function (e) {
+                if (e.ctrlKey && e.key === 'Enter') {
+                    popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("keydown", function (e) {
+            // Make sure ALT is pressed (and no other modifiers like Ctrl/Shift)
+            if (e.altKey && !e.ctrlKey && !e.shiftKey) {
+                const key = e.key.toLowerCase();
+
+                switch (key) {
+                    // SALE
+                    case "s":
+                        window.location.href = "/Web/Sales/Create";
+                        break;
+                    case "i":
+                        window.location.href = "/Web/PaymentIn/Create";
+                        break;
+                    case "r":
+                        window.location.href = "/Web/CreditNote/Create";
+                        break;
+                    case "f":
+                        window.location.href = "/Web/SalesOrder/Create";
+                        break;
+                    case "m":
+                        window.location.href = "/Web/Estimate_Quotations/Create";
+                        break;
+                    case "k":
+                        window.location.href = "/Web/Sales/Proforma";
+                        break;
+                    case "d":
+                        window.location.href = "/Web/DeliveryChallan/Create";
+                        break;
+
+                    // PURCHASE
+                    case "p":
+                        window.location.href = "/Web/Purchase/Bill";
+                        break;
+                    case "o":
+                        window.location.href = "/Web/PaymentOut/Create";
+                        break;
+                    case "l":
+                        window.location.href = "/Web/DebitNote/Create";
+                        break;
+                    case "g":
+                        window.location.href = "/Web/PurchaseOrder/Create";
+                        break;
+
+                    // OTHERS
+                    case "e":
+                        window.location.href = "/Expenses";
+                        break;
+                    case "q":
+                        window.location.href = "/Web/OtherIncome/Create";
+                        break;
+                    case "j":
+                        window.location.href = "/Web/Party/Add";
+                        break;
+                }
+            }
+        });
+    </script>
+
 </body>
+
 </html>

@@ -64,6 +64,7 @@ namespace MUNEEMJI.Models
         public DateTime OrderDate { get; set; } = DateTime.Now;
         public string ChallanNo { get; set;  }
         public DateTime Challandate { get; set; } = DateTime.Now;
+        public int PaymentTermId { get; set; }
 
         public List<PurchaseBillItem> BillItems { get; set; } = new List<PurchaseBillItem>();
 
@@ -106,6 +107,26 @@ namespace MUNEEMJI.Models
 
         [Display(Name = "Amount")]
         public decimal Amount { get; set; }
+        public int CategoryId { get; set; }
+        public string ItemCode { get; set; }
+        public string HSNCode { get; set; }
+        public string SerialNumber { get; set; }
+        public string Description { get; set; }
+        public int? Count { get; set; }
+        public string BatchNumber { get; set; }
+
+        public string ModelNumber { get; set; }
+
+        public DateTime? ExpiryDate { get; set; }
+
+        public DateTime? ManufacturingDate { get; set; }
+
+        public decimal? MRP { get; set; }
+
+        public string Size { get; set; }
+        public decimal? FreeQuantity { get; set; }
+
+
 
         public PurchaseBill Bill { get; set; }
     }
@@ -124,6 +145,7 @@ namespace MUNEEMJI.Models
             "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
         };
         public List<BillItem> DropDownItem { get; set; }
+        public List<BillItem> DropDownCategory { get; set; }
         public int ViewTypeId { get; set; }
     }
     public enum TradeDocumentTypes

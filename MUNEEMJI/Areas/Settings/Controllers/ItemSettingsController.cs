@@ -5,6 +5,7 @@ using Npgsql;
 
 namespace MUNEEMJI.Areas.Settings.Controllers
 {
+    [Area("Settings")]
     public class ItemSettingsController : Controller
     {
         private readonly string _connectionString;
@@ -118,12 +119,16 @@ namespace MUNEEMJI.Areas.Settings.Controllers
 
         // POST: ItemSettings/SaveOrUpdate
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveOrUpdate(ItemSettingsViewModel model)
+        public async Task<IActionResult> SaveOrUpdate([FromBody]ItemSettingsViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View("Index", model);
+                var errors = ModelState.Values
+                                .SelectMany(v => v.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+
+                return Json(new { success = false, message = "Validation failed", errors = errors });
             }
 
             using var connection = new NpgsqlConnection(_connectionString);
@@ -192,7 +197,12 @@ namespace MUNEEMJI.Areas.Settings.Controllers
             }
 
             TempData["SuccessMessage"] = "Item settings saved successfully!";
-            return RedirectToAction("Index");
+            return Json(new
+            {
+                success = true,
+                message = "Settings saved successfully!",
+                redirectUrl = Url.Action("Index", "ItemSettings", new { area = "Settings" })
+            });
         }
     }
     public class ItemSettingsData

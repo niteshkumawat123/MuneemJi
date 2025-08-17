@@ -14,9 +14,8 @@
     .party-settings-container {
         background: white;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        padding: 30px;
-        max-width: 1000px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.0);
+        padding: 0px;
         position: relative;
     }
 
@@ -352,7 +351,6 @@
 
 <form id="partySettingsForm">
     <div class="party-settings-container">
-        <button type="button" class="close-btn" onclick="window.close()">×</button>
 
         <!-- Alert Messages -->
         <div id="alertContainer"></div>
@@ -484,10 +482,6 @@
     </div>
 </form>
 
-<div class="activation-notice">
-    <div class="title">Activate Windows</div>
-    <div>Go to Settings to activate Windows.</div>
-</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

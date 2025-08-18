@@ -1042,13 +1042,13 @@
                                     <th class="col-amount2" style="width: 6%">AMOUNT</th>
                                     <th class="col-action" style="width: 2%">
                                         <button type="button"
-                                                class="column-toggle-btn"
-                                                id="columnToggleBtn"
-                                                data-bs-toggle="popover"
-                                                data-bs-placement="bottom"
-                                                data-bs-html="true"
-                                                data-bs-trigger="click"
-                                                data-bs-title="Column Settings">
+                                        class="column-toggle-btn"
+                                        id="columnToggleBtn"
+                                        data-bs-toggle="popover"
+                                        data-bs-placement="bottom"
+                                        data-bs-html="true"
+                                        data-bs-trigger="click"
+                                        data-bs-title="Column Settings">
                                             <i class="bi bi-plus"></i>
                                         </button>
                                     </th>
@@ -1059,24 +1059,34 @@
                                 {
                                     <tr class="item-row" data-index="@i">
                                         <td class="col-sr-no">@(i + 1)</td>
+                                        @if(Model.Bill.itemSettings!=null && Model.Bill.itemSettings.ItemCategory==true)
+                                        {
                                         <td class="col-category">
                                             @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
-                                                     new SelectList(Model.DropDownItem, "Id", "ItemName"),
-                                                     "-- Select Category --",
-                                                     new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
+                                                                       new SelectList(Model.DropDownItem, "Id", "ItemName"),
+                                                                       "-- Select Category --",
+                                                                       new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
                                         </td>
+                                        }
+
                                         <td class="col-item">
                                             @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
-                                                     new SelectList(Model.DropDownItem, "Id", "ItemName"),
-                                                     "-- Select Item --",
-                                                     new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
+                                                                       new SelectList(Model.DropDownItem, "Id", "ItemName"),
+                                                                       "-- Select Item --",
+                                                                       new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
                                         </td>
-                                        <td class="col-item-code">
-                                            <input asp-for="Bill.BillItems[i].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" />
-                                        </td>
-                                        <td class="col-hsn">
-                                            <input asp-for="Bill.BillItems[i].HSNCode" type="text" class="form-control-sm" placeholder="HSN Code" />
-                                        </td>
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
+                                        {
+                                            <td class="col-item-code">
+                                                <input asp-for="Bill.BillItems[i].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" />
+                                            </td>
+                                        }
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
+                                        {
+                                            <td class="col-hsn">
+                                                <input asp-for="Bill.BillItems[i].HSNCode" type="text" class="form-control-sm" placeholder="HSN Code" />
+                                            </td>
+                                        }
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.SerialNoTracking == true)
                                         {
                                             <td class="col-serial">
@@ -1177,140 +1187,133 @@
                     <button type="button" class="btn-add-row" onclick="addNewRow()">ADD ROW</button>
                 </div>
 
-                <!-- Transport Section -->
-                <div class="transport-section">
-                    <div class="row">
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.TransportName == true)
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Transport Name</label>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-                        }
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryLocation == true)
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Delivery Location</label>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-
-                        }
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field5 == true)
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Field5</label>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                       
-                                </div>
-                            </div>
-
-                        }
-
-                        <div class="col-md-3">
-                            <div class="floating-label-container">
-                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.VehicleNumber == true)
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Vehicle Number</label>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-                        }
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryDate == true)
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Delivery Date</label>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-                        }
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field6 == true)
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Field6</label>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-3">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-
-                        }
-
-                    </div>
-                </div>
+           
 
 
                 <div class="payment-section">
                     <div class="row">
 
                         <div class="col-md-8">
+                            <div class="row">
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.TransportName == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Transport Name</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryLocation == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Delivery Location</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field5 == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Field5</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                        </div>
+                                    </div>
+
+                                }
+
+                           
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.VehicleNumber == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Vehicle Number</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryDate == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Delivery Date</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field6 == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Field6</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+
+                                }
+
+                            </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
@@ -1332,16 +1335,17 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="floating-label-container">
-                                        <textarea asp-for="Bill.Description" class="floating-textarea" rows="2" placeholder=" "></textarea>
+                                        <input type="file" name="imageFile" class="floating-input" accept="image/*" />
+                                      @*   <textarea asp-for="Bill.Description" class="floating-textarea" rows="2" placeholder=" "></textarea> *@
                                         <label class="floating-label">Add Description</label>
                                     </div>
                                 </div>
 
 
                                 <div class="col-md-6">
-                                    <div class="floating-label-container">
+                                    <div class="floating-label-container fileupload">
                                         <input type="file" name="imageFile" class="floating-input" accept="image/*" />
                                         <label class="floating-label">Add Document</label>
                                     </div>
@@ -1350,7 +1354,14 @@
 
                             </div>
                         </div>
+                        <style>
+                            .fileupload .floating-input {
+                            padding: 0px 16px;    
+                            font-size: 12px;
+  
+                            }
 
+                        </style>
                         <div class="col-md-4">
                             <div class="summary-section" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
                                 <div class="row mb-2">
@@ -1367,95 +1378,177 @@
                                 </div>
 
                                 <div class="row mb-2">
-                                    <div class="col-8">
-                                        <label>Discount (%)</label>
-                                    </div>
-                                    <div class="col-4">
-                                        <input type="number" class="form-control form-control-sm" value="0" />
-                                    </div>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <div class="col-6">
-                                        <label>Tax</label>
-                                    </div>
-                                    <div class="col-6">
-                                        <select class="form-control form-control-sm">
-                                            <option>NONE</option>
-                                            <option>5%</option>
-                                            <option>12%</option>
-                                            <option>18%</option>
-                                            <option>28%</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <div class="col-8">
-                                        <label>Shipping</label>
-                                    </div>
-                                    <div class="col-4">
-                                        <input type="number" class="form-control form-control-sm" value="0" />
-                                    </div>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <div class="col-8">
-                                        <label>Packaging</label>
-                                    </div>
-                                    <div class="col-4">
-                                        <input type="number" class="form-control form-control-sm" value="0" />
-                                    </div>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <div class="col-8">
-                                        <label>Adjustment</label>
-                                    </div>
-                                    <div class="col-4">
-                                        <input type="number" class="form-control form-control-sm" value="0" />
-                                    </div>
-                                </div>
-
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="taxType" id="tcs" value="TCS" checked>
-                                            <label class="form-check-label" for="tcs">TCS</label>
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Discount (%)</label>
                                         </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="taxType" id="tds" value="TDS">
-                                            <label class="form-check-label" for="tds">TDS</label>
+                                        <div class="" style="width: 79px;">
+                                            <input type="number" class="form-control form-control-sm" value="0">
                                         </div>
-                                        <select class="form-control form-control-sm mt-2">
-                                            <option>NONE</option>
-                                            <option>0.1%</option>
-                                            <option>1%</option>
-                                            <option>2%</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row mb-2">
-                                    <div class="col-8">
-                                        <div class="form-check">
-                                            <input asp-for="Bill.RoundOff" type="checkbox" class="form-check-input" checked />
-                                            <label asp-for="Bill.RoundOff" class="form-check-label">Round Off</label>
+                                        <div>-</div>
+                                        <div class="" style="width: 75px;">
+                                            <input type="number" class="form-control form-control-sm" value="0">
                                         </div>
                                     </div>
-                                    <div class="col-4">
-                                        <span id="roundOffAmount">0</span>
-                                    </div>
+                                   
                                 </div>
 
-                                <div class="row">
-                                    <div class="col-8">
-                                        <strong>Total</strong>
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Tax</label>
+                                        </div>
+                                        <div class="" style="width: 79px;">
+                                            <select class="form-control form-control-sm">
+                                                <option>NONE</option>
+                                                <option>5%</option>
+                                                <option>12%</option>
+                                                <option>18%</option>
+                                                <option>28%</option>
+                                            </select>
+                                        </div>                                       
+                                        <div class="" style="width: 97px;text-align: right;">
+                                            <span> 0</span>
+                                        </div>
                                     </div>
-                                    <div class="col-4">
-                                        <strong id="finalTotal">0.00</strong>
-                                    </div>
+
                                 </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Shipping</label>
+                                        </div>
+                                        <div class="" style="width: 79px;">
+                                            <input type="number" class="form-control form-control-sm" value="0" />
+                                        </div>
+                                        <div class="" style="width: 97px;text-align: right;">
+                                            <span> 0</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Packaging</label>
+                                        </div>
+                                        <div class="" style="width: 79px;">
+                                            <input type="number" class="form-control form-control-sm" value="0" />
+                                        </div>
+                                        <div class="" style="width: 97px;text-align: right;">
+                                            <span id=""> 0</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Adjustment</label>
+                                        </div>
+                                        <div class="" style="width: 79px;">
+                                            <input type="number" class="form-control form-control-sm" value="0" />
+                                        </div>
+                                        <div class="" style="width: 97px;text-align: right;">
+                                           <span> 0</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                           
+
+                                 <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="taxType" id="tcs" value="TCS" checked>
+                                                <label class="form-check-label" for="tcs">TCS</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="taxType" id="tds" value="TDS">
+                                                <label class="form-check-label" for="tds">TDS</label>
+                                            </div>
+                                        </div>
+                                        <div class="" style="width: 79px;">
+                                            <select class="form-control form-control-sm mt-2">
+                                                <option>NONE</option>
+                                                <option>0.1%</option>
+                                                <option>1%</option>
+                                                <option>2%</option>
+                                            </select>
+                                        </div>
+                                        <div class="" style="width: 97px;text-align: right;">
+                                           <span> 0</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <div class="form-check">
+                                                <input asp-for="Bill.RoundOff" type="checkbox" class="form-check-input" checked />
+                                                <label asp-for="Bill.RoundOff" class="form-check-label">Round Off</label>
+                                            </div>
+                                        </div>
+                                        <div class="" style="width: 40px;">
+                                            <input id="roundOffAmount" type="number" class="form-control form-control-sm" value="0" />
+                                             
+                                        </div>
+                                        <div class="" style="text-align: right;">
+                                           Total
+                                        </div>
+                                        <div class="" style="width: 140px;">
+                                            <input id="roundOffAmount" type="number" class="form-control form-control-sm" value="0" />
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <div class="form-check">
+                                                <input asp-for="Bill.RoundOff" type="checkbox" class="form-check-input" checked />
+                                                <label asp-for="Bill.RoundOff" class="form-check-label d-none"></label>
+                                            </div>
+                                        </div>
+                                       
+                                        <div class="" style="text-align: right;">
+                                            Received
+                                        </div>
+                                        <div class="" style="width: 140px;">
+                                            <input id="roundOffAmount" type="number" class="form-control form-control-sm" value="0" />
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">                                   
+
+                                        <div class="" style="text-align: right; font-weight:bold;">
+                                         Balance
+                                        </div>
+                                        <div class="" style="width: 140px; font-weight:bold; text-align:right;">
+                                            0000
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                       
+
                             </div>
                         </div>
                     </div>
@@ -1527,12 +1620,20 @@
             newRow.className = 'item-row';
             newRow.setAttribute('data-index', itemIndex);
 
-            let rowHTML = `
-                <td class="col-sr-no">${itemIndex + 1}</td>
-                <td class="col-category">${itemDropdown.replace('ITEMINDEX', itemIndex).replace('ItemId', 'CategoryId')}</td>
-                <td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>
-                <td class="col-item-code"><input name="Bill.BillItems[${itemIndex}].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" /></td>
-                <td class="col-hsn"><input name="Bill.BillItems[${itemIndex}].HSNCode" type="text" class="form-control-sm" placeholder="HSN Code" /></td>`;
+            let rowHTML = `<td class="col-sr-no">${itemIndex + 1}</td>`
+            if(itemSettings.category)
+            {
+              rowHTML += `<td class="col-category">${itemDropdown.replace('ITEMINDEX', itemIndex).replace('ItemId', 'CategoryId')}</td>`;
+            }
+               rowHTML += `<td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>`;
+            if(itemSettings.itemcode)
+            {
+                rowHTML += `<td class="col-item-code"><input name="Bill.BillItems[${itemIndex}].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" /></td>`;
+            }
+            if(itemSettings.hsnsaccode)
+            {
+              rowHTML += `<td class="col-hsn"><input name="Bill.BillItems[${itemIndex}].HSNCode" type="text" class="form-control-sm" placeholder="HSN Code" /></td>`;
+            }
 
             // Conditional fields
             if (itemSettings.serialNoTracking) {

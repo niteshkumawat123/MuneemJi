@@ -54,5 +54,9 @@
 
         public bool SizeEnabled { get; set; } = false;
 
+       
+        public bool ItemCode { get; set; } = false;
+        public bool HsnSacCode { get; set; } = false;
+        
     }
 }

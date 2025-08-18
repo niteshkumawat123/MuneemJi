@@ -1,7 +1,10 @@
-﻿namespace MUNEEMJI.Models.Setting
+﻿using MUNEEMJI.Controllers;
+
+namespace MUNEEMJI.Models.Setting
 {
     public class TransactionSettingsViewModel
     {
+        public int Id { get; set; }
         public int FirmId { get; set; }
         public bool InvoiceBillNo { get; set; }
         public bool AddTimeOnTransactions { get; set; }
@@ -36,5 +39,11 @@
         public string ProformaInvoicePrefix { get; set; } = "None";
         public string DeliveryChallanPrefix { get; set; } = "None";
         public string PaymentInPrefix { get; set; } = "None";
+        public bool TransportName { get; set; }
+        public bool VehicleNumber { get; set; }
+        public bool DeliveryDate { get; set; }
+        public bool DeliveryLocation { get; set; }
+        public bool Field5 { get; set; }
+        public bool Field6 { get; set; }
     }
 }

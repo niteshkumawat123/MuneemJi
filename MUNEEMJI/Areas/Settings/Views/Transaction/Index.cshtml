@@ -356,9 +356,9 @@
                         <span class="help-icon">i</span>
                     </label>
                 </div>
-                <div class="ms-4">
+               @*  <div class="ms-4">
                     <a href="#" class="change-text-link">Set Payment Terms</a>
-                </div>
+                </div> *@
 
                 <div class="form-check mt-3">
                     <input class="form-check-input" type="checkbox" name="ShowProfitSaleInvoice" id="showProfitSaleInvoice" @(Model?.ShowProfitSaleInvoice == true ? "checked" : "")>
@@ -367,6 +367,54 @@
                         <span class="help-icon">i</span>
                     </label>
                 </div>
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="TransportName" id="TransportName" @(Model?.TransportName == true ? "checked" : "")>
+                    <label class="form-check-label" for="TransportName">
+                        TransportName
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="VehicleNumber" id="VehicleNumber" @(Model?.VehicleNumber == true ? "checked" : "")>
+                    <label class="form-check-label" for="VehicleNumber">
+                        Vehicle Number
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="DeliveryDate" id="DeliveryDate" @(Model?.DeliveryDate == true ? "checked" : "")>
+                    <label class="form-check-label" for="DeliveryDate">
+                        Delivery Date
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="DeliveryLocation" id="DeliveryLocation" @(Model?.DeliveryLocation == true ? "checked" : "")>
+                    <label class="form-check-label" for="DeliveryLocation">
+                        Delivery Location
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="Field5" id="Field5" @(Model?.Field5 == true ? "checked" : "")>
+                    <label class="form-check-label" for="Field5">
+                        Field 5
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+                <div class="form-check mt-3">
+                    <input class="form-check-input" type="checkbox" name="Field6" id="Field6" @(Model?.Field6 == true ? "checked" : "")>
+                    <label class="form-check-label" for="Field6">
+                        Field 6
+                        <span class="help-icon">i</span>
+                    </label>
+                </div>
+
+
             </div>
 
             <!-- Items Table Section -->
@@ -577,7 +625,7 @@
             'LinkPaymentsToInvoices', 'DueDatesPaymentTerms', 'ShowProfitSaleInvoice',
             'InclusiveExclusiveTax', 'DisplayPurchasePrice', 'ShowLast5SalePrice',
             'FreeItemQuantity', 'CountEnabled', 'TransactionWiseTax',
-            'TransactionWiseDiscount', 'RoundOffTotal'
+            'TransactionWiseDiscount', 'RoundOffTotal','DeliveryLocation','DeliveryDate','VehicleNumber','TransportName','Field5','Field6'
         ];
 
         // Set all checkboxes to false first

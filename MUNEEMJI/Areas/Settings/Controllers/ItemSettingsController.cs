@@ -204,6 +204,60 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                 redirectUrl = Url.Action("Index", "ItemSettings", new { area = "Settings" })
             });
         }
+        public async Task<IActionResult> SaveOrUpdateColumnSettings([FromBody] ItemSettingsViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                                .SelectMany(v => v.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+
+                return Json(new { success = false, message = "Validation failed", errors = errors });
+            }
+
+            using var connection = new NpgsqlConnection(_connectionString);
+
+            // Check if record exists (id = 1 for global settings)
+            var existsQuery = "SELECT COUNT(*) FROM item_settings WHERE id = 1";
+            var exists = await connection.QuerySingleAsync<int>(existsQuery) > 0;
+
+            if (exists)
+            {
+                // Update existing record
+                var updateQuery = @"
+            UPDATE item_settings SET
+                item_category = @Category,
+                item_code = @ItemCode,
+                hsn_sac_code = @HsnSacCode,
+                description = @Description,
+                item_wise_discount = @Discount
+            WHERE id = 1";
+
+                await connection.ExecuteAsync(updateQuery, model);
+            }
+            else
+            {
+                // Insert new record
+                var insertQuery = @"
+            INSERT INTO item_settings (
+                id, item_category, item_code, hsn_sac_code, description, item_wise_discount, created_at, updated_at
+            ) VALUES (
+                1, @Category, @ItemCode, @HsnSacCode, @Description, @Discount, NOW(), NOW()
+            )";
+
+                await connection.ExecuteAsync(insertQuery, model);
+            }
+
+            TempData["SuccessMessage"] = "Column settings saved successfully!";
+            return Json(new
+            {
+                success = true,
+                message = "Settings saved successfully!",
+                redirectUrl = Url.Action("create", "Sales")
+            });
+        }
+
     }
     public class ItemSettingsData
     {

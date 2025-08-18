@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MUNEEMJI.Models.Setting;
+using System.ComponentModel.DataAnnotations;
 
 namespace MUNEEMJI.Models
 {
@@ -67,6 +68,9 @@ namespace MUNEEMJI.Models
         public int PaymentTermId { get; set; }
 
         public List<PurchaseBillItem> BillItems { get; set; } = new List<PurchaseBillItem>();
+
+        public TransactionSettingsViewModel transactionSettings { get; set; }
+        public ItemSettingsViewModel itemSettings { get; set; }
 
     }
     public class PurchaseBillItem

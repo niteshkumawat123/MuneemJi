@@ -13,12 +13,14 @@ namespace MUNEEMJI.Controllers
         private readonly ISalesBillService _billService;
         private readonly IWebHostEnvironment _environment;
         private readonly IBillItemService _IBillItemService;
+        private readonly TransactionSettingsController settingsController;
         string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
         public SalesController(ISalesBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService)
         {
             _billService = billService;
             _environment = environment;
             _IBillItemService = iBillItemService;
+          
         }
 
 
@@ -151,6 +153,9 @@ namespace MUNEEMJI.Controllers
         {
             PartyController partyController = new PartyController();
             var viewModel = new PurchaseBillViewModel();
+            var transactionSettingsController = new TransactionSettingsController();
+
+            int firmid = 1;
             await Task.Delay(1);
             //if (id > 0)
             //{
@@ -175,22 +180,25 @@ namespace MUNEEMJI.Controllers
             //}
             //else
             //{
-                 viewModel = new PurchaseBillViewModel
+            viewModel = new PurchaseBillViewModel
+            {
+                Bill = new PurchaseBill
                 {
-                    Bill = new PurchaseBill
-                    {
-                        BillNumber = _billService.GenerateBillNumber(),
+                    BillNumber = _billService.GenerateBillNumber(),
 
-                        BillDate = DateTime.Now,
-                        BillItems = new List<PurchaseBillItem>
-                    {
+                    BillDate = DateTime.Now,
+                    BillItems = new List<PurchaseBillItem>
+                        {
                         new PurchaseBillItem(),
                         new PurchaseBillItem()
-                    }
-                    },
-                     ViewTypeId = (int)ViewTypeEnum.Create,
-                     DropDownItem = await _IBillItemService.GetItems()
-                };
+                        },
+
+                    transactionSettings = transactionSettingsController.GetTransactionByFirmId(firmid),
+                    itemSettings = transactionSettingsController.GetItemSettings()
+                },
+                ViewTypeId = (int)ViewTypeEnum.Create,
+                DropDownItem = await _IBillItemService.GetItems()
+            };
             //}
             ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
             return View(viewModel);

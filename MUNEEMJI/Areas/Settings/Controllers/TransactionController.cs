@@ -53,7 +53,13 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                 estimate_prefix AS ""EstimatePrefix"",
                 proforma_invoice_prefix AS ""ProformaInvoicePrefix"",
                 delivery_challan_prefix AS ""DeliveryChallanPrefix"",
-                payment_in_prefix AS ""PaymentInPrefix""
+                payment_in_prefix AS ""PaymentInPrefix"",
+                transport_name AS ""TransportName"",
+                vehicle_number AS ""VehicleNumber"",
+                delivery_date AS ""DeliveryDate"",
+                delivery_location AS ""DeliveryLocation"",
+                field5 AS ""Field5"",
+                field6 AS ""Field6""
             FROM transaction_settings
             LIMIT 1;   -- ✅ Only first record
         ";
@@ -98,7 +104,14 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                             EstimatePrefix = reader["EstimatePrefix"] as string ?? "None",
                             ProformaInvoicePrefix = reader["ProformaInvoicePrefix"] as string ?? "None",
                             DeliveryChallanPrefix = reader["DeliveryChallanPrefix"] as string ?? "None",
-                            PaymentInPrefix = reader["PaymentInPrefix"] as string ?? "None"
+                            PaymentInPrefix = reader["PaymentInPrefix"] as string ?? "None",
+
+                            TransportName = reader["TransportName"] as bool? ?? false,
+                            VehicleNumber = reader["VehicleNumber"] as bool? ?? false,
+                            DeliveryDate = reader["DeliveryDate"] as bool? ?? false,
+                            DeliveryLocation = reader["DeliveryLocation"] as bool? ?? false,
+                            Field5 = reader["Field5"] as bool? ?? false,
+                            Field6 = reader["Field6"] as bool? ?? false
                         };
                     }
                 }
@@ -169,7 +182,13 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                                     delivery_challan_prefix = @DeliveryChallanPrefix,
                                     payment_in_prefix = @PaymentInPrefix,
                                     updated_at = @UpdatedAt,
-                                    updated_by = @UpdatedBy
+                                    updated_by = @UpdatedBy,
+                                    transport_name = @TransportName,
+                                    vehicle_number = @VehicleNumber,
+                                    delivery_date = @DeliveryDate,
+                                    delivery_location = @DeliveryLocation,
+                                    field5 = @Field5,
+                                    field6 = @Field6
                                 WHERE firm_id = @FirmId";
                 }
                 else
@@ -186,7 +205,7 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                                   transaction_wise_discount, round_off_total, round_off_type, round_off_value,
                                   billing_type, sale_prefix, credit_note_prefix, sale_order_prefix,
                                   purchase_order_prefix, estimate_prefix, proforma_invoice_prefix,
-                                  delivery_challan_prefix, payment_in_prefix, created_at, created_by
+                                  delivery_challan_prefix, payment_in_prefix, created_at, created_by,transport_name, vehicle_number, delivery_date, delivery_location, field5, field6
                               ) VALUES (
                                   @FirmId, @InvoiceBillNo, @AddTimeOnTransactions, @PrintTimeOnInvoices,
                                   @CashSaleByDefault, @BillingNameOfParties, @CustomerPODetails,
@@ -197,7 +216,7 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                                   @TransactionWiseDiscount, @RoundOffTotal, @RoundOffType, @RoundOffValue,
                                   @BillingType, @SalePrefix, @CreditNotePrefix, @SaleOrderPrefix,
                                   @PurchaseOrderPrefix, @EstimatePrefix, @ProformaInvoicePrefix,
-                                  @DeliveryChallanPrefix, @PaymentInPrefix, @CreatedAt, @CreatedBy
+                                  @DeliveryChallanPrefix, @PaymentInPrefix, @CreatedAt, @CreatedBy,@TransportName, @VehicleNumber, @DeliveryDate, @DeliveryLocation, @Field5, @Field6
                               )";
                 }
 
@@ -237,6 +256,12 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                     ProformaInvoicePrefix = model.ProformaInvoicePrefix,
                     DeliveryChallanPrefix = model.DeliveryChallanPrefix,
                     PaymentInPrefix = model.PaymentInPrefix,
+                    TransportName = model.TransportName,
+                    VehicleNumber = model.VehicleNumber,
+                    DeliveryDate = model.DeliveryDate,
+                    DeliveryLocation = model.DeliveryLocation,
+                    Field5 = model.Field5,
+                    Field6 = model.Field6,
                     CreatedAt = DateTime.UtcNow,
                     CreatedBy = User.Identity?.Name ?? "System",
                     UpdatedAt = DateTime.UtcNow,

@@ -502,7 +502,7 @@
             <div class="dropdown">
                 <a href="#" class="me-3 text-decoration-none dropdown-toggle" id="companyDropdown">Company</a>
                 <ul class="dropdown-menu" aria-labelledby="companyDropdown">
-                    <li><a class="dropdown-item" href="@Url.Action("ChangeCompany", "Company")">Change Company</a></li>
+                    <li><a class="dropdown-item" href="@Url.Action("index", "Company")">Change Company</a></li>
                     <li><a class="dropdown-item" href="@Url.Action("RenameCompany", "Company")">Rename Company Name</a></li>
                 </ul>
             </div>
@@ -677,6 +677,7 @@
                     </a>
                     <div class="collapse" id="syncMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
+                            <li><a href="/Web/User/Index" class="nav-link">Sync & Share</a></li>
                             <li><a href="#" class="nav-link">Cloud Sync</a></li>
                             <li><a href="#" class="nav-link">Backup Now</a></li>
                             <li><a href="#" class="nav-link">Backup to Drive</a></li>

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Xml.Schema;
 
 namespace MUNEEMJI.Models
 {
@@ -20,8 +21,16 @@ namespace MUNEEMJI.Models
 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-    }
+        public string Username { get; set; }
 
+        public int Status { get; set; }
+
+        public int RoleId { get; set; }
+
+        public bool IsActive { get; set; }
+        public int CompanyId { get; set; }
+        public string UserName {  get; set; }
+    } 
     public class LoginViewModel
     {
         [Required(ErrorMessage = "Phone number is required")]

@@ -1,0 +1,327 @@
+﻿@model List<Business>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sync & Share</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background-color: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .header h1 {
+                margin: 0;
+                font-size: 20px;
+                font-weight: 600;
+                color: #333;
+            }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-link {
+            color: #007bff;
+            background: none;
+            border: none;
+            text-decoration: none;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .current-user {
+            background-color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .current-user-info {
+            color: #666;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phone-number {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .whatsapp-icon {
+            color: #25d366;
+            font-size: 16px;
+        }
+
+        .user-roles {
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .user-roles-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .user-roles-header h2 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 600;
+                color: #333;
+            }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .status-pending {
+            color: #ff8c00;
+            font-weight: 500;
+        }
+
+        .status-removed {
+            color: #999;
+            font-weight: 500;
+        }
+
+        .role-badge {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .edit-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #dc3545;
+        }
+
+        .restore-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #007bff;
+        }
+
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-toggle {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #ccc;
+            font-size: 14px;
+        }
+
+        .email-icon::before {
+            content: "✉";
+            margin-right: 5px;
+        }
+
+        .three-dots {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Sync & Share ⭐</h1>
+        <div class="header-actions">
+            <button class="btn btn-link">💬 Know More</button>
+            <a href="@Url.Action("AddUser", "User")" class="btn btn-primary">+ Add Users</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="current-user">
+            <div class="current-user-info">
+                Currently logged in with the following number:
+                <span class="phone-number">9610562456</span>
+                <span class="whatsapp-icon">💬</span>
+                <button class="three-dots">⋮</button>
+            </div>
+        </div>
+
+        <div class="user-roles">
+            <div class="user-roles-header">
+                <h2>User Roles</h2>
+                <a href="#" class="btn btn-link">See User Activity</a>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>FULL NAME</th>
+                            <th>PHONE/E-MAIL</th>
+                            <th>STATUS</th>
+                            <th>ROLE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.BusinessName</td>
+                                <td>
+                                    <span class="email-icon">@user.Email</span>
+                                </td>
+                                <td>
+                                    @if (user.Status == 0)
+                                    {
+                                        <span class="status-pending">Pending</span>
+                                    }
+                                    else if (user.Status == -1)
+                                    {
+                                        <span class="status-removed">Removed</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="dropdown">
+                                        <span class="role-badge">SECONDARY ADMIN</span>
+                                        <button class="dropdown-toggle" onclick="toggleRoleDropdown(@user.Id)">Change Role ▼</button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="actions">
+                                        <button class="edit-btn">✏️</button>
+                                        @if (user.Status == -1)
+                                        {
+                                            <form asp-action="RestoreUser" method="post" style="display: inline;">
+                                                <input type="hidden" name="userId" value="@user.Id" />
+                                                <button type="submit" class="restore-btn">Restore</button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <button class="delete-btn">🗑️</button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="watermark">
+        <div>Activate Windows</div>
+        <div>Go to Settings to activate Windows.</div>
+    </div>
+
+    <script>
+        function toggleRoleDropdown(userId) {
+            // Implementation for role dropdown toggle
+            console.log('Toggle role dropdown for user:', userId);
+        }
+    </script>
+</body>
+</html>

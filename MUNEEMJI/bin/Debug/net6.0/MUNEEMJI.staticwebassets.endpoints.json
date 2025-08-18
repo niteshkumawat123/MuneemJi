@@ -29,7 +29,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 17 Aug 2025 00:57:13 GMT"
+          "Value": "Sun, 17 Aug 2025 21:04:04 GMT"
         }
       ],
       "EndpointProperties": [
@@ -66,7 +66,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Sun, 17 Aug 2025 00:57:13 GMT"
+          "Value": "Sun, 17 Aug 2025 21:04:04 GMT"
         }
       ],
       "EndpointProperties": [
@@ -163,6 +163,88 @@
         {
           "Name": "label",
           "Value": "css/site.css"
+        }
+      ]
+    },
+    {
+      "Route": "email-templates/InviteTemplate.html",
+      "AssetFile": "email-templates/InviteTemplate.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "557"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"giV6GDG6vRUfsXlPr5UC+bkg1tmAURg/mdY6100yYG0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 17 Aug 2025 11:53:44 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-giV6GDG6vRUfsXlPr5UC+bkg1tmAURg/mdY6100yYG0="
+        }
+      ]
+    },
+    {
+      "Route": "email-templates/InviteTemplate.ulrfs40vdk.html",
+      "AssetFile": "email-templates/InviteTemplate.html",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "557"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/html"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"giV6GDG6vRUfsXlPr5UC+bkg1tmAURg/mdY6100yYG0=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sun, 17 Aug 2025 11:53:44 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ulrfs40vdk"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-giV6GDG6vRUfsXlPr5UC+bkg1tmAURg/mdY6100yYG0="
+        },
+        {
+          "Name": "label",
+          "Value": "email-templates/InviteTemplate.html"
         }
       ]
     },

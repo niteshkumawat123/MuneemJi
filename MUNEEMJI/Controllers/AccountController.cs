@@ -27,6 +27,12 @@ namespace MUNEEMJI.Controllers
             ViewBag.Email = email;
             return View();
         }
+        [HttpGet]
+        public IActionResult Register()
+        {
+            
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> SendOtp(LoginViewModel model)
@@ -180,14 +186,14 @@ namespace MUNEEMJI.Controllers
             ViewBag.otpsent = true;
             return View("Login");
         }
-        [HttpPost]     
+        [HttpPost]
         public IActionResult Logout()
         {
             // Clear session data
             HttpContext.Session.Clear();
             // Clear TempData (optional but recommended)
             TempData.Clear();
-            ViewData.Clear();          
+            ViewData.Clear();
 
             // Sign out from cookie authentication (synchronous wait)
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
@@ -277,7 +283,7 @@ namespace MUNEEMJI.Controllers
                         }
                     }
                     //return View("Login", loginViewModel);
-                    
+
                     return RedirectToAction("Login", "Account");
                 }
 
@@ -360,50 +366,55 @@ namespace MUNEEMJI.Controllers
 }
 
 
-    public class LoginViewModel
-    {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        public string Email { get; set; }
+public class LoginViewModel
+{
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+    public string Email { get; set; }
 
-        public bool AcceptTerms { get; set; }
-    }
+    public bool AcceptTerms { get; set; }
+}
 
-    public class RegisterViewModel
-    {
-        [Required(ErrorMessage = "Business name is required")]
-        [StringLength(100, ErrorMessage = "Business name cannot exceed 100 characters")]
-        public string BusinessName { get; set; }
+public class RegisterViewModel
+{
+    [Required(ErrorMessage = "Business name is required")]
+    [StringLength(100, ErrorMessage = "Business name cannot exceed 100 characters")]
+    public string BusinessName { get; set; }
 
-        [Required(ErrorMessage = "Phone number is required")]
-        [Phone(ErrorMessage = "Please enter a valid phone number")]
-        [StringLength(15, ErrorMessage = "Phone number cannot exceed 15 characters")]
-        public string Phone { get; set; }
+    [Required(ErrorMessage = "Phone number is required")]
+    [Phone(ErrorMessage = "Please enter a valid phone number")]
+    [StringLength(15, ErrorMessage = "Phone number cannot exceed 15 characters")]
+    public string Phone { get; set; }
 
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Please enter a valid email address")]
-        public string Email { get; set; }
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+    public string Email { get; set; }
 
-        [Required(ErrorMessage = "You must accept the terms and conditions")]
-        public bool AcceptTerms { get; set; }
-    }
+    [Required(ErrorMessage = "You must accept the terms and conditions")]
+    public bool AcceptTerms { get; set; }
+}
 
-    public class Business
-    {
-        public int Id { get; set; }
-        public string BusinessName { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-    }
+public class Business
+{
+    public int Id { get; set; }
+    public string BusinessName { get; set; }
+    public string Phone { get; set; }
+    public string Email { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public int Status { get; set; }
 
-    public class OtpViewModel
-    {
-        [Required(ErrorMessage = "OTP is required")]
-        [StringLength(6, MinimumLength = 6, ErrorMessage = "OTP must be 6 digits")]
-        public string Otp { get; set; }
+    public int RoleId { get; set; }
 
-        [Required(ErrorMessage = "Email is required")]
-        public string Email { get; set; }
-    }
+    public bool IsActive { get; set; }
+}
+
+public class OtpViewModel
+{
+    [Required(ErrorMessage = "OTP is required")]
+    [StringLength(6, MinimumLength = 6, ErrorMessage = "OTP must be 6 digits")]
+    public string Otp { get; set; }
+
+    [Required(ErrorMessage = "Email is required")]
+    public string Email { get; set; }
+}

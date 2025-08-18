@@ -1,0 +1,535 @@
+﻿@model MUNEEMJI.Models.AddUserViewModel
+@{
+    ViewData["Title"] = "General Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .adduser-body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+
+    .adduser-container {
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .adduser-modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+    }
+
+        .adduser-modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+    .adduser-close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .adduser-modal-body {
+        padding: 20px;
+    }
+
+    .adduser-form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .adduser-form-group {
+        flex: 1;
+    }
+
+        .adduser-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .adduser-form-group input,
+        .adduser-form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+            .adduser-form-group input:focus,
+            .adduser-form-group select:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+    .adduser-required {
+        color: #dc3545;
+    }
+
+    .adduser-help-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .adduser-custom-dropdown {
+        position: relative;
+    }
+
+    .adduser-dropdown-trigger {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: white;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-sizing: border-box;
+        user-select: none;
+    }
+
+        .adduser-dropdown-trigger:hover {
+            border-color: #007bff;
+        }
+
+        .adduser-dropdown-trigger:active {
+            background-color: #f8f9fa;
+        }
+
+    .adduser-dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ccc;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 9999;
+        display: none;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+        .adduser-dropdown-list.adduser-dropdown-visible {
+            display: block !important;
+        }
+
+    .adduser-dropdown-option {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s;
+    }
+
+        .adduser-dropdown-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .adduser-dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+    .adduser-permissions-panel {
+        margin-top: 30px;
+        display: none;
+    }
+
+        .adduser-permissions-panel.adduser-permissions-visible {
+            display: block;
+        }
+
+    .adduser-permissions-header {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .adduser-permissions-grid {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+    }
+
+        .adduser-permissions-grid th {
+            background-color: #f8f9fa;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            border: 1px solid #e0e0e0;
+        }
+
+        .adduser-permissions-grid td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+            .adduser-permissions-grid td:first-child {
+                text-align: left;
+                font-weight: 500;
+            }
+
+    .adduser-permission-allowed {
+        color: #28a745;
+        font-size: 16px;
+    }
+
+    .adduser-permission-denied {
+        color: #dc3545;
+        font-size: 16px;
+    }
+
+    .adduser-permission-notapplicable {
+        color: #999;
+        font-size: 12px;
+    }
+
+    .adduser-modal-footer {
+        padding: 20px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: flex-end;
+        background: white;
+    }
+
+    .adduser-submit-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        background-color: #007bff;
+        color: white;
+    }
+
+        .adduser-submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+    .adduser-debug-panel {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: #333;
+        color: white;
+        padding: 10px;
+        font-size: 12px;
+        border-radius: 4px;
+        z-index: 99999;
+        max-width: 300px;
+    }
+</style>
+
+
+
+<div class="adduser-container">
+    <div class="adduser-modal-header">
+        <h2>Add User</h2>
+        <a href="@Url.Action("Index", "User")" class="adduser-close-btn">×</a>
+    </div>
+
+    <form asp-action="AddUser" method="post" id="adduserForm">
+        <div class="adduser-modal-body">
+            <div class="adduser-form-row">
+                <div class="adduser-form-group">
+                    <label>Enter Full Name <span class="adduser-required">*</span></label>
+                    <input type="text" asp-for="FullName" required />
+                </div>
+
+                <div class="adduser-form-group">
+                    <label>Enter Phone Number or Email <span class="adduser-required">*</span></label>
+                    <input type="text" asp-for="PhoneOrEmail" required />
+                    <div class="adduser-help-text">User will receive an invite on this number or email.</div>
+                </div>
+
+                <div class="adduser-form-group">
+                    <label>Choose User Role <span class="adduser-required">*</span></label>
+                    <div class="adduser-custom-dropdown">
+                        <div class="adduser-dropdown-trigger" onclick="adduserToggleDropdown()" id="adduserDropdownTrigger">
+                            <span id="adduserSelectedRole">Select Role</span>
+                            <span>▼</span>
+                        </div>
+                        <div class="adduser-dropdown-list" id="adduserRoleDropdown">
+                            @if (Model.AvailableRoles != null && Model.AvailableRoles.Any())
+                            {
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <div class="adduser-dropdown-option" onclick="adduserSelectRole('@role.RoleId', '@role.RoleName')">@role.RoleName</div>
+                                }
+                            }
+                            else
+                            {
+                                <!-- Fallback if AvailableRoles is not populated -->
+                                <div class="adduser-dropdown-option" onclick="adduserSelectRole('1', 'Secondary Admin')">Secondary Admin</div>
+                                <div class="adduser-dropdown-option" onclick="adduserSelectRole('2', 'Salesman')">Salesman</div>
+                                <div class="adduser-dropdown-option" onclick="adduserSelectRole('3', 'Biller')">Biller</div>
+                                <div class="adduser-dropdown-option" onclick="adduserSelectRole('4', 'Biller and Salesman')">Biller and Salesman</div>
+                                <div class="adduser-dropdown-option" onclick="adduserSelectRole('5', 'CA/Accountant')">CA/Accountant</div>
+                                <div class="adduser-dropdown-option" onclick="adduserSelectRole('6', 'Stock Keeper')">Stock Keeper</div>
+                            }
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="SelectedRoleId" id="adduserSelectedRoleId" />
+                </div>
+            </div>
+
+            <div class="adduser-permissions-panel" id="adduserPermissionsPanel">
+                <div class="adduser-permissions-header" id="adduserPermissionsHeader">Role Permissions</div>
+
+                <table class="adduser-permissions-grid">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Module</th>
+                            <th>VIEW</th>
+                            <th>CREATE</th>
+                            <th>EDIT</th>
+                            <th>SHARE</th>
+                            <th>DELETE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="permissionsTableBody">
+                        <tr>
+                            <td>All Transactions</td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Settings</td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                        </tr>
+                        <tr>
+                            <td>Sync Settings</td>
+                            <td><span class="adduser-permission-denied">✗</span></td>
+                            <td><span class="adduser-permission-denied">✗</span></td>
+                            <td><span class="adduser-permission-denied">✗</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                            <td><span class="adduser-permission-denied">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td>Reports</td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                        </tr>
+                        <tr>
+                            <td>Stock Transfer</td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                        </tr>
+                        <tr>
+                            <td>Party Smart Connect</td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-allowed">✓</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                            <td><span class="adduser-permission-notapplicable">NA</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="adduser-modal-footer">
+            <button type="submit" class="adduser-submit-btn">Add User</button>
+        </div>
+    </form>
+</div>
+
+<script>
+
+
+    function adduserToggleDropdown() {
+
+
+        var dropdown = document.getElementById('adduserRoleDropdown');
+        var trigger = document.getElementById('adduserDropdownTrigger');
+        var isCurrentlyVisible = dropdown.classList.contains('adduser-dropdown-visible');
+
+        dropdown.classList.toggle('adduser-dropdown-visible');
+
+        // Add visual feedback to trigger
+        if (trigger) {
+            if (dropdown.classList.contains('adduser-dropdown-visible')) {
+                trigger.style.backgroundColor = '#e3f2fd';
+                trigger.style.borderColor = '#007bff';
+            } else {
+                trigger.style.backgroundColor = '';
+                trigger.style.borderColor = '#ccc';
+            }
+        }
+
+        var newState = dropdown.classList.contains('adduser-dropdown-visible');
+        var newComputedStyle = window.getComputedStyle(dropdown).display;
+
+    }
+
+    function adduserSelectRole(roleId, roleName) {
+       
+
+        var selectedRoleSpan = document.getElementById('adduserSelectedRole');
+        var selectedRoleInput = document.getElementById('adduserSelectedRoleId');
+        var dropdown = document.getElementById('adduserRoleDropdown');
+        var trigger = document.getElementById('adduserDropdownTrigger');
+
+        if (selectedRoleSpan) selectedRoleSpan.textContent = roleName;
+        if (selectedRoleInput) selectedRoleInput.value = roleId;
+
+        // Hide dropdown
+        if (dropdown) dropdown.classList.remove('adduser-dropdown-visible');
+        if (trigger) {
+            trigger.style.backgroundColor = '';
+            trigger.style.borderColor = '#28a745';
+        }
+
+
+        var permissionsHeader = document.getElementById('adduserPermissionsHeader');
+        if (permissionsHeader) {
+            permissionsHeader.textContent = roleName + ' Permissions';
+        }
+
+
+        var permissionsPanel = document.getElementById('adduserPermissionsPanel');
+        if (permissionsPanel) {
+            permissionsPanel.classList.add('adduser-permissions-visible');
+        }
+
+
+        adduserLoadRolePermissions(roleId);
+    }
+
+    function adduserLoadRolePermissions(roleId) {
+   
+
+        fetch('/User/GetRolePermissions?roleId=' + roleId)
+            .then(response => response.json())
+            .then(permissions => {
+                debugger;
+                adduserUpdatePermissionsTable(permissions);
+            })
+            .catch(error => {
+                console.error('Error loading permissions:', error);
+            });
+
+    }
+
+      function adduserLoadRolePermissions(roleId) {
+        console.log('Loading permissions for role:', roleId);
+
+        fetch('/User/GetRolePermissions?roleId=' + roleId)
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(permissions => {
+                console.log('Permissions received:', permissions);
+                console.log('Permissions type:', typeof permissions);
+                console.log('Is array:', Array.isArray(permissions));
+                updatePermissionsTable(permissions);
+            })
+            .catch(error => {
+                console.error('Error loading permissions:', error);
+                // Show user-friendly error
+                alert(`Failed to load permissions. Error: ${error.message || error}`);
+
+            });
+    }
+
+       function updatePermissionsTable(permissions) {
+          
+            const tbody = document.getElementById('permissionsTableBody');
+            tbody.innerHTML = '';
+
+            permissions.forEach(permission => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${permission.moduleName}</td>
+                    <td>${permission.canView ? '<span class="permission-check">✓</span>' : '<span class="permission-cross">✗</span>'}</td>
+                    <td>${permission.canCreate ? '<span class="permission-check">✓</span>' : '<span class="permission-na">NA</span>'}</td>
+                    <td>${permission.canEdit ? '<span class="permission-check">✓</span>' : '<span class="permission-na">NA</span>'}</td>
+                    <td>${permission.canShare ? '<span class="permission-check">✓</span>' : '<span class="permission-na">NA</span>'}</td>
+                    <td>${permission.canDelete ? '<span class="permission-check">✓</span>' : '<span class="permission-na">NA</span>'}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        var customDropdown = document.querySelector('.adduser-custom-dropdown');
+        var dropdown = document.getElementById('adduserRoleDropdown');
+        var trigger = document.getElementById('adduserDropdownTrigger');
+
+        if (customDropdown && dropdown && !customDropdown.contains(event.target)) {
+            dropdown.classList.remove('adduser-dropdown-visible');
+            if (trigger) {
+                trigger.style.backgroundColor = '';
+                trigger.style.borderColor = '#ccc';
+            }
+        }
+    });
+
+    // Prevent form submission if no role selected
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('adduserForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                var roleId = document.getElementById('adduserSelectedRoleId').value;
+                if (!roleId) {
+                    e.preventDefault();
+                    alert('Please select a user role.');
+                    return false;
+                }
+            });
+        }
+
+    });
+</script>

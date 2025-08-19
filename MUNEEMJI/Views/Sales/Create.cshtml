@@ -491,7 +491,14 @@
             .more-settings i {
                 margin-right: 4px;
             }
+
     </style>
+
+
+
+
+
+
 </head>
 <body>
     <div class="container-fluid">
@@ -501,12 +508,17 @@
 
                 <div class="header-top">
                     <div class="sale-toggle">
+
                         <span style="font-size: 21px">Sale</span>
+
                         <div class="toggle-switch" id="paymentToggle">
+
                             <div class="toggle-slider"></div>
                         </div>
+
                         <span id="paymentMode">Credit</span>
                     </div>
+
                     <div class="text-end w-100">
                         <button class="btn btn-primary" style="background-color:#89bcf3" onclick="window.open('https://www.google.com/search?q=calculator', '_blank')">
                             <i class="bi bi-calculator"></i> Calculator
@@ -773,7 +785,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-2" style="margin-right: 0px;margin-left: 248px;margin-top: -44px;">
+                        <div class="col-md-2" style="margin-right: 0px;margin-left: 248px;margin-top: -44px;" id="dueDateContainer">
                             <div class="floating-label-container">
                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Due Date</label>
@@ -1374,6 +1386,12 @@
                                         <label class="floating-label">Payment Type</label>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="floating-label-container">
+                                        <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                        <label class="floating-label">Add Description</label>
+                                    </div>
+                                </div>
 
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
@@ -1382,13 +1400,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="floating-label-container">
-                                        <input type="file" name="imageFile" class="floating-input" accept="image/*" />
-                                        @*   <textarea asp-for="Bill.Description" class="floating-textarea" rows="2" placeholder=" "></textarea> *@
-                                        <label class="floating-label">Add Description</label>
-                                    </div>
-                                </div>
+                                
 
 
                                 <div class="col-md-6">
@@ -1878,40 +1890,41 @@
     <script>
         // Toggle between Credit and Cash
                 document.getElementById('paymentToggle').addEventListener('click', function() {
+                    debugger;
                     const toggle = this;
                     const modeText = document.getElementById('paymentMode');
-                    const receivedSection = document.getElementById('receivedCheckbox');
-                    const balanceSection = document.getElementById('balanceSection');
-                    const partyBalance = document.getElementById('partyBalance');
+                   
+                    const dueDateContainer = document.getElementById('dueDateContainer');
+
 
                     toggle.classList.toggle('cash');
 
                     if (toggle.classList.contains('cash')) {
                         modeText.textContent = 'Cash';
-                        receivedSection.style.display = 'none';
-                        balanceSection.style.display = 'none';
-                        partyBalance.style.display = 'block';
-                    } else {
+                        dueDateContainer.style.display='none';
+                       
+                    }
+                    else {
                         modeText.textContent = 'Credit';
-                        receivedSection.style.display = 'flex';
-                        balanceSection.style.display = 'flex';
-                        partyBalance.style.display = 'none';
+                        dueDateContainer.style.display = 'block';
+
                     }
                 });
 
 
 
-                        function showColumnSettings() {
-            const dropdown = document.getElementById('columnSettings');
-            const button = document.querySelector('th.col-action .column-toggle-btn'); // Changed this line
-            dropdown.classList.toggle('show');
-            if (dropdown.classList.contains('show')) {
-                const buttonRect = button.getBoundingClientRect();
-                dropdown.style.position = 'absolute';
-                dropdown.style.top = (buttonRect.bottom + 5) + 'px';
-                dropdown.style.left = (buttonRect.right - 200) + 'px';
-            }
-        }
+                          function showColumnSettings() 
+                         {
+                            const dropdown = document.getElementById('columnSettings');
+                            const button = document.querySelector('th.col-action .column-toggle-btn'); // Changed this line
+                            dropdown.classList.toggle('show');
+                            if (dropdown.classList.contains('show')) {
+                                const buttonRect = button.getBoundingClientRect();
+                                dropdown.style.position = 'absolute';
+                                dropdown.style.top = (buttonRect.bottom + 5) + 'px';
+                                dropdown.style.left = (buttonRect.right - 200) + 'px';
+                            }
+                         }
 
 
                function closeView() {

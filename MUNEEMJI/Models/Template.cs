@@ -126,5 +126,13 @@ namespace MUNEEMJI.Models
         [Column("created_date")]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
     }
+
+    public class CategoryDropdownModel
+    {
+       public int Id { get; set; }
+        public string Name { get; set; }
+
+    }
+
 }
 

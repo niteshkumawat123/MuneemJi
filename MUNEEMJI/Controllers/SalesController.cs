@@ -154,6 +154,7 @@ namespace MUNEEMJI.Controllers
             PartyController partyController = new PartyController();
             var viewModel = new PurchaseBillViewModel();
             var transactionSettingsController = new TransactionSettingsController();
+            var CategoryController = new CategoryController();
 
             int firmid = 1;
             await Task.Delay(1);
@@ -197,7 +198,9 @@ namespace MUNEEMJI.Controllers
                     itemSettings = transactionSettingsController.GetItemSettings()
                 },
                 ViewTypeId = (int)ViewTypeEnum.Create,
-                DropDownItem = await _IBillItemService.GetItems()
+                DropDownItem = await _IBillItemService.GetItems(),
+                DropDownCategory = CategoryController.GetCategoriesDropdown()
+
             };
             //}
             ViewBag.PartyList = await partyController.GetPartyDropDownAsync();

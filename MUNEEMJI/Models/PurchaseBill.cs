@@ -129,6 +129,8 @@ namespace MUNEEMJI.Models
 
         public string Size { get; set; }
         public decimal? FreeQuantity { get; set; }
+        public decimal? AddCessAmount { get; set; }
+        public decimal? TotalAmount { get; set; }
 
 
 
@@ -149,7 +151,7 @@ namespace MUNEEMJI.Models
             "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
         };
         public List<BillItem> DropDownItem { get; set; }
-        public List<BillItem> DropDownCategory { get; set; }
+        public List<CategoryDropdownModel> DropDownCategory { get; set; }
         public int ViewTypeId { get; set; }
     }
     public enum TradeDocumentTypes

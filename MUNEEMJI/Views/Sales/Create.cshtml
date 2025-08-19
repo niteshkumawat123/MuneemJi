@@ -9,6 +9,7 @@
 }
 @{
     string formAction = Model.ViewTypeId == (int)ViewTypeEnum.Edit ? "UpdateEntries" : "Create";
+    int counter = 0;
 }
 
 <!DOCTYPE html>
@@ -26,470 +27,470 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
     <style>
         .form-container {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
         }
 
         .search-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
         }
 
         .bill-info-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
         }
 
         .items-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
-        position: relative; /* Add this */
-        overflow: visible; /* Add this */
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            position: relative; /* Add this */
+            overflow: visible; /* Add this */
         }
 
         .transport-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
         }
 
         .payment-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
         }
 
         .table-scroll-wrapper {
-        overflow-x: auto;
-        overflow-y: visible; /* Add this */
+            overflow-x: auto;
+            overflow-y: visible; /* Add this */
 
-        width: 100%;
-        /* Enhanced scrollbar styling */
-        scrollbar-width: thin;
-        scrollbar-color: #007bff #f1f1f1;
-        scroll-behavior: smooth;
+            width: 100%;
+            /* Enhanced scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: #007bff #f1f1f1;
+            scroll-behavior: smooth;
         }
 
-        .table-scroll-wrapper::-webkit-scrollbar {
-        height: 12px;
-        }
+            .table-scroll-wrapper::-webkit-scrollbar {
+                height: 12px;
+            }
 
-        .table-scroll-wrapper::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 6px;
-        }
+            .table-scroll-wrapper::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 6px;
+            }
 
-        .table-scroll-wrapper::-webkit-scrollbar-thumb {
-        background: #007bff;
-        border-radius: 6px;
-        border: 2px solid #f1f1f1;
-        }
+            .table-scroll-wrapper::-webkit-scrollbar-thumb {
+                background: #007bff;
+                border-radius: 6px;
+                border: 2px solid #f1f1f1;
+            }
 
-        .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
-        background: #0056b3;
-        }
+                .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+                    background: #0056b3;
+                }
 
         /* Ensure table maintains minimum width to preserve column sizes */
         .items-table {
-        width: 100%;
-        min-width: 2200px; /* Adjust based on your total column widths */
-        border-collapse: collapse;
+            width: 100%;
+            min-width: 2200px; /* Adjust based on your total column widths */
+            border-collapse: collapse;
         }
 
 
 
         .items-table {
-        width: 100%;
-        margin-top: 15px;
+            width: 100%;
+            margin-top: 15px;
         }
 
-        .items-table th {
-        background-color: #f8f9fa;
-        font-weight: bold;
-        padding: 8px;
-        text-align: center;
-        border: 1px solid #dee2e6;
-        font-size: 12px;
-        }
+            .items-table th {
+                background-color: #f8f9fa;
+                font-weight: bold;
+                padding: 8px;
+                text-align: center;
+                border: 1px solid #dee2e6;
+                font-size: 12px;
+            }
 
-        .items-table td {
-        padding: 5px;
-        border: 1px solid #dee2e6;
-        text-align: center;
-        }
+            .items-table td {
+                padding: 5px;
+                border: 1px solid #dee2e6;
+                text-align: center;
+            }
 
-        .items-table input, .items-table select {
-        width: 100%;
-        border: none;
-        padding: 5px;
-        text-align: center;
-        font-size: 12px;
-        }
+            .items-table input, .items-table select {
+                width: 100%;
+                border: none;
+                padding: 5px;
+                text-align: center;
+                font-size: 12px;
+            }
 
         .total-row {
-        background-color: #f8f9fa;
-        font-weight: bold;
+            background-color: #f8f9fa;
+            font-weight: bold;
         }
 
         .btn-add-row {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 4px;
-        margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-top: 10px;
         }
 
         .form-control-sm {
-        font-size: 12px;
-        padding: 4px 8px;
+            font-size: 12px;
+            padding: 4px 8px;
         }
 
         .checkbox-container {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .action-buttons {
-        text-align: right;
-        margin-top: 20px;
+            text-align: right;
+            margin-top: 20px;
         }
 
         .btn-share {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        margin-right: 10px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin-right: 10px;
         }
 
         .btn-save {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 30px;
-        border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 4px;
         }
 
         .header-top {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
         }
 
         .sale-toggle {
-        display: flex;
-        align-items: center;
-        gap: 9px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
         }
 
         .toggle-switch {
-        position: relative;
-        width: 59px;
-        height: 22px;
-        background: #89bcf3;
-        border-radius: 15px;
-        cursor: pointer;
-        transition: background 0.3s;
-        left: 4px;
+            position: relative;
+            width: 59px;
+            height: 22px;
+            background: #89bcf3;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            left: 4px;
         }
 
-        .toggle-switch.cash {
-        background: #28a745;
-        }
+            .toggle-switch.cash {
+                background: #28a745;
+            }
 
         .toggle-slider {
-        position: absolute;
-        top: 1px;
-        left: 4px;
-        width: 21px;
-        height: 20px;
-        background: white;
-        border-radius: 50%;
-        transition: transform 0.3s;
+            position: absolute;
+            top: 1px;
+            left: 4px;
+            width: 21px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
         }
 
         .toggle-switch.cash .toggle-slider {
-        transform: translateX(30px);
+            transform: translateX(30px);
         }
     </style>
     <style>
         .floating-label-container {
-        position: relative;
-        margin-bottom: 20px;
+            position: relative;
+            margin-bottom: 20px;
         }
 
         .floating-input {
-        width: 100%;
-        padding: 6px 16px;
-        border: 2px solid #d3d3d3; /* Light gray border by default */
-        border-radius: 4px;
-        font-size: 16px;
-        outline: none;
-        background: transparent;
-        transition: all 0.3s ease;
+            width: 100%;
+            padding: 6px 16px;
+            border: 2px solid #d3d3d3; /* Light gray border by default */
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            background: transparent;
+            transition: all 0.3s ease;
         }
 
 
 
-        .floating-input:focus {
-        border-color: #007bff; /* Blue border on focus/click */
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
+            .floating-input:focus {
+                border-color: #007bff; /* Blue border on focus/click */
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
 
         .floating-label {
-        position: absolute;
-        left: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: white;
-        padding: 0 4px;
-        color: #6c757d;
-        pointer-events: none;
-        transition: all 0.3s ease;
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 0 4px;
+            color: #6c757d;
+            pointer-events: none;
+            transition: all 0.3s ease;
         }
 
         .floating-input:focus + .floating-label,
         .floating-input:not(:placeholder-shown) + .floating-label {
-        top: 0;
-        transform: translateY(-50%);
-        font-size: 12px;
-        color: #007bff;
+            top: 0;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #007bff;
         }
 
         /* Style floating select */
         .floating-select {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #d3d3d3;
-        border-radius: 4px;
-        font-size: 16px;
-        outline: none;
-        background: white;
-        transition: all 0.3s ease;
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d3d3d3;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            background: white;
+            transition: all 0.3s ease;
         }
 
-        .floating-select:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
+            .floating-select:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
 
-        .floating-select:focus + .floating-label,
-        .floating-select:not([value=""]) + .floating-label {
-        top: 0;
-        transform: translateY(-50%);
-        font-size: 12px;
-        color: #007bff;
-        }
+                .floating-select:focus + .floating-label,
+                .floating-select:not([value=""]) + .floating-label {
+                    top: 0;
+                    transform: translateY(-50%);
+                    font-size: 12px;
+                    color: #007bff;
+                }
 
         /* Style floating textarea */
         .floating-textarea {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #d3d3d3;
-        border-radius: 4px;
-        font-size: 16px;
-        outline: none;
-        background: transparent;
-        transition: all 0.3s ease;
-        resize: vertical;
-        min-height: 60px;
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d3d3d3;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            background: transparent;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 60px;
         }
 
-        .floating-textarea:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
+            .floating-textarea:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
 
-        .floating-textarea:focus + .floating-label,
-        .floating-textarea:not(:placeholder-shown) + .floating-label {
-        top: 0;
-        transform: translateY(-50%);
-        font-size: 12px;
-        color: #007bff;
-        }
+                .floating-textarea:focus + .floating-label,
+                .floating-textarea:not(:placeholder-shown) + .floating-label {
+                    top: 0;
+                    transform: translateY(-50%);
+                    font-size: 12px;
+                    color: #007bff;
+                }
 
         /* Column Toggle Styles - ADD THIS TO YOUR EXISTING CSS */
         .column-toggle-container {
-        position: relative;
-        display: inline-block;
-        margin-left: 10px;
+            position: relative;
+            display: inline-block;
+            margin-left: 10px;
         }
 
         .column-toggle-btn {
-        background: #007bff;
-        color: white;
-        border: none;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 16px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: #007bff;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .column-toggle-btn:hover {
-        background: #0056b3;
-        }
+            .column-toggle-btn:hover {
+                background: #0056b3;
+            }
 
         .column-dropdown {
-        position: absolute;
-        top: 35px;
-        right: 0;
-        background: white;
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        min-width: 200px;
-        z-index: 9999;
-        display: none;
-        padding: 10px;
-        max-height: 300px; /* Add this to prevent it from being too tall */
-        overflow-y: auto; /* Add scroll if needed */
+            position: absolute;
+            top: 35px;
+            right: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 200px;
+            z-index: 9999;
+            display: none;
+            padding: 10px;
+            max-height: 300px; /* Add this to prevent it from being too tall */
+            overflow-y: auto; /* Add scroll if needed */
         }
 
-        .column-dropdown.show {
-        display: block;
-        top: -217.4px;
-        }
+            .column-dropdown.show {
+                display: block;
+                top: -217.4px;
+            }
 
         .column-option {
-        display: flex;
-        align-items: center;
-        padding: 8px 0;
-        gap: 8px;
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            gap: 8px;
         }
 
-        .column-option input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: #007bff;
-        }
+            .column-option input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+                accent-color: #007bff;
+            }
 
-        .column-option label {
-        cursor: pointer;
-        font-size: 14px;
-        margin: 0;
-        flex-grow: 1;
-        }
+            .column-option label {
+                cursor: pointer;
+                font-size: 14px;
+                margin: 0;
+                flex-grow: 1;
+            }
 
         .more-settings {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        color: #007bff;
-        font-size: 14px;
-        cursor: pointer;
-        margin-top: 5px;
-        padding-top: 5px;
-        border-top: 1px solid #dee2e6;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #007bff;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid #dee2e6;
         }
 
-        .more-settings:hover {
-        color: #0056b3;
-        }
+            .more-settings:hover {
+                color: #0056b3;
+            }
 
         /* Hidden column class */
         .hidden-column {
-        display: none !important;
+            display: none !important;
         }
 
         .table-header-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        position: relative; /* Add this */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            position: relative; /* Add this */
         }
 
         .table-title {
-        font-weight: bold;
-        font-size: 16px;
-        color: #333;
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
         }
 
         .col-action {
-        text-align: center;
+            text-align: center;
         }
 
-        .col-action .column-toggle-btn {
-        background: #007bff;
-        color: white;
-        border: none;
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 14px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+            .col-action .column-toggle-btn {
+                background: #007bff;
+                color: white;
+                border: none;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 14px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
 
-        .col-action .column-toggle-btn:hover {
-        background: #0056b3;
-        transform: scale(1.05);
-        }
+                .col-action .column-toggle-btn:hover {
+                    background: #0056b3;
+                    transform: scale(1.05);
+                }
     </style>
     <style>
         .popover {
-        max-width: 300px;
+            max-width: 300px;
         }
 
         .column-option {
-        display: flex;
-        align-items: center;
-        margin-bottom: 8px;
-        padding: 4px 0;
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 4px 0;
         }
 
-        .column-option input[type="checkbox"] {
-        margin-right: 8px;
-        }
+            .column-option input[type="checkbox"] {
+                margin-right: 8px;
+            }
 
-        .column-option label {
-        margin: 0;
-        font-size: 14px;
-        cursor: pointer;
-        }
+            .column-option label {
+                margin: 0;
+                font-size: 14px;
+                cursor: pointer;
+            }
 
         .more-settings {
-        border-top: 1px solid #dee2e6;
-        padding-top: 8px;
-        margin-top: 8px;
-        cursor: pointer;
-        color: #007bff;
-        font-size: 14px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 8px;
+            margin-top: 8px;
+            cursor: pointer;
+            color: #007bff;
+            font-size: 14px;
         }
 
-        .more-settings:hover {
-        color: #0056b3;
-        }
+            .more-settings:hover {
+                color: #0056b3;
+            }
 
-        .more-settings i {
-        margin-right: 4px;
-        }
+            .more-settings i {
+                margin-right: 4px;
+            }
     </style>
 </head>
 <body>
@@ -515,7 +516,7 @@
                                         padding-right: 6px;" aria-label="Close" onclick="closeView()">
                         </button>
                         <button type="button" class="bi bi-gear" onclick="window.location.href='/Settings/Transaction/Index'"
-                        style=" font-size: 20px; color: #6c757d; background-color:#89bcf3;border: 2px solid #89bcf3;border-radius: 15%;
+                                style=" font-size: 20px; color: #6c757d; background-color:#89bcf3;border: 2px solid #89bcf3;border-radius: 15%;
                                         padding-bottom:7px;padding-top:0px;padding-left:6px;
                                         padding-right:6px;">
                         </button>
@@ -543,10 +544,10 @@
                                             @if (Model.Bill.PartyId == party.id)
                                             {
                                                 <option value="@party.id"
-                                                data-phone="@party.phonenumber"
-                                                data-balance="@party.balance"
-                                                class="party-option"
-                                                selected="selected">
+                                                        data-phone="@party.phonenumber"
+                                                        data-balance="@party.balance"
+                                                        class="party-option"
+                                                        selected="selected">
                                                     <span class="party-name">@party.partyname</span>
                                                     <span class="party-phone">@party.phonenumber</span>
                                                     <span class="party-balance">@party.balance</span>
@@ -555,9 +556,9 @@
                                             else
                                             {
                                                 <option value="@party.id"
-                                                data-phone="@party.phonenumber"
-                                                data-balance="@party.balance"
-                                                class="party-option">
+                                                        data-phone="@party.phonenumber"
+                                                        data-balance="@party.balance"
+                                                        class="party-option">
                                                     <span class="party-name">@party.partyname</span>
                                                     <span class="party-phone">@party.phonenumber</span>
                                                     <span class="party-balance">@party.balance</span>
@@ -893,93 +894,61 @@
 
 
                 <div class="table-header-controls">
-
-                    <div hidden>
-                        <div id="columnSettingsContent">
-
-                            @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCategory == true)
-                            {
+                    <div id="columnSettingsContainer" style="display: none;">
+                        <!-- Use CSS instead of hidden -->
+                        <form id="columnSettingsForm">
+                            <div id="columnSettingsContent">
+                                <!-- Category -->
                                 <div class="column-option">
-                                    <input type="checkbox" id="col-category" checked>
+                                    <input type="checkbox" id="col-category" name="ItemCategory" value="true"
+                                    @(Model.Bill.itemSettings?.ItemCategory == true ? "checked" : "")>
+                                    <input type="hidden" name="ItemCategory" value="false">
                                     <label for="col-category">Category</label>
                                 </div>
-                            }
-                            else
-                            {
+
+                                <!-- Item Code -->
                                 <div class="column-option">
-                                    <input type="checkbox" id="col-category">
-                                    <label for="col-category">Category</label>
-                                </div>
-                            }
-                            @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
-                            {
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-item-code" checked>
+                                    <input type="checkbox" id="col-item-code" name="ItemCode" value="true"
+                                    @(Model.Bill.itemSettings?.ItemCode == true ? "checked" : "")>
+                                    <input type="hidden" name="ItemCode" value="false">
                                     <label for="col-item-code">Item Code</label>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-item-code">
-                                    <label for="col-item-code">Item Code</label>
-                                </div>
-                            }
 
-                            @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.HsnSacCode == true)
-                            {
+                                <!-- HSN/SAC Code -->
                                 <div class="column-option">
-                                    <input type="checkbox" id="col-hsn" checked>
+                                    <input type="checkbox" id="col-hsn" name="HsnSacCode" value="true"
+                                    @(Model.Bill.itemSettings?.HsnSacCode == true ? "checked" : "")>
+                                    <input type="hidden" name="HsnSacCode" value="false">
                                     <label for="col-hsn">HSN/SAC Code</label>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-hsn">
-                                    <label for="col-hsn">HSN/SAC Code</label>
-                                </div>
-                            }
 
-                            @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.Description == true)
-                            {
+                                <!-- Description -->
                                 <div class="column-option">
-                                    <input type="checkbox" id="col-description" checked>
+                                    <input type="checkbox" id="col-description" name="Description" value="true"
+                                    @(Model.Bill.itemSettings?.Description == true ? "checked" : "")>
+                                    <input type="hidden" name="Description" value="false">
                                     <label for="col-description">DESCRIPTION</label>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-description">
-                                    <label for="col-description">DESCRIPTION</label>
-                                </div>
-                            }
 
-                            @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseDiscount == true)
-                            {
+                                <!-- Item Wise Discount -->
                                 <div class="column-option">
-                                    <input type="checkbox" id="col-discount-pct" checked>
+                                    <input type="checkbox" id="col-discount-pct" name="ItemWiseDiscount" value="true"
+                                    @(Model.Bill.itemSettings?.ItemWiseDiscount == true ? "checked" : "")>
+                                    <input type="hidden" name="ItemWiseDiscount" value="false">
                                     <label for="col-discount-pct">DISCOUNT %</label>
                                 </div>
-                            }
-                            else
-                            {
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-discount-pct">
-                                    <label for="col-discount-pct">DISCOUNT %</label>
-                                </div>
-                            }
 
-                            <div class="more-settings">
-                                <i class="bi bi-gear"></i>
-                                More Settings
+                                <div class="more-settings" onclick="window.location.href='/Settings/Transaction/Index'">
+                                    <i class="bi bi-gear"></i>
+                                    More Settings
+                                </div>
+                                <div class="btn btn-primary" onclick="saveColumnSettings()" style="cursor:pointer;display: flow;padding: 0px;margin-top: 5px;">
+                                    Save
+                                </div>
                             </div>
-                        </div>
-
+                        </form>
                     </div>
                 </div>
-
 
                 <!-- Items Section -->
                 <div class="items-section">
@@ -988,67 +957,131 @@
                             <thead>
                                 <tr>
                                     <th class="col-sr-no" style="width: 3%">#</th>
+                                    @{
+                                        counter += 1;
+                                    }
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCategory == true)
                                     {
+                                        counter += 1;
+
+
                                         <th class="col-category" style="width: 8%">CATEGORY</th>
+                                    }
+                                    @{
+                                        counter += 1;
                                     }
                                     <th class="col-item" style="width: 8%">ITEM</th>
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
                                     {
+                                        counter += 1;
+
                                         <th class="col-item-code" style="width: 6%">ITEM CODE</th>
                                     }
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.HsnSacCode == true)
                                     {
+                                        counter += 1;
+
                                         <th class="col-hsn" style="width: 6%">HSN<br />CODE</th>
                                     }
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.SerialNoTracking == true)
                                     {
+                                        counter += 1;
+
                                         <th class="col-serial" style="width: 6%">SERIAL NO.</th>
                                     }
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.Description == true)
                                     {
+                                        counter += 1;
+
                                         <th class="col-description" style="width: 10%">DESCRIPTION</th>
                                     }
+                                    @{
+                                        counter += 1;
+                                    }
                                     <th class="col-count" style="width: 5%">COUNT</th>
+                                    @{
+                                        counter += 1;
+                                    }
                                     <th class="col-batch" style="width: 6%">BATCH NO.</th>
+                                    @{
+                                        counter += 1;
+                                    }
                                     <th class="col-model" style="width: 6%">MODEL NO.</th>
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ExpDateEnabled == true)
                                     {
+                                        counter += 1;
+
                                         <th class="col-exp-date" style="width: 6%">EXP. DATE</th>
                                     }
 
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.MfgDateEnabled == true)
                                     {
+                                        counter += 1;
+
                                         <th class="col-mfg-date" style="width: 6%">MFG. DATE</th>
                                     }
+                                    @{
+                                        counter += 1;
+                                    }
                                     <th class="col-mrp" style="width: 5%">MRP</th>
+                                    @{
+                                        counter += 1;
+                                    }
                                     <th class="col-size" style="width: 4%">SIZE</th>
+                                    @{
+                                        counter += 1;
+                                    }
                                     <th class="col-qty" style="width: 4%">QTY</th>
                                     @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.FreeItemQuantity)
                                     {
+                                        counter += 1;
+
                                         <th class="col-free-qty" style="width: 4%">FREE<br />QTY</th>
                                     }
+                                    @{
+                                        counter += 1;
+                                    }
                                     <th class="col-unit" style="width: 4%">UNIT</th>
+                                    @{
+                                        counter += 1;
+                                    }
                                     <th class="col-price" style="width: 6%">PRICE/UNIT<br />Without Tax</th>
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseDiscount == true)
                                     {
-                                        <th class="col-discount-pct" style="width: 5%">DISCOUNT<br />%</th>
+                                        counter += 1;
+
+                                        <th  class="col-discount-pct" style="width: 5%">DISCOUNT<br />%</th>
                                     }
-                                    <th class="col-amount1" style="width: 6%">AMOUNT</th>
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-amount1" style="width: 6%">DISC<br />AMOUNT</th>
                                     @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseTax)
                                     {
+                                        counter += 1;
+
                                         <th class="col-tax" style="width: 4%">TAX<br />%</th>
                                     }
-                                    <th class="col-amount2" style="width: 6%">AMOUNT</th>
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-amount2" style="width: 6%">TAX<br />AMOUNT</th>
+                                    @{
+                                        counter += 1;
+                                    }
+
+                                    <th class="col-Cess" style="width:6%;min-width: 66px;">ADD CESS</th>
+
+                                    <th class="col-amount3" style="width: 6%">TOTAL<br />AMOUNT</th>
                                     <th class="col-action" style="width: 2%">
                                         <button type="button"
-                                        class="column-toggle-btn"
-                                        id="columnToggleBtn"
-                                        data-bs-toggle="popover"
-                                        data-bs-placement="bottom"
-                                        data-bs-html="true"
-                                        data-bs-trigger="click"
-                                        data-bs-title="Column Settings">
+                                                class="column-toggle-btn"
+                                                id="columnToggleBtn"
+                                                data-bs-toggle="popover"
+                                                data-bs-placement="bottom"
+                                                data-bs-html="true"
+                                                data-bs-trigger="click"
+                                                data-bs-title="Column Settings">
                                             <i class="bi bi-plus"></i>
                                         </button>
                                     </th>
@@ -1059,21 +1092,21 @@
                                 {
                                     <tr class="item-row" data-index="@i">
                                         <td class="col-sr-no">@(i + 1)</td>
-                                        @if(Model.Bill.itemSettings!=null && Model.Bill.itemSettings.ItemCategory==true)
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCategory == true)
                                         {
-                                        <td class="col-category">
-                                            @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
-                                                                       new SelectList(Model.DropDownItem, "Id", "ItemName"),
-                                                                       "-- Select Category --",
-                                                                       new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
-                                        </td>
+                                            <td class="col-category">
+                                                @Html.DropDownListFor(model => model.Bill.BillItems[i].categoryid,
+                                                         new SelectList(Model.DropDownCategory, "Id", "Name"),
+                                                         "-- Select Category --",
+                                                         new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
+                                            </td>
                                         }
 
                                         <td class="col-item">
                                             @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
-                                                                       new SelectList(Model.DropDownItem, "Id", "ItemName"),
-                                                                       "-- Select Item --",
-                                                                       new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
+                                                     new SelectList(Model.DropDownItem, "Id", "ItemName"),
+                                                     "-- Select Item --",
+                                                     new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
                                         </td>
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
                                         {
@@ -1081,7 +1114,7 @@
                                                 <input asp-for="Bill.BillItems[i].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" />
                                             </td>
                                         }
-                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.HsnSacCode == true)
                                         {
                                             <td class="col-hsn">
                                                 <input asp-for="Bill.BillItems[i].HSNCode" type="text" class="form-control-sm" placeholder="HSN Code" />
@@ -1143,18 +1176,22 @@
                                                 }
                                             </select>
                                         </td>
+
                                         <td class="col-price">
                                             <input asp-for="Bill.BillItems[i].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(@i)" />
                                         </td>
+
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseDiscount == true)
                                         {
                                             <td class="col-discount-pct">
                                                 <input asp-for="Bill.BillItems[i].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(@i)" />
                                             </td>
                                         }
+
                                         <td class="col-amount1">
                                             <input asp-for="Bill.BillItems[i].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly />
                                         </td>
+
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseTax)
                                         {
                                             <td class="col-tax">
@@ -1166,9 +1203,19 @@
                                                 </select>
                                             </td>
                                         }
+
                                         <td class="col-amount2">
                                             <input asp-for="Bill.BillItems[i].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly />
                                         </td>
+
+                                        <td class="col-Cess">
+                                            <input asp-for="Bill.BillItems[i].AddCessAmount" type="number"step="0.01"class="form-control-sm cess-input"onchange="calculateItemAmount(@i)" />
+                                        </td>
+
+                                        <td class="col-amount3">
+                                            <input asp-for="Bill.BillItems[i].TotalAmount" type="number" step="0.01" class="form-control-sm total-amount" readonly />
+                                        </td>
+
                                         <td class="col-action">
                                             <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
                                         </td>
@@ -1177,7 +1224,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="total-row">
-                                    <td class="col-sr-no col-item col-qty col-unit col-price col-discount-pct col-amount1 col-tax col-amount2" colspan="21" style="text-align: right; font-weight: bold;">TOTAL</td>
+                                    <td class="col-sr-no col-item col-qty col-unit col-price col-discount-pct col-amount1 col-tax col-amount2" colspan=@counter style="text-align: right; font-weight: bold;">TOTAL</td>
                                     <td class="col-amount3"><span id="grandTotal">0</span></td>
                                     <td class="col-action"></td>
                                 </tr>
@@ -1187,7 +1234,7 @@
                     <button type="button" class="btn-add-row" onclick="addNewRow()">ADD ROW</button>
                 </div>
 
-           
+
 
 
                 <div class="payment-section">
@@ -1253,7 +1300,7 @@
 
                                 }
 
-                           
+
 
                                 @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.VehicleNumber == true)
                                 {
@@ -1338,7 +1385,7 @@
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
                                         <input type="file" name="imageFile" class="floating-input" accept="image/*" />
-                                      @*   <textarea asp-for="Bill.Description" class="floating-textarea" rows="2" placeholder=" "></textarea> *@
+                                        @*   <textarea asp-for="Bill.Description" class="floating-textarea" rows="2" placeholder=" "></textarea> *@
                                         <label class="floating-label">Add Description</label>
                                     </div>
                                 </div>
@@ -1354,7 +1401,7 @@
 
                             </div>
                         </div>
-                       
+
                         <div class="col-md-4">
                             <div class="summary-section" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
                                 <div class="row mb-2">
@@ -1376,14 +1423,14 @@
                                             <label>Discount (%)</label>
                                         </div>
                                         <div class="" style="width: 79px;">
-                                            <input type="number" class="form-control form-control-sm" value="0">
+                                            <input type="number" class="form-control form-control-sm total-discount" onchange="updateGrandTotal()" value="0">
                                         </div>
                                         <div>-</div>
                                         <div class="" style="width: 75px;">
-                                            <input type="number" class="form-control form-control-sm" value="0">
+                                            <input type="number" class="form-control form-control-sm total-discountvalue" readonly value="0">
                                         </div>
                                     </div>
-                                   
+
                                 </div>
 
                                 <div class="row mb-2">
@@ -1399,7 +1446,7 @@
                                                 <option>18%</option>
                                                 <option>28%</option>
                                             </select>
-                                        </div>                                       
+                                        </div>
                                         <div class="" style="width: 97px;text-align: right;">
                                             <span> 0</span>
                                         </div>
@@ -1412,27 +1459,34 @@
                                         <div class="">
                                             <label>Shipping</label>
                                         </div>
+
                                         <div class="" style="width: 79px;">
-                                            <input type="number" class="form-control form-control-sm" value="0" />
+                                            <input type="number" class="form-control form-control-sm shipping-value" onchange="updateGrandTotal()" value="0" />
                                         </div>
-                                        <div class="" style="width: 97px;text-align: right;">
-                                            <span> 0</span>
+
+                                        <div  style="width: 97px;text-align: right;">
+                                            <span class="shipping-show"> 0</span>
                                         </div>
+
                                     </div>
 
                                 </div>
 
                                 <div class="row mb-2">
                                     <div class="d-flex align-items-center justify-content-end gap-3">
+
                                         <div class="">
                                             <label>Packaging</label>
                                         </div>
+
                                         <div class="" style="width: 79px;">
-                                            <input type="number" class="form-control form-control-sm" value="0" />
+                                            <input type="number" class="form-control form-control-sm packing-value" onchange="updateGrandTotal()" value="0" />
                                         </div>
-                                        <div class="" style="width: 97px;text-align: right;">
-                                            <span id=""> 0</span>
+
+                                        <div style="width: 97px;text-align: right;">
+                                            <span class="packing-show"> 0</span>
                                         </div>
+
                                     </div>
 
                                 </div>
@@ -1442,18 +1496,21 @@
                                         <div class="">
                                             <label>Adjustment</label>
                                         </div>
+
                                         <div class="" style="width: 79px;">
-                                            <input type="number" class="form-control form-control-sm" value="0" />
+                                            <input type="number" class="form-control form-control-sm adjustment-value" onchange="updateGrandTotal()" value="0" />
                                         </div>
-                                        <div class="" style="width: 97px;text-align: right;">
-                                           <span> 0</span>
+
+                                        <div  style="width: 97px;text-align: right;">
+                                            <span class="adjustment-show"> 0</span>
                                         </div>
+
                                     </div>
 
                                 </div>
-                           
 
-                                 <div class="row mb-2">
+
+                                <div class="row mb-2">
                                     <div class="d-flex align-items-center justify-content-end gap-3">
                                         <div class="">
                                             <div class="form-check form-check-inline">
@@ -1474,7 +1531,7 @@
                                             </select>
                                         </div>
                                         <div class="" style="width: 97px;text-align: right;">
-                                           <span> 0</span>
+                                            <span> 0</span>
                                         </div>
                                     </div>
 
@@ -1490,13 +1547,13 @@
                                         </div>
                                         <div class="" style="width: 40px;">
                                             <input id="roundOffAmount" type="number" class="form-control form-control-sm" value="0" />
-                                             
+
                                         </div>
                                         <div class="" style="text-align: right;">
-                                           Total
+                                            Total
                                         </div>
                                         <div class="" style="width: 140px;">
-                                            <input id="roundOffAmount" type="number" class="form-control form-control-sm" value="0" />
+                                            <input type="number" class="form-control form-control-sm total-balance" onchange="updateGrandTotal()" value="0" />
 
                                         </div>
                                     </div>
@@ -1513,12 +1570,12 @@
                                                 <label asp-for="Bill.RoundOff" class="form-check-label d-none"></label>
                                             </div>
                                         </div>
-                                       
+
                                         <div class="" style="text-align: right;">
                                             Received
                                         </div>
                                         <div class="" style="width: 140px;">
-                                            <input id="roundOffAmount" type="number" class="form-control form-control-sm" value="0" />
+                                            <input type="number" class="form-control form-control-sm received-amount" onchange="updateGrandTotal()" value="0" />
 
                                         </div>
                                     </div>
@@ -1526,12 +1583,12 @@
                                 </div>
 
                                 <div class="row mb-2">
-                                    <div class="d-flex align-items-center justify-content-end gap-3">                                   
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
 
                                         <div class="" style="text-align: right; font-weight:bold;">
-                                         Balance
+                                            Balance
                                         </div>
-                                        <div class="" style="width: 140px; font-weight:bold; text-align:right;">
+                                        <div id="finalTotal" style="width: 140px; font-weight:bold; text-align:right;">
                                             0000
 
                                         </div>
@@ -1540,7 +1597,7 @@
                                 </div>
 
 
-                       
+
 
                             </div>
                         </div>
@@ -1574,6 +1631,7 @@
     <script>
 
          var itemOptions = @Html.Raw(Json.Serialize(Model.DropDownItem));
+         var CategoryOptions = @Html.Raw(Json.Serialize(Model.DropDownCategory));
          let itemIndex = @Model.Bill.BillItems.Count;
 
          let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
@@ -1583,10 +1641,18 @@
         });
         itemDropdown += `</select>`;
 
+        debugger;
+         let categoryDropdown = `<select name="Bill.BillItems[${itemIndex}].categoryid" class="form-control-sm">`;
+        categoryDropdown += `<option value="">-- Select Category --</option>`;
+        CategoryOptions.forEach(item => {
+            categoryDropdown += `<option value="${item.id}">${item.name}</option>`;
+        });
+        categoryDropdown += `</select>`;
+
          function onItemChange(selectElem, rowIndex) {
             let selectedItemId = selectElem.value;
             console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);
-            // 
+            //
             // Do something like auto-fill price, etc.
         }
 
@@ -1599,7 +1665,7 @@
             itemWiseTax: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseTax ?? false)),
             itemcode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCode ?? false)),
             hsnsaccode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.HsnSacCode ?? false)),
-            category: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.HsnSacCode ?? false))
+            category: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCategory ?? false))
 
         };
 
@@ -1608,6 +1674,7 @@
         };
 
                     function addNewRow() {
+                        debugger;
             const tbody = document.getElementById('itemsTableBody');
             const newRow = document.createElement('tr');
             newRow.className = 'item-row';
@@ -1616,7 +1683,7 @@
             let rowHTML = `<td class="col-sr-no">${itemIndex + 1}</td>`
             if(itemSettings.category)
             {
-              rowHTML += `<td class="col-category">${itemDropdown.replace('ITEMINDEX', itemIndex).replace('ItemId', 'CategoryId')}</td>`;
+              rowHTML += `<td class="col-category">${categoryDropdown.replace('ITEMINDEX', itemIndex).replace('ItemId', 'CategoryId')}</td>`;
             }
                rowHTML += `<td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>`;
             if(itemSettings.itemcode)
@@ -1661,9 +1728,14 @@
 
             // Unit dropdown
             let unitDropdown = `<select name="Bill.BillItems[${itemIndex}].Unit" class="form-control-sm">`;
-            unitOptions.forEach(unit => {
-                unitDropdown += `<option value="${unit}">${unit}</option>`;
-            });
+
+
+             @foreach (var item in Model.UnitOptions)
+             {
+                    @:unitDropdown += `<option value="@item">@item</option>`;
+
+             }
+
             unitDropdown += `</select>`;
 
             rowHTML += `<td class="col-unit">${unitDropdown}</td>`;
@@ -1677,9 +1749,10 @@
 
             if (itemSettings.itemWiseTax) {
                 let taxDropdown = `<select name="Bill.BillItems[${itemIndex}].Tax" class="form-control-sm tax-select" onchange="calculateItemAmount(${itemIndex})">`;
-                taxOptions.forEach(tax => {
-                    taxDropdown += `<option value="${tax}">${tax}</option>`;
-                });
+                @foreach (var tax in Model.TaxOptions)
+                {
+                     @:taxDropdown += `<option value="@tax">@tax</option>`;
+                }
                 taxDropdown += `</select>`;
 
                 rowHTML += `<td class="col-tax">${taxDropdown}</td>`;
@@ -1687,6 +1760,9 @@
 
             rowHTML += `
                 <td class="col-amount2"><input name="Bill.BillItems[${itemIndex}].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly /></td>
+
+                 <td class="col-Cess"> <input asp-for="Bill.BillItems[i].AddCessAmount" type="number"step="0.01"class="form-control-sm cess-input"onchange="calculateItemAmount(${itemIndex})" /> </td>
+                 <td class="col-amount3"> <input asp-for="Bill.BillItems[i].TotalAmount" type="number" step="0.01" class="form-control-sm total-amount" readonly /></td>
                 <td class="col-action"><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${itemIndex})">×</button></td>`;
 
             newRow.innerHTML = rowHTML;
@@ -1706,12 +1782,14 @@
         }
 
         function calculateItemAmount(index) {
+            
             const row = document.querySelector(`tr[data-index="${index}"]`);
             if (!row) return;
 
             const quantity = parseFloat(row.querySelector('.qty-input').value) || 0;
             const pricePerUnit = parseFloat(row.querySelector('.price-input').value) || 0;
             const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
+            const CessAmount = parseFloat(row.querySelector('.cess-input').value) || 0;
             const taxSelect = row.querySelector('.tax-select').value;
 
             const subtotal = quantity * pricePerUnit;
@@ -1724,29 +1802,67 @@
             }
 
             const taxAmount = afterDiscount * (taxRate / 100);
-            const finalAmount = afterDiscount + taxAmount;
+            const finalAmount = afterDiscount + taxAmount + CessAmount;
 
             row.querySelector('.discount-amount').value = discountAmount.toFixed(2);
             row.querySelector('.tax-amount').value = taxAmount.toFixed(2);
-            row.querySelector('.item-amount').value = finalAmount.toFixed(2);
+            row.querySelector('.total-amount').value = finalAmount.toFixed(2);
 
             updateGrandTotal();
         }
 
         function updateGrandTotal() {
+          
             let total = 0;
-            document.querySelectorAll('.item-amount').forEach(input => {
+            document.querySelectorAll('.total-amount').forEach(input => {
                 total += parseFloat(input.value) || 0;
             });
 
             document.getElementById('grandTotal').textContent = total.toFixed(2);
 
+            debugger;
+
+            const TotalDiscount = document.querySelector('.total-discount');
+            const discountValueInput = document.querySelector('.total-discountvalue');
+
+            const shipingValueInput = document.querySelector('.shipping-value');
+            const packingValueInput = document.querySelector('.packing-value');
+            const adjustValueInput = document.querySelector('.adjustment-value');
+
+            const shipingShow = document.querySelector('.shipping-show');
+            const packingShow = document.querySelector('.packing-show');
+            const adjustShow = document.querySelector('.adjustment-show');
+
+            const discountPercentage = parseFloat(TotalDiscount.value) || 0;
+
+            const TotalDiscountvalue =  total * (discountPercentage/100);
+
+            discountValueInput.value  =  TotalDiscountvalue.toFixed(2);
+            total = total-TotalDiscountvalue.toFixed(2);
+
+             const shippingvalue = parseFloat(shipingValueInput.value) || 0;
+             shipingShow.textContent =  shippingvalue.toFixed(2);
+             const packingvalue = parseFloat(packingValueInput.value) || 0;
+             packingShow.textContent  = packingvalue.toFixed(2);
+             const adjustvalue = parseFloat(adjustValueInput.value) || 0;
+             adjustShow.textContent=  adjustvalue.toFixed(2);
+
+                     total = total + shippingvalue + packingvalue + adjustvalue;
+                     total = total.toFixed(2);
+
+
+
             const roundOff = document.querySelector('input[name="Bill.RoundOff"]').checked;
             let finalTotal = roundOff ? Math.round(total) : total;
             let roundOffAmount = finalTotal - total;
 
-            document.getElementById('roundOffAmount').textContent = roundOffAmount.toFixed(2);
-            document.getElementById('finalTotal').textContent = finalTotal.toFixed(2);
+             const totalbalance = document.querySelector('.total-balance');
+             totalbalance.value =  finalTotal.toFixed(2);
+
+             const receivedElement = document.querySelector('.received-amount');
+             const receivedamount = parseFloat(receivedElement.value) || 0;
+             const finalamount =  finalTotal-receivedamount;
+            document.getElementById('finalTotal').textContent = finalamount.toFixed(2);
         }
 
         // Initialize calculations on page load
@@ -1889,7 +2005,63 @@
                 }
             });
         }
+        function saveColumnSettings() {
 
+            // Get the popover element instead of the hidden form
+            const popoverElement = document.querySelector('.popover');
+            if (!popoverElement) {
+                console.error("Popover not found");
+                return;
+            }
+
+            // Get checkboxes from the popover
+            const categoryEl = popoverElement.querySelector('#col-category');
+            const itemCodeEl = popoverElement.querySelector('#col-item-code');
+            const hsnEl = popoverElement.querySelector('#col-hsn');
+            const descriptionEl = popoverElement.querySelector('#col-description');
+            const discountEl = popoverElement.querySelector('#col-discount-pct');
+
+            // Check if elements exist
+            if (!categoryEl || !itemCodeEl || !hsnEl || !descriptionEl || !discountEl) {
+                console.error("Some checkbox elements are missing from popover");
+                return;
+            }
+
+            // Collect checkbox values
+            const model = {
+                ItemCategory: categoryEl.checked,
+                ItemCode: itemCodeEl.checked,
+                HsnSacCode: hsnEl.checked,
+                Description: descriptionEl.checked,
+                ItemWiseDiscount: discountEl.checked
+            };
+
+            console.log("Model being sent:", model);
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch('/Settings/ItemSettings/SaveOrUpdateColumnSettings', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token
+                },
+                body: JSON.stringify(model)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.redirectUrl) {
+                        window.location.href = '/Sales/Create';
+                    }
+                } else {
+                    alert("Failed: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
 
     </script>
 </body>

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Mvc;
+using MUNEEMJI.Models;
 using MUNEEMJI.Models.Setting;
 using Npgsql;
 
@@ -234,7 +235,13 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                 item_wise_discount = @Discount
             WHERE id = 1";
 
-                await connection.ExecuteAsync(updateQuery, model);
+                await connection.ExecuteAsync(updateQuery, new {
+                    Category= model.ItemCategory,
+                    ItemCode =  model.ItemCode,
+                    HsnSacCode = model.HsnSacCode,
+                    Description = model.Description,
+                    Discount =  model.ItemWiseDiscount
+                });
             }
             else
             {

@@ -537,8 +537,9 @@
 
                 <!-- Search Section -->
                 <div class="search-section">
-                    <div class="row">
-                        <div class="col-md-2">
+                    <div class="row" style="display: flex; flex-wrap: wrap;">
+                        <!-- Column 1 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="floating-label-container">
                                 <select class="floating-select" id="partyDropdown" name="Bill.PartyId">
                                     <option value="">Select</option>
@@ -581,246 +582,83 @@
                                 </select>
                                 <label class="floating-label">Search by Name/Phone</label>
                             </div>
-                        </div>
 
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Billing Name</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2" style="margin-left: 120px">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Phone No.</label>
-                            </div>
-                        </div>
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.EwayBillNo == true)
-                        {
-                            <div class="col-md-2">
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">E-Way Bill No.</label>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-2">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-                        }
-
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
-                        {
-                            <div class="col-md-2" style="margin-right: 0px;margin-left: 129px;">
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.PODate" type="number" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Invoice Number</label>
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-2" style="margin-right: 0px;margin-left: 129px;">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.PODate" type="number" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-
-                        }
-
-                        <div class="col-md-2">
                             <div class="floating-label-container">
                                 <input asp-for="Bill.EWayBillNo" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
                                 <label class="floating-label">Billing Address</label>
                             </div>
                         </div>
 
-                        <div class="col-md-2">
+                        <!-- Column 2 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 40px;">
+                            <div class="floating-label-container">
+                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Billing Name</label>
+                            </div>
+
                             <div class="floating-label-container">
                                 <input asp-for="Bill.EWayBillNo" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
                                 <label class="floating-label">Shipping Address</label>
                             </div>
                         </div>
 
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.CustomerPODetails == true)
-                        {
-                            <div class="col-md-2" style="margin-left: 120px">
+                        <!-- Column 3 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;margin-right: 40px;">
+                            <div class="floating-label-container">
+                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Phone No.</label>
+                            </div>
+
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.CustomerPODetails == true)
+                            {
                                 <div class="floating-label-container">
                                     <input asp-for="Bill.PONo" class="floating-input" placeholder=" " />
                                     <label class="floating-label">P.O No.</label>
                                 </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-2" style="margin-left: 120px">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.PONo" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
 
-                        }
-
-
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2" style="margin-right:0px; margin-left:129px; margin-top:-19px;">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.BillDate" type="date" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Invoice Date</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        @*    <div class="col-md-2">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
-                                <label class="floating-label"></label>
-                            </div>
-                        </div> *@
-
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.CustomerPODetails == true)
-                        {
-                            <div class="col-md-2" style="margin-left: 120px ; margin-top:-40px">
                                 <div class="floating-label-container">
                                     <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
                                     <label class="floating-label">P.O Date</label>
                                 </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-2" style="margin-left: 120px ; margin-top:-40px">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-
-                        }
-
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
+                            }
                         </div>
 
-                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.AddTimeOnTransactions == true)
-                        {
+                        <!-- Column 4 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 142px;">
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.EwayBillNo == true)
+                            {
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">E-Way Bill No.</label>
+                                </div>
+                            }
 
-                            <div class="col-md-2" style="margin-right: 0px;margin-left: 129px;margin-top: -76px;">
+                          
+                        </div>
+
+                        <!-- Column 5 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 0px;">
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
+                            {
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.PODate" type="number" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">Invoice Number</label>
+                                </div>
+                            }
+
+                            <div class="floating-label-container">
+                                <input asp-for="Bill.BillDate" type="date" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Invoice Date</label>
+                            </div>
+
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.AddTimeOnTransactions == true)
+                            {
                                 <div class="floating-label-container">
                                     <input asp-for="Bill.PODate" type="time" class="floating-input" placeholder=" " />
                                     <label class="floating-label">Time</label>
                                 </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-md-2" style="margin-right: 0px;margin-left: 129px;margin-top: -76px;">
-                                <div class="floating-label-container">
-                                    @*                                     <input asp-for="Bill.PODate" type="time" class="floating-input" placeholder=" " />
- *@                                    <label class="floating-label"></label>
-                                </div>
-                            </div>
-                        }
+                            }
 
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2" style="margin-right: 0px;margin-left: 248px;margin-top: -44px;" id="dueDateContainer">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Due Date</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2" style="margin-right: 0px;margin-left: 248px;margin-top: -11px;">
                             <div class="floating-label-container">
                                 <select asp-for="Bill.PaymentTermId" class="floating-input" required>
                                     <option value="">Select Payment Term</option>
@@ -837,37 +675,12 @@
                                 </select>
                                 <label class="floating-label">Payment Term</label>
                             </div>
-                        </div>
 
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
+                            <div class="floating-label-container" id="dueDateContainer">
+                                <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Due Date</label>
                             </div>
-                        </div>
 
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="floating-label-container">
-                                @*                                 <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
- *@                                <label class="floating-label"></label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2" style="margin-right: 0px;margin-left: 248px;margin-top: -4px;">
                             <div class="floating-label-container">
                                 <select asp-for="Bill.StateOfSupply" class="floating-select">
                                     <option value="">Select State</option>
@@ -878,32 +691,11 @@
                                 </select>
                                 <label class="floating-label">State of Supply</label>
                             </div>
-                        </div>
+                          
 
+                        </div>                       
                     </div>
-                </div>
-
-                <!-- Bill Info Section -->
-                @*     <div class="bill-info-section">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.BillNumber" class="floating-input" readonly placeholder=" " />
-                                <label class="floating-label">Bill Number</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.BillDate" type="date" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Bill Date</label>
-                            </div>
-                        </div>
-
-
-                    </div>
-                </div> *@
-
+                </div>            
 
                 <div class="table-header-controls">
                     <div id="columnSettingsContainer" style="display: none;">
@@ -1653,7 +1445,6 @@
         });
         itemDropdown += `</select>`;
 
-        debugger;
          let categoryDropdown = `<select name="Bill.BillItems[${itemIndex}].categoryid" class="form-control-sm">`;
         categoryDropdown += `<option value="">-- Select Category --</option>`;
         CategoryOptions.forEach(item => {
@@ -1686,7 +1477,7 @@
         };
 
                     function addNewRow() {
-                        debugger;
+                        
             const tbody = document.getElementById('itemsTableBody');
             const newRow = document.createElement('tr');
             newRow.className = 'item-row';
@@ -1832,7 +1623,7 @@
 
             document.getElementById('grandTotal').textContent = total.toFixed(2);
 
-            debugger;
+            
 
             const TotalDiscount = document.querySelector('.total-discount');
             const discountValueInput = document.querySelector('.total-discountvalue');
@@ -1890,7 +1681,7 @@
     <script>
         // Toggle between Credit and Cash
                 document.getElementById('paymentToggle').addEventListener('click', function() {
-                    debugger;
+                   
                     const toggle = this;
                     const modeText = document.getElementById('paymentMode');
                    

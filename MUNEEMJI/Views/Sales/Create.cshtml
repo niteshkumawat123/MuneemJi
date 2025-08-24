@@ -495,14 +495,11 @@
     </style>
 
 
-
-
-
-
 </head>
 <body>
     <div class="container-fluid">
         <form asp-action="@formAction" method="post" enctype="multipart/form-data" id="billForm">
+            @Html.AntiForgeryToken()
             <div class="form-container">
                 <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
 
@@ -515,8 +512,9 @@
 
                             <div class="toggle-slider"></div>
                         </div>
-
                         <span id="paymentMode">Credit</span>
+                        <input type="hidden" id="iscreditinput" name="Bill.IsCredit" value="false">
+
                     </div>
 
                     <div class="text-end w-100">
@@ -584,7 +582,7 @@
                             </div>
 
                             <div class="floating-label-container">
-                                <input asp-for="Bill.EWayBillNo" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
+                                <input asp-for="Bill.BillingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
                                 <label class="floating-label">Billing Address</label>
                             </div>
                         </div>
@@ -592,12 +590,12 @@
                         <!-- Column 2 -->
                         <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 40px;">
                             <div class="floating-label-container">
-                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
+                                <input asp-for="Bill.BillingName" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Billing Name</label>
                             </div>
 
                             <div class="floating-label-container">
-                                <input asp-for="Bill.EWayBillNo" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
+                                <input asp-for="Bill.ShippingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
                                 <label class="floating-label">Shipping Address</label>
                             </div>
                         </div>
@@ -641,26 +639,26 @@
                             @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
                             {
                                 <div class="floating-label-container">
-                                    <input asp-for="Bill.PODate" type="number" class="floating-input" placeholder=" " />
+                                    <input asp-for="Bill.InvoiceNumber" type="number" class="floating-input" placeholder=" " />
                                     <label class="floating-label">Invoice Number</label>
                                 </div>
                             }
 
                             <div class="floating-label-container">
-                                <input asp-for="Bill.BillDate" type="date" class="floating-input" placeholder=" " />
+                                <input asp-for="Bill.InvoiceDate" type="date" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Invoice Date</label>
                             </div>
 
                             @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.AddTimeOnTransactions == true)
                             {
                                 <div class="floating-label-container">
-                                    <input asp-for="Bill.PODate" type="time" class="floating-input" placeholder=" " />
+                                    <input asp-for="Bill.Time" type="time" class="floating-input" placeholder=" " />
                                     <label class="floating-label">Time</label>
                                 </div>
                             }
 
                             <div class="floating-label-container">
-                                <select asp-for="Bill.PaymentTermId" class="floating-input" required>
+                                <select asp-for="Bill.PaymentTermId" class="floating-input" >
                                     <option value="">Select Payment Term</option>
                                     <option value="1">Net 15 Days</option>
                                     <option value="2">Net 30 Days</option>
@@ -677,7 +675,7 @@
                             </div>
 
                             <div class="floating-label-container" id="dueDateContainer">
-                                <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
+                                <input asp-for="Bill.DueDate" type="date" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Due Date</label>
                             </div>
 
@@ -699,58 +697,51 @@
 
                 <div class="table-header-controls">
                     <div id="columnSettingsContainer" style="display: none;">
-                        <!-- Use CSS instead of hidden -->
-                        <form id="columnSettingsForm">
-                            <div id="columnSettingsContent">
-                                <!-- Category -->
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-category" name="ItemCategory" value="true"
-                                    @(Model.Bill.itemSettings?.ItemCategory == true ? "checked" : "")>
-                                    <input type="hidden" name="ItemCategory" value="false">
-                                    <label for="col-category">Category</label>
-                                </div>
-
-                                <!-- Item Code -->
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-item-code" name="ItemCode" value="true"
-                                    @(Model.Bill.itemSettings?.ItemCode == true ? "checked" : "")>
-                                    <input type="hidden" name="ItemCode" value="false">
-                                    <label for="col-item-code">Item Code</label>
-                                </div>
-
-                                <!-- HSN/SAC Code -->
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-hsn" name="HsnSacCode" value="true"
-                                    @(Model.Bill.itemSettings?.HsnSacCode == true ? "checked" : "")>
-                                    <input type="hidden" name="HsnSacCode" value="false">
-                                    <label for="col-hsn">HSN/SAC Code</label>
-                                </div>
-
-                                <!-- Description -->
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-description" name="Description" value="true"
-                                    @(Model.Bill.itemSettings?.Description == true ? "checked" : "")>
-                                    <input type="hidden" name="Description" value="false">
-                                    <label for="col-description">DESCRIPTION</label>
-                                </div>
-
-                                <!-- Item Wise Discount -->
-                                <div class="column-option">
-                                    <input type="checkbox" id="col-discount-pct" name="ItemWiseDiscount" value="true"
-                                    @(Model.Bill.itemSettings?.ItemWiseDiscount == true ? "checked" : "")>
-                                    <input type="hidden" name="ItemWiseDiscount" value="false">
-                                    <label for="col-discount-pct">DISCOUNT %</label>
-                                </div>
-
-                                <div class="more-settings" onclick="window.location.href='/Settings/Transaction/Index'">
-                                    <i class="bi bi-gear"></i>
-                                    More Settings
-                                </div>
-                                <div class="btn btn-primary" onclick="saveColumnSettings()" style="cursor:pointer;display: flow;padding: 0px;margin-top: 5px;">
-                                    Save
-                                </div>
+                        <!-- Remove the nested form tag -->
+                        <div id="columnSettingsContent">
+                            <!-- Category -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-category-popup" data-column="col-category"
+                                @(Model.Bill.itemSettings?.ItemCategory == true ? "checked" : "")>
+                                <label for="col-category-popup">Category</label>
                             </div>
-                        </form>
+
+                            <!-- Item Code -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-item-code-popup" data-column="col-item-code"
+                                @(Model.Bill.itemSettings?.ItemCode == true ? "checked" : "")>
+                                <label for="col-item-code-popup">Item Code</label>
+                            </div>
+
+                            <!-- HSN/SAC Code -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-hsn-popup" data-column="col-hsn"
+                                @(Model.Bill.itemSettings?.HsnSacCode == true ? "checked" : "")>
+                                <label for="col-hsn-popup">HSN/SAC Code</label>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-description-popup" data-column="col-description"
+                                @(Model.Bill.itemSettings?.Description == true ? "checked" : "")>
+                                <label for="col-description-popup">DESCRIPTION</label>
+                            </div>
+
+                            <!-- Item Wise Discount -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-discount-pct-popup" data-column="col-discount-pct"
+                                @(Model.Bill.itemSettings?.ItemWiseDiscount == true ? "checked" : "")>
+                                <label for="col-discount-pct-popup">DISCOUNT %</label>
+                            </div>
+
+                            <div class="more-settings" onclick="window.location.href='/Settings/Transaction/Index'">
+                                <i class="bi bi-gear"></i>
+                                More Settings
+                            </div>
+                            <div class="btn btn-primary" onclick="saveColumnSettingsFromPopover()" style="cursor:pointer;display: flow;padding: 0px;margin-top: 5px;">
+                                Save
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -999,11 +990,13 @@
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseTax)
                                         {
                                             <td class="col-tax">
-                                                <select asp-for="Bill.BillItems[i].Tax" class="form-control-sm tax-select" onchange="calculateItemAmount(@i)">
-                                                    @foreach (var tax in Model.TaxOptions)
-                                                    {
-                                                        <option value="@tax">@tax</option>
-                                                    }
+                                                <select asp-for="Bill.BillItems[i].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount(@i)">
+                                                    <option value="0" selected="@(Model.Bill.BillItems[i].TaxPercentage == null)">Select</option>
+                                                    <option value="0" selected="@(Model.Bill.BillItems[i].TaxPercentage == 0)">0%</option>
+                                                    <option value="5" selected="@(Model.Bill.BillItems[i].TaxPercentage == 5)">5%</option>
+                                                    <option value="12" selected="@(Model.Bill.BillItems[i].TaxPercentage == 12)">12%</option>
+                                                    <option value="18" selected="@(Model.Bill.BillItems[i].TaxPercentage == 18)">18%</option>
+                                                    <option value="28" selected="@(Model.Bill.BillItems[i].TaxPercentage == 28)">28%</option>
                                                 </select>
                                             </td>
                                         }
@@ -1090,7 +1083,7 @@
                                 {
                                     <div class="col-md-4">
                                         <div class="floating-label-container">
-                                            <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                            <input asp-for="Bill.Field5" class="floating-input" placeholder=" " />
                                             <label class="floating-label">Field5</label>
                                         </div>
                                     </div>
@@ -1148,7 +1141,7 @@
                                 {
                                     <div class="col-md-4">
                                         <div class="floating-label-container">
-                                            <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                            <input asp-for="Bill.Field6" class="floating-input" placeholder=" " />
                                             <label class="floating-label">Field6</label>
                                         </div>
                                     </div>
@@ -1180,14 +1173,14 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
-                                        <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                        <input asp-for="Bill.Description" class="floating-input" placeholder=" " />
                                         <label class="floating-label">Add Description</label>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
-                                        <input type="file" name="imageFile" class="floating-input" accept="image/*" />
+                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*" />
                                         <label class="floating-label">Add Image</label>
                                     </div>
                                 </div>
@@ -1197,7 +1190,7 @@
 
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
-                                        <input type="file" name="imageFile" class="floating-input" accept="image/*" />
+                                        <input type="file" name="Bill.DocumentPath" class="floating-input" accept="image/*" />
                                         <label class="floating-label">Add Document</label>
                                     </div>
                                 </div>
@@ -1213,10 +1206,10 @@
                                         <label>No. of copies</label>
                                     </div>
                                     <div class="col-6">
-                                        <select class="form-control form-control-sm">
-                                            <option>Original</option>
-                                            <option>Duplicate</option>
-                                            <option>Triplicate</option>
+                                        <select class="form-control form-control-sm" name="Bill.NoOfCopi">
+                                            <option value="1">Original</option>
+                                            <option value="2">Duplicate</option>
+                                            <option value="3">Triplicate</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1227,11 +1220,11 @@
                                             <label>Discount (%)</label>
                                         </div>
                                         <div class="" style="width: 79px;">
-                                            <input type="number" class="form-control form-control-sm total-discount" onchange="updateGrandTotal()" value="0">
+                                            <input type="number" name="Bill.DiscountPercentage" class="form-control form-control-sm total-discount" onchange="updateGrandTotal()" value="0">
                                         </div>
                                         <div>-</div>
                                         <div class="" style="width: 75px;">
-                                            <input type="number" class="form-control form-control-sm total-discountvalue" readonly value="0">
+                                            <input type="number" name="Bill.DiscountAmount" class="form-control form-control-sm total-discountvalue" readonly value="0">
                                         </div>
                                     </div>
 
@@ -1243,12 +1236,12 @@
                                             <label>Tax</label>
                                         </div>
                                         <div class="" style="width: 79px;">
-                                            <select class="form-control form-control-sm">
-                                                <option>NONE</option>
-                                                <option>5%</option>
-                                                <option>12%</option>
-                                                <option>18%</option>
-                                                <option>28%</option>
+                                            <select class="form-control form-control-sm" name=" Bill.TaxPercentage">
+                                                <option value="0">NONE</option>
+                                                <option value="5">5%</option>
+                                                <option value="12">12%</option>
+                                                <option value="18">18%</option>
+                                                <option value="28">28%</option>
                                             </select>
                                         </div>
                                         <div class="" style="width: 97px;text-align: right;">
@@ -1265,7 +1258,7 @@
                                         </div>
 
                                         <div class="" style="width: 79px;">
-                                            <input type="number" class="form-control form-control-sm shipping-value" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.ShippingAmount" class="form-control form-control-sm shipping-value" onchange="updateGrandTotal()" value="0" />
                                         </div>
 
                                         <div  style="width: 97px;text-align: right;">
@@ -1284,7 +1277,7 @@
                                         </div>
 
                                         <div class="" style="width: 79px;">
-                                            <input type="number" class="form-control form-control-sm packing-value" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.PackingAmount" class="form-control form-control-sm packing-value" onchange="updateGrandTotal()" value="0" />
                                         </div>
 
                                         <div style="width: 97px;text-align: right;">
@@ -1302,7 +1295,7 @@
                                         </div>
 
                                         <div class="" style="width: 79px;">
-                                            <input type="number" class="form-control form-control-sm adjustment-value" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.AdjustmentAmount" class="form-control form-control-sm adjustment-value" onchange="updateGrandTotal()" value="0" />
                                         </div>
 
                                         <div  style="width: 97px;text-align: right;">
@@ -1317,21 +1310,25 @@
                                 <div class="row mb-2">
                                     <div class="d-flex align-items-center justify-content-end gap-3">
                                         <div class="">
+
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="taxType" id="tcs" value="TCS" checked>
+                                                <input class="form-check-input" type="radio" name="Bill.TCSTDSType" id="tcs" value="@((int)TCSTDSEnum.TCS)"
+                                                @(Model.Bill.TCSTDSType == TCSTDSEnum.TCS ? "checked" : "")>
                                                 <label class="form-check-label" for="tcs">TCS</label>
                                             </div>
                                             <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="taxType" id="tds" value="TDS">
+                                                <input class="form-check-input" type="radio" name="Bill.TCSTDSType" id="tds" value="@((int)TCSTDSEnum.TDS)"
+                                                @(Model.Bill.TCSTDSType == TCSTDSEnum.TDS ? "checked" : "")>
                                                 <label class="form-check-label" for="tds">TDS</label>
                                             </div>
+
                                         </div>
-                                        <div class="" style="width: 79px;">
-                                            <select class="form-control form-control-sm mt-2">
-                                                <option>NONE</option>
-                                                <option>0.1%</option>
-                                                <option>1%</option>
-                                                <option>2%</option>
+                                        <div style="width: 79px;">
+                                            <select class="form-control form-control-sm mt-2" name="Bill.TdsTcsPercentage">
+                                                <option value="0">NONE</option>
+                                                <option value="0.1">0.1%</option>
+                                                <option value="1">1%</option>
+                                                <option value="2">2%</option>
                                             </select>
                                         </div>
                                         <div class="" style="width: 97px;text-align: right;">
@@ -1345,19 +1342,19 @@
                                     <div class="d-flex align-items-center justify-content-end gap-3">
                                         <div class="">
                                             <div class="form-check">
-                                                <input asp-for="Bill.RoundOff" type="checkbox" class="form-check-input" checked />
-                                                <label asp-for="Bill.RoundOff" class="form-check-label">Round Off</label>
+                                                <input asp-for="Bill.IsRoundOff" type="checkbox" class="form-check-input" checked />
+                                                <label asp-for="Bill.IsRoundOff" class="form-check-label">Round Off</label>
                                             </div>
                                         </div>
                                         <div class="" style="width: 40px;">
-                                            <input id="roundOffAmount" type="number" class="form-control form-control-sm" value="0" />
+                                            <input id="roundOffAmount" name="Bill.RoundOffValue" type="number" class="form-control form-control-sm" value="0" />
 
                                         </div>
                                         <div class="" style="text-align: right;">
                                             Total
                                         </div>
                                         <div class="" style="width: 140px;">
-                                            <input type="number" class="form-control form-control-sm total-balance" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.Total" class="form-control form-control-sm total-balance" onchange="updateGrandTotal()" value="0" />
 
                                         </div>
                                     </div>
@@ -1370,8 +1367,8 @@
                                     <div class="d-flex align-items-center justify-content-end gap-3">
                                         <div class="">
                                             <div class="form-check">
-                                                <input asp-for="Bill.RoundOff" type="checkbox" class="form-check-input" checked />
-                                                <label asp-for="Bill.RoundOff" class="form-check-label d-none"></label>
+                                                <input asp-for="Bill.IsReceive" type="checkbox" class="form-check-input" checked />
+                                                <label asp-for="Bill.IsReceive" class="form-check-label d-none"></label>
                                             </div>
                                         </div>
 
@@ -1379,7 +1376,7 @@
                                             Received
                                         </div>
                                         <div class="" style="width: 140px;">
-                                            <input type="number" class="form-control form-control-sm received-amount" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.paidReciveamount" class="form-control form-control-sm received-amount" onchange="updateGrandTotal()" value="0" />
 
                                         </div>
                                     </div>
@@ -1392,10 +1389,12 @@
                                         <div class="" style="text-align: right; font-weight:bold;">
                                             Balance
                                         </div>
-                                        <div id="finalTotal" style="width: 140px; font-weight:bold; text-align:right;">
+                                        <div id="finalTotal"  style="width: 140px; font-weight:bold; text-align:right;">
                                             0000
-
                                         </div>
+
+                                        <input type="hidden" id="finalTotalinput" name="Bill.FinalAmount" value="0" />
+
                                     </div>
 
                                 </div>
@@ -1551,14 +1550,20 @@
             rowHTML += `<td class="col-amount1"><input name="Bill.BillItems[${itemIndex}].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly /></td>`;
 
             if (itemSettings.itemWiseTax) {
-                let taxDropdown = `<select name="Bill.BillItems[${itemIndex}].Tax" class="form-control-sm tax-select" onchange="calculateItemAmount(${itemIndex})">`;
-                @foreach (var tax in Model.TaxOptions)
-                {
-                     @:taxDropdown += `<option value="@tax">@tax</option>`;
-                }
-                taxDropdown += `</select>`;
+                       // Check if this is an existing row or new row
+                        let existingElement = document.querySelector(`[name="Bill.BillItems[${itemIndex}].TaxPercentage"]`);
+                        let currentTax = existingElement?.value || null;
+                        if (currentTax === "") currentTax = null;
 
-                rowHTML += `<td class="col-tax">${taxDropdown}</td>`;
+                        let taxDropdown = `<select name="Bill.BillItems[${itemIndex}].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount(${itemIndex})">`;
+                        taxDropdown += `<option value="0" ${currentTax == null ? "selected" : ""}>Select</option>`;
+                        taxDropdown += `<option value="0" ${currentTax == "0" ? "selected" : ""}>0%</option>`;
+                        taxDropdown += `<option value="5" ${currentTax == "5" ? "selected" : ""}>5%</option>`;
+                        taxDropdown += `<option value="12" ${currentTax == "12" ? "selected" : ""}>12%</option>`;
+                        taxDropdown += `<option value="18" ${currentTax == "18" ? "selected" : ""}>18%</option>`;
+                        taxDropdown += `<option value="28" ${currentTax == "28" ? "selected" : ""}>28%</option>`;
+                        taxDropdown += `</select>`;
+                        rowHTML += `<td class="col-tax">${taxDropdown}</td>`;
             }
 
             rowHTML += `
@@ -1594,15 +1599,15 @@
             const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
             const CessAmount = parseFloat(row.querySelector('.cess-input').value) || 0;
             const taxSelect = row.querySelector('.tax-select').value;
-
+            
             const subtotal = quantity * pricePerUnit;
             const discountAmount = subtotal * (discountPercentage / 100);
             const afterDiscount = subtotal - discountAmount;
 
             let taxRate = 0;
-            if (taxSelect && taxSelect !== 'Select') {
-                taxRate = parseFloat(taxSelect.replace('%', '')) || 0;
-            }
+            // if (taxSelect && taxSelect !== 'Select') {
+                taxRate = parseFloat(taxSelect) || 0;
+            // }
 
             const taxAmount = afterDiscount * (taxRate / 100);
             const finalAmount = afterDiscount + taxAmount + CessAmount;
@@ -1616,6 +1621,7 @@
 
         function updateGrandTotal() {
           
+            
             let total = 0;
             document.querySelectorAll('.total-amount').forEach(input => {
                 total += parseFloat(input.value) || 0;
@@ -1655,7 +1661,7 @@
 
 
 
-            const roundOff = document.querySelector('input[name="Bill.RoundOff"]').checked;
+            const roundOff = document.querySelector('input[name="Bill.IsRoundOff"]').checked;
             let finalTotal = roundOff ? Math.round(total) : total;
             let roundOffAmount = finalTotal - total;
 
@@ -1666,6 +1672,7 @@
              const receivedamount = parseFloat(receivedElement.value) || 0;
              const finalamount =  finalTotal-receivedamount;
             document.getElementById('finalTotal').textContent = finalamount.toFixed(2);
+            document.getElementById('finalTotalinput').value =  finalamount.toFixed(2);
         }
 
         // Initialize calculations on page load
@@ -1676,7 +1683,7 @@
         });
 
         // Handle round off checkbox change
-        document.querySelector('input[name="Bill.RoundOff"]').addEventListener('change', updateGrandTotal);
+        document.querySelector('input[name="Bill.IsRoundOff"]').addEventListener('change', updateGrandTotal);
     </script>
     <script>
         // Toggle between Credit and Cash
@@ -1687,62 +1694,64 @@
                    
                     const dueDateContainer = document.getElementById('dueDateContainer');
 
-
                     toggle.classList.toggle('cash');
 
                     if (toggle.classList.contains('cash')) {
                         modeText.textContent = 'Cash';
                         dueDateContainer.style.display='none';
-                       
-                    }
+                        document.getElementById('iscreditinput').value = "false";
+
+                        }
                     else {
                         modeText.textContent = 'Credit';
                         dueDateContainer.style.display = 'block';
+                        document.getElementById('iscreditinput').value = "true";
+
 
                     }
                 });
 
 
 
-                          function showColumnSettings() 
-                         {
-                            const dropdown = document.getElementById('columnSettings');
-                            const button = document.querySelector('th.col-action .column-toggle-btn'); // Changed this line
-                            dropdown.classList.toggle('show');
-                            if (dropdown.classList.contains('show')) {
-                                const buttonRect = button.getBoundingClientRect();
-                                dropdown.style.position = 'absolute';
-                                dropdown.style.top = (buttonRect.bottom + 5) + 'px';
-                                dropdown.style.left = (buttonRect.right - 200) + 'px';
-                            }
-                         }
+                         //  function showColumnSettings() 
+                         // {
+                         //     debugger;
+                         //    const dropdown = document.getElementById('columnSettings');
+                         //    const button = document.querySelector('th.col-action .column-toggle-btn'); // Changed this line
+                         //    dropdown.classList.toggle('show');
+                         //    if (dropdown.classList.contains('show')) {
+                         //        const buttonRect = button.getBoundingClientRect();
+                         //        dropdown.style.position = 'absolute';
+                         //        dropdown.style.top = (buttonRect.bottom + 5) + 'px';
+                         //        dropdown.style.left = (buttonRect.right - 200) + 'px';
+                         //    }
+                         // }
 
 
                function closeView() {
                        window.location.href = '/Web/Home/Index'; // Or your desired controller/action
                }
 
-        function toggleColumn(columnClass) {
-            const columns = document.querySelectorAll('.' + columnClass);
-            const checkbox = event.target;
-
-            columns.forEach(column => {
-                if (checkbox.checked) {
-                    column.classList.remove('hidden-column');
-                } else {
-                    column.classList.add('hidden-column');
-                }
-            });
-        }
+                // function toggleColumn(columnClass, isChecked) {
+                //          const columns = document.querySelectorAll('.' + columnClass);
+                //          columns.forEach(column => {
+                //                 if (isChecked) {
+                //                     column.classList.remove('hidden-column');
+                //                 } else {
+                //                     column.classList.add('hidden-column');
+                //                 }
+                //          });
+                //  }
 
 
                 document.addEventListener('click', function(event) {
+                    
             const button = document.querySelector('th.col-action .column-toggle-btn');
             const dropdown = document.getElementById('columnSettings');
 
-            if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-                dropdown.classList.remove('show');
-            }
+            // if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            //     dropdown.classList.remove('show');
+            // }
         });
     </script>
 
@@ -1752,7 +1761,8 @@
             initializePopover();
         });
 
-                       function initializePopover() {
+        function initializePopover() {
+           
             const columnToggleBtn = document.getElementById('columnToggleBtn');
             const columnSettingsContent = document.getElementById('columnSettingsContent');
 
@@ -1774,17 +1784,23 @@
                     const popoverElement = document.querySelector('.popover');
                     if (popoverElement) {
                         const checkboxes = popoverElement.querySelectorAll('input[type="checkbox"]');
-                        checkboxes.forEach(checkbox => {
-                            checkbox.addEventListener('change', function() {
-                                // Extract column class from onchange attribute
-                                const onchangeAttr = this.getAttribute('onchange');
-                                const match = onchangeAttr.match(/'([^']+)'/);
-                                if (match) {
-                                    const columnClass = match[1];
-                                    toggleColumnFromPopover(columnClass, this.checked);
-                                }
-                            });
-                        });
+                        // checkboxes.forEach(checkbox => {
+                        //     checkbox.addEventListener('change', function() {
+                        //         const columnClass = this.getAttribute('data-column');
+                        //         if (columnClass) {
+                        //             toggleColumnFromPopover(columnClass, this.checked);
+                        //         }
+                        //     });
+                        // });
+
+                        // Handle save button in popover
+                        // const saveBtn = popoverElement.querySelector('.btn-primary');
+                        // if (saveBtn) {
+                        //     saveBtn.addEventListener('click', function() {
+                        //         saveColumnSettingsFromPopover();
+                        //         popover.hide();
+                        //     });
+                        // }
                     }
                 });
 
@@ -1797,21 +1813,8 @@
             }
         }
 
-                // Define the toggleColumn function
-        function toggleColumn(columnClass, isChecked) {
-            const columns = document.querySelectorAll('.' + columnClass);
-
-            columns.forEach(column => {
-                if (isChecked) {
-                    column.classList.remove('hidden-column');
-                } else {
-                    column.classList.add('hidden-column');
-                }
-            });
-        }
-        function saveColumnSettings() {
-
-            // Get the popover element instead of the hidden form
+                function saveColumnSettingsFromPopover() {
+                   
             const popoverElement = document.querySelector('.popover');
             if (!popoverElement) {
                 console.error("Popover not found");
@@ -1819,15 +1822,88 @@
             }
 
             // Get checkboxes from the popover
-            const categoryEl = popoverElement.querySelector('#col-category');
-            const itemCodeEl = popoverElement.querySelector('#col-item-code');
-            const hsnEl = popoverElement.querySelector('#col-hsn');
-            const descriptionEl = popoverElement.querySelector('#col-description');
-            const discountEl = popoverElement.querySelector('#col-discount-pct');
+            const categoryEl = popoverElement.querySelector('#col-category-popup');
+            const itemCodeEl = popoverElement.querySelector('#col-item-code-popup');
+            const hsnEl = popoverElement.querySelector('#col-hsn-popup');
+            const descriptionEl = popoverElement.querySelector('#col-description-popup');
+            const discountEl = popoverElement.querySelector('#col-discount-pct-popup');
 
             // Check if elements exist
             if (!categoryEl || !itemCodeEl || !hsnEl || !descriptionEl || !discountEl) {
                 console.error("Some checkbox elements are missing from popover");
+                return;
+            }
+
+            // Collect checkbox values
+            const model = {
+                ItemCategory: categoryEl.checked,
+                ItemCode: itemCodeEl.checked,
+                HsnSacCode: hsnEl.checked,
+                Description: descriptionEl.checked,
+                ItemWiseDiscount: discountEl.checked
+            };
+
+            console.log("Model being sent from popover:", model);
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch('/Settings/ItemSettings/SaveOrUpdateColumnSettings', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token
+                },
+                body: JSON.stringify(model)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    if (data.redirectUrl) {
+                        window.location.href = '/Sales/Create';
+                    } else {
+                        alert('Settings saved successfully!');
+                    }
+                } else {
+                    alert("Failed: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while saving settings: " + error.message);
+            });
+        }
+                // Define the toggleColumn function
+        // function toggleColumn(columnClass, isChecked) {
+        //     const columns = document.querySelectorAll('.' + columnClass);
+
+        //     columns.forEach(column => {
+        //         if (isChecked) {
+        //             column.classList.remove('hidden-column');
+        //         } else {
+        //             column.classList.add('hidden-column');
+        //         }
+        //     });
+        // }
+        //         function toggleColumnFromPopover(columnClass, isChecked) {
+        //     toggleColumn(columnClass, isChecked);
+        // }
+               function saveColumnSettings() {
+                   
+            // Get checkboxes from the column settings container (not from popover)
+            const categoryEl = document.querySelector('#col-category-popup');
+            const itemCodeEl = document.querySelector('#col-item-code-popup');
+            const hsnEl = document.querySelector('#col-hsn-popup');
+            const descriptionEl = document.querySelector('#col-description-popup');
+            const discountEl = document.querySelector('#col-discount-pct-popup');
+
+            // Check if elements exist
+            if (!categoryEl || !itemCodeEl || !hsnEl || !descriptionEl || !discountEl) {
+                console.error("Some checkbox elements are missing");
                 return;
             }
 
@@ -1852,11 +1928,20 @@
                 },
                 body: JSON.stringify(model)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     if (data.redirectUrl) {
                         window.location.href = '/Sales/Create';
+                    } else {
+                        // Hide the settings container after successful save
+                        document.getElementById('columnSettingsContainer').style.display = 'none';
+                        alert('Settings saved successfully!');
                     }
                 } else {
                     alert("Failed: " + data.message);
@@ -1864,6 +1949,7 @@
             })
             .catch(error => {
                 console.error("Error:", error);
+                alert("An error occurred while saving settings: " + error.message);
             });
         }
 

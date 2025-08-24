@@ -22,8 +22,6 @@ namespace MUNEEMJI.Controllers
             _IBillItemService = iBillItemService;
           
         }
-
-
         public async Task<IActionResult> Index()
         {
             try
@@ -33,7 +31,6 @@ namespace MUNEEMJI.Controllers
                 string firmFilter = "ALL FIRMS";
                 string vendorFilter = null;
                 using var connection = new NpgsqlConnection(_connectionString);
-
 
                 string query = @"
                 SELECT 
@@ -58,69 +55,15 @@ namespace MUNEEMJI.Controllers
                     td.partyid AS ""PartyId"",
                     pt.party_name as PartyName
                 FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id  where td.TradeDocumentTypesid=@TradeDocumentTypesid;
-            ";
+                ";
 
                 var PurchaseBill = connection.QuerySql<PurchaseBill>(query,new { TradeDocumentTypesid = (int)TradeDocumentTypes.SalesChallan }).ToList();
 
 
-
-
-
-
-
-
-
-                // Set default date range if not provided
-                //if (!startDate.HasValue || !endDate.HasValue)
-                //{
-                //    startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                //    endDate = startDate.Value.AddMonths(1).AddDays(-1);
-                //}
-                //var query = @"
-                //                SELECT 
-                //                    pb.""id"",
-                //                    pb.""bill_number"",
-                //                    pb.""bill_date"",
-                //                    pb.""payment_type"",
-                //                    pb.""total"",
-                //                    pb.""created_date"",
-                //                    COALESCE(SUM(CASE WHEN pb.""payment_type"" = 'Cash' THEN pb.""total"" ELSE 0 END), 0) AS ""PaidAmount"",
-                //                    COALESCE(SUM(CASE WHEN pb.""payment_type"" != 'Cash' THEN pb.""total"" ELSE 0 END), 0) AS ""UnpaidAmount""
-                //                FROM ""purchasebills"" pb
-                //                WHERE pb.""bill_date"" >= @StartDate::date AND pb.""bill_date"" <= @EndDate::date";
-
-                //                            if (firmFilter != "ALL FIRMS")
-                //                            {
-                //                                query += " AND pb.\"state_of_supply\" = @FirmFilter";
-                //                            }
-
-                //                            query += @"
-                //                GROUP BY 
-                //                    pb.""id"", 
-                //                    pb.""bill_number"", 
-                //                    pb.""bill_date"", 
-                //                    pb.""payment_type"", 
-                //                    pb.""total"", 
-                //                    pb.""created_date""
-                //                ORDER BY pb.""bill_date"" DESC";
-
-
-                //var bills = await connection.QueryAsync<dynamic>(query, new
-                //{
-                //    StartDate = startDate.Value,
-                //    EndDate = endDate.Value,
-                //    FirmFilter = firmFilter
-                //});
-
-                // Calculate summary
                 if (PurchaseBill != null && PurchaseBill.Count() > 0)
                 {
-
-
                     var paidTotal = PurchaseBill.Sum(b => b.paidReciveamount);
-                    //var unpaidTotal = bills.Where(b => b.PaymentType != "Cash").Sum(b => (decimal)b.Total);
                     var unpaidTotal = PurchaseBill.Sum(x => x.Total) - paidTotal;
-
                     var grandTotal = paidTotal + unpaidTotal;
 
                     ViewBag.PaidTotal = paidTotal;
@@ -158,29 +101,7 @@ namespace MUNEEMJI.Controllers
 
             int firmid = 1;
             await Task.Delay(1);
-            //if (id > 0)
-            //{
-            //    var bill = await _billService.GetBillByIdAsync(id);
-            //    viewModel = new PurchaseBillViewModel
-            //    {
-            //        //Bill = new PurchaseBill
-            //        //{
-            //        //    BillNumber = _billService.GenerateBillNumber(),
-
-            //        //    BillDate = DateTime.Now,
-            //        //    BillItems = new List<PurchaseBillItem>
-            //        //{
-            //        //    new PurchaseBillItem(),
-            //        //    new PurchaseBillItem()
-            //        //}
-            //        //},
-            //        Bill = bill,
-            //        ViewTypeId = typeid,
-            //        DropDownItem = await _IBillItemService.GetItems()
-            //    };
-            //}
-            //else
-            //{
+           
             viewModel = new PurchaseBillViewModel
             {
                 Bill = new PurchaseBill
@@ -202,7 +123,7 @@ namespace MUNEEMJI.Controllers
                 DropDownCategory = CategoryController.GetCategoriesDropdown()
 
             };
-            //}
+            
             ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
             return View(viewModel);
         }
@@ -210,13 +131,12 @@ namespace MUNEEMJI.Controllers
         // POST: Bill/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PurchaseBillViewModel viewModel, IFormFile? imageFile)
+        public async Task<IActionResult> Create(PurchaseBillViewModel viewModel)
         {
             try
             {
                 
-                    // Handle image upload
-                    if (imageFile != null && imageFile.Length > 0)
+                    if (viewModel.Bill.imageFile != null && viewModel.Bill.imageFile.Length > 0)
                     {
                         var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
                         if (!Directory.Exists(uploadsFolder))
@@ -224,12 +144,12 @@ namespace MUNEEMJI.Controllers
                             Directory.CreateDirectory(uploadsFolder);
                         }
 
-                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + viewModel.Bill.imageFile.FileName;
                         var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                         using (var fileStream = new FileStream(filePath, FileMode.Create))
                         {
-                            await imageFile.CopyToAsync(fileStream);
+                            await viewModel.Bill.imageFile.CopyToAsync(fileStream);
                         }
 
                         viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;

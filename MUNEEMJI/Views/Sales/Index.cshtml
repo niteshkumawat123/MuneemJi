@@ -1,58 +1,37 @@
 ﻿@model List<PurchaseBill>
 @{
-    ViewData["Title"] = "Sales Bills";
+    ViewData["Title"] = "Sale Invoices";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
 
-<div class="container-fluid">
+<div class="container-fluid px-4 py-3">
     <!-- Header Section -->
-    <div class="row mb-3">
-        <div class="col-md-8">
-            <div class="input-group">
-                <span class="input-group-text">
-                    <i class="fa fa-search"></i>
-                </span>
-                <input type="text" class="form-control" placeholder="Search Transactions" id="searchTransactions">
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <h4 class="mb-0 me-3">Sale Invoices</h4>
+            <i class="bi bi-chevron-down text-muted"></i>
         </div>
-        @*  <div class="col-md-4 text-end">
-            <button class="btn btn-outline-danger me-2">
-                <i class="fa fa-plus"></i> Add Sale
+        <div>
+            <button class="btn btn-danger">
+                <i class="bi bi-plus"></i> Add Sale
             </button>
-            <button class="btn btn-outline-primary me-2">
-                <i class="fa fa-plus"></i> Add Purchase
+            <button class="btn btn-outline-secondary ms-2">
+                <i class="bi bi-gear"></i>
             </button>
-            <button class="btn btn-outline-secondary">
-                <i class="fa fa-plus"></i>
-            </button>
-            <button class="btn btn-outline-secondary">
-                <i class="fa fa-ellipsis-v"></i>
-            </button>
-        </div> *@
-    </div>
-
-    <!-- Page Title and Actions -->
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <h4>Sales Bills</h4>
-        </div>
-        <div class="col-md-6 text-end">
-            <button class="btn btn-outline-danger me-2">
-                <i class="fa fa-upload"></i> Upload Bill
-            </button>
-            <a href="/Web/Sales/Create">
-                <button class="btn btn-danger">
-                    <i class="fa fa-plus"></i> Add Sales
-                </button>
-            </a>
         </div>
     </div>
 
     <!-- Filters Section -->
-    <div class="row mb-3">
-        <div class="col-md-2">
+    <div class="row mb-4 align-items-center">
+        <div class="col-auto">
+            <span class="text-muted me-2">Filter by :</span>
+        </div>
+        <div class="col-auto">
             <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                     This Month
                 </button>
                 <ul class="dropdown-menu">
@@ -63,170 +42,153 @@
                 </ul>
             </div>
         </div>
-        <div class="col-md-1 text-center">
-            <span class="btn btn-secondary">Between</span>
+        <div class="col-auto">
+            <input type="date" class="form-control" id="startDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
         </div>
-        <div class="col-md-2">
-            <input type="date" class="form-control"
-                    id="startDate"
-                    value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-
+        <div class="col-auto">
+            <span class="text-muted">To</span>
         </div>
-        <div class="col-md-1 text-center">
-            <span>To</span>
+        <div class="col-auto">
+            <input type="date" class="form-control" id="endDate" value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")">
         </div>
-        <div class="col-md-2">
-            <input type="date" class="form-control" value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")" id="endDate">
-        </div>
-        <div class="col-md-2">
+        <div class="col-auto">
             <select class="form-select">
-                <option selected>@ViewBag.FirmFilter</option>
-                <option>ALL FIRMS</option>
+                <option selected>All Firms</option>
                 <option>FIRM 1</option>
                 <option>FIRM 2</option>
             </select>
         </div>
-        <div class="col-md-2">
+        <div class="col-auto">
             <select class="form-select">
-                <option selected>@ViewBag.VendorFilter</option>
-                <option>All Vendors</option>
-                <option>Vendor 1</option>
-                <option>Vendor 2</option>
+                <option selected>All Users</option>
+                <option>User 1</option>
+                <option>User 2</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <select class="form-select">
+                <option selected>All Godown</option>
+                <option>Godown 1</option>
+                <option>Godown 2</option>
             </select>
         </div>
     </div>
 
-    <!-- Summary Cards -->
+    <!-- Summary Card -->
     <div class="row mb-4">
         <div class="col-md-3">
-            <div class="card bg-light-success text-success">
-                <div class="card-body text-center">
-                    <h5>Paid</h5>
-                    <h3><i class="fa fa-rupee-sign"></i> @ViewBag.PaidTotal.ToString("N2")</h3>
+            <div class="summary-card">
+                <div class="summary-header">
+                    <span class="summary-title">Total Sales Amount</span>
+                    <div class="summary-trend">
+                        <span class="trend-percentage">100% ↗</span>
+                        <small class="trend-text">vs last month</small>
+                    </div>
+                </div>
+                <div class="summary-amount">
+                    <span class="currency">₹</span> @ViewBag.GrandTotal?.ToString("N0") ?? "151"
+                </div>
+                <div class="summary-breakdown">
+                    <span class="received-text">Received: ₹ @ViewBag.PaidTotal?.ToString("N0") ?? "151"</span>
+                    <span class="separator">|</span>
+                    <span class="balance-text">Balance: ₹ @ViewBag.UnpaidTotal?.ToString("N0") ?? "0"</span>
                 </div>
             </div>
         </div>
-        <div class="col-md-1 text-center align-self-center">
-            <h4>+</h4>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-light-primary text-primary">
-                <div class="card-body text-center">
-                    <h5>Unpaid</h5>
-                    <h3><i class="fa fa-rupee-sign"></i> @ViewBag.UnpaidTotal.ToString("N2")</h3>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-1 text-center align-self-center">
-            <h4>=</h4>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-light-warning text-warning">
-                <div class="card-body text-center">
-                    <h5>Total</h5>
-                    <h3><i class="fa fa-rupee-sign"></i> @ViewBag.GrandTotal.ToString("N2")</h3>
-                </div>
-            </div>
-        </div>
-        @*  <div class="col-md-2 d-flex gap-3 justify-content-end">
-            <!-- Excel Report Button -->
-            <button class="btn btn-outline-secondary d-flex flex-column align-items-center">
-                <i class="fa fa-file-excel fa-2x"></i>
-                <small>Excel Report</small>
-            </button>
-
-            <!-- Print Button -->
-            <button class="btn btn-outline-secondary d-flex flex-column align-items-center">
-                <i class="fa fa-print fa-2x"></i>
-                <small>Print</small>
-            </button>
-        </div> *@
     </div>
 
     <!-- Transactions Section -->
-    <div class="row">
-        <div class="col-12">
-            <h5 class="mb-3">TRANSACTIONS</h5>
-
-            <!-- Search Box -->
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="fa fa-search"></i>
-                        </span>
-                        <input type="text" class="form-control" placeholder="Search transactions" id="transactionSearch">
-                    </div>
-                </div>
+    <div class="transactions-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Transactions</h5>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-search"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-bar-chart"></i>
+                </button>
+                <button class="btn btn-success btn-sm">
+                    <i class="bi bi-file-earmark-excel"></i>
+                </button>
+                <button class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-printer"></i>
+                </button>
             </div>
+        </div>
 
-            <!-- Transactions Table -->
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>
-                                DATE
-                                <i class="fa fa-filter ms-2"></i>
-                            </th>
-                            <th>
-                                INVOICE NO.
-                                <i class="fa fa-filter ms-2"></i>
-                            </th>
-                            <th>
-                                PARTY NAME
-                                <i class="fa fa-filter ms-2"></i>
-                            </th>
-                            <th>
-                                PAYMENT TYPE
-                                <i class="fa fa-filter ms-2"></i>
-                            </th>
-                            <th>
-                                AMOUNT
-                                <i class="fa fa-filter ms-2"></i>
-                            </th>
-                            <th>
-                                BALANCE DUE
-                                <i class="fa fa-filter ms-2"></i>
-                            </th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
+        <!-- Transactions Table -->
+        <div class="table-responsive">
+            <table class="table transactions-table">
+                <thead>
+                    <tr>
+                        <th>
+                            Date
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>
+                            Invoice no
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>
+                            Party Name
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>
+                            Transaction
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>
+                            Payment Type
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>
+                            Amount
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>
+                            Balance
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>
+                            Due date
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>
+                            Status
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var bill in Model)
                         {
-                            @foreach (var bill in Model)
-                            {
-                                <tr class="@("Cash" == "Cash" ? "table-success" : "table-info")">
-                                    <td>@(bill.BillDate != null ? ((DateTime)bill.BillDate).ToString("dd-MM-yyyy") : "-")</td>
-                                    <td>@(bill.BillNumber ?? "-")</td>
-                                    <td>@(bill.PartyName ?? "-")</td>
-                                    <td>@(bill.PaymentType ?? "-")</td>
-                                    <td>@(bill.Total != null ? ((decimal)bill.Total).ToString("0.00") : "-")</td>
-                                    <td>@(bill.paidReciveamount != null ? ((decimal)bill.paidReciveamount).ToString("0.00") : "-")</td>
-
-                                    <td>
-                                        <button class="btn border-0 me-2" title="Print">
-                                            <!-- Option 1: FontAwesome Icon -->
-                                            <!-- Option 2: Custom Image Icon -->
-                                            <img src="~/images/PrinterIcon.png" alt="Print" style="width: 16px; height: 16px;">
+                            <tr class="transaction-row">
+                                <td>@(bill.BillDate != null ? ((DateTime)bill.BillDate).ToString("dd/MM/yyyy, HH:mm") : "-")</td>
+                                <td>@(bill.BillNumber ?? "-")</td>
+                                <td>@(bill.PartyName ?? "Cash Sale")</td>
+                                <td>Sale</td>
+                                <td>@(bill.PaymentType ?? "Cash")</td>
+                                <td>₹ @(bill.Total != null ? ((decimal)bill.Total).ToString("N0") : "0")</td>
+                                <td>₹ @(bill.paidReciveamount != null ? ((decimal)bill.paidReciveamount).ToString("N0") : "0")</td>
+                                <td>-</td>
+                                <td>
+                                    <span class="badge bg-success">Paid</span>
+                                </td>
+                                <td>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-secondary" title="Print">
+                                            <i class="bi bi-printer"></i>
                                         </button>
-                                        <button class="btn border-0 me-2" title="Share">
-                                            <!-- Option 1: FontAwesome Icon -->
-                                            @*                                             <i class="fas fa-external-link-alt" style="color: #6c757d; font-size: 16px;"></i>
- *@                                            <img src="~/images/Share.png" alt="Share" style="width: 16px; height: 16px;">
-
-                                            <!-- Option 2: Custom Image Icon -->
-                                            <!-- <img src="~/images/icons/share-icon.png" alt="Share" style="width: 16px; height: 16px;"> -->
+                                        <button class="btn btn-sm btn-outline-secondary" title="Share">
+                                            <i class="bi bi-share"></i>
                                         </button>
-                                        <div class="dropdown d-inline">
-                                            <button class="btn border-0 me-2" type="button" data-bs-toggle="dropdown" title="More Options">
-                                                <img src="~/images/ThreeDots.png" alt="Share" style="width: 16px; height: 16px;">
-
-                                                <!-- Option 1: FontAwesome Icon -->
-                                                @*  <i class="fas fa-ellipsis-v" style="color: #6c757d; font-size: 16px;"></i> *@
-                                                <!-- Option 2: Custom Image Icon -->
-                                                <!-- <img src="~/images/icons/more-icon.png" alt="More" style="width: 16px; height: 16px;"> -->
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" title="More Options">
+                                                <i class="bi bi-three-dots-vertical"></i>
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
@@ -234,80 +196,178 @@
                                                 <li><a class="dropdown-item" href="/Web/Sales/DeleteConfirmed?id=@(bill.Id)">Delete</a></li>
                                             </ul>
                                         </div>
-
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="7" class="text-center">No transactions found</td>
+                                    </div>
+                                </td>
                             </tr>
                         }
-                    </tbody>
-                </table>
-            </div>
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="10" class="text-center py-4 text-muted">No transactions found</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Windows Activation Notice -->
-    @*   <div class="position-fixed bottom-0 end-0 p-3">
-        <div class="toast show" role="alert">
-            <div class="toast-body">
-                <strong>Activate Windows</strong><br>
-                Go to Settings to activate Windows.
-            </div>
-        </div>
-    </div> *@
+
 </div>
 
 <style>
-    .bg-light-success {
-        background-color: #d4edda !important;
+    body {
+        background-color: #f8f9fa;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    .bg-light-primary {
-        background-color: #cce7ff !important;
-    }
-
-    .bg-light-warning {
-        background-color: #fff3cd !important;
-    }
-
-    .table-success {
-        background-color: #d4edda !important;
-    }
-
-    .table-info {
-        background-color: #cce7ff !important;
-    }
-
-    .card {
+    .summary-card {
+        background: white;
         border-radius: 8px;
-        border: 1px solid #dee2e6;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
     }
 
-    .btn {
-        border-radius: 6px;
+    .summary-header {
+        display: flex;
+        justify-content: between;
+        align-items: flex-start;
+        margin-bottom: 15px;
     }
 
-    .table th {
+    .summary-title {
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .summary-trend {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-left: auto;
+    }
+
+    .trend-percentage {
+        color: #28a745;
+        font-size: 12px;
         font-weight: 600;
-        font-size: 0.875rem;
+    }
+
+    .trend-text {
+        color: #6c757d;
+        font-size: 11px;
+    }
+
+    .summary-amount {
+        font-size: 32px;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 10px;
+    }
+
+    .currency {
+        font-size: 24px;
+    }
+
+    .summary-breakdown {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .received-text {
         color: #6c757d;
     }
 
-    .toast {
+    .separator {
+        color: #dee2e6;
+    }
+
+    .balance-text {
+        color: #6c757d;
+    }
+
+    .transactions-section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+    }
+
+    .transactions-table {
+        margin-bottom: 0;
+    }
+
+        .transactions-table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            color: #6c757d;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 12px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+    .filter-icon {
+        color: #ced4da;
+        font-size: 10px;
+        cursor: pointer;
+    }
+
+    .transaction-row {
+        background-color: #e7f3ff;
+        border-left: 3px solid #007bff;
+    }
+
+        .transaction-row td {
+            padding: 12px 8px;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+
+    .activation-notice {
         background-color: rgba(0, 0, 0, 0.8);
         color: white;
-        border: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    .btn {
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .form-control, .form-select {
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+        font-size: 14px;
+    }
+
+    .badge {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
     }
 </style>
 
 <script>
     // Search functionality
-    document.getElementById('transactionSearch').addEventListener('keyup', function() {
+    document.getElementById('transactionSearch')?.addEventListener('keyup', function() {
         var searchTerm = this.value.toLowerCase();
         var tableRows = document.querySelectorAll('tbody tr');
 
@@ -323,12 +383,10 @@
 
     // Date filter functionality
     document.getElementById('startDate').addEventListener('change', function() {
-        // Add your date filtering logic here
         filterByDate();
     });
 
     document.getElementById('endDate').addEventListener('change', function() {
-        // Add your date filtering logic here
         filterByDate();
     });
 
@@ -337,8 +395,15 @@
         var endDate = document.getElementById('endDate').value;
 
         if (startDate && endDate) {
-            // Reload page with new date parameters
             window.location.href = '?startDate=' + startDate + '&endDate=' + endDate;
         }
     }
+
+    // Add click handlers for action buttons
+    document.querySelectorAll('.filter-icon').forEach(function(icon) {
+        icon.addEventListener('click', function() {
+            // Add filter functionality here
+            console.log('Filter clicked for column');
+        });
+    });
 </script>

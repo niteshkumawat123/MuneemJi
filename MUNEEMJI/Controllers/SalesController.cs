@@ -53,7 +53,10 @@ namespace MUNEEMJI.Controllers
                     td.total AS ""Total"",
                     td.paidreciveamount AS ""paidReciveamount"",
                     td.partyid AS ""PartyId"",
-                    pt.party_name as PartyName
+                    pt.party_name as PartyName,
+                    td.final_amount as""FinalAmount"",
+                    td.invoicenumber as ""InvoiceNumber"",
+                    td.IsCredit as ""IsCredit""
                 FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id  where td.TradeDocumentTypesid=@TradeDocumentTypesid;
                 ";
 
@@ -124,7 +127,8 @@ namespace MUNEEMJI.Controllers
 
             };
             
-            ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
+            var PartyList = await partyController.GetPartyDropDownAsync();
+            ViewBag.PartyList = PartyList;
             return View(viewModel);
         }
         
@@ -321,27 +325,27 @@ namespace MUNEEMJI.Controllers
         {
             decimal total = 0;
 
-            foreach (var item in bill.BillItems)
-            {
-                var subtotal = item.Quantity * item.PricePerUnit;
-                item.DiscountAmount = subtotal * (item.DiscountPercentage / 100);
-                var afterDiscount = subtotal - item.DiscountAmount;
+            //foreach (var item in bill.BillItems)
+            //{
+            //    var subtotal = item.Quantity * item.PricePerUnit;
+            //    item.DiscountAmount = subtotal * (item.DiscountPercentage / 100);
+            //    var afterDiscount = subtotal - item.DiscountAmount;
 
-                var taxRate = ExtractTaxRate(item.Tax);
-                item.TaxAmount = afterDiscount * (taxRate / 100);
-                item.Amount = afterDiscount + item.TaxAmount;
+            //    var taxRate = ExtractTaxRate(item.Tax);
+            //    item.TaxAmount = afterDiscount * (taxRate / 100);
+            //    item.Amount = afterDiscount + item.TaxAmount;
 
-                total += item.Amount;
-            }
+            //    total += item.Amount;
+            //}
 
-            if (bill.RoundOff)
-            {
-                bill.Total = Math.Round(total);
-            }
-            else
-            {
-                bill.Total = Math.Round(total, 2);
-            }
+            //if (bill.RoundOff)
+            //{
+            //    bill.Total = Math.Round(total);
+            //}
+            //else
+            //{
+            //    bill.Total = Math.Round(total, 2);
+            //}
         }
 
         private decimal ExtractTaxRate(string tax)

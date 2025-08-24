@@ -15,7 +15,7 @@
             <i class="bi bi-chevron-down text-muted"></i>
         </div>
         <div>
-            <button class="btn btn-danger">
+            <button class="btn btn-danger" onclick="window.location.href='/Web/Sales/Create'">
                 <i class="bi bi-plus"></i> Add Sale
             </button>
             <button class="btn btn-outline-secondary ms-2">
@@ -86,12 +86,12 @@
                     </div>
                 </div>
                 <div class="summary-amount">
-                    <span class="currency">₹</span> @ViewBag.GrandTotal?.ToString("N0") ?? "151"
+                    <span class="currency">₹</span> @ViewBag.GrandTotal?.ToString("N0") 
                 </div>
                 <div class="summary-breakdown">
-                    <span class="received-text">Received: ₹ @ViewBag.PaidTotal?.ToString("N0") ?? "151"</span>
+                    <span class="received-text">Received: ₹ @ViewBag.PaidTotal?.ToString("N0") </span>
                     <span class="separator">|</span>
-                    <span class="balance-text">Balance: ₹ @ViewBag.UnpaidTotal?.ToString("N0") ?? "0"</span>
+                    <span class="balance-text">Balance: ₹ @ViewBag.UnpaidTotal?.ToString("N0") </span>
                 </div>
             </div>
         </div>
@@ -108,10 +108,12 @@
                 <button class="btn btn-outline-secondary btn-sm">
                     <i class="bi bi-bar-chart"></i>
                 </button>
-                <button class="btn btn-success btn-sm">
-                    <i class="bi bi-file-earmark-excel"></i>
-                </button>
-                <button class="btn btn-outline-secondary btn-sm">
+                <a href="/path/to/file.xlsx" download>
+                    <button type="button" class="btn btn-success btn-sm" title="Download Excel">
+                        <i class="bi bi-file-earmark-excel"></i>
+                    </button>
+                </a>
+                <button class="btn btn-outline-secondary btn-sm" onclick="window.print()">
                     <i class="bi bi-printer"></i>
                 </button>
             </div>
@@ -167,25 +169,28 @@
                         @foreach (var bill in Model)
                         {
                             <tr class="transaction-row">
-                                <td>@(bill.BillDate != null ? ((DateTime)bill.BillDate).ToString("dd/MM/yyyy, HH:mm") : "-")</td>
-                                <td>@(bill.BillNumber ?? "-")</td>
-                                <td>@(bill.PartyName ?? "Cash Sale")</td>
+                                <td>@(bill.InvoiceDate != null ? ((DateTime)bill.InvoiceDate).ToString("dd/MM/yyyy") : "-")</td>
+                                <td>@(bill.InvoiceNumber >0? bill.InvoiceNumber:0)</td>
+                                <td>@(bill.PartyName ?? "NA")</td>
                                 <td>Sale</td>
-                                <td>@(bill.PaymentType ?? "Cash")</td>
+                                <td>@(bill.IsCredit == true ? "Credit" : "Cash")</td>
                                 <td>₹ @(bill.Total != null ? ((decimal)bill.Total).ToString("N0") : "0")</td>
-                                <td>₹ @(bill.paidReciveamount != null ? ((decimal)bill.paidReciveamount).ToString("N0") : "0")</td>
-                                <td>-</td>
+                                <td>₹ @(bill.FinalAmount != null ? ((decimal)bill.FinalAmount).ToString("N0") : "0")</td>
+                                <td>@(bill.DueDate != null ? ((DateTime)bill.DueDate).ToString("dd/MM/yyyy") : "-")</td>
                                 <td>
-                                    <span class="badge bg-success">Paid</span>
+                                    <span class="badge bg-success">@((bill.Total-bill.FinalAmount)==0?"Paid":"Partial Paid")</span>
                                 </td>
                                 <td>
                                     <div class="d-flex gap-1">
-                                        <button class="btn btn-sm btn-outline-secondary" title="Print">
+                                        <button class="btn btn-sm btn-outline-secondary" title="Print" onclick="window.print()">
                                             <i class="bi bi-printer"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-secondary" title="Share">
-                                            <i class="bi bi-share"></i>
-                                        </button>
+                                        <a href="mailto:?subject=Check this&body=Here is the link: https://example.com">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" title="Share">
+                                                <i class="bi bi-share"></i>
+                                            </button>
+                                        </a>
+
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" title="More Options">
                                                 <i class="bi bi-three-dots-vertical"></i>

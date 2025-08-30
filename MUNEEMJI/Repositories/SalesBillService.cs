@@ -83,7 +83,7 @@ namespace MUNEEMJI.Repositories
                 billCommand.Parameters.AddWithValue("@PartyId", bill.PartyId);
 
                 // New parameters with null handling and default values
-                billCommand.Parameters.AddWithValue("@OrderStatusId", (object?)bill.orderstatusid?? DBNull.Value);
+                billCommand.Parameters.AddWithValue("@OrderStatusId", (object?)bill.orderstatusid ?? DBNull.Value);
                 billCommand.Parameters.AddWithValue("@DueDate", (object?)bill.DueDate ?? DBNull.Value);
                 billCommand.Parameters.AddWithValue("@OrderNo", bill.OrderNo ?? string.Empty);
                 billCommand.Parameters.AddWithValue("@OrderDate", (object?)bill.OrderDate ?? DBNull.Value);
@@ -104,13 +104,13 @@ namespace MUNEEMJI.Repositories
                 billCommand.Parameters.AddWithValue("@DiscountPercent", bill.DiscountPercent);
                 billCommand.Parameters.AddWithValue("@DiscountAmount", bill.DiscountAmount);
                 billCommand.Parameters.AddWithValue("@TaxPercentage", bill.TaxPercentage);
-                billCommand.Parameters.AddWithValue("@TaxAmount", bill.TaxAmount );
+                billCommand.Parameters.AddWithValue("@TaxAmount", bill.TaxAmount);
                 billCommand.Parameters.AddWithValue("@ShippingAmount", bill.ShippingAmount);
-                billCommand.Parameters.AddWithValue("@PackingAmount", bill.PackingAmount );
-                billCommand.Parameters.AddWithValue("@AdjustmentAmount", bill.AdjustmentAmount );
+                billCommand.Parameters.AddWithValue("@PackingAmount", bill.PackingAmount);
+                billCommand.Parameters.AddWithValue("@AdjustmentAmount", bill.AdjustmentAmount);
                 billCommand.Parameters.AddWithValue("@TCSTDSType", (int)bill.TCSTDSType);
                 billCommand.Parameters.AddWithValue("@TdsTcsPercentage", bill.TdsTcsPercentage);
-                billCommand.Parameters.AddWithValue("@TdsTcsAmount", bill.TdsTcsAmount );
+                billCommand.Parameters.AddWithValue("@TdsTcsAmount", bill.TdsTcsAmount);
                 billCommand.Parameters.AddWithValue("@IsRoundOff", bill.IsRoundOff);
                 billCommand.Parameters.AddWithValue("@FinalAmount", bill.FinalAmount);
                 billCommand.Parameters.AddWithValue("@isreceive", bill.IsReceive);

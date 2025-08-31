@@ -33,7 +33,7 @@
         }
 
         .search-section {
-            background: white;
+            background: #fffbf33d;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -49,7 +49,7 @@
         }
 
         .items-section {
-            background: white;
+            background: #fffbf33d;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -67,7 +67,7 @@
         }
 
         .payment-section {
-            background: white;
+            background: #fffbf33d;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -203,9 +203,9 @@
 
         .toggle-switch {
             position: relative;
-            width: 59px;
-            height: 22px;
-            background: #89bcf3;
+            width: 47px;
+            height: 23px;
+            background: #007bff;
             border-radius: 15px;
             cursor: pointer;
             transition: background 0.3s;
@@ -213,22 +213,22 @@
         }
 
             .toggle-switch.cash {
-                background: #28a745;
+                background: #007bff;
             }
 
         .toggle-slider {
             position: absolute;
-            top: 1px;
+            top: 2px;
             left: 4px;
-            width: 21px;
-            height: 20px;
+            width: 19px;
+            height: 19px;
             background: white;
             border-radius: 50%;
             transition: transform 0.3s;
         }
 
         .toggle-switch.cash .toggle-slider {
-            transform: translateX(30px);
+            transform: translateX(22px);
         }
     </style>
     <style>
@@ -247,13 +247,10 @@
             background: transparent;
             transition: all 0.3s ease;
         }
-
-
-
-            .floating-input:focus {
-                border-color: #007bff; /* Blue border on focus/click */
-                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-            }
+        .floating-input:focus {
+            border-color: #007bff; /* Blue border on focus/click */
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
 
         .floating-label {
             position: absolute;
@@ -492,6 +489,61 @@
                 margin-right: 4px;
             }
 
+        .btn-close-custom {
+            content: "×";
+            color: #007bff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .upload-area-imgshow:hover {
+            border-color: #0056b3;
+            background: #f0f4ff;
+        }
+
+    </style>
+    <style>
+        .share-dropdown-shareshow {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu-shareshow {
+            display: none;
+            position: absolute;
+            bottom: 1%;
+            left: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-width: 120px;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
+            .dropdown-menu-shareshow.show-shareshow {
+                display: block;
+            }
+
+        .dropdown-item-shareshow {
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+            .dropdown-item-shareshow:hover {
+                background-color: #f8f9fa;
+            }
+
+            .dropdown-item-shareshow i {
+                font-size: 14px;
+                width: 16px;
+            }
     </style>
 
 
@@ -518,15 +570,15 @@
                     </div>
 
                     <div class="text-end w-100">
-                        <button class="btn btn-primary" style="background-color:#89bcf3" onclick="window.open('https://www.google.com/search?q=calculator', '_blank')">
+                        <button class="btn btn-primary" style="background-color:#007bff" onclick="window.open('https://www.google.com/search?q=calculator', '_blank')">
                             <i class="bi bi-calculator"></i> Calculator
                         </button>
-                        <button type="button" class="btn-close" style="background-color:#89bcf3;border: 2px solid #2c7be5;border-radius: 15%;
+                        <button type="button" class="btn-close btn-close-custom" style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
                                         height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
                                         padding-right: 6px;" aria-label="Close" onclick="closeView()">
                         </button>
-                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Settings/Transaction/Index'"
-                                style=" font-size: 20px; color: #6c757d; background-color:#89bcf3;border: 2px solid #89bcf3;border-radius: 15%;
+                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index'"
+                                style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
                                         padding-bottom:7px;padding-top:0px;padding-left:6px;
                                         padding-right:6px;">
                         </button>
@@ -631,7 +683,7 @@
                                 </div>
                             }
 
-                          
+
                         </div>
 
                         <!-- Column 5 -->
@@ -658,7 +710,7 @@
                             }
 
                             <div class="floating-label-container">
-                                <select asp-for="Bill.PaymentTermId" class="floating-input" >
+                                <select asp-for="Bill.PaymentTermId" class="floating-input">
                                     <option value="">Select Payment Term</option>
                                     <option value="1">Net 15 Days</option>
                                     <option value="2">Net 30 Days</option>
@@ -689,11 +741,11 @@
                                 </select>
                                 <label class="floating-label">State of Supply</label>
                             </div>
-                          
 
-                        </div>                       
+
+                        </div>
                     </div>
-                </div>            
+                </div>
 
                 <div class="table-header-controls">
                     <div id="columnSettingsContainer" style="display: none;">
@@ -845,7 +897,7 @@
                                     {
                                         counter += 1;
 
-                                        <th  class="col-discount-pct" style="width: 5%">DISCOUNT<br />%</th>
+                                        <th class="col-discount-pct" style="width: 5%">DISCOUNT<br />%</th>
                                     }
                                     @{
                                         counter += 1;
@@ -893,6 +945,7 @@
                                                 @Html.DropDownListFor(model => model.Bill.BillItems[i].categoryid,
                                                          new SelectList(Model.DropDownCategory, "Id", "Name"),
                                                          "-- Select Category --",
+                                                        
                                                          new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
                                             </td>
                                         }
@@ -901,6 +954,7 @@
                                             @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
                                                      new SelectList(Model.DropDownItem, "Id", "ItemName"),
                                                      "-- Select Item --",
+                                                     "Add Item   Sale Price   purchase price   mfgcost     stock",
                                                      new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
                                         </td>
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
@@ -1006,7 +1060,7 @@
                                         </td>
 
                                         <td class="col-Cess">
-                                            <input asp-for="Bill.BillItems[i].AddCessAmount" type="number"step="0.01"class="form-control-sm cess-input"onchange="calculateItemAmount(@i)" />
+                                            <input asp-for="Bill.BillItems[i].AddCessAmount" type="number" step="0.01" class="form-control-sm cess-input" onchange="calculateItemAmount(@i)" />
                                         </td>
 
                                         <td class="col-amount3">
@@ -1179,13 +1233,26 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="floating-label-container">
-                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*" />
-                                        <label class="floating-label">Add Image</label>
+                                    <div class="floating-label-container upload-area-imgshow" style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;" onclick="document.querySelector('input[name=\'Bill.imageFile\']').click()">
+                                        <span class="upload-label-imgshow" style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">Add Image</span>
+                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*" onchange="previewImage(this)" style="display: none;" />
+                                        <div class="upload-content-imgshow">
+                                            <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
+                                            <div style="color: #007bff; font-weight: 500;">Upload</div>
+                                        </div>
+
+                                        <div class="image-preview-imgshow" style="display: none;">
+                                            <img id="preview-img-imgshow" src="" alt="Preview" style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
+                                            <div id="image-name-imgshow" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
+                                            <div style="margin-top: 8px;">
+                                                <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 
-                                
+
 
 
                                 <div class="col-md-6">
@@ -1200,7 +1267,7 @@
                         </div>
 
                         <div class="col-md-4">
-                            <div class="summary-section" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
+                            <div class="summary-section" style="background:   #f5f5f5; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
                                 <div class="row mb-2">
                                     <div class="col-6">
                                         <label>No. of copies</label>
@@ -1261,7 +1328,7 @@
                                             <input type="number" name="Bill.ShippingAmount" class="form-control form-control-sm shipping-value" onchange="updateGrandTotal()" value="0" />
                                         </div>
 
-                                        <div  style="width: 97px;text-align: right;">
+                                        <div style="width: 97px;text-align: right;">
                                             <span class="shipping-show"> 0</span>
                                         </div>
 
@@ -1298,7 +1365,7 @@
                                             <input type="number" name="Bill.AdjustmentAmount" class="form-control form-control-sm adjustment-value" onchange="updateGrandTotal()" value="0" />
                                         </div>
 
-                                        <div  style="width: 97px;text-align: right;">
+                                        <div style="width: 97px;text-align: right;">
                                             <span class="adjustment-show"> 0</span>
                                         </div>
 
@@ -1389,7 +1456,7 @@
                                         <div class="" style="text-align: right; font-weight:bold;">
                                             Balance
                                         </div>
-                                        <div id="finalTotal"  style="width: 140px; font-weight:bold; text-align:right;">
+                                        <div id="finalTotal" style="width: 140px; font-weight:bold; text-align:right;">
                                             0000
                                         </div>
 
@@ -1422,7 +1489,22 @@
                 @if (Model.ViewTypeId == (int)ViewTypeEnum.Create)
                 {
                     <div class="action-buttons">
-                        <button type="button" class="btn-share">Share ▼</button>
+                        <div class="share-dropdown-shareshow">
+                            <button type="button" class="btn-share" id="shareButtonshareshow">
+                                Share <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-menu-shareshow" id="shareDropdownshareshow">
+                                <div class="dropdown-item-shareshow" onclick="openShareWindow()">
+                                    <i class="bi bi-share"></i> Share
+                                </div>
+                                <div class="dropdown-item-shareshow" onclick="printDocument()">
+                                    <i class="bi bi-printer"></i> Print
+                                </div>
+                                <div class="dropdown-item-shareshow" style="margin-left: -21px;">
+                                    <i class="bi bi-floppy"></i> Save & New
+                                </div>
+                            </div>
+                        </div>
                         <button type="submit" class="btn-save">Save</button>
                     </div>
                 }
@@ -1433,9 +1515,9 @@
 
     <script>
 
-         var itemOptions = @Html.Raw(Json.Serialize(Model.DropDownItem));
-         var CategoryOptions = @Html.Raw(Json.Serialize(Model.DropDownCategory));
-         let itemIndex = @Model.Bill.BillItems.Count;
+         var itemOptions =  @Html.Raw(Json.Serialize(Model.DropDownItem));
+         var CategoryOptions =  @Html.Raw(Json.Serialize(Model.DropDownCategory));
+         let itemIndex =  @Model.Bill.BillItems.Count;
 
          let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
         itemDropdown += `<option value="">-- Select Item --</option>`;
@@ -1453,30 +1535,27 @@
 
          function onItemChange(selectElem, rowIndex) {
             let selectedItemId = selectElem.value;
-            console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);
-            //
-            // Do something like auto-fill price, etc.
+            console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);    
         }
 
              var itemSettings = {
-            serialNoTracking: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.SerialNoTracking ?? false)),
-            description: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.Description ?? false)),
-            expDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ExpDateEnabled ?? false)),
-            mfgDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.MfgDateEnabled ?? false)),
-            itemWiseDiscount: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseDiscount ?? false)),
-            itemWiseTax: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseTax ?? false)),
-            itemcode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCode ?? false)),
-            hsnsaccode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.HsnSacCode ?? false)),
-            category: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCategory ?? false))
+                    serialNoTracking: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.SerialNoTracking ?? false)),
+                    description: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.Description ?? false)),
+                    expDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ExpDateEnabled ?? false)),
+                    mfgDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.MfgDateEnabled ?? false)),
+                    itemWiseDiscount: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseDiscount ?? false)),
+                    itemWiseTax: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseTax ?? false)),
+                    itemcode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCode ?? false)),
+                    hsnsaccode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.HsnSacCode ?? false)),
+                    category: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCategory ?? false))
+                    };
 
-        };
-
-        var transactionSettings = {
-            freeItemQuantity: @Html.Raw(Json.Serialize(Model.Bill.transactionSettings?.FreeItemQuantity ?? false))
-        };
+            var transactionSettings = {
+                    freeItemQuantity: @Html.Raw(Json.Serialize(Model.Bill.transactionSettings?.FreeItemQuantity ?? false))
+                    };
 
                     function addNewRow() {
-                        
+
             const tbody = document.getElementById('itemsTableBody');
             const newRow = document.createElement('tr');
             newRow.className = 'item-row';
@@ -1532,11 +1611,11 @@
             let unitDropdown = `<select name="Bill.BillItems[${itemIndex}].Unit" class="form-control-sm">`;
 
 
-             @foreach (var item in Model.UnitOptions)
-             {
-                    @:unitDropdown += `<option value="@item">@item</option>`;
+        @foreach (var item in Model.UnitOptions)
+        {
+            @:unitDropdown += `<option value="@item">@item</option>`;
 
-             }
+        }
 
             unitDropdown += `</select>`;
 
@@ -1590,7 +1669,7 @@
         }
 
         function calculateItemAmount(index) {
-            
+
             const row = document.querySelector(`tr[data-index="${index}"]`);
             if (!row) return;
 
@@ -1599,7 +1678,7 @@
             const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
             const CessAmount = parseFloat(row.querySelector('.cess-input').value) || 0;
             const taxSelect = row.querySelector('.tax-select').value;
-            
+
             const subtotal = quantity * pricePerUnit;
             const discountAmount = subtotal * (discountPercentage / 100);
             const afterDiscount = subtotal - discountAmount;
@@ -1620,8 +1699,8 @@
         }
 
         function updateGrandTotal() {
-          
-            
+
+
             let total = 0;
             document.querySelectorAll('.total-amount').forEach(input => {
                 total += parseFloat(input.value) || 0;
@@ -1629,7 +1708,7 @@
 
             document.getElementById('grandTotal').textContent = total.toFixed(2);
 
-            
+
 
             const TotalDiscount = document.querySelector('.total-discount');
             const discountValueInput = document.querySelector('.total-discountvalue');
@@ -1688,10 +1767,10 @@
     <script>
         // Toggle between Credit and Cash
                 document.getElementById('paymentToggle').addEventListener('click', function() {
-                   
+
                     const toggle = this;
                     const modeText = document.getElementById('paymentMode');
-                   
+
                     const dueDateContainer = document.getElementById('dueDateContainer');
 
                     toggle.classList.toggle('cash');
@@ -1713,7 +1792,7 @@
 
 
 
-                         //  function showColumnSettings() 
+                         //  function showColumnSettings()
                          // {
                          //     debugger;
                          //    const dropdown = document.getElementById('columnSettings');
@@ -1745,7 +1824,7 @@
 
 
                 document.addEventListener('click', function(event) {
-                    
+
             const button = document.querySelector('th.col-action .column-toggle-btn');
             const dropdown = document.getElementById('columnSettings');
 
@@ -1762,7 +1841,7 @@
         });
 
         function initializePopover() {
-           
+
             const columnToggleBtn = document.getElementById('columnToggleBtn');
             const columnSettingsContent = document.getElementById('columnSettingsContent');
 
@@ -1814,7 +1893,7 @@
         }
 
                 function saveColumnSettingsFromPopover() {
-                   
+
             const popoverElement = document.querySelector('.popover');
             if (!popoverElement) {
                 console.error("Popover not found");
@@ -1893,7 +1972,7 @@
         //     toggleColumn(columnClass, isChecked);
         // }
                function saveColumnSettings() {
-                   
+
             // Get checkboxes from the column settings container (not from popover)
             const categoryEl = document.querySelector('#col-category-popup');
             const itemCodeEl = document.querySelector('#col-item-code-popup');
@@ -1953,6 +2032,77 @@
             });
         }
 
+    </script>
+    <script>
+                      function previewImage(input) {
+            const container = input.closest('.upload-area-imgshow');
+            const uploadContent = container.querySelector('.upload-content-imgshow');
+            const preview = container.querySelector('.image-preview-imgshow');
+            const img = document.getElementById('preview-img-imgshow');
+            const imageName = document.getElementById('image-name-imgshow');
+            const label = container.querySelector('.upload-label-imgshow');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    imageName.textContent = input.files[0].name; // Add this line
+                    uploadContent.style.display = 'none';
+                    preview.style.display = 'block';
+                    label.style.color = '#007bff';
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage(event) {
+            event.stopPropagation();
+            const input = document.querySelector('input[name="Bill.imageFile"]');
+            const container = input.closest('.upload-area-imgshow');
+            const uploadContent = container.querySelector('.upload-content-imgshow');
+            const preview = container.querySelector('.image-preview-imgshow');
+
+            input.value = '';
+            preview.style.display = 'none';
+            uploadContent.style.display = 'block';
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const shareButton = document.getElementById('shareButtonshareshow');
+            const shareDropdown = document.getElementById('shareDropdownshareshow');
+
+            shareButton.addEventListener('click', function() {
+                shareDropdown.classList.toggle('show-shareshow');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!shareButton.contains(event.target) && !shareDropdown.contains(event.target)) {
+                    shareDropdown.classList.remove('show-shareshow');
+                }
+            });
+        });
+
+        function openShareWindow() {
+            // Your existing share functionality or create new share window
+            const shareWindow = window.open('', 'shareWindow', 'width=400,height=300');
+            shareWindow.document.write(`
+                <div style="padding: 20px; font-family: Arial;">
+                    <h3>Share Options</h3>
+                    <p>Share functionality would go here</p>
+                    <button onclick="window.close()">Close</button>
+                </div>
+            `);
+            document.getElementById('shareDropdownshareshow').classList.remove('show-shareshow');
+        }
+
+        function printDocument() {
+            window.print();
+            document.getElementById('shareDropdownshareshow').classList.remove('show-shareshow');
+        }
     </script>
 </body>
 </html>

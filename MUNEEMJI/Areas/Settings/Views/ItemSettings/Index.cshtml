@@ -402,7 +402,7 @@
         const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
         // Send JSON data - CORRECTED URL to match your controller
-        fetch('/Settings/ItemSettings/SaveOrUpdate', {
+        fetch('/Web/Settings/ItemSettings/SaveOrUpdate', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -424,7 +424,7 @@
                 // If there's a redirect URL in the response, you can use it
                 if (result.redirectUrl) {
                     setTimeout(() => {
-                        window.location.href = '/Settings/ItemSettings/Index';
+                        window.location.href = '/Web/Settings/ItemSettings/Index';
                     }, 1500);
                 }
             } else {

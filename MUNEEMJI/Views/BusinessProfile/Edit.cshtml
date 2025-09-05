@@ -8,6 +8,7 @@
     <meta charset="utf-8" />
     <title>Edit Profile</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" />
 </head>
 <body>
     <div class="container mt-4">
@@ -38,10 +39,48 @@
                         <label asp-for="Email">Email ID</label>
                         <input asp-for="Email" class="form-control" placeholder="Enter Email ID" />
                     </div>
-                    <div class="form-group">
+
+                  @*   <div class="form-group">
                         <label>Business Logo</label>
                         <input type="file" name="LogoFile" class="form-control-file" />
+                    </div> *@
+
+
+                    <div class="form-group">
+                        <div class="floating-label-container upload-area-logo"
+                             style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;"
+                             onclick="document.querySelector('input[name=\'LogoFile\']').click()">
+
+                            <span class="upload-label-logo"
+                                  style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">
+                                Business Logo
+                            </span>
+
+                            <input type="file" name="LogoFile" class="floating-input" accept="image/*"
+                                   onchange="previewLogo(this)" style="display: none;" />
+
+                            <div class="upload-content-logo">
+                                <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
+                                <div style="color: #007bff; font-weight: 500;">Upload Logo</div>
+                                <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">Click to browse files</div>
+                            </div>
+
+                            <div class="image-preview-logo" style="display: none;">
+                                <img id="preview-img-logo" src="" alt="Logo Preview"
+                                     style="width: 85px; height: 85px; border: 1px solid #ddd; border-radius: 50%; object-fit: cover;" />
+                                <div id="image-name-logo" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
+                                <div style="margin-top: 8px;">
+                                    <button type="button" onclick="removeLogo(event)"
+                                            style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
+
+
                 </div>
                 <!-- Column 2: More Details -->
                 <div class="col-md-4">
@@ -75,9 +114,34 @@
                     <div class="form-group">
                         <textarea asp-for="Address" class="form-control" rows="4" placeholder="Enter Business Address"></textarea>
                     </div>
-                    <h5>Add Signature</h5>
+
                     <div class="form-group">
-                        <input type="file" name="SignatureFile" class="form-control-file" />
+                        <div class="floating-label-container upload-area-signature"
+                             style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;"
+                             onclick="document.querySelector('input[name=\'SignatureFile\']').click()">
+                            <span class="upload-label-signature"
+                                  style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">
+                                Add Signature
+                            </span>
+                            <input type="file" name="SignatureFile" class="floating-input" accept="image/*"
+                                   onchange="previewSignature(this)" style="display: none;" />
+                            <div class="upload-content-signature">
+                                <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
+                                <div style="color: #007bff; font-weight: 500;">Upload Signature</div>
+                                <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">Click to browse files</div>
+                            </div>
+                            <div class="image-preview-signature" style="display: none;">
+                                <img id="preview-img-signature" src="" alt="Signature Preview"
+                                     style="width: 85px; height: 85px; border: 1px solid #ddd; border-radius: 50%; object-fit: cover;" />
+                                <div id="image-name-signature" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
+                                <div style="margin-top: 8px;">
+                                    <button type="button" onclick="removeSignature(event)"
+                                            style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -89,5 +153,56 @@
         </form>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      
+        function previewLogo(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('.upload-content-logo').style.display = 'none';
+                    document.querySelector('.image-preview-logo').style.display = 'block';
+                    document.getElementById('preview-img-logo').src = e.target.result;
+                    document.getElementById('image-name-logo').textContent = file.name;
+                    document.querySelector('.upload-area-logo').style.borderColor = '#28a745';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeLogo(event) {
+            event.stopPropagation();
+            document.querySelector('input[name="LogoFile"]').value = '';
+            document.querySelector('.upload-content-logo').style.display = 'block';
+            document.querySelector('.image-preview-logo').style.display = 'none';
+            document.getElementById('preview-img-logo').src = '';
+            document.getElementById('image-name-logo').textContent = '';
+            document.querySelector('.upload-area-logo').style.borderColor = 'lightgray';
+        }
+                function previewSignature(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('.upload-content-signature').style.display = 'none';
+                    document.querySelector('.image-preview-signature').style.display = 'block';
+                    document.getElementById('preview-img-signature').src = e.target.result;
+                    document.getElementById('image-name-signature').textContent = file.name;
+                    document.querySelector('.upload-area-signature').style.borderColor = '#28a745';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeSignature(event) {
+            event.stopPropagation();
+            document.querySelector('input[name="SignatureFile"]').value = '';
+            document.querySelector('.upload-content-signature').style.display = 'block';
+            document.querySelector('.image-preview-signature').style.display = 'none';
+            document.getElementById('preview-img-signature').src = '';
+            document.getElementById('image-name-signature').textContent = '';
+            document.querySelector('.upload-area-signature').style.borderColor = 'lightgray';
+        }
+    </script>
 </body>
 </html>

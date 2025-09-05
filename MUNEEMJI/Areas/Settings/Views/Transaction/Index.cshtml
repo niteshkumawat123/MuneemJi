@@ -643,7 +643,7 @@
         }
 
         // Make AJAX request
-        fetch('/Settings/Transaction/SaveTransactionSettings', {
+        fetch('/Web/Settings/Transaction/SaveTransactionSettings', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -661,7 +661,7 @@
             if (result.success) {
                 showAlert('success', result.message);
                 setTimeout(() => {
-            window.location.href = '/Settings/Transaction/Index';
+            window.location.href = '/Web/Settings/Transaction/Index';
         }, 2000);
             } else {
                 showAlert('danger', result.message);

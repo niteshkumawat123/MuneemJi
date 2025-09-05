@@ -554,7 +554,7 @@
         data.AdditionalField4ShowInPrint = document.getElementById('additionalField4ShowInPrint').value === 'true';
 
         // Make AJAX request
-        fetch('/Settings/Party/SavePartySettings', {
+        fetch('/Web/Settings/Party/SavePartySettings', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -34,7 +34,8 @@ namespace MUNEEMJI.Controllers
                     p.Total,
                     p.ReceivedPaid,
                     p.Balance,
-                    p.PrintShare
+                    p.PrintShare,
+                    p.PaymentType
                 FROM PaymentInOut p
                 LEFT JOIN parties pt ON p.PartyId = pt.Id
                 ORDER BY p.Date DESC
@@ -216,6 +217,7 @@ namespace MUNEEMJI.Controllers
         public decimal ReceivedPaid { get; set; }
         public decimal Balance { get; set; }
         public string PrintShare { get; set; }
+        public string paymenttype { get; set; }
     }
 
     public class Party

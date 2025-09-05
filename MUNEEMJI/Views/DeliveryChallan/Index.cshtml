@@ -305,14 +305,22 @@
 
 
                     <tr class="row-highlight">
-                        <td>@item.Challandate</td>
+                        <td>@item.InvoiceDate</td>
                         <td>@item.PartyName</td>
-                        <td>@item.ChallanNo</td>
+                        <td>@item.InvoiceNumber</td>
                         <td>@item.DueDate</td>
                         <td>@item.Total</td>
                         <td>
+                            @if(item.orderstatusid>0)
+                            {
                             <span class="status-closed">@Enum.GetName(typeof(TradeDocumentStatusEnum), item.orderstatusid);</span>
                             <div style="font-size: 12px; color: #6c757d;">-</div>
+                            }
+                            else
+                            {
+                                <span class="status-closed">Open</span>
+
+                            }
 
                         </td>
                         <td class="actions-cell">

@@ -56,7 +56,9 @@ namespace MUNEEMJI.Controllers
                     td.orderstatusid,
                     td.orderno,
                     td.orderdate,
-                    td.duedate
+                    td.duedate,
+                    td.INVOICENUMBER,
+                    td.final_amount as ""finalamount""
                 FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id where td.TradeDocumentTypesid=@TradeDocumentTypesid;
             ";
 

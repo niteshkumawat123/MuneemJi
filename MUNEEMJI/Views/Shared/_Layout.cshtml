@@ -530,13 +530,13 @@
         </div>
 
         <!-- Search Input -->
-        <div class="sidebar-search">
+     @*    <div class="sidebar-search">
             <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-search"></i></span>
                 <input type="text" class="form-control" placeholder="Open Anything (Ctrl+F)" aria-label="Search" />
                 <button class="btn" type="button"><i class="bi bi-chevron-left"></i></button>
             </div>
-        </div>
+        </div> *@
 
         <!-- Sidebar Navigation Menu -->
         <div class="sidebar-nav">
@@ -590,7 +590,9 @@
                     <div class="collapse" id="saleMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/Web/Sales/Create" class="nav-link">New Invoice</a></li>
-                            <li><a href="#" class="nav-link">View Reports</a></li>
+
+@*                             <li><a href="#" class="nav-link">View Reports</a></li>
+ *@
                             <li><a href="/Web/Sales/index" class="nav-link">Sales Invoices</a></li>
                             <li><a href="/Web/Estimate_Quotations/index" class="nav-link">Estimate/Quotation</a></li>
                             <li><a href="/Web/PaymentIn/index" class="nav-link">Payment In</a></li>
@@ -598,8 +600,8 @@
                             <li><a href="/Web/DeliveryChallan/index" class="nav-link">Delivery Challan</a></li>
                             <li><a href="/Web/CreditNote/index" class="nav-link">Sale Return/Credit Note</a></li>
                             <li><a href="/Web/OtherIncome/index" class="nav-link">Other Income</a></li>
-                            <li><a href="#" class="nav-link">Sale FA</a></li>
-                            <li><a href="#" class="nav-link">Muneem Ji POS</a></li>
+                          @*   <li><a href="#" class="nav-link">Sale FA</a></li>
+                            <li><a href="#" class="nav-link">Muneem Ji POS</a></li> *@
                         </ul>
                     </div>
                 </li>
@@ -614,14 +616,16 @@
                     <div class="collapse" id="purchaseMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/Web/PurchaseBill/Create" class="nav-link">New Purchase</a></li>
-                            <li><a href="#" class="nav-link">Expense Report</a></li>
+
+@*                             <li><a href="#" class="nav-link">Expense Report</a></li>
+ *@
                             <li><a href="/Web/PurchaseBill/index" class="nav-link">Purchase Bill</a></li>
                             <li><a href="/Web/PaymentOut/index" class="nav-link">Payment Out</a></li>
                             <li><a href="/Web/Expense/Index" class="nav-link">Expense</a></li>
                             <li><a href="/Web/PurchaseOrder/index" class="nav-link">Purchase Order</a></li>
                             <li><a href="/Web/DebitNote/index" class="nav-link">Purchase Return/Dr. Note</a></li>
-                            <li><a href="#" class="nav-link">Purchase FA</a></li>
-                        </ul>
+@*                             <li><a href="#" class="nav-link">Purchase FA</a></li>
+ *@                        </ul>
                     </div>
                 </li>
 
@@ -634,10 +638,14 @@
                     </a>
                     <div class="collapse" id="growMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
-                            <li><a href="#" class="nav-link">Business Plan</a></li>
-                            <li><a href="#" class="nav-link">Analytics</a></li>
+                     @*        <li><a href="#" class="nav-link">Business Plan</a></li>
+                            <li><a href="#" class="nav-link">Analytics</a></li> *@
+
                             <li><a href="/Web/WhatsAppMarketing/index" class="nav-link">WhatsApp Marketing</a></li>
-                            <li><a href="#" class="nav-link">Online Store</a></li>
+
+
+                          @*   <li><a href="#" class="nav-link">Online Store</a></li> *@
+
                         </ul>
                     </div>
                 </li>
@@ -651,13 +659,13 @@
                     </a>
                     <div class="collapse" id="cashMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
-                            <li><a href="#" class="nav-link">Cash Ledger</a></li>
-                            <li><a href="/Web/bank/index" class="nav-link">Bank Accounts</a></li>
+@*                             <li><a href="#" class="nav-link">Cash Ledger</a></li>
+ *@                            <li><a href="/Web/bank/index" class="nav-link">Bank Accounts</a></li>
                             <li><a href="/Web/bank/CashinHand" class="nav-link">Cash In Hand</a></li>
-                            <li><a href="#" class="nav-link">Cheques</a></li>
-                            <li><a href="/Loan/Index" class="nav-link">Loan Account</a></li>
-                            <li><a href="#" class="nav-link">Fixed Asset</a></li>
-                        </ul>
+@*                             <li><a href="#" class="nav-link">Cheques</a></li>
+ *@                            <li><a href="/Loan/Index" class="nav-link">Loan Account</a></li>
+@*                             <li><a href="#" class="nav-link">Fixed Asset</a></li>
+ *@                        </ul>
                     </div>
                 </li>
 
@@ -672,23 +680,23 @@
                 <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#syncMenu"
                        role="button" aria-expanded="false" aria-controls="syncMenu">
-                        <i class="bi bi-cloud-arrow-up"></i> Sync, Share & Backup
+                        <i class="bi bi-cloud-arrow-up"></i> Sync & Share 
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse" id="syncMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/Web/User/Index" class="nav-link">Sync & Share</a></li>
-                            <li><a href="#" class="nav-link">Cloud Sync</a></li>
+                          @*   <li><a href="#" class="nav-link">Cloud Sync</a></li>
                             <li><a href="#" class="nav-link">Backup Now</a></li>
                             <li><a href="#" class="nav-link">Backup to Drive</a></li>
                             <li><a href="#" class="nav-link">Backup to Computer</a></li>
-                            <li><a href="#" class="nav-link">Auto Backup</a></li>
+                            <li><a href="#" class="nav-link">Auto Backup</a></li> *@
                         </ul>
                     </div>
                 </li>
 
                 <!-- Utilities -->
-                <li class="nav-item">
+             @*    <li class="nav-item">
                     <a class="nav-link" data-bs-toggle="collapse" href="#utilsMenu"
                        role="button" aria-expanded="false" aria-controls="utilsMenu">
                         <i class="bi bi-tools"></i> Utilities
@@ -703,18 +711,18 @@
                             <li><a href="#" class="nav-link">Account Access</a></li>
                         </ul>
                     </div>
-                </li>
+                </li> *@
 
                 <!-- Settings -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="/Web/Settings/Transaction/Index">
                         <i class="bi bi-gear"></i> Settings
                     </a>
                 </li>
 
                 <!-- Plans & Pricing -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="/Web/PlansAndPricing/index">
                         <i class="bi bi-trophy"></i> Plans & Pricing
                     </a>
                 </li>
@@ -725,7 +733,11 @@
         <div class="sidebar-footer">
             <a href="/Web/BusinessProfile/Edit" class="mb-2">
                 <i class="bi bi-building me-2"></i>
-                <span>Unlinsoftware Development</span>
+                
+                @{
+                    var BusinessName = Context.Session.GetString("BusinessName");
+                }
+                <span>@BusinessName</span>
                 <i class="bi bi-chevron-right ms-auto"></i>
             </a>
         </div>

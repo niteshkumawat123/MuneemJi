@@ -26,9 +26,9 @@ namespace MUNEEMJI.Controllers
             using (var conn = new NpgsqlConnection(connString))
             {
                 conn.Open();
-
+                var Id = Convert.ToInt32(HttpContext.Session.GetString("BusinessId"));
                 // Get profile (assuming id=1 for demo)
-                using (var cmd = new NpgsqlCommand("SELECT * FROM business_profiles WHERE id = 1", conn))
+                using (var cmd = new NpgsqlCommand($"SELECT * FROM business_profiles  WHERE businessesid = {Id}", conn))
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())

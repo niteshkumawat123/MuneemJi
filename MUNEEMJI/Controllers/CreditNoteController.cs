@@ -85,8 +85,14 @@ namespace MUNEEMJI.Controllers
         public async Task<IActionResult> Create()
         {
             PartyController partyController = new PartyController();
+            var viewModel = new PurchaseBillViewModel();
+            var transactionSettingsController = new TransactionSettingsController();
+            var CategoryController = new CategoryController();
+
+            int firmid = 1;
             await Task.Delay(1);
-            var viewModel = new PurchaseBillViewModel
+
+            viewModel = new PurchaseBillViewModel
             {
                 Bill = new PurchaseBill
                 {
@@ -94,53 +100,59 @@ namespace MUNEEMJI.Controllers
 
                     BillDate = DateTime.Now,
                     BillItems = new List<PurchaseBillItem>
-                    {
+                        {
                         new PurchaseBillItem(),
                         new PurchaseBillItem()
-                    }
+                        },
+
+                    transactionSettings = transactionSettingsController.GetTransactionByFirmId(firmid),
+                    itemSettings = transactionSettingsController.GetItemSettings()
                 },
-                DropDownItem = await _IBillItemService.GetItems()
+                ViewTypeId = (int)ViewTypeEnum.Create,
+                DropDownItem = await _IBillItemService.GetItems(),
+                DropDownCategory = CategoryController.GetCategoriesDropdown()
+
             };
-            ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
+
+            var PartyList = await partyController.GetPartyDropDownAsync();
+            ViewBag.PartyList = PartyList;
             return View(viewModel);
         }
 
         // POST: Bill/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PurchaseBillViewModel viewModel, IFormFile? imageFile)
+        public async Task<IActionResult> Create(PurchaseBillViewModel viewModel)
         {
             try
             {
-                if (ModelState.IsValid)
+
+                if (viewModel.Bill.imageFile != null && viewModel.Bill.imageFile.Length > 0)
                 {
-                    // Handle image upload
-                    if (imageFile != null && imageFile.Length > 0)
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                    if (!Directory.Exists(uploadsFolder))
                     {
-                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-                        if (!Directory.Exists(uploadsFolder))
-                        {
-                            Directory.CreateDirectory(uploadsFolder);
-                        }
-
-                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await imageFile.CopyToAsync(fileStream);
-                        }
-
-                        viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;
+                        Directory.CreateDirectory(uploadsFolder);
                     }
 
-                    // Calculate totals
-                    CalculateBillTotals(viewModel.Bill);
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + viewModel.Bill.imageFile.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                    var billId = await _billService.CreateBillAsync(viewModel.Bill);
-                    TempData["SuccessMessage"] = "Bill created successfully!";
-                    return RedirectToAction(nameof(Index));
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await viewModel.Bill.imageFile.CopyToAsync(fileStream);
+                    }
+
+                    viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;
                 }
+
+                // Calculate totals
+                CalculateBillTotals(viewModel.Bill);
+
+                var billId = await _billService.CreateBillAsync(viewModel.Bill);
+                TempData["SuccessMessage"] = "Bill created successfully!";
+                return RedirectToAction(nameof(Index));
+
             }
             catch (Exception ex)
             {

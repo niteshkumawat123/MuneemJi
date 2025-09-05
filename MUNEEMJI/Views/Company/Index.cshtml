@@ -76,7 +76,7 @@
 
         /* Main Container */
         .main-container {
-        background-color: #3a3f4a;
+            background-color: #23272b;
         min-height: calc(100vh - 60px);
         padding: 0;
         }
@@ -124,7 +124,7 @@
         /* Tabs */
         .tabs {
         display: flex;
-        background-color: #3a3f4a;
+            background-color: #23272b7a;
         padding: 0 20px;
         }
 
@@ -325,11 +325,16 @@
         }
 
         .logout-link {
-        color: #007bff;
-        text-decoration: none;
-        font-size: 14px;
-        margin-bottom: 5px;
-        display: block;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: block;
+            padding: 10px 23px;
+            background: #007bff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer ;
         }
 
         .logout-text {
@@ -475,9 +480,46 @@
     </style>
 </head>
 <body>
+    <div id="callModal" class="call-modal" style="display: none;">
+        <div class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="brand-logo">
+                        <span style="color: #e53e3e;">▼</span>
+                        <span style="color: #333;">Muneem Ji</span>
+                    </div>
+                    <button class="close-btn" onclick="closeCallModal()">&times;</button>
+                </div>
+
+                <div class="info-banner">
+                    <div class="info-icon">ℹ</div>
+                    <div class="info-text">
+                        If you are an <strong>International user</strong> please
+                        <a href="#" style="color: #007bff;">click here</a> for support
+                    </div>
+                </div>
+
+                <div class="modal-body">
+                    <div class="warning-icon">
+                        <div class="warning-circle">
+                            <span>!</span>
+                        </div>
+                    </div>
+
+                    <h3>Call (+91) 8690562456 From Your Registered Number</h3>
+                    <p class="ignore-text">Ignore If You Are Already On A Call</p>
+
+                    <div class="button-group">
+                        <button class="btn-secondary" onclick="closeCallModal()">No, Not On A Call</button>
+                        <button class="btn-primary" onclick="proceedCall()">Yes, I'm On A Call</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Header -->
     <div class="header">
-        <div class="header-left">
+        <div class="header-left" href="http://muneemjii.com/gst-billing-app.htm">
             <div class="vyapar-logo"></div>
             <span class="help-title">Help</span>
         </div>
@@ -486,7 +528,7 @@
                 Customer Support:
                 <a href="tel:+916364444752" class="phone-number">📞 (+91)-636444752</a>
             </div>
-            <a href="#" class="instant-support">Get Instant Online Support</a>
+            <a href="http://muneemjii.com/gst-billing-app.htm" class="instant-support">Get Instant Online Support</a>
         </div>
     </div>
 
@@ -513,10 +555,7 @@
             <div id="myCompaniesContent">
                 <div class="content-header">
                     <span class="content-title">Below are the company that are created by you</span>
-                    <div>
-                        <a href="#" class="browse-files">Browse Files (.vyp)</a>
-                        <button class="refresh-btn">🔄</button>
-                    </div>
+                  
                 </div>
 
                 <!-- Company List -->
@@ -534,13 +573,13 @@
                             <div class="company-details">My Account,@item.Email</div>
                         </div>
                         <div class="company-actions">
-                            <div class="sync-status">
+                           @*  <div class="sync-status">
                                 <span class="sync-icon">
                                     <img src="/images/pcmobile.png" alt="Mobile Icon" class="icon-img">
                                 </span>
                                 <span>SYNC ON</span>
-                            </div>
-                            <button class="open-btn">Open</button>
+                            </div> *@
+                            <button class="open-btn" onclick="window.location.href='/Web/Home/index'">Open</button>
                             <div class="more-btn" onclick="toggleDropdown(this)">
                                 ⋮
                                 <div class="dropdown-menu">
@@ -557,7 +596,7 @@
 
                 <div class="bottom-actions">
                     <div>
-                        <button class="restore-btn">Restore backup</button>
+                        @* <button class="restore-btn">Restore backup</button> *@
                         <button class="new-company-btn" onclick="window.location.href='/Account/Register'">New Company</button>
                     </div>
                     <div class="logout-section">
@@ -571,10 +610,10 @@
             <div id="sharedCompaniesContent" style="display: none;">
                 <div class="content-header">
                     <span class="content-title">Below are the company that are shared with you</span>
-                    <div>
+                   @*  <div>
                         <a href="#" class="browse-files">Browse Files (.vyp)</a>
                         <button class="refresh-btn">🔄</button>
-                    </div>
+                    </div> *@
                 </div>
 
                 <!-- Video Section -->
@@ -715,6 +754,39 @@
             const searchTerm = e.target.value.toLowerCase();
             // Add search functionality here
             console.log('Searching for:', searchTerm);
+        });
+            document.addEventListener('DOMContentLoaded', function() {
+            const phoneLink = document.querySelector('a[href="tel:+918690562456"]');
+            if (phoneLink) {
+                phoneLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    showCallModal();
+                });
+            }
+        });
+
+        function showCallModal() {
+            document.getElementById('callModal').style.display = 'block';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeCallModal() {
+            document.getElementById('callModal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restore scrolling
+        }
+
+        function proceedCall() {
+            // Close modal and proceed with call
+            closeCallModal();
+            window.location.href = 'tel:+918690562456';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('callModal');
+            if (e.target === modal || e.target.classList.contains('modal-overlay')) {
+                closeCallModal();
+            }
         });
     </script>
 </body>

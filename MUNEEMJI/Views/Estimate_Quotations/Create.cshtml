@@ -33,7 +33,7 @@
         }
 
         .search-section {
-            background: white;
+            background: #fffbf33d;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -49,7 +49,7 @@
         }
 
         .items-section {
-            background: white;
+            background: #fffbf33d;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -67,7 +67,7 @@
         }
 
         .payment-section {
-            background: white;
+            background: #fffbf33d;
             padding: 15px;
             border-radius: 5px;
             margin-bottom: 20px;
@@ -203,9 +203,9 @@
 
         .toggle-switch {
             position: relative;
-            width: 59px;
-            height: 22px;
-            background: #89bcf3;
+            width: 47px;
+            height: 23px;
+            background: #007bff;
             border-radius: 15px;
             cursor: pointer;
             transition: background 0.3s;
@@ -213,22 +213,22 @@
         }
 
             .toggle-switch.cash {
-                background: #28a745;
+                background: #007bff;
             }
 
         .toggle-slider {
             position: absolute;
-            top: 1px;
+            top: 2px;
             left: 4px;
-            width: 21px;
-            height: 20px;
+            width: 19px;
+            height: 19px;
             background: white;
             border-radius: 50%;
             transition: transform 0.3s;
         }
 
         .toggle-switch.cash .toggle-slider {
-            transform: translateX(30px);
+            transform: translateX(22px);
         }
     </style>
     <style>
@@ -247,8 +247,6 @@
             background: transparent;
             transition: all 0.3s ease;
         }
-
-
 
             .floating-input:focus {
                 border-color: #007bff; /* Blue border on focus/click */
@@ -328,11 +326,11 @@
                 }
 
         /* Column Toggle Styles - ADD THIS TO YOUR EXISTING CSS */
-        .column-toggle-container {
-            position: relative;
-            display: inline-block;
-            margin-left: 10px;
-        }
+        /*  .column-toggle-container {
+                    position: relative;
+                    display: inline-block;
+                    margin-left: 10px;
+                } */
 
         .column-toggle-btn {
             background: #007bff;
@@ -352,27 +350,27 @@
             .column-toggle-btn:hover {
                 background: #0056b3;
             }
+        /*
+                .column-dropdown {
+                    position: absolute;
+                    top: 35px;
+                    right: 0;
+                    background: white;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    min-width: 200px;
+                    z-index: 9999;
+                    display: none;
+                    padding: 10px;
+                    max-height: 300px;
+                    overflow-y: auto;
+                } */
 
-        .column-dropdown {
-            position: absolute;
-            top: 35px;
-            right: 0;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            min-width: 200px;
-            z-index: 9999;
-            display: none;
-            padding: 10px;
-            max-height: 300px; /* Add this to prevent it from being too tall */
-            overflow-y: auto; /* Add scroll if needed */
-        }
-
-            .column-dropdown.show {
-                display: block;
-                top: -217.4px;
-            }
+        /*  .column-dropdown.show {
+                        display: block;
+                        top: -217.4px;
+                    } */
 
         .column-option {
             display: flex;
@@ -411,9 +409,9 @@
             }
 
         /* Hidden column class */
-        .hidden-column {
-            display: none !important;
-        }
+        /*   .hidden-column {
+                    display: none !important;
+                } */
 
         .table-header-controls {
             display: flex;
@@ -492,6 +490,61 @@
                 margin-right: 4px;
             }
 
+        .btn-close-custom {
+            content: "×";
+            color: #007bff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .upload-area-imgshow:hover {
+            border-color: #0056b3;
+            background: #f0f4ff;
+        }
+
+    </style>
+    <style>
+        .share-dropdown-shareshow {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu-shareshow {
+            display: none;
+            position: absolute;
+            bottom: 1%;
+            left: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-width: 120px;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
+            .dropdown-menu-shareshow.show-shareshow {
+                display: block;
+            }
+
+        .dropdown-item-shareshow {
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+            .dropdown-item-shareshow:hover {
+                background-color: #f8f9fa;
+            }
+
+            .dropdown-item-shareshow i {
+                font-size: 14px;
+                width: 16px;
+            }
     </style>
 
 
@@ -506,20 +559,27 @@
                 <div class="header-top">
                     <div class="sale-toggle">
 
-                        <span style="font-size: 21px">Estimate/Quotation</span>                      
+                        <span style="font-size: 21px">Estimate/Quotation</span>
+
+                        @* <div class="toggle-switch" id="paymentToggle">
+
+                            <div class="toggle-slider"></div>
+                        </div> *@
+                        @* <span id="paymentMode">Credit</span> *@
+                        <input type="hidden" id="iscreditinput" name="Bill.IsCredit" value="false">
 
                     </div>
 
                     <div class="text-end w-100">
-                        <button class="btn btn-primary" style="background-color:#89bcf3" onclick="window.open('https://www.google.com/search?q=calculator', '_blank')">
+                        <button class="btn btn-primary" style="background-color:#007bff" onclick="window.open('https://www.google.com/search?q=calculator', '_blank')">
                             <i class="bi bi-calculator"></i> Calculator
                         </button>
-                        <button type="button" class="btn-close" style="background-color:#89bcf3;border: 2px solid #2c7be5;border-radius: 15%;
+                        <button type="button" class="btn-close btn-close-custom" style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
                                         height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
                                         padding-right: 6px;" aria-label="Close" onclick="closeView()">
                         </button>
-                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Settings/Transaction/Index'"
-                                style=" font-size: 20px; color: #6c757d; background-color:#89bcf3;border: 2px solid #89bcf3;border-radius: 15%;
+                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index'"
+                                style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
                                         padding-bottom:7px;padding-top:0px;padding-left:6px;
                                         padding-right:6px;">
                         </button>
@@ -574,22 +634,58 @@
                                 <label class="floating-label">Search by Name/Phone</label>
                             </div>
 
-                           
+                           @*  <div class="floating-label-container">
+                                <input asp-for="Bill.BillingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
+                                <label class="floating-label">Billing Address</label>
+                            </div> *@
                         </div>
 
                         <!-- Column 2 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 746px;">
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 755px;">
                             <div class="floating-label-container">
                                 <input asp-for="Bill.BillingName" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Billing Name</label>
                             </div>
 
-                           
+                            @* <div class="floating-label-container">
+                                <input asp-for="Bill.ShippingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
+                                <label class="floating-label">Shipping Address</label>
+                            </div> *@
                         </div>
 
-                   
+                        <!-- Column 3 -->
+@*                         <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;margin-right: 40px;">
+ *@                           @*  <div class="floating-label-container">
+                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Phone No.</label>
+                            </div> *@
 
-                    
+                            @* @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.CustomerPODetails == true)
+                            {
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.PONo" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">P.O No.</label>
+                                </div>
+
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">P.O Date</label>
+                                </div>
+                            } *@
+                        @* </div> *@
+
+                        <!-- Column 4 -->
+                       @*  <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 142px;">
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.EwayBillNo == true)
+                            {
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">E-Way Bill No.</label>
+                                </div>
+                            }
+
+
+                        </div> *@
 
                         <!-- Column 5 -->
                         <div class="col-md-2" style="display: flex; flex-direction: column; gap: 0px;">
@@ -613,7 +709,29 @@
                                     <label class="floating-label">Time</label>
                                 </div>
                             }
-                            
+
+                          @*   <div class="floating-label-container">
+                                <select asp-for="Bill.PaymentTermId" class="floating-input">
+                                    <option value="">Select Payment Term</option>
+                                    <option value="1">Net 15 Days</option>
+                                    <option value="2">Net 30 Days</option>
+                                    <option value="3">Net 45 Days</option>
+                                    <option value="4">Net 60 Days</option>
+                                    <option value="5">Due on Receipt</option>
+                                    <option value="6">Cash on Delivery</option>
+                                    <option value="7">Advance Payment</option>
+                                    <option value="8">2/10 Net 30</option>
+                                    <option value="9">1/15 Net 30</option>
+                                    <option value="10">End of Month</option>
+                                </select>
+                                <label class="floating-label">Payment Term</label>
+                            </div> *@
+@* 
+                            <div class="floating-label-container" id="dueDateContainer">
+                                <input asp-for="Bill.DueDate" type="date" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Due Date</label>
+                            </div> *@
+
                             <div class="floating-label-container">
                                 <select asp-for="Bill.StateOfSupply" class="floating-select">
                                     <option value="">Select State</option>
@@ -828,16 +946,34 @@
                                                 @Html.DropDownListFor(model => model.Bill.BillItems[i].categoryid,
                                                          new SelectList(Model.DropDownCategory, "Id", "Name"),
                                                          "-- Select Category --",
+
                                                          new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
                                             </td>
                                         }
 
-                                        <td class="col-item">
+                                        @* <td class="col-item">
                                             @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
                                                      new SelectList(Model.DropDownItem, "Id", "ItemName"),
                                                      "-- Select Item --",
                                                      new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
+                                        </td> *@
+
+                                        <td class="col-item">
+                                            <div style="position: relative; background-color: white;">
+                                                <button type="button" class="form-control-sm" style="border: none;background-color: white;" onclick="toggleItemDropdownPopdorp(@i)" id="itemBtnPopdorp-@i">
+                                                    --Select Item--
+                                                </button>
+                                                <!-- Hidden select for form submission -->
+                                                <select name="Bill.BillItems[@i].ItemId" id="hiddenSelectPopdorp-@i" style="display: none;">
+                                                    <option value="">--Select Item--</option>
+                                                    @foreach (var item in Model.DropDownItem)
+                                                    {
+                                                        <option value="@item.Id">@item.ItemName</option>
+                                                    }
+                                                </select>
+                                            </div>
                                         </td>
+
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
                                         {
                                             <td class="col-item-code">
@@ -973,9 +1109,139 @@
                     <div class="row">
 
                         <div class="col-md-8">
-                            
+                            @* <div class="row">
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.TransportName == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Transport Name</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                                                                <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
+                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryLocation == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Delivery Location</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                                                                 <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
+                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field5 == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.Field5" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Field5</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                        </div>
+                                    </div>
+
+                                }
+
+
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.VehicleNumber == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Vehicle Number</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                                                                 <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryDate == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Delivery Date</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                                                                <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
+                                     <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field6 == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.Field6" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Field6</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                                                                <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                     <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+
+                                }
+
+                            </div> *@
                             <div class="row">
-                               
+                               @*  <div class="col-md-6">
+                                    <div class="floating-label-container">
+                                        <select asp-for="Bill.PaymentType" class="floating-select">
+                                            <option value="">Select Payment Type</option>
+                                            @foreach (var payment in Model.PaymentTypes)
+                                            {
+                                                <option value="@payment">@payment</option>
+                                            }
+                                        </select>
+                                        <label class="floating-label">Payment Type</label>
+                                    </div>
+                                </div> *@
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
                                         <input asp-for="Bill.Description" class="floating-input" placeholder=" " />
@@ -984,16 +1250,41 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="floating-label-container">
-                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*" />
-                                        <label class="floating-label">Add Image</label>
+                                    <div class="floating-label-container upload-area-imgshow" style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;" onclick="document.querySelector('input[name=\'Bill.imageFile\']').click()">
+                                        <span class="upload-label-imgshow" style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">Add Image</span>
+                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*" onchange="previewImage(this)" style="display: none;" />
+                                        <div class="upload-content-imgshow">
+                                            <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
+                                            <div style="color: #007bff; font-weight: 500;">Upload</div>
+                                        </div>
+
+                                        <div class="image-preview-imgshow" style="display: none;">
+                                            <img id="preview-img-imgshow" src="" alt="Preview" style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
+                                            <div id="image-name-imgshow" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
+                                            <div style="margin-top: 8px;">
+                                                <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
+
+
+
+
+                               @*  <div class="col-md-6">
+                                    <div class="floating-label-container">
+                                        <input type="file" name="Bill.DocumentPath" class="floating-input" accept="image/*" />
+                                        <label class="floating-label">Add Document</label>
+                                    </div>
+                                </div> *@
+
+
                             </div>
                         </div>
 
                         <div class="col-md-4">
-                            <div class="summary-section" style="background: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
+                            <div class="summary-section" style="background:   #f5f5f5; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
                                 <div class="row mb-2">
                                     <div class="col-6">
                                         <label>No. of copies</label>
@@ -1099,6 +1390,38 @@
 
                                 </div>
 
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="Bill.TCSTDSType" id="tcs" value="@((int)TCSTDSEnum.TCS)"
+                                                @(Model.Bill.TCSTDSType == TCSTDSEnum.TCS ? "checked" : "")>
+                                                <label class="form-check-label" for="tcs">TCS</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="Bill.TCSTDSType" id="tds" value="@((int)TCSTDSEnum.TDS)"
+                                                @(Model.Bill.TCSTDSType == TCSTDSEnum.TDS ? "checked" : "")>
+                                                <label class="form-check-label" for="tds">TDS</label>
+                                            </div>
+
+                                        </div>
+                                        <div style="width: 79px;">
+                                            <select class="form-control form-control-sm mt-2" name="Bill.TdsTcsPercentage">
+                                                <option value="0">NONE</option>
+                                                <option value="0.1">0.1%</option>
+                                                <option value="1">1%</option>
+                                                <option value="2">2%</option>
+                                            </select>
+                                        </div>
+                                        <div class="" style="width: 97px;text-align: right;">
+                                            <span> 0</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
                                 <div class="row mb-2">
                                     <div class="d-flex align-items-center justify-content-end gap-3">
                                         <div class="">
@@ -1122,6 +1445,47 @@
 
                                 </div>
 
+
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <div class="form-check">
+                                                <input asp-for="Bill.IsReceive" type="checkbox" class="form-check-input" checked />
+                                                <label asp-for="Bill.IsReceive" class="form-check-label d-none"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="" style="text-align: right;">
+                                            Received
+                                        </div>
+                                        <div class="" style="width: 140px;">
+                                            <input type="number" name="Bill.paidReciveamount" class="form-control form-control-sm received-amount" onchange="updateGrandTotal()" value="0" />
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+
+                                        <div class="" style="text-align: right; font-weight:bold;">
+                                            Balance
+                                        </div>
+                                        <div id="finalTotal" style="width: 140px; font-weight:bold; text-align:right;">
+                                            0000
+                                        </div>
+
+                                        <input type="hidden" id="finalTotalinput" name="Bill.FinalAmount" value="0" />
+
+                                    </div>
+
+                                </div>
+
+
+
+
                             </div>
                         </div>
                     </div>
@@ -1142,7 +1506,22 @@
                 @if (Model.ViewTypeId == (int)ViewTypeEnum.Create)
                 {
                     <div class="action-buttons">
-                        <button type="button" class="btn-share">Share ▼</button>
+                        <div class="share-dropdown-shareshow">
+                            <button type="button" class="btn-share" id="shareButtonshareshow">
+                                Share <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-menu-shareshow" id="shareDropdownshareshow">
+                                <div class="dropdown-item-shareshow" onclick="openShareWindow()">
+                                    <i class="bi bi-share"></i> Share
+                                </div>
+                                <div class="dropdown-item-shareshow" onclick="printDocument()">
+                                    <i class="bi bi-printer"></i> Print
+                                </div>
+                                <div class="dropdown-item-shareshow" style="margin-left: -21px;">
+                                    <i class="bi bi-floppy"></i> Save & New
+                                </div>
+                            </div>
+                        </div>
                         <button type="submit" class="btn-save">Save</button>
                     </div>
                 }
@@ -1153,16 +1532,32 @@
 
     <script>
 
-         var itemOptions = @Html.Raw(Json.Serialize(Model.DropDownItem));
-         var CategoryOptions = @Html.Raw(Json.Serialize(Model.DropDownCategory));
-         let itemIndex = @Model.Bill.BillItems.Count;
 
-         let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
-        itemDropdown += `<option value="">-- Select Item --</option>`;
-        itemOptions.forEach(item => {
-            itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
-        });
-        itemDropdown += `</select>`;
+         var itemOptions =  @Html.Raw(Json.Serialize(Model.DropDownItem));
+         var CategoryOptions =  @Html.Raw(Json.Serialize(Model.DropDownCategory));
+         let itemIndex =  @Model.Bill.BillItems.Count;
+
+        //  let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
+        // itemDropdown += `<option value="">-- Select Item --</option>`;
+        // itemOptions.forEach(item => {
+        //     itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
+        // });
+        // itemDropdown += `</select>`;
+
+                let itemDropdown = `
+                         <div style="position: relative; background-color: white;">
+                             <button type="button" class="form-control-sm" style="border: none;background-color: white;" onclick="toggleItemDropdownPopdorp(${itemIndex})" id="itemBtnPopdorp-${itemIndex}">
+                                 --Select Item--
+                             </button>
+                             <select name="Bill.BillItems[${itemIndex}].ItemId" id="hiddenSelectPopdorp-${itemIndex}" style="display: none;">
+                                 <option value="">--Select Item--</option>`;
+
+                             itemOptions.forEach(item => {
+                                 itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
+                             });
+
+                             itemDropdown += `</select>
+                             </div>`;
 
          let categoryDropdown = `<select name="Bill.BillItems[${itemIndex}].categoryid" class="form-control-sm">`;
         categoryDropdown += `<option value="">-- Select Category --</option>`;
@@ -1174,26 +1569,27 @@
          function onItemChange(selectElem, rowIndex) {
             let selectedItemId = selectElem.value;
             console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);
-            //
-            // Do something like auto-fill price, etc.
+                if (selectedItemId)
+                {
+                   autoFillItemData(rowIndex, selectedItemId);
+                }
         }
 
              var itemSettings = {
-            serialNoTracking: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.SerialNoTracking ?? false)),
-            description: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.Description ?? false)),
-            expDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ExpDateEnabled ?? false)),
-            mfgDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.MfgDateEnabled ?? false)),
-            itemWiseDiscount: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseDiscount ?? false)),
-            itemWiseTax: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseTax ?? false)),
-            itemcode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCode ?? false)),
-            hsnsaccode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.HsnSacCode ?? false)),
-            category: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCategory ?? false))
+                    serialNoTracking: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.SerialNoTracking ?? false)),
+                    description: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.Description ?? false)),
+                    expDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ExpDateEnabled ?? false)),
+                    mfgDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.MfgDateEnabled ?? false)),
+                    itemWiseDiscount: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseDiscount ?? false)),
+                    itemWiseTax: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseTax ?? false)),
+                    itemcode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCode ?? false)),
+                    hsnsaccode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.HsnSacCode ?? false)),
+                    category: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCategory ?? false))
+                    };
 
-        };
-
-        var transactionSettings = {
-            freeItemQuantity: @Html.Raw(Json.Serialize(Model.Bill.transactionSettings?.FreeItemQuantity ?? false))
-        };
+            var transactionSettings = {
+                    freeItemQuantity: @Html.Raw(Json.Serialize(Model.Bill.transactionSettings?.FreeItemQuantity ?? false))
+                    };
 
                     function addNewRow() {
 
@@ -1207,7 +1603,8 @@
             {
               rowHTML += `<td class="col-category">${categoryDropdown.replace('ITEMINDEX', itemIndex).replace('ItemId', 'CategoryId')}</td>`;
             }
-               rowHTML += `<td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>`;
+               // rowHTML += `<td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>`;
+               rowHTML += `<td class="col-item">${itemDropdown}</td>`;
             if(itemSettings.itemcode)
             {
                 rowHTML += `<td class="col-item-code"><input name="Bill.BillItems[${itemIndex}].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" /></td>`;
@@ -1405,12 +1802,63 @@
         // Handle round off checkbox change
         document.querySelector('input[name="Bill.IsRoundOff"]').addEventListener('change', updateGrandTotal);
     </script>
-    <script>  
-                      function closeView() {
-                       window.location.href = '/Web/Home/Index'; 
-                       }
+    <script>
+        // Toggle between Credit and Cash
+                document.getElementById('paymentToggle').addEventListener('click', function() {
 
-            
+                    const toggle = this;
+                    const modeText = document.getElementById('paymentMode');
+
+                    const dueDateContainer = document.getElementById('dueDateContainer');
+
+                    toggle.classList.toggle('cash');
+
+                    if (toggle.classList.contains('cash')) {
+                        modeText.textContent = 'Cash';
+                        dueDateContainer.style.display='none';
+                        document.getElementById('iscreditinput').value = "false";
+
+                        }
+                    else {
+                        modeText.textContent = 'Credit';
+                        dueDateContainer.style.display = 'block';
+                        document.getElementById('iscreditinput').value = "true";
+
+
+                    }
+                });
+
+
+
+                         //  function showColumnSettings()
+                         // {
+                         //     debugger;
+                         //    const dropdown = document.getElementById('columnSettings');
+                         //    const button = document.querySelector('th.col-action .column-toggle-btn'); // Changed this line
+                         //    dropdown.classList.toggle('show');
+                         //    if (dropdown.classList.contains('show')) {
+                         //        const buttonRect = button.getBoundingClientRect();
+                         //        dropdown.style.position = 'absolute';
+                         //        dropdown.style.top = (buttonRect.bottom + 5) + 'px';
+                         //        dropdown.style.left = (buttonRect.right - 200) + 'px';
+                         //    }
+                         // }
+
+
+               function closeView() {
+                       window.location.href = '/Web/Home/Index'; // Or your desired controller/action
+               }
+
+                // function toggleColumn(columnClass, isChecked) {
+                //          const columns = document.querySelectorAll('.' + columnClass);
+                //          columns.forEach(column => {
+                //                 if (isChecked) {
+                //                     column.classList.remove('hidden-column');
+                //                 } else {
+                //                     column.classList.add('hidden-column');
+                //                 }
+                //          });
+                //  }
 
 
                 document.addEventListener('click', function(event) {
@@ -1418,6 +1866,9 @@
             const button = document.querySelector('th.col-action .column-toggle-btn');
             const dropdown = document.getElementById('columnSettings');
 
+            // if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            //     dropdown.classList.remove('show');
+            // }
         });
     </script>
 
@@ -1617,6 +2068,226 @@
                 console.error("Error:", error);
                 alert("An error occurred while saving settings: " + error.message);
             });
+        }
+
+    </script>
+    <script>
+                      function previewImage(input) {
+            const container = input.closest('.upload-area-imgshow');
+            const uploadContent = container.querySelector('.upload-content-imgshow');
+            const preview = container.querySelector('.image-preview-imgshow');
+            const img = document.getElementById('preview-img-imgshow');
+            const imageName = document.getElementById('image-name-imgshow');
+            const label = container.querySelector('.upload-label-imgshow');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    imageName.textContent = input.files[0].name; // Add this line
+                    uploadContent.style.display = 'none';
+                    preview.style.display = 'block';
+                    label.style.color = '#007bff';
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage(event) {
+            event.stopPropagation();
+            const input = document.querySelector('input[name="Bill.imageFile"]');
+            const container = input.closest('.upload-area-imgshow');
+            const uploadContent = container.querySelector('.upload-content-imgshow');
+            const preview = container.querySelector('.image-preview-imgshow');
+
+            input.value = '';
+            preview.style.display = 'none';
+            uploadContent.style.display = 'block';
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const shareButton = document.getElementById('shareButtonshareshow');
+            const shareDropdown = document.getElementById('shareDropdownshareshow');
+
+            shareButton.addEventListener('click', function() {
+                shareDropdown.classList.toggle('show-shareshow');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!shareButton.contains(event.target) && !shareDropdown.contains(event.target)) {
+                    shareDropdown.classList.remove('show-shareshow');
+                }
+            });
+        });
+
+        function openShareWindow() {
+            // Your existing share functionality or create new share window
+            const shareWindow = window.open('', 'shareWindow', 'width=400,height=300');
+            shareWindow.document.write(`
+                <div style="padding: 20px; font-family: Arial;">
+                    <h3>Share Options</h3>
+                    <p>Share functionality would go here</p>
+                    <button onclick="window.close()">Close</button>
+                </div>
+            `);
+            document.getElementById('shareDropdownshareshow').classList.remove('show-shareshow');
+        }
+
+        function printDocument() {
+            window.print();
+            document.getElementById('shareDropdownshareshow').classList.remove('show-shareshow');
+        }
+    </script>
+
+
+    <script>
+              function toggleItemDropdownPopdorp(index) {
+            // Remove any existing dropdown
+            const existingDropdown = document.getElementById('floatingDropdownPopdorp');
+            if (existingDropdown) {
+                existingDropdown.remove();
+            }
+
+            const button = document.getElementById(`itemBtnPopdorp-${index}`);
+            const buttonRect = button.getBoundingClientRect();
+
+            // Create dropdown element
+
+            const dropdown = document.createElement('div');
+            dropdown.id = 'floatingDropdownPopdorp';
+            dropdown.innerHTML = `
+                <div style="background: #f8f9fa; padding: 8px; border-bottom: 1px solid #dee2e6; display: flex; font-weight: bold; font-size: 12px;">
+                    <div style="flex: 2; padding: 4px;">ITEM NAME</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">SALE PRICE</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">PURCHASE PRICE</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">MFG COST</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">STOCK</div>
+                </div>
+                <div style="display: flex; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; align-items: center;" onclick="showAddItemFormPopdorp(${index})">
+                    <div style="flex: 2; padding: 4px; color: #007bff;">
+                        <i class="bi bi-plus-circle"></i> Add Item
+                    </div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                </div>
+
+                ${itemOptions.map(item => `
+                    <div style="display: flex; padding: 6px 8px; border-bottom: 1px solid #eee; cursor: pointer;"
+                         onclick="selectItemFromTablePopdorp(${index}, '${item.id}', '${item.itemName}')"
+                         onmouseover="this.style.backgroundColor='#f8f9fa'"
+                         onmouseout="this.style.backgroundColor='white'">
+                        <div style="flex: 2; padding: 4px; font-size: 12px;">${item.itemName}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${item.salePrice}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${item.purchasePrice}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${new Date(item.asOfDate).toLocaleDateString('en-GB')}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px; color: #dc3545;">${item.openingQuantity}</div>
+                    </div>
+                `).join('')}
+            `;
+
+            // Style the dropdown
+            dropdown.style.cssText = `
+                position: fixed;
+                background: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                min-width: 600px;
+                max-height: 300px;
+                overflow-y: auto;
+                z-index: 10000;
+                top: ${buttonRect.bottom + 5}px;
+                left: ${buttonRect.left}px;
+            `;
+
+            // Append to body
+            document.body.appendChild(dropdown);
+          }
+
+        function selectItemFromTablePopdorp(index, itemId, itemName) {
+            // Update button text
+            const button = document.getElementById(`itemBtnPopdorp-${index}`);
+            button.textContent = itemName;
+
+            // Update hidden select
+            const hiddenSelect = document.getElementById(`hiddenSelectPopdorp-${index}`);
+            hiddenSelect.value = itemId;
+
+                autoFillItemData(index, itemId);
+
+            // Remove dropdown
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown) {
+                dropdown.remove();
+            }
+
+            // Call your existing function
+            onItemChange(hiddenSelect, index);
+        }
+
+        function showAddItemFormPopdorp(index) {
+
+
+            window.location.href='/Web/billitem/create';
+
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown && !dropdown.contains(event.target) && !event.target.id.includes('itemBtnPopdorp')) {
+                dropdown.remove();
+            }
+        });
+
+                    window.addEventListener('scroll', function() {
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown) {
+                dropdown.remove();
+            }
+        });
+
+                function autoFillItemData(rowIndex, itemId) {
+            // Find the selected item from itemOptions
+            const selectedItem = itemOptions.find(item => item.id == itemId);
+            if (!selectedItem) return;
+
+            const row = document.querySelector(`tr[data-index="${rowIndex}"]`);
+            if (!row) return;
+
+            // Auto-fill the fields based on item data
+            const itemCodeInput = row.querySelector('input[name*="ItemCode"]');
+            if (itemCodeInput && selectedItem.itemCode) {
+                itemCodeInput.value = selectedItem.itemCode;
+            }
+
+            const hsnCodeInput = row.querySelector('input[name*="HSNCode"]');
+            if (hsnCodeInput && selectedItem.itemHsn) {
+                hsnCodeInput.value = selectedItem.itemHsn;
+            }
+
+            const mrpInput = row.querySelector('input[name*="MRP"]');
+            if (mrpInput && selectedItem.mrp) {
+                mrpInput.value = selectedItem.mrp;
+            }
+
+            const priceInput = row.querySelector('input[name*="PricePerUnit"]');
+            if (priceInput && selectedItem.salePrice) {
+                priceInput.value = selectedItem.salePrice;
+            }
+
+             const Qty = row.querySelector('input[name*="Quantity"]');
+            if (Qty) {
+                Qty.value = 1;
+            }
+
+            calculateItemAmount(rowIndex);
         }
 
     </script>

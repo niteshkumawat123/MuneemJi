@@ -11,7 +11,7 @@ namespace MUNEEMJI.Models
         public string StateOfSupply { get; set; } = string.Empty;
         public string PhoneNo { get; set; } = string.Empty;
         public string PONo { get; set; } = string.Empty;
-        public DateTime? PODate { get; set; }
+        public DateTime? PODate { get; set; } = DateTime.Now;
         public string EWayBillNo { get; set; } = string.Empty;
         public string TransportName { get; set; } = string.Empty;
         public string DeliveryLocation { get; set; } = string.Empty;

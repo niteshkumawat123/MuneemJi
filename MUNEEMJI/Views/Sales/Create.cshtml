@@ -325,11 +325,11 @@
                 }
 
         /* Column Toggle Styles - ADD THIS TO YOUR EXISTING CSS */
-        .column-toggle-container {
+       /*  .column-toggle-container {
             position: relative;
             display: inline-block;
             margin-left: 10px;
-        }
+        } */
 
         .column-toggle-btn {
             background: #007bff;
@@ -349,7 +349,7 @@
             .column-toggle-btn:hover {
                 background: #0056b3;
             }
-
+/* 
         .column-dropdown {
             position: absolute;
             top: 35px;
@@ -362,14 +362,14 @@
             z-index: 9999;
             display: none;
             padding: 10px;
-            max-height: 300px; /* Add this to prevent it from being too tall */
-            overflow-y: auto; /* Add scroll if needed */
-        }
+            max-height: 300px; 
+            overflow-y: auto; 
+        } */
 
-            .column-dropdown.show {
+           /*  .column-dropdown.show {
                 display: block;
                 top: -217.4px;
-            }
+            } */
 
         .column-option {
             display: flex;
@@ -408,9 +408,9 @@
             }
 
         /* Hidden column class */
-        .hidden-column {
+      /*   .hidden-column {
             display: none !important;
-        }
+        } */
 
         .table-header-controls {
             display: flex;
@@ -950,13 +950,29 @@
                                             </td>
                                         }
 
-                                        <td class="col-item">
+                                        @* <td class="col-item">
                                             @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
                                                      new SelectList(Model.DropDownItem, "Id", "ItemName"),
                                                      "-- Select Item --",
-                                                     "Add Item   Sale Price   purchase price   mfgcost     stock",
                                                      new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
+                                        </td> *@
+
+                                        <td class="col-item">
+                                            <div style="position: relative; background-color: white;">
+                                                <button type="button" class="form-control-sm" style="border: none;background-color: white;"onclick="toggleItemDropdownPopdorp(@i)" id="itemBtnPopdorp-@i">
+                                                    --Select Item--
+                                                </button>
+                                                <!-- Hidden select for form submission -->
+                                                <select name="Bill.BillItems[@i].ItemId" id="hiddenSelectPopdorp-@i" style="display: none;">
+                                                    <option value="">--Select Item--</option>
+                                                    @foreach (var item in Model.DropDownItem)
+                                                    {
+                                                        <option value="@item.Id">@item.ItemName</option>
+                                                    }
+                                                </select>
+                                            </div>
                                         </td>
+
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
                                         {
                                             <td class="col-item-code">
@@ -1514,17 +1530,33 @@
     </div>
 
     <script>
+        
 
          var itemOptions =  @Html.Raw(Json.Serialize(Model.DropDownItem));
          var CategoryOptions =  @Html.Raw(Json.Serialize(Model.DropDownCategory));
          let itemIndex =  @Model.Bill.BillItems.Count;
 
-         let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
-        itemDropdown += `<option value="">-- Select Item --</option>`;
-        itemOptions.forEach(item => {
-            itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
-        });
-        itemDropdown += `</select>`;
+        //  let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
+        // itemDropdown += `<option value="">-- Select Item --</option>`;
+        // itemOptions.forEach(item => {
+        //     itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
+        // });
+        // itemDropdown += `</select>`;
+
+                let itemDropdown = `
+                         <div style="position: relative; background-color: white;">
+                             <button type="button" class="form-control-sm" style="border: none;background-color: white;" onclick="toggleItemDropdownPopdorp(${itemIndex})" id="itemBtnPopdorp-${itemIndex}">
+                                 --Select Item--
+                             </button>
+                             <select name="Bill.BillItems[${itemIndex}].ItemId" id="hiddenSelectPopdorp-${itemIndex}" style="display: none;">
+                                 <option value="">--Select Item--</option>`;
+
+                             itemOptions.forEach(item => {
+                                 itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
+                             });
+
+                             itemDropdown += `</select>
+                             </div>`;
 
          let categoryDropdown = `<select name="Bill.BillItems[${itemIndex}].categoryid" class="form-control-sm">`;
         categoryDropdown += `<option value="">-- Select Category --</option>`;
@@ -1535,7 +1567,11 @@
 
          function onItemChange(selectElem, rowIndex) {
             let selectedItemId = selectElem.value;
-            console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);    
+            console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);
+                if (selectedItemId)
+                {
+                   autoFillItemData(rowIndex, selectedItemId);
+                }
         }
 
              var itemSettings = {
@@ -1566,7 +1602,8 @@
             {
               rowHTML += `<td class="col-category">${categoryDropdown.replace('ITEMINDEX', itemIndex).replace('ItemId', 'CategoryId')}</td>`;
             }
-               rowHTML += `<td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>`;
+               // rowHTML += `<td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>`;
+               rowHTML += `<td class="col-item">${itemDropdown}</td>`;
             if(itemSettings.itemcode)
             {
                 rowHTML += `<td class="col-item-code"><input name="Bill.BillItems[${itemIndex}].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" /></td>`;
@@ -2104,5 +2141,154 @@
             document.getElementById('shareDropdownshareshow').classList.remove('show-shareshow');
         }
     </script>
+   
+
+    <script>
+              function toggleItemDropdownPopdorp(index) {
+            // Remove any existing dropdown
+            const existingDropdown = document.getElementById('floatingDropdownPopdorp');
+            if (existingDropdown) {
+                existingDropdown.remove();
+            }
+
+            const button = document.getElementById(`itemBtnPopdorp-${index}`);
+            const buttonRect = button.getBoundingClientRect();
+
+            // Create dropdown element
+           
+            const dropdown = document.createElement('div');
+            dropdown.id = 'floatingDropdownPopdorp';
+            dropdown.innerHTML = `
+                <div style="background: #f8f9fa; padding: 8px; border-bottom: 1px solid #dee2e6; display: flex; font-weight: bold; font-size: 12px;">
+                    <div style="flex: 2; padding: 4px;">ITEM NAME</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">SALE PRICE</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">PURCHASE PRICE</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">MFG COST</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">STOCK</div>
+                </div>
+                <div style="display: flex; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; align-items: center;" onclick="showAddItemFormPopdorp(${index})">
+                    <div style="flex: 2; padding: 4px; color: #007bff;">
+                        <i class="bi bi-plus-circle"></i> Add Item
+                    </div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                </div>
+                
+                ${itemOptions.map(item => `
+                    <div style="display: flex; padding: 6px 8px; border-bottom: 1px solid #eee; cursor: pointer;"
+                         onclick="selectItemFromTablePopdorp(${index}, '${item.id}', '${item.itemName}')"
+                         onmouseover="this.style.backgroundColor='#f8f9fa'"
+                         onmouseout="this.style.backgroundColor='white'">
+                        <div style="flex: 2; padding: 4px; font-size: 12px;">${item.itemName}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${item.salePrice}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${item.purchasePrice}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${new Date(item.asOfDate).toLocaleDateString('en-GB')}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px; color: #dc3545;">${item.openingQuantity}</div>
+                    </div>
+                `).join('')}
+            `;
+
+            // Style the dropdown
+            dropdown.style.cssText = `
+                position: fixed;
+                background: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                min-width: 600px;
+                max-height: 300px;
+                overflow-y: auto;
+                z-index: 10000;
+                top: ${buttonRect.bottom + 5}px;     
+                left: ${buttonRect.left}px;
+            `;
+
+            // Append to body
+            document.body.appendChild(dropdown);
+          }
+
+        function selectItemFromTablePopdorp(index, itemId, itemName) {
+            // Update button text
+            const button = document.getElementById(`itemBtnPopdorp-${index}`);
+            button.textContent = itemName;
+
+            // Update hidden select
+            const hiddenSelect = document.getElementById(`hiddenSelectPopdorp-${index}`);
+            hiddenSelect.value = itemId;
+
+                autoFillItemData(index, itemId);
+
+            // Remove dropdown
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown) {
+                dropdown.remove();
+            }
+
+            // Call your existing function
+            onItemChange(hiddenSelect, index);
+        }
+
+        function showAddItemFormPopdorp(index) {
+
+
+            window.location.href='/Web/billitem/create';
+           
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown && !dropdown.contains(event.target) && !event.target.id.includes('itemBtnPopdorp')) {
+                dropdown.remove();
+            }
+        });
+
+                    window.addEventListener('scroll', function() {
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown) {
+                dropdown.remove();
+            }
+        });
+
+                function autoFillItemData(rowIndex, itemId) {
+            // Find the selected item from itemOptions
+            const selectedItem = itemOptions.find(item => item.id == itemId);
+            if (!selectedItem) return;
+
+            const row = document.querySelector(`tr[data-index="${rowIndex}"]`);
+            if (!row) return;
+
+            // Auto-fill the fields based on item data
+            const itemCodeInput = row.querySelector('input[name*="ItemCode"]');
+            if (itemCodeInput && selectedItem.itemCode) {
+                itemCodeInput.value = selectedItem.itemCode;
+            }
+
+            const hsnCodeInput = row.querySelector('input[name*="HSNCode"]');
+            if (hsnCodeInput && selectedItem.itemHsn) {
+                hsnCodeInput.value = selectedItem.itemHsn;
+            }
+
+            const mrpInput = row.querySelector('input[name*="MRP"]');
+            if (mrpInput && selectedItem.mrp) {
+                mrpInput.value = selectedItem.mrp;
+            }
+
+            const priceInput = row.querySelector('input[name*="PricePerUnit"]');
+            if (priceInput && selectedItem.salePrice) {
+                priceInput.value = selectedItem.salePrice;
+            }
+
+             const Qty = row.querySelector('input[name*="Quantity"]');
+            if (Qty) {
+                Qty.value = 1;
+            }
+
+            calculateItemAmount(rowIndex);
+        }
+      
+      </script>
 </body>
 </html>

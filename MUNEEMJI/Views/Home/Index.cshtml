@@ -449,6 +449,169 @@
             list-style: none;
         }
     </style>
+    <style>
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+            .legend-dot.profit {
+                background-color: #ff9500;
+            }
+
+            .legend-dot.sales {
+                background-color: #4a90e2;
+            }
+
+        .sales-profit-chart {
+            position: relative;
+            height: 350px;
+            padding: 20px 40px 40px 60px;
+            border-bottom: 2px solid #e0e0e0;
+            border-left: 2px solid #e0e0e0;
+        }
+
+        .y-axis-left {
+            position: absolute;
+            left: 10px;
+            top: 20px;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #ff9500;
+            font-weight: 500;
+        }
+
+        .y-axis-right {
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #4a90e2;
+            font-weight: 500;
+        }
+
+        .chart-area {
+            position: relative;
+            height: 280px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .product-group {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 60px;
+        }
+
+        .sales-bar {
+            width: 40px;
+            background: linear-gradient(to top, #2c5aa0, #4a90e2);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(74, 144, 226, 0.2);
+        }
+
+            .sales-bar:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+            }
+
+                .sales-bar:hover::after {
+                    content: attr(data-value);
+                    position: absolute;
+                    top: -30px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #333;
+                    color: white;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                    white-space: nowrap;
+                    z-index: 10;
+                }
+
+        .profit-point {
+            position: absolute;
+            background: #ff9500;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .product-label {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+        .profit-line {
+            position: absolute;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            height: 280px;
+            pointer-events: none;
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 768px) {
+            .sales-profit-chart
+
+        {
+            padding: 15px 25px 30px 45px;
+        }
+
+        .product-group {
+            width: 45px;
+        }
+
+        .sales-bar {
+            width: 30px;
+        }
+
+        .chart-legend {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid">
@@ -510,8 +673,8 @@
                 <button class="btn btn-sale" onclick="window.location.href='/Web/Sales/Create'">+ Add Sale</button>
                 <button class="btn btn-purchase" onclick="window.location.href='/Web/PurchaseBill/Create'">+ Add Purchase</button>
                 <button class="btn btn-primary" id="plusButton">+</button>
-                <button class="menu-btn">⋮</button>
-            </div>
+@*                 <button class="menu-btn">⋮</button>
+ *@            </div>
         </div>
 
         <!-- Alert Banner -->
@@ -549,33 +712,96 @@
         <!-- Chart Section -->
         <div class="chart-section">
             <div class="chart-header">
-                <span class="chart-title">Total Sale</span>
+                <span class="chart-title">Sales VS Profit by Products</span>
                 <select class="chart-filter">
                     <option>This Month</option>
                 </select>
             </div>
-            <div class="stat-value">₹ 0</div>
-            <div class="chart-container">
-                <div class="chart-axis">
-                    <span>1</span>
-                    <span>0.8</span>
-                    <span>0.6</span>
-                    <span>0.4</span>
-                    <span>0.2</span>
-                    <span>0</span>
+
+            <!-- Legend -->
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <div class="legend-dot profit"></div>
+                    <span>20% Profit</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot sales"></div>
+                    <span>$2.03k Sales</span>
                 </div>
             </div>
-            <div class="chart-x-axis">
-                <span>1 Jun</span>
-                <span>4 Jun</span>
-                <span>7 Jun</span>
-                <span>10 Jun</span>
-                <span>13 Jun</span>
-                <span>16 Jun</span>
-                <span>19 Jun</span>
-                <span>22 Jun</span>
-                <span>25 Jun</span>
-                <span>28 Jun</span>
+
+            <!-- Chart Container -->
+            <div class="sales-profit-chart">
+                <!-- Left Y-axis (Profit %) -->
+                <div class="y-axis-left">
+                    <span>28%</span>
+                    <span>21%</span>
+                    <span>14%</span>
+                    <span>7%</span>
+                    <span>0%</span>
+                </div>
+
+                <!-- Right Y-axis (Sales $) -->
+                <div class="y-axis-right">
+                    <span>$700</span>
+                    <span>$525</span>
+                    <span>$350</span>
+                    <span>$175</span>
+                    <span>$0</span>
+                </div>
+
+                <!-- Chart Area -->
+                <div class="chart-area">
+                    <!-- Sales Bars -->
+                    <div class="product-group">
+                        <div class="sales-bar" style="height: 21%;" data-value="$150"></div>
+                        <div class="profit-point" style="bottom: 57%;" data-value="16%">16%</div>
+                        <div class="product-label">Product1</div>
+                    </div>
+
+                    <div class="product-group">
+                        <div class="sales-bar" style="height: 25%;" data-value="$175"></div>
+                        <div class="profit-point" style="bottom: 60%;" data-value="17%">17%</div>
+                        <div class="product-label">Product2</div>
+                    </div>
+
+                    <div class="product-group">
+                        <div class="sales-bar" style="height: 29%;" data-value="$200"></div>
+                        <div class="profit-point" style="bottom: 68%;" data-value="19%">19%</div>
+                        <div class="product-label">Product3</div>
+                    </div>
+
+                    <div class="product-group">
+                        <div class="sales-bar" style="height: 43%;" data-value="$300"></div>
+                        <div class="profit-point" style="bottom: 75%;" data-value="21%">21%</div>
+                        <div class="product-label">Product4</div>
+                    </div>
+
+                    <div class="product-group">
+                        <div class="sales-bar" style="height: 71%;" data-value="$500"></div>
+                        <div class="profit-point" style="bottom: 82%;" data-value="23%">23%</div>
+                        <div class="product-label">Product5</div>
+                    </div>
+
+                    <div class="product-group">
+                        <div class="sales-bar" style="height: 100%;" data-value="$700"></div>
+                        <div class="profit-point" style="bottom: 100%;" data-value="28%">28%</div>
+                        <div class="product-label">Product6</div>
+                    </div>
+
+                    <!-- Profit Line -->
+                    <svg class="profit-line" viewBox="0 0 100 100">
+                        <polyline points="8.33,43 25,40 41.67,32 58.33,25 75,18 91.67,0"
+                                  fill="none" stroke="#4a90e2" stroke-width="2" stroke-linecap="round" />
+                        <!-- Line points (dots) -->
+                        <circle cx="8.33" cy="43" r="3" fill="#ff9500" />
+                        <circle cx="25" cy="40" r="3" fill="#ff9500" />
+                        <circle cx="41.67" cy="32" r="3" fill="#ff9500" />
+                        <circle cx="58.33" cy="25" r="3" fill="#ff9500" />
+                        <circle cx="75" cy="18" r="3" fill="#ff9500" />
+                        <circle cx="91.67" cy="0" r="3" fill="#ff9500" />
+                    </svg>
+                </div>
             </div>
         </div>
 
@@ -614,12 +840,12 @@
                     <div class="empty-title">It Looks So Empty in Here!</div>
                     <div class="empty-description">Add one of our widgets to get started and view your business operations</div>
                 </div>
-                <div class="widget-section">
+               @*  <div class="widget-section">
                     <div class="widget-title">
                         <span class="plus-icon">+</span>
                         Add Widget of Your Choice
                     </div>
-                </div>
+                </div> *@
             </div>
         </div>
     </div>

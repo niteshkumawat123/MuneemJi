@@ -21,8 +21,8 @@
             <button class="btn btn-danger" onclick="openAddPaymentModal()">
                 <i class="bi bi-plus"></i> Add Payment-in
             </button>
-            <button class="btn btn-outline-secondary ms-2">
-                <i class="bi bi-gear"></i>
+            <button class="btn btn-outline-secondary ms-2" onclick="window.location.href='/Web/Settings/Transaction/Index'" style="background-color: blue;">
+                <i class="bi bi-gear" style="color: white;"></i>
             </button>
         </div>
     </div>
@@ -115,7 +115,7 @@
                     <i class="bi bi-bar-chart"></i>
                 </button>
                 <a href="/Web/PaymentIn/ExcelReport" download>
-                    <button type="button" class="btn btn-success btn-sm" title="Download Excel">
+                    <button type="button" class="btn btn-success btn-sm" title="Download Excel" style="height: 38px;">
                         <i class="bi bi-file-earmark-excel"></i>
                     </button>
                 </a>
@@ -182,7 +182,7 @@
                                 <td>@(item.PartyName ?? "NA")</td>
                                 <td>₹ @(item.ReceivedPaid.ToString("N2") ?? "0.00")</td>
                                 <td>₹ @(item.Total.ToString("N2") ?? "0.00")</td>
-                                <td> @item.Type</td>
+                                <td> @item.paymenttype</td>
                                 <td>UnUsed</td>
                                 <td onclick="event.stopPropagation();">
                                     <div class="d-flex gap-1">

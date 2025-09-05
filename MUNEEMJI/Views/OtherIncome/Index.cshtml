@@ -5,7 +5,6 @@
 }
 
 <style>
-
     * {
         margin: 0;
         padding: 0;
@@ -14,15 +13,26 @@
 
     body {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: white;
+        background: #f5f7fa;
         min-height: 100vh;
         padding: 0;
         margin: 0;
     }
 
-    .container {
-        width: 100vw;
-        height: 100vh;
+    .income-page-title {
+        text-align: center;
+        color: #999;
+        font-size: 18px;
+        font-weight: 500;
+        padding: 20px 0;
+        background: white;
+        margin-bottom: 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .income-container {
+       
+        height: calc(100vh - 80px);
         margin: 0 auto;
         background: white;
         border-radius: 0;
@@ -33,473 +43,445 @@
         padding: 0;
     }
 
-    .header-tabs {
-        background: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
-        display: flex;
-        padding: 0;
-        flex-shrink: 0;
-    }
-
-    .tab {
-        padding: 15px 30px;
-        cursor: pointer;
-        border-bottom: 3px solid transparent;
-        color: #6c757d;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-        .tab.active {
-            color: #007bff;
-            border-bottom-color: #007bff;
-            background: white;
-        }
-
-        .tab:hover {
-            background: #e9ecef;
-        }
-
-    .main-content {
+    .income-main-content {
         display: flex;
         flex: 1;
         overflow: hidden;
         padding-left: 0px;
     }
 
-    .sidebar {
-        width: 300px;
-        background: #f8f9fa;
+    .income-sidebar {
+        width: 340px;
+        background: white;
         border-right: 1px solid #e9ecef;
-        padding: 20px;
+        padding: 0;
         flex-shrink: 0;
         overflow-y: auto;
+        display: flex;
+        flex-direction: column;
     }
 
-    .search-box {
+    .income-sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+        background: #f8f9fa;
+    }
+
+    .income-search-box {
         position: relative;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
 
-        .search-box input {
+        .income-search-box input {
             width: 100%;
             padding: 10px 15px 10px 40px;
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 6px;
             font-size: 14px;
-            transition: border-color 0.3s ease;
+            background: white;
         }
 
-            .search-box input:focus {
-                outline: none;
-                border-color: #007bff;
-                box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
-            }
-
-        .search-box i {
+        .income-search-box i {
             position: absolute;
             left: 12px;
             top: 50%;
             transform: translateY(-50%);
             color: #6c757d;
+            font-size: 14px;
         }
 
-    .add-item-btn {
-        background: linear-gradient(45deg, #ff9500, #ffb347);
+    .income-add-item-btn {
+        background: #ff9500;
         color: white;
         border: none;
         padding: 12px 20px;
-        border-radius: 8px;
+        border-radius: 6px;
         font-weight: 500;
         cursor: pointer;
         width: 100%;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255,149,0,0.3);
-    }
-
-        .add-item-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,149,0,0.4);
-        }
-
-    .godown-select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        background: white;
-    }
-
-    .item-list {
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .item-list-header {
-        display: flex;
-        background: #f8f9fa;
-        padding: 10px;
-        font-weight: 600;
-        color: #495057;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .item-name {
-        flex: 1;
-    }
-
-    .item-quantity {
-        width: 80px;
-        text-align: center;
-    }
-
-    .item-row {
-        display: flex;
-        padding: 12px;
-        align-items: center;
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
-        margin: 1px 0;
+        font-size: 14px;
         transition: all 0.3s ease;
     }
 
-        .item-row:hover {
-            background: #bbdefb;
-            transform: translateX(5px);
+        .income-add-item-btn:hover {
+            background: #e6850e;
         }
 
-    .content-area {
+        .income-add-item-btn i {
+            margin-right: 8px;
+        }
+
+    .income-item-list {
         flex: 1;
-        padding: 20px;
         overflow-y: auto;
     }
 
-    .product-header {
+    .income-item-list-header {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
-
-    .product-title {
-        font-size: 24px;
+        background: #f8f9fa;
+        padding: 15px 20px;
         font-weight: 600;
-        color: #2c3e50;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .adjust-btn {
-        background: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-        transition: all 0.3s ease;
-    }
-
-        .adjust-btn:hover {
-            background: #0056b3;
-            transform: translateY(-2px);
-        }
-
-    .product-info {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .info-card {
-        background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 100%);
-        color: black;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        transition: transform 0.3s ease;
-    }
-
-        .info-card:hover {
-            transform: translateY(-5px);
-        }
-
-    .info-label {
+        color: #495057;
+        border-bottom: 1px solid #e9ecef;
         font-size: 12px;
-        opacity: 0.9;
-        margin-bottom: 5px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
-    .info-value {
-        font-size: 18px;
+    .income-item-name {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+
+        .income-item-name i {
+            margin-left: 5px;
+            font-size: 10px;
+            color: #6c757d;
+        }
+
+    .income-item-quantity {
+        width: 80px;
+        text-align: right;
         font-weight: 600;
     }
 
-    .transactions-section {
-        margin-top: 30px;
+    .income-item-row {
+        border-bottom: 1px solid #f1f3f4;
     }
 
-    .section-header {
+        .income-item-row a {
+            display: flex;
+            padding: 15px 20px;
+            align-items: center;
+            color: #2c3e50;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+            .income-item-row a:hover {
+                background: #f8f9fa;
+                text-decoration: none;
+            }
+
+            .income-item-row a.active {
+                background: #e3f2fd;
+                border-left: 3px solid #2196f3;
+                color: #1976d2;
+            }
+
+        .income-item-row .income-item-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .income-item-row .income-item-quantity {
+            font-size: 14px;
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .income-item-row i.fa-ellipsis-v {
+            margin-left: 10px;
+            color: #6c757d;
+            font-size: 12px;
+        }
+
+    .income-content-area {
+        flex: 1;
+        padding: 30px;
+        overflow-y: auto;
+        background: white;
+    }
+
+    .income-product-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .income-product-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .income-product-title i {
+            color: #007bff;
+            font-size: 18px;
+        }
+
+    .income-add-other-income-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .income-add-other-income-btn:hover {
+            background: #0056b3;
+        }
+
+    .income-product-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .income-info-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        color: #2c3e50;
+        padding: 25px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+        transition: transform 0.3s ease;
+    }
+
+        .income-info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+    .income-info-label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+
+    .income-info-value {
+        font-size: 22px;
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    .income-transactions-section {
+        margin-top: 20px;
+    }
+
+    .income-section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
 
-    .section-title {
-        font-size: 20px;
+    .income-section-title {
+        font-size: 16px;
         font-weight: 600;
         color: #2c3e50;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .search-transactions {
+    .income-search-transactions {
         position: relative;
         width: 300px;
     }
 
-        .search-transactions input {
+        .income-search-transactions input {
             width: 100%;
             padding: 8px 15px 8px 35px;
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
+            background: white;
         }
 
-        .search-transactions i {
+        .income-search-transactions i {
             position: absolute;
             left: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: #6c757d;
+            font-size: 14px;
         }
 
-    .transactions-table {
+    .income-transactions-table {
         background: white;
-        border-radius: 12px;
+        border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
     }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+        .income-transactions-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
 
-    th {
-        background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 100%);
-        color: black;
-        padding: 15px 12px;
-        text-align: left;
-        font-weight: 600;
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+        .income-transactions-table th {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 15px 20px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e9ecef;
+        }
 
-    td {
-        padding: 15px 12px;
-        border-bottom: 1px solid #f1f3f4;
-        color: #2c3e50;
-    }
+        .income-transactions-table td {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f1f3f4;
+            color: #2c3e50;
+            font-size: 14px;
+        }
 
-    tr:hover {
-        background: #f8f9ff;
-    }
+        .income-transactions-table tr:hover {
+            background: #f8f9ff;
+        }
 
-    .status-badge {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .status-partial {
-        background: #fff3cd;
-        color: #856404;
-    }
-
-    .status-complete {
-        background: #d4edda;
-        color: #155724;
-    }
-
-    .status-pending {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
-    .transaction-indicator {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 8px;
-    }
-
-    .indicator-purchase {
-        background: #28a745;
-    }
-
-    .indicator-sale {
-        background: #dc3545;
-    }
-
-    .sort-icon {
-        margin-left: 5px;
+    .income-sort-icon {
+        margin-left: 8px;
         opacity: 0.7;
+        font-size: 10px;
+        color: #6c757d;
     }
 
-    (max-width: 768px) {
-        .main-content
+    .income-transactions-table th:hover .income-sort-icon {
+        opacity: 1;
+        color: #007bff;
+    }
+
+    @@media (max-width: 768px) {
+        .income-main-content
 
     {
         flex-direction: column;
     }
 
-    .sidebar {
+    .income-sidebar {
         width: 100%;
         max-height: 300px;
     }
 
-    .product-info {
+    .income-product-info {
         grid-template-columns: 1fr;
     }
 
-    .search-transactions {
+    .income-search-transactions {
         width: 100%;
         margin-top: 10px;
     }
 
-    .section-header {
+    .income-section-header {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .income-content-area {
+        padding: 20px;
+    }
+
+    .income-product-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
     }
 
     }
 </style>
 
+<div class="income-page-title">OTHER INCOMES</div>
 
-<div class="container-fluid">
-   @*  <div class="header-tabs">
-        <div class="tab active">PRODUCTS</div>
-        <div class="tab">SERVICES</div>
-        <div class="tab">CATEGORY</div>
-        <div class="tab">UNITS</div>
-    </div> *@
+<div class="income-container">
+    <div class="income-main-content">
+        <div class="income-sidebar">
+            <div class="income-sidebar-header">
+                <div class="income-search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search items...">
+                </div>
 
-    <div class="d-flex">
-        <div class="sidebar">
-           @*  <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search items...">
-            </div> *@
+                <button class="income-add-item-btn" onclick="window.location.href='/Web/OtherIncome/create';">
+                    <i class="fas fa-plus"></i> Add Category
+                </button>
+            </div>
 
-            <button class="add-item-btn" onclick="window.location.href='/Web/OtherIncome/create';">
-                <i class="fas fa-plus"></i> Add Other Income
-            </button>
-
-            @* <select class="godown-select">
-                <option>Godown: All Godowns</option>
-                <option>Main Warehouse</option>
-                <option>Secondary Storage</option>
-                <option>Retail Store</option>
-            </select> *@
-
-            <div class="item-list">
-                <div class="item-list-header">
-                    <div class="item-name">CATEGORY <i class="fas fa-filter"></i></div>
-                    <div class="item-quantity">AMOUNT</div>
+            <div class="income-item-list">
+                <div class="income-item-list-header">
+                    <div class="income-item-name">CATEGORY <i class="fas fa-sort"></i></div>
+                    <div class="income-item-quantity">AMOUNT</div>
                 </div>
                 @foreach (var item in Model.ItemView)
                 {
-                    <div class="item-row">
-                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
+                    <div class="income-item-row">
+                        <a class="@(item.Id == Model.SelectedItem?.Id ? "active" : "")"
                            asp-action="Index" asp-route-id="@item.Id">
-                            <div class="item-name">@item.ItemName</div>
-                            <div class="item-quantity">@item.OpeningQuantity</div>
-                            <i class="fas fa-ellipsis-v" style="margin-left: auto; color: #6c757d;"></i>
+                            <div class="income-item-name">@item.ItemName</div>
+                            <div class="income-item-quantity">@item.OpeningQuantity</div>
+                            <i class="fas fa-ellipsis-v"></i>
                         </a>
                     </div>
                 }
-
             </div>
         </div>
 
-        <div class="content-area">
-            <div class="product-header">
-                <div class="product-title">
+        <div class="income-content-area">
+            <div class="income-product-header">
+                <div class="income-product-title">
                     <span>@Model.SelectedItem.ItemName</span>
-                    <i class="fas fa-external-link-alt" style="color: #007bff; font-size: 16px;"></i>
+                    <i class="fas fa-external-link-alt"></i>
                 </div>
-             @*    <button class="adjust-btn">
-                    <i class="fas fa-sliders-h"></i> ADJUST ITEM
-                </button> *@
+                <button class="income-add-other-income-btn" onclick="window.location.href='/Web/OtherIncome/create'">
+                    <i class="fas fa-plus"></i> Add Other Income
+                </button>
             </div>
 
-            <div class="product-info">
-                <div class="info-card">
-                    <div class="info-label">Sale Price</div>
-                    <div class="info-value">₹@Model.SelectedItem.SalePrice (excl)</div>
+            <div class="income-product-info">
+                <div class="income-info-card">
+                    <div class="income-info-label">Sale Price</div>
+                    <div class="income-info-value">₹ @Model.SelectedItem.SalePrice</div>
                 </div>
-@* 
-                <div class="info-card">
-                    <div class="info-label">Purchase Price</div>
-                    <div class="info-value">₹@Model.SelectedItem.PurchasePrice (excl)</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Stock Quantity</div>
-                    <div class="info-value">@Model.SelectedItem.OpeningQuantity</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Stock Value</div>
-                    <div class="info-value">₹ @Model.SelectedItem.OnlineStorePrice</div>
-                </div> *@
-
             </div>
 
-            <div class="transactions-section">
-                <div class="section-header">
-                    <h3 class="section-title">TRANSACTIONS</h3>
-                    <div class="search-transactions">
+            <div class="income-transactions-section">
+                <div class="income-section-header">
+                    <h3 class="income-section-title">TRANSACTIONS</h3>
+                    <div class="income-search-transactions">
                         <i class="fas fa-search"></i>
                         <input type="text" placeholder="Search transactions...">
                     </div>
                 </div>
 
-                <div class="transactions-table">
+                <div class="income-transactions-table">
                     <table>
                         <thead>
                             <tr>
                                 <th>
-                                   DATE <i class="fas fa-sort sort-icon"></i>
-                                </th>
-
-                                <th>
-                                    AMOUNT <i class="fas fa-sort sort-icon"></i>
+                                    DATE <i class="fas fa-sort income-sort-icon"></i>
                                 </th>
                                 <th>
-                                    ACTION <i class="fas fa-sort sort-icon"></i>
+                                    AMOUNT <i class="fas fa-sort income-sort-icon"></i>
                                 </th>
-                              
+                                <th>
+                                    ACTION <i class="fas fa-sort income-sort-icon"></i>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                               
-                                <td>14/06/2025</td>
-                                
-                                <td>234565</td>
-                                <td>:</td>
-                             
+                                <td>05/09/2025, 04:50 AM</td>
+                                <td>₹ 1,221.00</td>
+                                <td>⋮</td>
                             </tr>
                         </tbody>
                     </table>
@@ -512,53 +494,44 @@
 <script>
     // Add some interactive functionality
     document.addEventListener('DOMContentLoaded', function() {
-        // Tab switching
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                tabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
         // Search functionality
         const searchInputs = document.querySelectorAll('input[type="text"]');
         searchInputs.forEach(input => {
             input.addEventListener('focus', function() {
-                this.style.transform = 'scale(1.02)';
+                this.style.borderColor = '#007bff';
             });
             input.addEventListener('blur', function() {
-                this.style.transform = 'scale(1)';
+                this.style.borderColor = '#ddd';
             });
         });
 
         // Add hover effects to cards
-        const infoCards = document.querySelectorAll('.info-card');
+        const infoCards = document.querySelectorAll('.income-info-card');
         infoCards.forEach(card => {
             card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px) scale(1.02)';
+                this.style.transform = 'translateY(-5px)';
             });
             card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
+                this.style.transform = 'translateY(0)';
             });
         });
 
         // Sortable table headers
-        const sortHeaders = document.querySelectorAll('th');
+        const sortHeaders = document.querySelectorAll('.income-transactions-table th');
         sortHeaders.forEach(header => {
             header.addEventListener('click', function() {
                 // Reset all sort icons
                 sortHeaders.forEach(h => {
-                    const icon = h.querySelector('.sort-icon');
+                    const icon = h.querySelector('.income-sort-icon');
                     if (icon) {
-                        icon.className = 'fas fa-sort sort-icon';
+                        icon.className = 'fas fa-sort income-sort-icon';
                     }
                 });
 
                 // Set clicked header to sorted
-                const icon = this.querySelector('.sort-icon');
+                const icon = this.querySelector('.income-sort-icon');
                 if (icon) {
-                    icon.className = 'fas fa-sort-down sort-icon';
+                    icon.className = 'fas fa-sort-down income-sort-icon';
                 }
             });
         });

@@ -215,11 +215,11 @@
                 {
                     <tr class="row-odd">
                         <td class="party-cell">@item.PartyName</td>
-                        <td>@(item.OrderNo != null ? item.OrderNo : "")</td>
-                        <td>@(item.BillDate != null ? item.BillDate.ToString("dd/MM/yyyy") : "")</td>
-                        <td>@(item.OrderDate!=null ? item.OrderDate.ToString("dd/MM/yyyy") : "")</td>
+                        <td>@(item.InvoiceNumber != null ? item.InvoiceNumber : "")</td>
+                        <td>@(item.InvoiceDate != null ? item.InvoiceDate.Value.ToString("dd/MM/yyyy") : "")</td>
+                        <td>@(item.DueDate != null ? item.DueDate.ToString("dd/MM/yyyy") : "")</td>
                         <td class="amount-cell">₹ @item.Total.ToString("N2")</td>
-                        <td class="amount-cell">₹ @item.Total.ToString("N2")</td>
+                        <td class="amount-cell">₹ @item.FinalAmount.ToString("N2")</td>
                         <td class="type-cell">Sales Order</td>
                         <td class="@(item.orderstatusid ==1 ? "status-overdue" : "status-completed")">@(item.orderstatusid == 1 ? "Order Overdue" : "Order Completed")</td>
                         <td class="action-cell">

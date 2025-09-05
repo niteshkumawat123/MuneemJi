@@ -24,7 +24,6 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
-            
         }
 
         .page-header {
@@ -34,6 +33,42 @@
             justify-content: space-between;
             align-items: center;
             background: #fafafa;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .header-toggle {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            padding: 4px;
+            background: white;
+        }
+
+            .header-toggle .toggle-option {
+                padding: 8px 20px;
+                border-radius: 20px;
+                border: none;
+                background: none;
+                cursor: pointer;
+                font-weight: 500;
+                transition: all 0.3s;
+                font-size: 14px;
+            }
+
+                .header-toggle .toggle-option.active {
+                    background: #007bff;
+                    color: white;
+                }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .page-title {
@@ -58,8 +93,7 @@
 
         .item-type-toggle {
             display: flex;
-/*             background: #f0f0f0;
- */            border-radius: 25px;
+            border-radius: 25px;
             padding: 4px;
             margin-bottom: 25px;
         }
@@ -80,19 +114,32 @@
             }
 
         .form-row {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr auto;
             gap: 20px;
             margin-bottom: 20px;
             align-items: end;
         }
 
         .form-group {
-            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
             .form-group.small {
-                flex: 0 0 200px;
+                justify-self: end;
             }
+
+        /* Specific adjustments for the button in the first row */
+        .form-row .btn-primary {
+            height: fit-content;
+            align-self: end;
+        }
+
+        /* For the second row with Category, Description, and Add Item Image */
+        .form-row:nth-child(2) {
+            grid-template-columns: 1fr 1fr auto;
+        }
 
         .form-label {
             display: block;
@@ -201,6 +248,10 @@
 
         .pricing-section {
             margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
         }
 
         .pricing-title {
@@ -219,6 +270,7 @@
 
         .input-group {
             flex: 1;
+            position: relative;
         }
 
             .input-group.small {
@@ -339,12 +391,46 @@
                 color: #c82333;
             }
 
+        /* New styles for the updated pricing UI */
+        .two-column-layout {
+            display: grid;
+            /*             grid-template-columns: 1fr 1fr;
+         */ gap: 30px;
+        }
+
+        .price-input-row {
+            display: flex;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 15px;
+        }
+
+        .price-input-main {
+            flex: 1;
+        }
+
+        .price-input-small {
+            flex: 0 0 247px;
+        }
+
+        .info-icon {
+            color: #999;
+            font-size: 14px;
+            cursor: help;
+            margin-left: 5px;
+        }
+
         /* Responsive design */
-        media (max-width: 768px) {
+        @@media (max-width: 768px) {
             .form-row
 
         {
-            flex-direction: column;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .form-row:nth-child(2) {
+            grid-template-columns: 1fr;
         }
 
         .pricing-row {
@@ -356,24 +442,38 @@
             gap: 10px;
         }
 
+        .two-column-layout {
+            grid-template-columns: 1fr;
+        }
+
         }
     </style>
 </head>
 <body>
-    
-<div class="page-container">
-    <div class="page-header">
-        <h1 class="page-title">Add Item</h1>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <span class="settings-icon">⚙️</span>
-        </div>
-    </div>
 
-    <div class="page-body">
-@*         <form id="itemForm" method="post" action="/Web/BillItem/Create">
- *@            <!-- Item Type Toggle -->
+    <div class="page-container">
+        <div class="page-header">
+            <div class="header-left">
+                <h1 class="page-title">Add Item</h1>
+                <div class="header-toggle">
+                    @if (!string.IsNullOrEmpty(Model.BillItem.ItemType))
+                    {
+                        Model.BillItem.ItemType = "product";
+                    }
+                    <button type="button" class="toggle-option @(Model.BillItem.ItemType == "product" ? "active" : "")" onclick="switchType('product')">Product</button>
+                    <button type="button" class="toggle-option @(Model.BillItem.ItemType == "service" ? "active" : "")" onclick="switchType('service')">Service</button>
+                </div>
+            </div>
+            <div class="header-right">
+                <span class="settings-icon">⚙️</span>
+                <span class="settings-icon">✕</span>
+            </div>
+        </div>
+
+        <div class="page-body">
             <form id="itemForm">
-            <div class="item-type-toggle">
+                <!-- Item Type Toggle -->
+              @*   <div class="item-type-toggle">
                     <input type="hidden" name="Id" value="@Model.BillItem.Id" />
 
                     @if (!string.IsNullOrEmpty(Model.BillItem.ItemType))
@@ -381,118 +481,196 @@
                         Model.BillItem.ItemType = "product";
                     }
 
-                <button type="button" class="toggle-option @(Model.BillItem.ItemType == "product" ? "active" : "")" onclick="switchType('product')">Product</button>
+                    <button type="button" class="toggle-option @(Model.BillItem.ItemType == "product" ? "active" : "")" onclick="switchType('product')">Product</button>
                     <button type="button" class="toggle-option @(Model.BillItem.ItemType == "service" ? "active" : "")" onclick="switchType('service')">Service</button>
-            </div>
+                </div> *@
 
-            <!-- Product Form -->
+                <!-- Product Form -->
                 <div id="productForm" class="item-form" style="display:@(Model.BillItem.ItemType == "product" ? "block" : "none");">
-                <!-- Basic Info Row -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Item Name *</label>
+                    <!-- Basic Info Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Item Name *</label>
                             <input type="text" name="ItemName" class="form-input" required value="@Model.BillItem.ItemName">
-                    </div>
-                    <div class="form-group input-with-icon">
-                        <label class="form-label">Item HSN</label>
+                        </div>
+                        <div class="form-group input-with-icon">
+                            <label class="form-label">Item HSN</label>
                             <input type="text" name="ItemHSN" class="form-input" value="@Model.BillItem.ItemHsn">
-                        <span class="search-icon">🔍</span>
+                            <span class="search-icon">🔍</span>
+                        </div>
+                        <div class="form-group input-with-icon">
+                            <label class="form-label">Item Code</label>
+                            <input type="text" name="ItemCode" class="form-input" style="padding-right: 100px;" value="@Model.BillItem.ItemCode">
+                            <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
+                        </div>
+                        <div class="form-group small">
+                            <button type="button" class="btn-primary">Select Unit</button>
+                        </div>
                     </div>
-                    <div class="form-group small">
-                        <button type="button" class="btn-primary">Select Unit</button>
-                    </div>
-                    <div class="form-group small">
-                        <button type="button" class="btn-link">📷 Add Item Image</button>
-                    </div>
-                </div>
 
-                <!-- Category and Code Row -->
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Category</label>
-                        <select name="Category" class="form-select">
+                    <!-- Category and Additional Options Row -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select name="Category" class="form-select">
                                 <option value="" selected="@(string.IsNullOrEmpty(Model.BillItem.Category))">Select Category</option>
                                 <option value="electronics" selected="@(Model.BillItem.Category == "electronics")">Electronics</option>
                                 <option value="clothing" selected="@(Model.BillItem.Category == "clothing")">Clothing</option>
                                 <option value="food" selected="@(Model.BillItem.Category == "food")">Food & Beverages</option>
-                        </select>
-                    </div>
-                    <div class="form-group input-with-icon">
-                        <label class="form-label">Item Code</label>
-                            <input type="text" name="ItemCode" class="form-input" style="padding-right: 100px;" value="@Model.BillItem.ItemCode">
-                        <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
-                    </div>
-                </div>
-
-                <!-- Tabs -->
-                <div class="tabs">
-                    <button type="button" class="tab active" onclick="showTab('pricing')">Pricing</button>
-                    <button type="button" class="tab" onclick="showTab('stock')">Stock</button>
-                    <button type="button" class="tab" onclick="showTab('online-store')">Online Store</button>
-                    <button type="button" class="tab" onclick="showTab('manufacturing')">Manufacturing</button>
-                </div>
-
-                <!-- Pricing Tab -->
-                <div id="pricing" class="tab-content active">
-                    <div class="pricing-section">
-                        <h3 class="pricing-title">Sale Price</h3>
-                        <div class="pricing-row">
-                            <div class="input-group">
-                                <label class="form-label">Sale Price</label>
-                                    <input type="number" name="SalePrice" class="form-input" step="0.01" value="@Model.BillItem.SalePrice">
-                            </div>
-                            <div class="input-group small">
-                                <label class="form-label"></label>
-                                <select name="SalePriceTax" class="form-select">
-                                        <option value="Without Tax" selected="@(Model.BillItem.SalePriceTaxType == "Without Tax")">Without Tax</option>
-                                        <option value="With Tax" selected="@(Model.BillItem.SalePriceTaxType == "With Tax")">With Tax</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label class="form-label">Disc. On Sale Price</label>
-                                    <input type="number" name="SaleDiscount" class="form-input" step="0.01" value="@Model.BillItem.DiscountOnSalePrice">
-                            </div>
-                            <div class="input-group small">
-                                <label class="form-label"></label>
-                                <select name="SaleDiscountType" class="form-select">
-                                        <option value="Percentage" selected="@(Model.BillItem.DiscountType == "Percentage")">Percentage</option>
-                                        <option value="Amount" selected="@(Model.BillItem.DiscountType == "Amount")">Amount</option>
-                                </select>
-                            </div>
-                        </div>
-                        <a href="#" class="wholesale-link">+ Add Wholesale Price</a>
-                    </div>
-
-                    <div class="pricing-section">
-                        <h3 class="pricing-title">Purchase Price</h3>
-                        <div class="pricing-row">
-                            <div class="input-group">
-                                <label class="form-label">Purchase Price</label>
-                                    <input type="number" name="PurchasePrice" class="form-input" step="0.01" value="@Model.BillItem.PurchasePrice">
-                            </div>
-                            <div class="input-group small">
-                                <select name="PurchasePriceTax" class="form-select">
-                                        <option value="Without Tax" selected="@(Model.BillItem.PurchasePriceTaxType == "Without Tax")">Without Tax</option>
-                                        <option value="With Tax" selected="@(Model.BillItem.PurchasePriceTaxType == "With Tax")">With Tax</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="pricing-section">
-                        <h3 class="pricing-title">Taxes</h3>
-                        <div class="form-group" style="max-width: 300px;">
-                            <label class="form-label">Tax Rate</label>
-                            <select name="TaxRate" class="form-select">
-                                    <option value="None" selected="@(Model.BillItem.TaxRate == "None")">None</option>
-                                    <option value="5%" selected="@(Model.BillItem.TaxRate == "5%")">5%</option>
-                                    <option value="12%" selected="@(Model.BillItem.TaxRate == "12%")">12%</option>
-                                    <option value="18%" selected="@(Model.BillItem.TaxRate == "18%")">18%</option>
-                                    <option value="28%" selected="@(Model.BillItem.TaxRate == "28%")">28%</option>
                             </select>
                         </div>
+                        <div class="form-group">
+                            <label class="form-label">Description</label>
+                            <input type="text" name="Description" class="form-input" value="@Model.BillItem.Description">
+                        </div>
+                        <div class="form-group small">
+                            <button type="button" class="btn-link">📷 Add Item Image</button>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Tracking Options -->
+                    <div class="form-row" style="margin-bottom: 30px;">
+                        <div style="display: flex; gap: 20px; align-items: center;">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                <input type="radio" name="tracking" value="batch" style="margin: 0;">
+                                Batch Tracking
+                                <span class="info-icon">ℹ</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                                <input type="radio" name="tracking" value="serial" style="margin: 0;">
+                                Serial No. Tracking
+                                <span class="info-icon">ℹ</span>
+                            </label>
+                            <button type="button" class="btn-link" style="padding: 0;">Clear Tracking</button>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button type="button" class="tab active" onclick="showTab('pricing')">Pricing</button>
+                        <button type="button" class="tab" onclick="showTab('stock')">Stock</button>
+                        <button type="button" class="tab" onclick="showTab('online-store')">Online Store</button>
+                        <button type="button" class="tab" onclick="showTab('manufacturing')">Manufacturing</button>
+                    </div>
+
+                    <!-- Pricing Tab - Updated to match screenshots -->
+                    <div id="pricing" class="tab-content active">
+                        <div class="two-column-layout">
+                            <!-- Left Column -->
+                            <div>
+                                <!-- MRP Section -->
+                                <div class="pricing-section">
+                                    <h3 class="pricing-title">MRP</h3>
+                                    <div class="price-input-row">
+                                        <div class="price-input-main">
+                                            <div style="position: relative;">
+                                                <input type="number" name="MRP" class="form-input" step="0.01" value="@Model.BillItem.SalePrice" placeholder="MRP">
+                                                <span class="info-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);">ℹ</span>
+                                            </div>
+                                        </div>
+                                        <div class="price-input-small">
+                                            <label class="form-label">Disc. On MRP For Sale (%)</label>
+                                            <input type="number" name="DiscOnMRPSale" class="form-input" step="0.01" placeholder="Disc. On MRP For Sale (%)" value="@Model.BillItem.DiscountOnSalePrice">
+                                        </div>
+                                        <div class="price-input-small">
+                                            <label class="form-label">Disc. On MRP For Wholesale (%)</label>
+                                            <input type="number" name="DiscOnMRPWholesale" class="form-input" step="0.01" placeholder="Disc. On MRP For Wholesale (%)">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sale Price Section -->
+                                <div class="pricing-section">
+                                    <h3 class="pricing-title">Sale Price</h3>
+                                    <div class="price-input-row">
+                                        <div class="price-input-main">
+                                            <input type="number" name="SalePrice" class="form-input" step="0.01" value="@Model.BillItem.SalePrice" placeholder="Sale Price">
+                                        </div>
+                                        <div class="price-input-small">
+                                            <label class="form-label"></label>
+                                            <select name="SalePriceTax" class="form-select">
+                                                <option value="Without Tax" selected="@(Model.BillItem.SalePriceTaxType == "Without Tax")">Without Tax</option>
+                                                <option value="With Tax" selected="@(Model.BillItem.SalePriceTaxType == "With Tax")">With Tax</option>
+                                            </select>
+                                        </div>
+                                        <div class="price-input-main">
+                                            <label class="form-label">Disc. On Sale Price</label>
+                                            <input type="number" name="SaleDiscount" class="form-input" step="0.01" value="@Model.BillItem.DiscountOnSalePrice" placeholder="Disc. On Sale Price">
+                                        </div>
+                                        <div class="price-input-small">
+                                            <label class="form-label"></label>
+                                            <select name="SaleDiscountType" class="form-select">
+                                                <option value="Percentage" selected="@(Model.BillItem.DiscountType == "Percentage")">Percentage</option>
+                                                <option value="Amount" selected="@(Model.BillItem.DiscountType == "Amount")">Amount</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <h3 class="pricing-title">Wholesale Price</h3>
+                                    <div class="price-input-row">
+                                        <div class="price-input-main">
+                                            <input type="number" name="WholesalePrice" class="form-input" step="0.01" placeholder="Wholesale Price">
+                                        </div>
+                                        <div class="price-input-small">
+                                            <label class="form-label"></label>
+                                            <select name="WholesalePriceTax" class="form-select">
+                                                <option value="Without Tax">Without Tax</option>
+                                                <option value="With Tax">With Tax</option>
+                                            </select>
+                                        </div>
+                                        <div class="price-input-main">
+                                            <label class="form-label">Minimum Wholesale Qty</label>
+                                            <div style="position: relative;">
+                                                <input type="number" name="MinWholesaleQty" class="form-input" placeholder="Minimum Wholesale Qty">
+                                                <span class="info-icon" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%);">ℹ</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Right Column -->
+                            <div>
+                                <!-- Purchase Price Section -->
+                                <div class="pricing-section" style="margin-top: -30px;">
+                                    <h3 class="pricing-title">Purchase Price</h3>
+                                    <div class="price-input-row">
+                                        <div class="price-input-main">
+                                            <label class="form-label">Purchase Price</label>
+                                            <input type="number" name="PurchasePrice" class="form-input" step="0.01" value="@Model.BillItem.PurchasePrice" placeholder="Purchase Price">
+                                        </div>
+                                        <div class="price-input-small">
+                                            <select name="PurchasePriceTax" class="form-select">
+                                                <option value="Without Tax" selected="@(Model.BillItem.PurchasePriceTaxType == "Without Tax")">Without Tax</option>
+                                                <option value="With Tax" selected="@(Model.BillItem.PurchasePriceTaxType == "With Tax")">With Tax</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Taxes Section -->
+                                <div class="pricing-section">
+                                    <h3 class="pricing-title">Taxes</h3>
+                                    <div class="price-input-row">
+                                        <div class="price-input-main">
+                                            <label class="form-label">Tax Rate</label>
+                                            <select name="TaxRate" class="form-select">
+                                                <option value="None" selected="@(Model.BillItem.TaxRate == "None")">None</option>
+                                                <option value="5%" selected="@(Model.BillItem.TaxRate == "5%")">5%</option>
+                                                <option value="12%" selected="@(Model.BillItem.TaxRate == "12%")">12%</option>
+                                                <option value="18%" selected="@(Model.BillItem.TaxRate == "18%")">18%</option>
+                                                <option value="28%" selected="@(Model.BillItem.TaxRate == "28%")">28%</option>
+                                            </select>
+                                        </div>
+                                        <div class="price-input-main">
+                                            <label class="form-label">Additional Cess Per Unit</label>
+                                            <input type="number" name="AdditionalCess" class="form-input" step="0.01" placeholder="Additional Cess Per Unit">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 <!-- Stock Tab -->
                 <div id="stock" class="tab-content">

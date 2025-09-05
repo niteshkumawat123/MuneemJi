@@ -395,7 +395,8 @@ namespace MUNEEMJI.Repositories
                                    service_hsn AS ""ServiceHsn"",
                                    service_code AS ""ServiceCode"",
                                    created_at AS ""CreatedAt"",
-                                   updated_at AS ""UpdatedAt""
+                                   updated_at AS ""UpdatedAt"",
+                                   mrp
                                FROM billitem
                                ORDER BY id;
 ";

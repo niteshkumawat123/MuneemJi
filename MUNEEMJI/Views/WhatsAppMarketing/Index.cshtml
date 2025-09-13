@@ -251,6 +251,82 @@
             padding: 10px 20px;
             font-weight: 500;
         }
+
+        .template-image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .template-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            background: #f0f0f0;
+        }
+
+            .template-image.loading {
+                background: #f0f0f0 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23ddd"/></svg>') center/50px no-repeat;
+            }
+
+        .loading-spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+            z-index: 1;
+        }
+
+        @@keyframes spin {
+            0%
+
+        {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+
+        }
+
+        .template-image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .template-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            height: 300px;
+            display: flex; /* Add this */
+            flex-direction: column; /* Add this */
+        }
+
+        .template-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            /* Remove position: relative if it exists */
+        }
     </style>
 </head>
 <body>
@@ -309,8 +385,13 @@
             {
                 @foreach (var template in Model.Templates)
                 {
-                    <div class="template-card" onclick="openEditor(@template.Id, '@template.ImageUrl', '@template.Title')">
-                        <img src="@template.ImageUrl" alt="@template.Title" class="template-image" />
+                    <div class="template-card"
+                         data-template-id="@template.Id"
+                         data-image-url="@template.ImageUrl"
+                         data-title="@template.Title">
+                        <div class="template-image-container">
+                            <img src="@template.ImageUrl" alt="@template.Title" class="template-image" />
+                        </div>
                         <div class="template-overlay">
                             <div class="template-text">@template.Title</div>
                             <div class="template-arrow">
@@ -322,9 +403,14 @@
             }
             else
             {
-                <!-- Default templates when no data -->
-                <div class="template-card" onclick="openEditor(1, '/images/template1.jpg', 'Motivational Quote')">
-                    <img src="/Web/images/template1.jpg" alt="Template" class="template-image" />
+                <!-- Default templates with local images -->
+                <div class="template-card"
+                     data-template-id="1"
+                     data-image-url="~/images/templates/1.jpg"
+                     data-title="हार मत मानो">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/1.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">हार मत मानो</div>
                         <div class="template-arrow">
@@ -333,8 +419,13 @@
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(2, '/images/template2.jpg', 'Success Quote')">
-                    <img src="/images/template2.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="2"
+                     data-image-url="~/images/templates/2.jpg"
+                     data-title="जिंदगी सिर्फ सोनात से बदलती है">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/2.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">जिंदगी सिर्फ सोनात से बदलती है</div>
                         <div class="template-arrow">
@@ -343,8 +434,13 @@
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(3, '/images/template3.jpg', 'Adventure Quote')">
-                    <img src="/images/template3.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="3"
+                     data-image-url="~/images/templates/3.jpg"
+                     data-title="उड़ने का शौक रखो">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/3.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">उड़ने का शौक रखो</div>
                         <div class="template-arrow">
@@ -353,8 +449,13 @@
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(4, '/images/template4.jpg', 'Memory Quote')">
-                    <img src="/images/template4.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="4"
+                     data-image-url="~/images/templates/4.jpg"
+                     data-title="याद रखना कल कभी नहीं आता है">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/4.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">याद रखना कल कभी नहीं आता है</div>
                         <div class="template-arrow">
@@ -363,8 +464,13 @@
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(5, '/images/template5.jpg', 'Good Night')">
-                    <img src="/images/template5.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="5"
+                     data-image-url="~/images/templates/5.jpg"
+                     data-title="Good Night">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/5.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">Good Night</div>
                         <div class="template-arrow">
@@ -373,18 +479,28 @@
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(6, '/images/template6.jpg', 'Good Night Quote')">
-                    <img src="/images/template6.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="6"
+                     data-image-url="~/images/templates/6.jpg"
+                     data-title="ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/6.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
-                        <div class="template-text">ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE, ONLY GOOD NIGHT</div>
+                        <div class="template-text">ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE</div>
                         <div class="template-arrow">
                             <i class="fas fa-arrow-right"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(7, '/images/template7.jpg', 'Talent Quote')">
-                    <img src="/images/template7.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="7"
+                     data-image-url="~/images/templates/7.jpg"
+                     data-title="Hard work beats TALENT">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/7.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">Hard work beats TALENT</div>
                         <div class="template-arrow">
@@ -393,8 +509,13 @@
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(8, '/images/template8.jpg', 'Start Quote')">
-                    <img src="/images/template8.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="8"
+                     data-image-url="~/images/templates/8.jpg"
+                     data-title="YOU DON'T HAVE TO BE GREAT TO START">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/8.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">YOU DON'T HAVE TO BE GREAT TO START</div>
                         <div class="template-arrow">
@@ -403,8 +524,13 @@
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(9, '/images/template9.jpg', 'Good Morning')">
-                    <img src="/images/template9.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="9"
+                     data-image-url="~/images/templates/9.jpg"
+                     data-title="Good Morning">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/9.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">Good Morning</div>
                         <div class="template-arrow">
@@ -413,8 +539,13 @@
                     </div>
                 </div>
 
-                <div class="template-card" onclick="openEditor(10, '/images/template10.jpg', 'Good Morning Quote')">
-                    <img src="/images/template10.jpg" alt="Template" class="template-image" />
+                <div class="template-card"
+                     data-template-id="10"
+                     data-image-url="~/images/templates/10.jpg"
+                     data-title="Good Morning Quote">
+                    <div class="template-image-container">
+                        <img src="~/images/templates/10.jpg" alt="Template" class="template-image" />
+                    </div>
                     <div class="template-overlay">
                         <div class="template-text">Good Morning</div>
                         <div class="template-arrow">
@@ -454,7 +585,7 @@
 
                                 <div class="form-group">
                                     <label class="form-label">Business Name</label>
-                                    <input type="text" class="form-control" id="businessName" placeholder="xyz" />
+                                    <input type="text" class="form-control" id="businessName" placeholder="MuneemJi" />
                                 </div>
 
                                 <div class="form-group">
@@ -464,7 +595,7 @@
 
                                 <div class="form-group">
                                     <label class="form-label">Contact number</label>
-                                    <input type="text" class="form-control" id="contactNumber" placeholder="9887964016" />
+                                    <input type="text" class="form-control" id="contactNumber" placeholder="9000000000" />
                                 </div>
 
                                 <div class="form-group">
@@ -483,14 +614,14 @@
                                 <div style="position: relative; display: inline-block;">
                                     <img id="previewImage" src="" alt="Preview" class="preview-image" />
                                     <div style="position: absolute; top: -46px; right: -31px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; min-width: 100px;">
-                                        <div style="text-align: center; font-weight: bold; color: #000;" id="companyLogoText">xyz</div>
+                                        <div style="text-align: center; font-weight: bold; color: #000;" id="companyLogoText">MuneemJi</div>
                                     </div>
                                     <div style=" bottom: -55px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px;">
                                         <div id="additionalTextPreview">🎉 Flat 10% discount on Sundays</div>
                                     </div>
                                     <div style=" bottom: -102px; left: 20px; right: 20px; background: #fff; color: #212529; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between;">
                                         <span id="contactPersonPreview">👤 mahendra</span>
-                                        <span id="contactNumberPreview">📞 9887964016</span>
+                                        <span id="contactNumberPreview">📞 9000000000</span>
                                     </div>
                                     <div style=" background: #dbebdb; color: #2e7d32; padding: 5px 15px; border-radius: 8px; font-size: 14px;">
                                         <span id="categoryPreview">Motivation</span>
@@ -548,6 +679,8 @@
 
         function downloadImage() {
             // Create form data
+
+            debugger;
             const formData = {
                 templateId: currentTemplateId,
                 businessName: document.getElementById('businessName').value,
@@ -583,6 +716,30 @@
             const whatsappText = document.getElementById('whatsappText').value;
             const message = encodeURIComponent(whatsappText || 'Check out this amazing template!');
             window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+
+                document.addEventListener('DOMContentLoaded', function() {
+            editorModal = new bootstrap.Modal(document.getElementById('editorModal'));
+
+            // Add event listeners for form inputs
+            document.getElementById('businessName').addEventListener('input', updatePreview);
+            document.getElementById('contactPerson').addEventListener('input', updatePreview);
+            document.getElementById('contactNumber').addEventListener('input', updatePreview);
+            document.getElementById('additionalText').addEventListener('input', updatePreview);
+
+            // Add template card click handlers
+            setupTemplateCardHandlers();
+        });
+
+        function setupTemplateCardHandlers() {
+            document.querySelectorAll('.template-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const templateId = this.dataset.templateId;
+                    const imageUrl = this.dataset.imageUrl;
+                    const title = this.dataset.title;
+                    openEditor(templateId, imageUrl, title);
+                });
+            });
         }
     </script>
 </body>

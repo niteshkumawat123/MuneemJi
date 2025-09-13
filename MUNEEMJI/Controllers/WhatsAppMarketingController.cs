@@ -6,7 +6,10 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Security.Cryptography;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
+using SkiaSharp;
 
 namespace MUNEEMJI.Controllers
 {
@@ -279,92 +282,115 @@ namespace MUNEEMJI.Controllers
 
         private async Task<byte[]> GenerateCustomImageAsync(Template template, GenerateImageRequest request)
         {
-            // For demo purposes, create a simple image with text overlay
-            // In production, you would load the actual template image and overlay text
-
             var width = 800;
             var height = 600;
 
-            using var bitmap = new Bitmap(width, height);
-            using var graphics = Graphics.FromImage(bitmap);
+            using var surface = SKSurface.Create(new SKImageInfo(width, height));
+            var canvas = surface.Canvas;
 
-            // Set high quality rendering
-            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+            // Clear background with gradient colors (simplified)
+            canvas.Clear(SKColor.Parse("#4A90E2"));
 
-            // Create gradient background
-            using var brush = new LinearGradientBrush(
-                new Rectangle(0, 0, width, height),
-                Color.FromArgb(74, 144, 226),
-                Color.FromArgb(143, 88, 188),
-                45f);
+            // Create a simple gradient effect by drawing rectangles
+            for (int i = 0; i < height; i++)
+            {
+                float ratio = (float)i / height;
+                var r = (byte)(74 + (143 - 74) * ratio);
+                var g = (byte)(144 + (88 - 144) * ratio);
+                var b = (byte)(226 + (188 - 226) * ratio);
 
-            graphics.FillRectangle(brush, 0, 0, width, height);
+                using var paint = new SKPaint { Color = new SKColor(r, g, b) };
+                canvas.DrawRect(0, i, width, 1, paint);
+            }
 
             // Add business name at top right
             if (!string.IsNullOrEmpty(request.BusinessName))
             {
-                using var font = new Font("Arial", 16, FontStyle.Bold);
-                using var textBrush = new SolidBrush(Color.White);
-                var rect = new RectangleF(width - 200, 20, 180, 50);
-                using var bgBrush = new SolidBrush(Color.FromArgb(180, 0, 0, 0));
-                graphics.FillRoundedRectangle(bgBrush, Rectangle.Round(rect), 10);
-                graphics.DrawString(request.BusinessName, font, textBrush, rect,
-                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                using var bgPaint = new SKPaint { Color = new SKColor(0, 0, 0, 180) };
+                var rect = new SKRect(width - 200, 20, width - 20, 70);
+                canvas.DrawRoundRect(rect, 10, 10, bgPaint);
+
+                using var textPaint = new SKPaint
+                {
+                    Color = SKColors.White,
+                    TextSize = 16,
+                    IsAntialias = true,
+                    TextAlign = SKTextAlign.Center
+                };
+                canvas.DrawText(request.BusinessName, width - 110, 50, textPaint);
             }
 
             // Add main motivational text in center
-            var mainText = template.Title;
-            if (!string.IsNullOrEmpty(mainText))
+            if (!string.IsNullOrEmpty(template.Title))
             {
-                using var font = new Font("Arial", 24, FontStyle.Bold);
-                using var textBrush = new SolidBrush(Color.White);
-                var textRect = new RectangleF(50, height / 2 - 50, width - 100, 100);
-                graphics.DrawString(mainText, font, textBrush, textRect,
-                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                using var textPaint = new SKPaint
+                {
+                    Color = SKColors.White,
+                    TextSize = 24,
+                    IsAntialias = true,
+                    TextAlign = SKTextAlign.Center,
+                    FakeBoldText = true
+                };
+                canvas.DrawText(template.Title, width / 2, height / 2, textPaint);
             }
 
             // Add additional text
             if (!string.IsNullOrEmpty(request.AdditionalText))
             {
-                using var font = new Font("Arial", 14, FontStyle.Regular);
-                using var textBrush = new SolidBrush(Color.White);
-                var rect = new RectangleF(20, height - 120, width - 40, 40);
-                using var bgBrush = new SolidBrush(Color.FromArgb(180, 0, 0, 0));
-                graphics.FillRoundedRectangle(bgBrush, Rectangle.Round(rect), 8);
-                graphics.DrawString(request.AdditionalText, font, textBrush, rect,
-                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                using var bgPaint = new SKPaint { Color = new SKColor(0, 0, 0, 180) };
+                var rect = new SKRect(20, height - 120, width - 20, height - 80);
+                canvas.DrawRoundRect(rect, 8, 8, bgPaint);
+
+                using var textPaint = new SKPaint
+                {
+                    Color = SKColors.White,
+                    TextSize = 14,
+                    IsAntialias = true,
+                    TextAlign = SKTextAlign.Center
+                };
+                canvas.DrawText(request.AdditionalText, width / 2, height - 95, textPaint);
             }
 
-            // Add contact info at bottom
+            // Add contact info
             if (!string.IsNullOrEmpty(request.ContactPerson) || !string.IsNullOrEmpty(request.ContactNumber))
             {
-                using var font = new Font("Arial", 12, FontStyle.Regular);
-                using var textBrush = new SolidBrush(Color.White);
-                var rect = new RectangleF(20, height - 70, width - 40, 40);
-                using var bgBrush = new SolidBrush(Color.FromArgb(180, 76, 175, 80));
-                graphics.FillRoundedRectangle(bgBrush, Rectangle.Round(rect), 8);
+                using var bgPaint = new SKPaint { Color = new SKColor(76, 175, 80, 180) };
+                var rect = new SKRect(20, height - 70, width - 20, height - 30);
+                canvas.DrawRoundRect(rect, 8, 8, bgPaint);
 
-                var contactText = $"👤 {request.ContactPerson}     📞 {request.ContactNumber}";
-                graphics.DrawString(contactText, font, textBrush, rect,
-                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                var contactText = $"Contact: {request.ContactPerson} | {request.ContactNumber}";
+                using var textPaint = new SKPaint
+                {
+                    Color = SKColors.White,
+                    TextSize = 12,
+                    IsAntialias = true,
+                    TextAlign = SKTextAlign.Center
+                };
+                canvas.DrawText(contactText, width / 2, height - 45, textPaint);
             }
 
             // Add category tag
-            using (var font = new Font("Arial", 10, FontStyle.Regular))
-            using (var textBrush = new SolidBrush(Color.FromArgb(46, 125, 50)))
+            using (var bgPaint = new SKPaint { Color = new SKColor(232, 245, 233) })
             {
-                var rect = new RectangleF(20, height - 25, 100, 20);
-                using var bgBrush = new SolidBrush(Color.FromArgb(232, 245, 233));
-                graphics.FillRoundedRectangle(bgBrush, Rectangle.Round(rect), 10);
-                graphics.DrawString("Motivation", font, textBrush, rect,
-                    new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center });
+                var rect = new SKRect(20, height - 25, 120, height - 5);
+                canvas.DrawRoundRect(rect, 10, 10, bgPaint);
+            }
+
+            using (var textPaint = new SKPaint
+            {
+                Color = new SKColor(46, 125, 50),
+                TextSize = 10,
+                IsAntialias = true,
+                TextAlign = SKTextAlign.Center
+            })
+            {
+                canvas.DrawText("Motivation", 70, height - 12, textPaint);
             }
 
             // Convert to byte array
-            using var stream = new MemoryStream();
-            bitmap.Save(stream, ImageFormat.Png);
-            return stream.ToArray();
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            return data.ToArray();
         }
 
         // Sample data for development/demo

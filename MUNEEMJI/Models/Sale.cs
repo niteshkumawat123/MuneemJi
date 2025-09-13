@@ -65,6 +65,10 @@ namespace MUNEEMJI.Models
     public class ItemDropdownModel { public int ItemId { get; set; } public string Name { get; set; } }
     public class UnitModel { public int UnitId { get; set; } public string Name { get; set; } }
     public class TaxModel { public int TaxId { get; set; } public string Name { get; set; } public decimal Rate { get; set; } }
-    public class StateModel { public int StateId { get; set; } public string Name { get; set; } }
+    public class StateModel
+    { 
+      public int StateId { get; set; } 
+      public string Name { get; set; }
+    }
 
 }

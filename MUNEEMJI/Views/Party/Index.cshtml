@@ -172,11 +172,7 @@
                                               ? (Model.SelectedParty?.OpeningBalance.Value.ToString("0.00") ?? "0.00")
                                               : "0.00")
                                         </td>
-                                        <td>
-                                                <button class="btn btn-sm btn-outline-secondary">
-                                                    <i class="bi bi-three-dots"></i>
-                                                </button>
-                                            </td>
+
                                         </tr>
                                     
                                 }
@@ -191,11 +187,11 @@
                                             <td>02/07/2025</td>
                                             <td>₹ @Model.SelectedParty.Balance.Value.ToString("0.00")</td>
                                             <td>₹ @Model.SelectedParty.Balance.Value.ToString("0.00")</td>
-                                            <td>
+                                          @*   <td>
                                                 <button class="btn btn-sm btn-outline-secondary">
                                                     <i class="bi bi-three-dots"></i>
                                                 </button>
-                                            </td>
+                                            </td> *@
                                         </tr>
                                     }
                                 }

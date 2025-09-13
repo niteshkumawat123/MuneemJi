@@ -247,10 +247,11 @@
             background: transparent;
             transition: all 0.3s ease;
         }
-        .floating-input:focus {
-            border-color: #007bff; /* Blue border on focus/click */
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
+
+            .floating-input:focus {
+                border-color: #007bff; /* Blue border on focus/click */
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
 
         .floating-label {
             position: absolute;
@@ -325,11 +326,11 @@
                 }
 
         /* Column Toggle Styles - ADD THIS TO YOUR EXISTING CSS */
-       /*  .column-toggle-container {
-            position: relative;
-            display: inline-block;
-            margin-left: 10px;
-        } */
+        /*  .column-toggle-container {
+                    position: relative;
+                    display: inline-block;
+                    margin-left: 10px;
+                } */
 
         .column-toggle-btn {
             background: #007bff;
@@ -349,27 +350,27 @@
             .column-toggle-btn:hover {
                 background: #0056b3;
             }
-/* 
-        .column-dropdown {
-            position: absolute;
-            top: 35px;
-            right: 0;
-            background: white;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            min-width: 200px;
-            z-index: 9999;
-            display: none;
-            padding: 10px;
-            max-height: 300px; 
-            overflow-y: auto; 
-        } */
+        /*
+                .column-dropdown {
+                    position: absolute;
+                    top: 35px;
+                    right: 0;
+                    background: white;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    min-width: 200px;
+                    z-index: 9999;
+                    display: none;
+                    padding: 10px;
+                    max-height: 300px;
+                    overflow-y: auto;
+                } */
 
-           /*  .column-dropdown.show {
-                display: block;
-                top: -217.4px;
-            } */
+        /*  .column-dropdown.show {
+                        display: block;
+                        top: -217.4px;
+                    } */
 
         .column-option {
             display: flex;
@@ -408,9 +409,9 @@
             }
 
         /* Hidden column class */
-      /*   .hidden-column {
-            display: none !important;
-        } */
+        /*   .hidden-column {
+                    display: none !important;
+                } */
 
         .table-header-controls {
             display: flex;
@@ -945,7 +946,7 @@
                                                 @Html.DropDownListFor(model => model.Bill.BillItems[i].categoryid,
                                                          new SelectList(Model.DropDownCategory, "Id", "Name"),
                                                          "-- Select Category --",
-                                                        
+
                                                          new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
                                             </td>
                                         }
@@ -959,7 +960,7 @@
 
                                         <td class="col-item">
                                             <div style="position: relative; background-color: white;">
-                                                <button type="button" class="form-control-sm" style="border: none;background-color: white;"onclick="toggleItemDropdownPopdorp(@i)" id="itemBtnPopdorp-@i">
+                                                <button type="button" class="form-control-sm" style="border: none;background-color: white;" onclick="toggleItemDropdownPopdorp(@i)" id="itemBtnPopdorp-@i">
                                                     --Select Item--
                                                 </button>
                                                 <!-- Hidden select for form submission -->
@@ -1530,7 +1531,7 @@
     </div>
 
     <script>
-        
+
 
          var itemOptions =  @Html.Raw(Json.Serialize(Model.DropDownItem));
          var CategoryOptions =  @Html.Raw(Json.Serialize(Model.DropDownCategory));
@@ -2141,7 +2142,7 @@
             document.getElementById('shareDropdownshareshow').classList.remove('show-shareshow');
         }
     </script>
-   
+
 
     <script>
               function toggleItemDropdownPopdorp(index) {
@@ -2155,7 +2156,7 @@
             const buttonRect = button.getBoundingClientRect();
 
             // Create dropdown element
-           
+
             const dropdown = document.createElement('div');
             dropdown.id = 'floatingDropdownPopdorp';
             dropdown.innerHTML = `
@@ -2175,7 +2176,7 @@
                     <div style="flex: 1;"></div>
                     <div style="flex: 1;"></div>
                 </div>
-                
+
                 ${itemOptions.map(item => `
                     <div style="display: flex; padding: 6px 8px; border-bottom: 1px solid #eee; cursor: pointer;"
                          onclick="selectItemFromTablePopdorp(${index}, '${item.id}', '${item.itemName}')"
@@ -2201,7 +2202,7 @@
                 max-height: 300px;
                 overflow-y: auto;
                 z-index: 10000;
-                top: ${buttonRect.bottom + 5}px;     
+                top: ${buttonRect.bottom + 5}px;
                 left: ${buttonRect.left}px;
             `;
 
@@ -2234,7 +2235,7 @@
 
 
             window.location.href='/Web/billitem/create';
-           
+
         }
 
         // Close dropdown when clicking outside
@@ -2288,7 +2289,7 @@
 
             calculateItemAmount(rowIndex);
         }
-      
-      </script>
+
+    </script>
 </body>
 </html>

@@ -626,5 +626,97 @@ namespace MUNEEMJI.Controllers
                 return View(new InventoryViewModel());
             }
         }
+
+      
+
+        [HttpPost]
+        public IActionResult DeleteItem(int id)
+        {
+            try
+            {
+                if (id > 0)
+                {
+                    string Query = "delete from billitem where id = @p_id";
+                    using (var conn = new NpgsqlConnection(_connectionString))
+                    {
+                        conn.QuerySql(Query, new { p_id = id });
+                    }
+                }
+                return Json(new { success = true, message = "Item deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ViewItem(int id = 0)
+        {
+            try
+            {
+                BillItem billItem = new BillItem();
+                var model = new BillItemViewModel();
+                model.IsView = true;
+                if (id > 0)
+                {
+                    var data = await GetBillItemsAsync();
+                    if (data != null && data.Count() > 0)
+                    {
+                        billItem = data.Where(x => x.Id == id).FirstOrDefault();
+                    }
+
+
+                }
+                if (billItem != null && billItem.Id > 0)
+                {
+                    model = new BillItemViewModel
+                    {
+
+                        BillItem = billItem,
+                        Categories = await _billItemService.GetCategoriesAsync(),
+                        Units = await _billItemService.GetUnitsAsync(),
+                        TaxRates = await _billItemService.GetTaxRatesAsync(),
+                        RawMaterials = billItem.Manufacturing,
+                        AdditionalCosts = new List<AdditionalCost>(),
+                        IsView = true
+                    };
+                }
+                else
+                {
+                    model = new BillItemViewModel
+                    {
+
+                        BillItem = new BillItem
+                        {
+                            ItemType = "Product",
+                            AsOfDate = DateTime.Today,
+                            SalePriceTaxType = "Without Tax",
+                            PurchasePriceTaxType = "Without Tax",
+                            DiscountType = "Percentage",
+                            TaxRate = "None"
+                        },
+                        Categories = await _billItemService.GetCategoriesAsync(),
+                        Units = await _billItemService.GetUnitsAsync(),
+                        TaxRates = await _billItemService.GetTaxRatesAsync(),
+                        RawMaterials = new List<RawMaterial>
+                    {
+                        new RawMaterial { Id = 1 },
+                        new RawMaterial { Id = 2 }
+                    },
+                        AdditionalCosts = new List<AdditionalCost>(),
+                        IsView = true
+
+                    };
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading create bill item page");
+                return View("Error");
+            }
+        }
     }
 }

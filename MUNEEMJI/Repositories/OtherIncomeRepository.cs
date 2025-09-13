@@ -66,7 +66,7 @@ namespace MUNEEMJI.Repositories
                 command.Parameters.AddWithValue("@item_code", (object?)model.ItemCode ?? DBNull.Value);
                 command.Parameters.AddWithValue("@category", (object?)model.Category ?? DBNull.Value);
                 command.Parameters.AddWithValue("@unit", (object?)model.Unit ?? DBNull.Value);
-                command.Parameters.AddWithValue("@item_image_url", (object?)model.ItemImageUrl ?? DBNull.Value);
+                command.Parameters.AddWithValue("@item_image_url", (object?)model.ImageUrl ?? DBNull.Value);
 
                 command.Parameters.AddWithValue("@sale_price", (object?)model.SalePrice ?? DBNull.Value);
                 command.Parameters.AddWithValue("@sale_price_tax_type", model.SalePriceTaxType);

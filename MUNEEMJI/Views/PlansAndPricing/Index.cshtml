@@ -1,0 +1,447 @@
+﻿@{
+    ViewData["Title"] = "Settings";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .settings-container {
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            padding: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+            .header h1 {
+                font-size: 32px;
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+            .header p {
+                opacity: 0.9;
+                font-size: 16px;
+            }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fb;
+            border-bottom: 1px solid #e9ecef;
+            margin: 0;
+            padding: 0 30px;
+        }
+
+        .nav-tab {
+            padding: 16px 24px;
+            color: #6c757d;
+            text-decoration: none;
+            border-bottom: 3px solid transparent;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+            .nav-tab:hover {
+                color: #495057;
+                background: rgba(102, 126, 234, 0.1);
+            }
+
+            .nav-tab.active {
+                color: #667eea;
+                border-bottom-color: #667eea;
+                background: white;
+            }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+            .section-title i {
+                font-size: 24px;
+                margin-right: 12px;
+                color: #667eea;
+            }
+
+            .section-title h2 {
+                font-size: 22px;
+                font-weight: 600;
+            }
+
+        .section-subtitle {
+            color: #6c757d;
+            font-size: 14px;
+            margin-left: 36px;
+            margin-top: -20px;
+            margin-bottom: 30px;
+        }
+
+        .plan-card {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .plan-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            }
+
+            .plan-card.current {
+                border-color: #28a745;
+                background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
+            }
+
+            .plan-card.pro {
+                border-color: #007bff;
+                background: linear-gradient(135deg, #f8f9ff 0%, #e8ebff 100%);
+                position: relative;
+            }
+
+                .plan-card.pro::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background: linear-gradient(90deg, #667eea, #007bff);
+                }
+
+        .plan-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .plan-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+            .plan-info h3 i {
+                margin-right: 10px;
+                font-size: 20px;
+            }
+
+        .free-icon {
+            color: #28a745;
+        }
+
+        .pro-icon {
+            color: #667eea;
+        }
+
+        .plan-info p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .current-badge {
+            background: #28a745;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: auto;
+        }
+
+        .price {
+            color: #007bff;
+            font-size: 28px;
+            font-weight: 700;
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+            .price .currency {
+                font-size: 20px;
+            }
+
+            .price .period {
+                font-size: 12px;
+                color: #6c757d;
+                font-weight: 400;
+            }
+
+        .features {
+            list-style: none;
+            margin-bottom: 24px;
+        }
+
+            .features li {
+                display: flex;
+                align-items: center;
+                margin-bottom: 12px;
+                color: #495057;
+                font-size: 14px;
+            }
+
+                .features li i {
+                    margin-right: 12px;
+                    width: 16px;
+                    text-align: center;
+                }
+
+        .feature-check {
+            color: #28a745;
+        }
+
+        .feature-info {
+            color: #17a2b8;
+        }
+
+        .feature-support {
+            color: #ffc107;
+        }
+
+        .feature-priority {
+            color: #dc3545;
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            padding: 14px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+            .upgrade-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            }
+
+            .upgrade-btn:active {
+                transform: translateY(0);
+            }
+
+        @@media (max-width: 768px) {
+            .settings-container {
+                margin: 10px;
+                border-radius: 12px;
+            }
+
+            .header, .content {
+                padding: 20px;
+            }
+
+            .nav-tabs {
+                padding: 0 20px;
+                overflow-x: auto;
+            }
+
+            .plan-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .price {
+                margin-left: 0;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+
+
+
+
+        <div class="content">
+            <div class="section-title">
+                <i class="fas fa-credit-card"></i>
+                <h2>Subscription Plan</h2>
+            </div>
+            <p class="section-subtitle">Manage your subscription and billing</p>
+
+            <!-- Free Plan -->
+            <div class="plan-card current">
+                <div class="plan-header">
+                    <div class="plan-info">
+                        <h3><i class="fas fa-gift free-icon"></i>Free Trial Plan – 7 Days</h3>
+                        <p>Perfect for getting started</p>
+                    </div>
+                    <div class="current-badge">Current Plan</div>
+                </div>
+
+                <ul class="features">
+                    <li>7 days free</li>
+                    <li>Create and manage invoices</li>
+                    <li>Add and save customer & product details</li>
+                    <li>Limited entries (e.g., up to 100 invoices)</li>
+                </ul>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="plan-card pro">
+                <div class="plan-header">
+                    <div class="plan-info">
+                        <h3><i class="fas fa-crown pro-icon"></i>Pro Plan</h3>
+                        <p>For growing businesses</p>
+                    </div>
+                    <div class="price">
+                        <span><span class="currency">₹</span>399</span>
+                        <span class="period">+ GST / Month</span>
+                    </div>
+                </div>
+
+                <ul class="features">
+                    <li>All features unlocked</li>
+                    <li>Unlimited Invoices & Billing</li>
+                    <li>GST Auto Calculation & Detailed Reports</li>
+                    <li>Share/Download Invoices</li>
+                    <li>Priority Customer Support</li>
+                    <li><b>Perfect for small businesses, retailers, wholesalers & kirana stores.</b></li>
+                </ul>
+
+                <form method="post" asp-action="UpgradeToPro">
+                    <button type="submit" class="upgrade-btn">
+                        <i class="fas fa-rocket"></i> Upgrade to Pro
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth transitions and interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on scroll
+            const cards = document.querySelectorAll('.plan-card');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+
+            // Add click effects to nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Add ripple effect to upgrade button
+            const upgradeBtn = document.querySelector('.upgrade-btn');
+            upgradeBtn.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: rgba(255,255,255,0.3);
+                    border-radius: 50%;
+                    left: ${x}px;
+                    top: ${y}px;
+                    transform: scale(0);
+                    animation: ripple 0.6s linear;
+                `;
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+        @@keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

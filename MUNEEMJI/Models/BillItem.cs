@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MUNEEMJI.Models
 {
@@ -16,7 +17,13 @@ namespace MUNEEMJI.Models
         public string? ItemCode { get; set; }
         public string? Category { get; set; }
         public string? Unit { get; set; }
-        public string? ItemImageUrl { get; set; }
+        [NotMapped] 
+        public string ImageBase64 { get; set; }
+
+        [NotMapped] 
+        public string ImageFileName { get; set; }
+
+        public string ImageUrl { get; set; }
 
         // Pricing Information
         //sale section 
@@ -92,5 +99,6 @@ namespace MUNEEMJI.Models
         public List<string> Categories { get; set; } = new List<string>();
         public List<string> Units { get; set; } = new List<string>();
         public List<string> TaxRates { get; set; } = new List<string>();
+        public Boolean IsView { get; set; }
     }
 }

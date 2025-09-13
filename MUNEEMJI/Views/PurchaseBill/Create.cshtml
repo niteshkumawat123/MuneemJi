@@ -4,488 +4,2292 @@
     ViewData["Title"] = "Create Bill";
 }
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+    // Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+    Layout = null;
+}
+@{
+    string formAction = Model.ViewTypeId == (int)ViewTypeEnum.Edit ? "UpdateEntries" : "Create";
+    int counter = 0;
 }
 
-<style>
-    .form-container {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - MuneemJi</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    .search-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
-    }
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    .bill-info-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
-    }
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    <style>
+        .form-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
 
-    .items-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
-    }
+        .search-section {
+            background: #fffbf33d;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
 
-    .transport-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
-    }
+        .bill-info-section {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
 
-    .payment-section {
-        background: white;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 20px;
-        border: 1px solid #dee2e6;
-    }
+        .items-section {
+            background: #fffbf33d;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+            position: relative; /* Add this */
+            overflow: visible; /* Add this */
+        }
 
-    .items-table {
-        width: 100%;
-        margin-top: 15px;
-    }
+        .transport-section {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
 
-        .items-table th {
+        .payment-section {
+            background: #fffbf33d;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+
+        .table-scroll-wrapper {
+            overflow-x: auto;
+            overflow-y: visible; /* Add this */
+
+            width: 100%;
+            /* Enhanced scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: #007bff #f1f1f1;
+            scroll-behavior: smooth;
+        }
+
+            .table-scroll-wrapper::-webkit-scrollbar {
+                height: 12px;
+            }
+
+            .table-scroll-wrapper::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 6px;
+            }
+
+            .table-scroll-wrapper::-webkit-scrollbar-thumb {
+                background: #007bff;
+                border-radius: 6px;
+                border: 2px solid #f1f1f1;
+            }
+
+                .table-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+                    background: #0056b3;
+                }
+
+        /* Ensure table maintains minimum width to preserve column sizes */
+        .items-table {
+            width: 100%;
+            min-width: 2200px; /* Adjust based on your total column widths */
+            border-collapse: collapse;
+        }
+
+
+
+        .items-table {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+            .items-table th {
+                background-color: #f8f9fa;
+                font-weight: bold;
+                padding: 8px;
+                text-align: center;
+                border: 1px solid #dee2e6;
+                font-size: 12px;
+            }
+
+            .items-table td {
+                padding: 5px;
+                border: 1px solid #dee2e6;
+                text-align: center;
+            }
+
+            .items-table input, .items-table select {
+                width: 100%;
+                border: none;
+                padding: 5px;
+                text-align: center;
+                font-size: 12px;
+            }
+
+        .total-row {
             background-color: #f8f9fa;
             font-weight: bold;
-            padding: 8px;
-            text-align: center;
-            border: 1px solid #dee2e6;
-            font-size: 12px;
         }
 
-        .items-table td {
-            padding: 5px;
-            border: 1px solid #dee2e6;
-            text-align: center;
-        }
-
-        .items-table input, .items-table select {
-            width: 100%;
+        .btn-add-row {
+            background-color: #007bff;
+            color: white;
             border: none;
-            padding: 5px;
-            text-align: center;
-            font-size: 12px;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-top: 10px;
         }
 
-    .total-row {
-        background-color: #f8f9fa;
-        font-weight: bold;
-    }
+        .form-control-sm {
+            font-size: 12px;
+            padding: 4px 8px;
+        }
 
-    .btn-add-row {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 8px 15px;
-        border-radius: 4px;
-        margin-top: 10px;
-    }
+        .checkbox-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .form-control-sm {
-        font-size: 12px;
-        padding: 4px 8px;
-    }
+        .action-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
 
-    .checkbox-container {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-    }
+        .btn-share {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
 
-    .action-buttons {
-        text-align: right;
-        margin-top: 20px;
-    }
+        .btn-save {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 4px;
+        }
 
-    .btn-share {
-        background-color: #6c757d;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        margin-right: 10px;
-    }
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
 
-    .btn-save {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 30px;
-        border-radius: 4px;
-    }
-</style>
+        .sale-toggle {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
 
-<div class="container-fluid">
-    <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
-        <div class="form-container">
-            <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
-            <!-- Search Section -->
-            <div class="search-section">
-                <div class="row">
-                    <div class="col-md-2">
-                        <label>Search by Name/Phone</label>
-                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="Bill.PartyId">
-                            <option value="">Select</option>
-                            @if (ViewBag.PartyList != null)
-                            {
-                                <!-- Header Option (disabled and styled) -->
-                                <option disabled class="dropdown-header">
-                                    <span class="header-item">Party Name</span>
-                                    <span class="header-item">Mobile Number</span>
-                                    <span class="header-item">Balance</span>
-                                </option>
+        .toggle-switch {
+            position: relative;
+            width: 47px;
+            height: 23px;
+            background: #007bff;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            left: 4px;
+        }
 
-                                @foreach (var party in ViewBag.PartyList)
-                                {
-                                    @if (Model.Bill.PartyId == party.id)
+            .toggle-switch.cash {
+                background: #007bff;
+            }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            width: 19px;
+            height: 19px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.cash .toggle-slider {
+            transform: translateX(22px);
+        }
+    </style>
+    <style>
+        .floating-label-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .floating-input {
+            width: 100%;
+            padding: 6px 16px;
+            border: 2px solid #d3d3d3; /* Light gray border by default */
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+            .floating-input:focus {
+                border-color: #007bff; /* Blue border on focus/click */
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+
+        .floating-label {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: white;
+            padding: 0 4px;
+            color: #6c757d;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .floating-input:focus + .floating-label,
+        .floating-input:not(:placeholder-shown) + .floating-label {
+            top: 0;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #007bff;
+        }
+
+        /* Style floating select */
+        .floating-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d3d3d3;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+            .floating-select:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+
+                .floating-select:focus + .floating-label,
+                .floating-select:not([value=""]) + .floating-label {
+                    top: 0;
+                    transform: translateY(-50%);
+                    font-size: 12px;
+                    color: #007bff;
+                }
+
+        /* Style floating textarea */
+        .floating-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d3d3d3;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            background: transparent;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+            .floating-textarea:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+            }
+
+                .floating-textarea:focus + .floating-label,
+                .floating-textarea:not(:placeholder-shown) + .floating-label {
+                    top: 0;
+                    transform: translateY(-50%);
+                    font-size: 12px;
+                    color: #007bff;
+                }
+
+        /* Column Toggle Styles - ADD THIS TO YOUR EXISTING CSS */
+        /*  .column-toggle-container {
+                    position: relative;
+                    display: inline-block;
+                    margin-left: 10px;
+                } */
+
+        .column-toggle-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+            .column-toggle-btn:hover {
+                background: #0056b3;
+            }
+        /*
+                .column-dropdown {
+                    position: absolute;
+                    top: 35px;
+                    right: 0;
+                    background: white;
+                    border: 1px solid #dee2e6;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    min-width: 200px;
+                    z-index: 9999;
+                    display: none;
+                    padding: 10px;
+                    max-height: 300px;
+                    overflow-y: auto;
+                } */
+
+        /*  .column-dropdown.show {
+                        display: block;
+                        top: -217.4px;
+                    } */
+
+        .column-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            gap: 8px;
+        }
+
+            .column-option input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+                accent-color: #007bff;
+            }
+
+            .column-option label {
+                cursor: pointer;
+                font-size: 14px;
+                margin: 0;
+                flex-grow: 1;
+            }
+
+        .more-settings {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #007bff;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid #dee2e6;
+        }
+
+            .more-settings:hover {
+                color: #0056b3;
+            }
+
+        /* Hidden column class */
+        /*   .hidden-column {
+                    display: none !important;
+                } */
+
+        .table-header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            position: relative; /* Add this */
+        }
+
+        .table-title {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .col-action {
+            text-align: center;
+        }
+
+            .col-action .column-toggle-btn {
+                background: #007bff;
+                color: white;
+                border: none;
+                width: 24px;
+                height: 24px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-size: 14px;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+
+                .col-action .column-toggle-btn:hover {
+                    background: #0056b3;
+                    transform: scale(1.05);
+                }
+    </style>
+    <style>
+        .popover {
+            max-width: 300px;
+        }
+
+        .column-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 4px 0;
+        }
+
+            .column-option input[type="checkbox"] {
+                margin-right: 8px;
+            }
+
+            .column-option label {
+                margin: 0;
+                font-size: 14px;
+                cursor: pointer;
+            }
+
+        .more-settings {
+            border-top: 1px solid #dee2e6;
+            padding-top: 8px;
+            margin-top: 8px;
+            cursor: pointer;
+            color: #007bff;
+            font-size: 14px;
+        }
+
+            .more-settings:hover {
+                color: #0056b3;
+            }
+
+            .more-settings i {
+                margin-right: 4px;
+            }
+
+        .btn-close-custom {
+            content: "×";
+            color: #007bff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .upload-area-imgshow:hover {
+            border-color: #0056b3;
+            background: #f0f4ff;
+        }
+
+    </style>
+    <style>
+        .share-dropdown-shareshow {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu-shareshow {
+            display: none;
+            position: absolute;
+            bottom: 1%;
+            left: 0;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            min-width: 120px;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+
+            .dropdown-menu-shareshow.show-shareshow {
+                display: block;
+            }
+
+        .dropdown-item-shareshow {
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+            .dropdown-item-shareshow:hover {
+                background-color: #f8f9fa;
+            }
+
+            .dropdown-item-shareshow i {
+                font-size: 14px;
+                width: 16px;
+            }
+    </style>
+
+
+</head>
+<body>
+    <div class="container-fluid">
+        <form asp-action="@formAction" method="post" enctype="multipart/form-data" id="billForm">
+            @Html.AntiForgeryToken()
+            <div class="form-container">
+                <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
+
+                <div class="header-top">
+                    <div class="sale-toggle">
+
+                        <span style="font-size: 19px; font-family: bold;">Purchase</span>
+
+                        <div class="toggle-switch" id="paymentToggle">
+
+                            <div class="toggle-slider"></div>
+                        </div>
+                        <span id="paymentMode" style="white-space: nowrap;">Reverse Charge</span>
+                        <input type="hidden" id="iscreditinput" name="Bill.IsCredit" value="false">
+
+                    </div>
+
+                    <div class="text-end w-100">
+                        <button class="btn btn-primary" style="background-color:#007bff" onclick="window.open('https://www.google.com/search?q=calculator', '_blank')">
+                            <i class="bi bi-calculator"></i> Calculator
+                        </button>
+                        <button type="button" class="btn-close btn-close-custom" style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
+                                        height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
+                                        padding-right: 6px;" aria-label="Close" onclick="closeView()">
+                        </button>
+                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index'"
+                                style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
+                                        padding-bottom:7px;padding-top:0px;padding-left:6px;
+                                        padding-right:6px;">
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="search-section">
+                    <div class="row" style="display: flex; flex-wrap: wrap;">
+                        <!-- Column 1 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;">
+                            <div class="floating-label-container">
+                                <select class="floating-select" id="partyDropdown" name="Bill.PartyId">
+                                    <option value="">Select</option>
+                                    @if (ViewBag.PartyList != null)
                                     {
-                                        <option value="@party.id"
-                                                data-phone="@party.phonenumber"
-                                                data-balance="@party.balance"
-                                                class="party-option"
-                                                selected="selected">
-                                            <span class="party-name">@party.partyname</span>
-                                            <span class="party-phone">@party.phonenumber</span>
-                                            <span class="party-balance">@party.balance</span>
+                                        <!-- Header Option (disabled and styled) -->
+                                        <option disabled class="dropdown-header">
+                                            <span class="header-item">Party Name</span>
+                                            <span class="header-item">Mobile Number</span>
+                                            <span class="header-item">Balance</span>
                                         </option>
+
+                                        @foreach (var party in ViewBag.PartyList)
+                                        {
+                                            @if (Model.Bill.PartyId == party.id)
+                                            {
+                                                <option value="@party.id"
+                                                        data-phone="@party.phonenumber"
+                                                        data-balance="@party.balance"
+                                                        class="party-option"
+                                                        selected="selected">
+                                                    <span class="party-name">@party.partyname</span>
+                                                    <span class="party-phone">@party.phonenumber</span>
+                                                    <span class="party-balance">@party.balance</span>
+                                                </option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@party.id"
+                                                        data-phone="@party.phonenumber"
+                                                        data-balance="@party.balance"
+                                                        class="party-option">
+                                                    <span class="party-name">@party.partyname</span>
+                                                    <span class="party-phone">@party.phonenumber</span>
+                                                    <span class="party-balance">@party.balance</span>
+                                                </option>
+                                            }
+                                        }
                                     }
-                                    else
+                                </select>
+                                <label class="floating-label">Search by Name/Phone</label>
+                            </div>
+
+                            <div class="floating-label-container">
+                                <input asp-for="Bill.BillingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
+                                <label class="floating-label">Billing Address</label>
+                            </div>
+                        </div>
+
+                        <!-- Column 2 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 40px;">
+                            <div class="floating-label-container">
+                                <input asp-for="Bill.BillingName" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Billing Name</label>
+                            </div>
+
+                            <div class="floating-label-container">
+                                <input asp-for="Bill.ShippingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
+                                <label class="floating-label">Shipping Address</label>
+                            </div>
+                        </div>
+
+                        <!-- Column 3 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;margin-right: 40px;">
+                            <div class="floating-label-container">
+                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Phone No.</label>
+                            </div>
+
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.CustomerPODetails == true)
+                            {
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.PONo" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">P.O No.</label>
+                                </div>
+
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">P.O Date</label>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Column 4 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 142px;">
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.EwayBillNo == true)
+                            {
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">E-Way Bill No.</label>
+                                </div>
+                            }
+
+
+                        </div>
+
+                        <!-- Column 5 -->
+                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 0px;">
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
+                            {
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.InvoiceNumber" type="number" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">Bill Number</label>
+                                </div>
+                            }
+
+                            <div class="floating-label-container">
+                                <input asp-for="Bill.InvoiceDate" type="date" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Bill Date</label>
+                            </div>
+
+                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.AddTimeOnTransactions == true)
+                            {
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.Time" type="time" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">Time</label>
+                                </div>
+                            }
+
+                            <div class="floating-label-container">
+                                <select asp-for="Bill.PaymentTermId" class="floating-input">
+                                    <option value="">Select Payment Term</option>
+                                    <option value="1">Net 15 Days</option>
+                                    <option value="2">Net 30 Days</option>
+                                    <option value="3">Net 45 Days</option>
+                                    <option value="4">Net 60 Days</option>
+                                    <option value="5">Due on Receipt</option>
+                                    <option value="6">Cash on Delivery</option>
+                                    <option value="7">Advance Payment</option>
+                                    <option value="8">2/10 Net 30</option>
+                                    <option value="9">1/15 Net 30</option>
+                                    <option value="10">End of Month</option>
+                                </select>
+                                <label class="floating-label">Payment Term</label>
+                            </div>
+
+                            <div class="floating-label-container" id="dueDateContainer">
+                                <input asp-for="Bill.DueDate" type="date" class="floating-input" placeholder=" " />
+                                <label class="floating-label">Due Date</label>
+                            </div>
+
+                            <div class="floating-label-container">
+                                <select asp-for="Bill.StateOfSupply" class="floating-select">
+                                    <option value="">Select State</option>
+                                    @foreach (var state in Model.StateOptions)
                                     {
-                                        <option value="@party.id"
-                                                data-phone="@party.phonenumber"
-                                                data-balance="@party.balance"
-                                                class="party-option">
-                                            <span class="party-name">@party.partyname</span>
-                                            <span class="party-phone">@party.phonenumber</span>
-                                            <span class="party-balance">@party.balance</span>
-                                        </option>
+                                        <option value="@state">@state</option>
                                     }
-                                }
-                            }
-                        </select>
-                    </div> 
-                    <div class="col-md-2">
-                        <label>Phone No.</label>
-                        <input asp-for="Bill.PhoneNo" class="form-control form-control-sm" placeholder="Phone No." />
-                    </div>
-                    <div class="col-md-2">
-                        <label>P.O No.</label>
-                        <input asp-for="Bill.PONo" class="form-control form-control-sm" placeholder="P.O No." />
-                    </div>
-                    <div class="col-md-2">
-                        <label>P.O Date</label>
-                        <input asp-for="Bill.PODate" type="date" class="form-control form-control-sm" />
-                    </div>
-                    <div class="col-md-2">
-                        <label>E-Way Bill No.</label>
-                        <input asp-for="Bill.EWayBillNo" class="form-control form-control-sm" placeholder="E-Way Bill No." />
-                    </div>
-                </div>
-            </div>
+                                </select>
+                                <label class="floating-label">State of Supply</label>
+                            </div>
 
-            <!-- Bill Info Section -->
-            <div class="bill-info-section">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label>Bill Number</label>
-                        <input asp-for="Bill.BillNumber" class="form-control form-control-sm" readonly />
-                    </div>
-                    <div class="col-md-3">
-                        <label>Bill Date</label>
-                        <input asp-for="Bill.BillDate" type="date" class="form-control form-control-sm" />
-                    </div>
-                    <div class="col-md-3">
-                        <label>State of supply</label>
-                        <select asp-for="Bill.StateOfSupply" class="form-control form-control-sm">
-                            @foreach (var state in Model.StateOptions)
-                            {
-                                <option value="@state">@state</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Items Section -->
-            <div class="items-section">
-                <table class="items-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 5%">#</th>
-                            <th style="width: 25%">
-                                ITEM<br />
-                               
-                            </th>
-                            <th style="width: 8%">QTY</th>
-                            <th style="width: 10%">UNIT</th>
-                            <th style="width: 12%">PRICE/UNIT<br />Without Tax</th>
-                            <th style="width: 8%">DISCOUNT<br />%</th>
-                            <th style="width: 10%">AMOUNT</th>
-                            <th style="width: 8%">TAX</th>
-                            <th style="width: 10%">AMOUNT</th>
-                            <th style="width: 4%">AMOUNT</th>
-                            <th style="width: 2%">⊕</th>
-                        </tr>
-                    </thead>
-                    <tbody id="itemsTableBody">
-                        @for (int i = 0; i < Model.Bill.BillItems.Count; i++)
-                        {
-                            <tr class="item-row" data-index="@i">
-                                <td>@(i + 1)</td>
-                                <td>
-                                    @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
-                                             new SelectList(Model.DropDownItem, "Id", "ItemName"),
-                                             "-- Select Item --",
-                                             new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
-                                </td>
-                                <td>
-                                    <input asp-for="Bill.BillItems[i].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(@i)" />
-                                </td>
-                                <td>
-                                    <select asp-for="Bill.BillItems[i].Unit" class="form-control-sm">
-                                        @foreach (var unit in Model.UnitOptions)
-                                        {
-                                            <option value="@unit">@unit</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <input asp-for="Bill.BillItems[i].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(@i)" />
-                                </td>
-                                <td>
-                                    <input asp-for="Bill.BillItems[i].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(@i)" />
-                                </td>
-                                <td>
-                                    <input asp-for="Bill.BillItems[i].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly />
-                                </td>
-                                <td>
-                                    <select asp-for="Bill.BillItems[i].Tax" class="form-control-sm tax-select" onchange="calculateItemAmount(@i)">
-                                        @foreach (var tax in Model.TaxOptions)
-                                        {
-                                            <option value="@tax">@tax</option>
-                                        }
-                                    </select>
-                                </td>
-                                <td>
-                                    <input asp-for="Bill.BillItems[i].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly />
-                                </td>
-                                <td>
-                                    <input asp-for="Bill.BillItems[i].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly />
-                                </td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                    <tfoot>
-                        <tr class="total-row">
-                            <td colspan="9" style="text-align: right; font-weight: bold;">TOTAL</td>
-                            <td><span id="grandTotal">0</span></td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-                <button type="button" class="btn-add-row" onclick="addNewRow()">ADD ROW</button>
-            </div>
-
-            <!-- Transport Section -->
-            <div class="transport-section">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label>Transport Name</label>
-                        <input asp-for="Bill.TransportName" class="form-control form-control-sm" placeholder="Transport Name" />
-                    </div>
-                    <div class="col-md-3">
-                        <label>Delivery Location</label>
-                        <input asp-for="Bill.DeliveryLocation" class="form-control form-control-sm" placeholder="Delivery Location" />
-                    </div>
-                    <div class="col-md-3">
-                        <label>Vehicle Number</label>
-                        <input asp-for="Bill.VehicleNumber" class="form-control form-control-sm" placeholder="Vehicle Number" />
-                    </div>
-                    <div class="col-md-3">
-                        <label>Delivery Date</label>
-                        <input asp-for="Bill.DeliveryDate" type="date" class="form-control form-control-sm" />
-                    </div>
-                </div>
-            </div>
-
-            <!-- Payment Section -->
-            <div class="payment-section">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label>Payment Type</label>
-                        <select asp-for="Bill.PaymentType" class="form-control form-control-sm">
-                            @foreach (var payment in Model.PaymentTypes)
-                            {
-                                <option value="@payment">@payment</option>
-                            }
-                        </select>
-                        <a href="#" style="color: #007bff; font-size: 12px;">+ Add Payment type</a>
-                    </div>
-                    <div class="col-md-3">
-                        <label>ADD DESCRIPTION</label>
-                        <textarea asp-for="Bill.Description" class="form-control form-control-sm" rows="2" placeholder="Add description"></textarea>
-                    </div>
-                    <div class="col-md-3">
-                        <label>ADD IMAGE</label>
-                        <input type="file" name="imageFile" class="form-control form-control-sm" accept="image/*" />
-                    </div>
-                    <div class="col-md-3">
-                        <div class="checkbox-container">
-                            <input asp-for="Bill.RoundOff" type="checkbox" checked />
-                            <label asp-for="Bill.RoundOff">Round Off</label>
-                            <span id="roundOffAmount">0</span>
-                            <span style="margin-left: 20px;">Total: <strong id="finalTotal">0</strong></span>
                         </div>
                     </div>
                 </div>
+
+                <div class="table-header-controls">
+                    <div id="columnSettingsContainer" style="display: none;">
+                        <!-- Remove the nested form tag -->
+                        <div id="columnSettingsContent">
+                            <!-- Category -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-category-popup" data-column="col-category"
+                                @(Model.Bill.itemSettings?.ItemCategory == true ? "checked" : "")>
+                                <label for="col-category-popup">Category</label>
+                            </div>
+
+                            <!-- Item Code -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-item-code-popup" data-column="col-item-code"
+                                @(Model.Bill.itemSettings?.ItemCode == true ? "checked" : "")>
+                                <label for="col-item-code-popup">Item Code</label>
+                            </div>
+
+                            <!-- HSN/SAC Code -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-hsn-popup" data-column="col-hsn"
+                                @(Model.Bill.itemSettings?.HsnSacCode == true ? "checked" : "")>
+                                <label for="col-hsn-popup">HSN/SAC Code</label>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-description-popup" data-column="col-description"
+                                @(Model.Bill.itemSettings?.Description == true ? "checked" : "")>
+                                <label for="col-description-popup">DESCRIPTION</label>
+                            </div>
+
+                            <!-- Item Wise Discount -->
+                            <div class="column-option">
+                                <input type="checkbox" id="col-discount-pct-popup" data-column="col-discount-pct"
+                                @(Model.Bill.itemSettings?.ItemWiseDiscount == true ? "checked" : "")>
+                                <label for="col-discount-pct-popup">DISCOUNT %</label>
+                            </div>
+
+                            <div class="more-settings" onclick="window.location.href='/Settings/Transaction/Index'">
+                                <i class="bi bi-gear"></i>
+                                More Settings
+                            </div>
+                            <div class="btn btn-primary" onclick="saveColumnSettingsFromPopover()" style="cursor:pointer;display: flow;padding: 0px;margin-top: 5px;">
+                                Save
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Section -->
+                <div class="items-section">
+                    <div class="table-scroll-wrapper">
+                        <table class="items-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-sr-no" style="width: 3%">#</th>
+                                    @{
+                                        counter += 1;
+                                    }
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCategory == true)
+                                    {
+                                        counter += 1;
+
+
+                                        <th class="col-category" style="width: 8%">CATEGORY</th>
+                                    }
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-item" style="width: 8%">ITEM</th>
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-item-code" style="width: 6%">ITEM CODE</th>
+                                    }
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.HsnSacCode == true)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-hsn" style="width: 6%">HSN<br />CODE</th>
+                                    }
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.SerialNoTracking == true)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-serial" style="width: 6%">SERIAL NO.</th>
+                                    }
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.Description == true)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-description" style="width: 10%">DESCRIPTION</th>
+                                    }
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-count" style="width: 5%">COUNT</th>
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-batch" style="width: 6%">BATCH NO.</th>
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-model" style="width: 6%">MODEL NO.</th>
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ExpDateEnabled == true)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-exp-date" style="width: 6%">EXP. DATE</th>
+                                    }
+
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.MfgDateEnabled == true)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-mfg-date" style="width: 6%">MFG. DATE</th>
+                                    }
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-mrp" style="width: 5%">MRP</th>
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-size" style="width: 4%">SIZE</th>
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-qty" style="width: 4%">QTY</th>
+                                    @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.FreeItemQuantity)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-free-qty" style="width: 4%">FREE<br />QTY</th>
+                                    }
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-unit" style="width: 4%">UNIT</th>
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-price" style="width: 6%">PRICE/UNIT<br />Without Tax</th>
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseDiscount == true)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-discount-pct" style="width: 5%">DISCOUNT<br />%</th>
+                                    }
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-amount1" style="width: 6%">DISC<br />AMOUNT</th>
+                                    @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseTax)
+                                    {
+                                        counter += 1;
+
+                                        <th class="col-tax" style="width: 4%">TAX<br />%</th>
+                                    }
+                                    @{
+                                        counter += 1;
+                                    }
+                                    <th class="col-amount2" style="width: 6%">TAX<br />AMOUNT</th>
+                                    @{
+                                        counter += 1;
+                                    }
+
+                                    <th class="col-Cess" style="width:6%;min-width: 66px;">ADD CESS</th>
+
+                                    <th class="col-amount3" style="width: 6%">TOTAL<br />AMOUNT</th>
+                                    <th class="col-action" style="width: 2%">
+                                        <button type="button"
+                                                class="column-toggle-btn"
+                                                id="columnToggleBtn"
+                                                data-bs-toggle="popover"
+                                                data-bs-placement="bottom"
+                                                data-bs-html="true"
+                                                data-bs-trigger="click"
+                                                data-bs-title="Column Settings">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTableBody">
+                                @for (int i = 0; i < Model.Bill.BillItems.Count; i++)
+                                {
+                                    <tr class="item-row" data-index="@i">
+                                        <td class="col-sr-no">@(i + 1)</td>
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCategory == true)
+                                        {
+                                            <td class="col-category">
+                                                @Html.DropDownListFor(model => model.Bill.BillItems[i].categoryid,
+                                                         new SelectList(Model.DropDownCategory, "Id", "Name"),
+                                                         "-- Select Category --",
+
+                                                         new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
+                                            </td>
+                                        }
+
+                                        @* <td class="col-item">
+                                            @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
+                                                     new SelectList(Model.DropDownItem, "Id", "ItemName"),
+                                                     "-- Select Item --",
+                                                     new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
+                                        </td> *@
+
+                                        <td class="col-item">
+                                            <div style="position: relative; background-color: white;">
+                                                <button type="button" class="form-control-sm" style="border: none;background-color: white;" onclick="toggleItemDropdownPopdorp(@i)" id="itemBtnPopdorp-@i">
+                                                    --Select Item--
+                                                </button>
+                                                <!-- Hidden select for form submission -->
+                                                <select name="Bill.BillItems[@i].ItemId" id="hiddenSelectPopdorp-@i" style="display: none;">
+                                                    <option value="">--Select Item--</option>
+                                                    @foreach (var item in Model.DropDownItem)
+                                                    {
+                                                        <option value="@item.Id">@item.ItemName</option>
+                                                    }
+                                                </select>
+                                            </div>
+                                        </td>
+
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCode == true)
+                                        {
+                                            <td class="col-item-code">
+                                                <input asp-for="Bill.BillItems[i].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" />
+                                            </td>
+                                        }
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.HsnSacCode == true)
+                                        {
+                                            <td class="col-hsn">
+                                                <input asp-for="Bill.BillItems[i].HSNCode" type="text" class="form-control-sm" placeholder="HSN Code" />
+                                            </td>
+                                        }
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.SerialNoTracking == true)
+                                        {
+                                            <td class="col-serial">
+                                                <input asp-for="Bill.BillItems[i].SerialNumber" type="text" class="form-control-sm" placeholder="Serial No." />
+                                            </td>
+                                        }
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.Description == true)
+                                        {
+                                            <td class="col-description">
+                                                <input asp-for="Bill.BillItems[i].Description" type="text" class="form-control-sm" placeholder="Description" />
+                                            </td>
+                                        }
+                                        <td class="col-count">
+                                            <input asp-for="Bill.BillItems[i].Count" type="number" class="form-control-sm" placeholder="Count" />
+                                        </td>
+                                        <td class="col-batch">
+                                            <input asp-for="Bill.BillItems[i].BatchNumber" type="text" class="form-control-sm" placeholder="Batch No." />
+                                        </td>
+                                        <td class="col-model">
+                                            <input asp-for="Bill.BillItems[i].ModelNumber" type="text" class="form-control-sm" placeholder="Model No." />
+                                        </td>
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ExpDateEnabled == true)
+                                        {
+                                            <td class="col-exp-date">
+                                                <input asp-for="Bill.BillItems[i].ExpiryDate" type="date" class="form-control-sm" />
+                                            </td>
+                                        }
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.MfgDateEnabled == true)
+                                        {
+                                            <td class="col-mfg-date">
+                                                <input asp-for="Bill.BillItems[i].ManufacturingDate" type="date" class="form-control-sm" />
+                                            </td>
+                                        }
+                                        <td class="col-mrp">
+                                            <input asp-for="Bill.BillItems[i].MRP" type="number" step="0.01" class="form-control-sm" placeholder="MRP" />
+                                        </td>
+                                        <td class="col-size">
+                                            <input asp-for="Bill.BillItems[i].Size" type="text" class="form-control-sm" placeholder="Size" />
+                                        </td>
+                                        <td class="col-qty">
+                                            <input asp-for="Bill.BillItems[i].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(@i)" />
+                                        </td>
+                                        @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.FreeItemQuantity)
+                                        {
+                                            <td class="col-free-qty">
+                                                <input asp-for="Bill.BillItems[i].FreeQuantity" type="number" step="0.01" class="form-control-sm" placeholder="Free Qty" />
+                                            </td>
+                                        }
+                                        <td class="col-unit">
+                                            <select asp-for="Bill.BillItems[i].Unit" class="form-control-sm">
+                                                @foreach (var unit in Model.UnitOptions)
+                                                {
+                                                    <option value="@unit">@unit</option>
+                                                }
+                                            </select>
+                                        </td>
+
+                                        <td class="col-price">
+                                            <input asp-for="Bill.BillItems[i].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(@i)" />
+                                        </td>
+
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseDiscount == true)
+                                        {
+                                            <td class="col-discount-pct">
+                                                <input asp-for="Bill.BillItems[i].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(@i)" />
+                                            </td>
+                                        }
+
+                                        <td class="col-amount1">
+                                            <input asp-for="Bill.BillItems[i].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly />
+                                        </td>
+
+                                        @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseTax)
+                                        {
+                                            <td class="col-tax">
+                                                <select asp-for="Bill.BillItems[i].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount(@i)">
+                                                    <option value="0" selected="@(Model.Bill.BillItems[i].TaxPercentage == null)">Select</option>
+                                                    <option value="0" selected="@(Model.Bill.BillItems[i].TaxPercentage == 0)">0%</option>
+                                                    <option value="5" selected="@(Model.Bill.BillItems[i].TaxPercentage == 5)">5%</option>
+                                                    <option value="12" selected="@(Model.Bill.BillItems[i].TaxPercentage == 12)">12%</option>
+                                                    <option value="18" selected="@(Model.Bill.BillItems[i].TaxPercentage == 18)">18%</option>
+                                                    <option value="28" selected="@(Model.Bill.BillItems[i].TaxPercentage == 28)">28%</option>
+                                                </select>
+                                            </td>
+                                        }
+
+                                        <td class="col-amount2">
+                                            <input asp-for="Bill.BillItems[i].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly />
+                                        </td>
+
+                                        <td class="col-Cess">
+                                            <input asp-for="Bill.BillItems[i].AddCessAmount" type="number" step="0.01" class="form-control-sm cess-input" onchange="calculateItemAmount(@i)" />
+                                        </td>
+
+                                        <td class="col-amount3">
+                                            <input asp-for="Bill.BillItems[i].TotalAmount" type="number" step="0.01" class="form-control-sm total-amount" readonly />
+                                        </td>
+
+                                        <td class="col-action">
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td class="col-sr-no col-item col-qty col-unit col-price col-discount-pct col-amount1 col-tax col-amount2" colspan=@counter style="text-align: right; font-weight: bold;">TOTAL</td>
+                                    <td class="col-amount3"><span id="grandTotal">0</span></td>
+                                    <td class="col-action"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <button type="button" class="btn-add-row" onclick="addNewRow()">ADD ROW</button>
+                </div>
+
+
+
+
+                <div class="payment-section">
+                    <div class="row">
+
+                        <div class="col-md-8">
+                            <div class="row">
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.TransportName == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Transport Name</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryLocation == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Delivery Location</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field5 == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.Field5" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Field5</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                        </div>
+                                    </div>
+
+                                }
+
+
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.VehicleNumber == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Vehicle Number</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryDate == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Delivery Date</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+                                }
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field6 == true)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            <input asp-for="Bill.Field6" class="floating-input" placeholder=" " />
+                                            <label class="floating-label">Field6</label>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-md-4">
+                                        <div class="floating-label-container">
+                                            @*                                     <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
+ *@                                    <label class="floating-label"></label>
+                                        </div>
+                                    </div>
+
+                                }
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="floating-label-container">
+                                        <select asp-for="Bill.PaymentType" class="floating-select">
+                                            <option value="">Select Payment Type</option>
+                                            @foreach (var payment in Model.PaymentTypes)
+                                            {
+                                                <option value="@payment">@payment</option>
+                                            }
+                                        </select>
+                                        <label class="floating-label">Payment Type</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="floating-label-container">
+                                        <input asp-for="Bill.Description" class="floating-input" placeholder=" " />
+                                        <label class="floating-label">Add Description</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="floating-label-container upload-area-imgshow" style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;" onclick="document.querySelector('input[name=\'Bill.imageFile\']').click()">
+                                        <span class="upload-label-imgshow" style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">Add Image</span>
+                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*" onchange="previewImage(this)" style="display: none;" />
+                                        <div class="upload-content-imgshow">
+                                            <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
+                                            <div style="color: #007bff; font-weight: 500;">Upload</div>
+                                        </div>
+
+                                        <div class="image-preview-imgshow" style="display: none;">
+                                            <img id="preview-img-imgshow" src="" alt="Preview" style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
+                                            <div id="image-name-imgshow" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
+                                            <div style="margin-top: 8px;">
+                                                <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+
+
+
+                                <div class="col-md-6">
+                                    <div class="floating-label-container">
+                                        <input type="file" name="Bill.DocumentPath" class="floating-input" accept="image/*" />
+                                        <label class="floating-label">Add Document</label>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="summary-section" style="background:   #f5f5f5; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <label>No. of copies</label>
+                                    </div>
+                                    <div class="col-6">
+                                        <select class="form-control form-control-sm" name="Bill.NoOfCopi">
+                                            <option value="1">Original</option>
+                                            <option value="2">Duplicate</option>
+                                            <option value="3">Triplicate</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Discount (%)</label>
+                                        </div>
+                                        <div class="" style="width: 79px;">
+                                            <input type="number" name="Bill.DiscountPercentage" class="form-control form-control-sm total-discount" onchange="updateGrandTotal()" value="0">
+                                        </div>
+                                        <div>-</div>
+                                        <div class="" style="width: 75px;">
+                                            <input type="number" name="Bill.DiscountAmount" class="form-control form-control-sm total-discountvalue" readonly value="0">
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Tax</label>
+                                        </div>
+                                        <div class="" style="width: 79px;">
+                                            <select class="form-control form-control-sm" name=" Bill.TaxPercentage">
+                                                <option value="0">NONE</option>
+                                                <option value="5">5%</option>
+                                                <option value="12">12%</option>
+                                                <option value="18">18%</option>
+                                                <option value="28">28%</option>
+                                            </select>
+                                        </div>
+                                        <div class="" style="width: 97px;text-align: right;">
+                                            <span> 0</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Shipping</label>
+                                        </div>
+
+                                        <div class="" style="width: 79px;">
+                                            <input type="number" name="Bill.ShippingAmount" class="form-control form-control-sm shipping-value" onchange="updateGrandTotal()" value="0" />
+                                        </div>
+
+                                        <div style="width: 97px;text-align: right;">
+                                            <span class="shipping-show"> 0</span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+
+                                        <div class="">
+                                            <label>Packaging</label>
+                                        </div>
+
+                                        <div class="" style="width: 79px;">
+                                            <input type="number" name="Bill.PackingAmount" class="form-control form-control-sm packing-value" onchange="updateGrandTotal()" value="0" />
+                                        </div>
+
+                                        <div style="width: 97px;text-align: right;">
+                                            <span class="packing-show"> 0</span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <label>Adjustment</label>
+                                        </div>
+
+                                        <div class="" style="width: 79px;">
+                                            <input type="number" name="Bill.AdjustmentAmount" class="form-control form-control-sm adjustment-value" onchange="updateGrandTotal()" value="0" />
+                                        </div>
+
+                                        <div style="width: 97px;text-align: right;">
+                                            <span class="adjustment-show"> 0</span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="Bill.TCSTDSType" id="tcs" value="@((int)TCSTDSEnum.TCS)"
+                                                @(Model.Bill.TCSTDSType == TCSTDSEnum.TCS ? "checked" : "")>
+                                                <label class="form-check-label" for="tcs">TCS</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="Bill.TCSTDSType" id="tds" value="@((int)TCSTDSEnum.TDS)"
+                                                @(Model.Bill.TCSTDSType == TCSTDSEnum.TDS ? "checked" : "")>
+                                                <label class="form-check-label" for="tds">TDS</label>
+                                            </div>
+
+                                        </div>
+                                        <div style="width: 79px;">
+                                            <select class="form-control form-control-sm mt-2" name="Bill.TdsTcsPercentage">
+                                                <option value="0">NONE</option>
+                                                <option value="0.1">0.1%</option>
+                                                <option value="1">1%</option>
+                                                <option value="2">2%</option>
+                                            </select>
+                                        </div>
+                                        <div class="" style="width: 97px;text-align: right;">
+                                            <span> 0</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <div class="form-check">
+                                                <input asp-for="Bill.IsRoundOff" type="checkbox" class="form-check-input" checked />
+                                                <label asp-for="Bill.IsRoundOff" class="form-check-label">Round Off</label>
+                                            </div>
+                                        </div>
+                                        <div class="" style="width: 40px;">
+                                            <input id="roundOffAmount" name="Bill.RoundOffValue" type="number" class="form-control form-control-sm" value="0" />
+
+                                        </div>
+                                        <div class="" style="text-align: right;">
+                                            Total
+                                        </div>
+                                        <div class="" style="width: 140px;">
+                                            <input type="number" name="Bill.Total" class="form-control form-control-sm total-balance" onchange="updateGrandTotal()" value="0" />
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+                                        <div class="">
+                                            <div class="form-check">
+                                                <input asp-for="Bill.IsReceive" type="checkbox" class="form-check-input" checked />
+                                                <label asp-for="Bill.IsReceive" class="form-check-label d-none"></label>
+                                            </div>
+                                        </div>
+
+                                        <div class="" style="text-align: right;">
+                                            Received
+                                        </div>
+                                        <div class="" style="width: 140px;">
+                                            <input type="number" name="Bill.paidReciveamount" class="form-control form-control-sm received-amount" onchange="updateGrandTotal()" value="0" />
+
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="row mb-2">
+                                    <div class="d-flex align-items-center justify-content-end gap-3">
+
+                                        <div class="" style="text-align: right; font-weight:bold;">
+                                            Balance
+                                        </div>
+                                        <div id="finalTotal" style="width: 140px; font-weight:bold; text-align:right;">
+                                            0000
+                                        </div>
+
+                                        <input type="hidden" id="finalTotalinput" name="Bill.FinalAmount" value="0" />
+
+                                    </div>
+
+                                </div>
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                @if (Model.ViewTypeId == (int)ViewTypeEnum.View)
+                {
+
+                }
+                @if (Model.ViewTypeId == (int)ViewTypeEnum.Edit)
+                {
+                    <div class="action-buttons">
+                        <button type="button" class="btn-share">Share ▼</button>
+                        <button type="submit" class="btn-edit">Edit</button>
+                    </div>
+                }
+                @if (Model.ViewTypeId == (int)ViewTypeEnum.Create)
+                {
+                    <div class="action-buttons">
+                        <div class="share-dropdown-shareshow">
+                            <button type="button" class="btn-share" id="shareButtonshareshow">
+                                Share <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <div class="dropdown-menu-shareshow" id="shareDropdownshareshow">
+                                <div class="dropdown-item-shareshow" onclick="openShareWindow()">
+                                    <i class="bi bi-share"></i> Share
+                                </div>
+                                <div class="dropdown-item-shareshow" onclick="printDocument()">
+                                    <i class="bi bi-printer"></i> Print
+                                </div>
+                                <div class="dropdown-item-shareshow" style="margin-left: -21px;">
+                                    <i class="bi bi-floppy"></i> Save & New
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-save">Save</button>
+                    </div>
+                }
+
             </div>
+        </form>
+    </div>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button type="button" class="btn-share">Share ▼</button>
-                <button type="submit" class="btn-save">Save</button>
-            </div>
+    <script>
 
-        </div>
-    </form>
-</div>
 
-<script>
+         var itemOptions =  @Html.Raw(Json.Serialize(Model.DropDownItem));
+         var CategoryOptions =  @Html.Raw(Json.Serialize(Model.DropDownCategory));
+         let itemIndex =  @Model.Bill.BillItems.Count;
 
-     var itemOptions = @Html.Raw(Json.Serialize(Model.DropDownItem));
-     let itemIndex = @Model.Bill.BillItems.Count;
+        //  let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
+        // itemDropdown += `<option value="">-- Select Item --</option>`;
+        // itemOptions.forEach(item => {
+        //     itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
+        // });
+        // itemDropdown += `</select>`;
 
-     let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
-    itemDropdown += `<option value="">-- Select Item --</option>`;
-    itemOptions.forEach(item => {
-        itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
-    });
-    itemDropdown += `</select>`;
+                let itemDropdown = `
+                         <div style="position: relative; background-color: white;">
+                             <button type="button" class="form-control-sm" style="border: none;background-color: white;" onclick="toggleItemDropdownPopdorp(${itemIndex})" id="itemBtnPopdorp-${itemIndex}">
+                                 --Select Item--
+                             </button>
+                             <select name="Bill.BillItems[${itemIndex}].ItemId" id="hiddenSelectPopdorp-${itemIndex}" style="display: none;">
+                                 <option value="">--Select Item--</option>`;
 
-     function onItemChange(selectElem, rowIndex) {
-        let selectedItemId = selectElem.value;
-        console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);
-        // Do something like auto-fill price, etc.
-    }
+                             itemOptions.forEach(item => {
+                                 itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
+                             });
 
-    
+                             itemDropdown += `</select>
+                             </div>`;
 
-    function addNewRow() {
-        const tbody = document.getElementById('itemsTableBody');
-        const newRow = document.createElement('tr');
-        newRow.className = 'item-row';
-        newRow.setAttribute('data-index', itemIndex);
+         let categoryDropdown = `<select name="Bill.BillItems[${itemIndex}].categoryid" class="form-control-sm">`;
+        categoryDropdown += `<option value="">-- Select Category --</option>`;
+        CategoryOptions.forEach(item => {
+            categoryDropdown += `<option value="${item.id}">${item.name}</option>`;
+        });
+        categoryDropdown += `</select>`;
 
-        newRow.innerHTML = `
-            <td>${itemIndex + 1}</td>
-            @* <td><input name="Bill.BillItems[${itemIndex}].Item" class="form-control-sm" /></td> *@
-            <td>${itemDropdown}</td>
-            <td><input name="Bill.BillItems[${itemIndex}].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(${itemIndex})" /></td>
-            <td>
-                <select name="Bill.BillItems[${itemIndex}].Unit" class="form-control-sm">
-    @foreach (var unit in Model.UnitOptions)
-    {
-                            <option value="@unit">@unit</option>
-    }
-                </select>
-            </td>
-            <td><input name="Bill.BillItems[${itemIndex}].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(${itemIndex})" /></td>
-            <td><input name="Bill.BillItems[${itemIndex}].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(${itemIndex})" /></td>
-            <td><input name="Bill.BillItems[${itemIndex}].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly /></td>
-            <td>
-                <select name="Bill.BillItems[${itemIndex}].Tax" class="form-control-sm tax-select" onchange="calculateItemAmount(${itemIndex})">
-    @foreach (var tax in Model.TaxOptions)
-    {
-                            <option value="@tax">@tax</option>
-    }
-                </select>
-            </td>
-            <td><input name="Bill.BillItems[${itemIndex}].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly /></td>
-            <td><input name="Bill.BillItems[${itemIndex}].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly /></td>
-            <td><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${itemIndex})">×</button></td>
-        `;
+         function onItemChange(selectElem, rowIndex) {
+            let selectedItemId = selectElem.value;
+            console.log("Row " + rowIndex + " selected item ID: " + selectedItemId);
+                if (selectedItemId)
+                {
+                   autoFillItemData(rowIndex, selectedItemId);
+                }
+        }
 
-        tbody.appendChild(newRow);
-        itemIndex++;
-    }
+             var itemSettings = {
+                    serialNoTracking: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.SerialNoTracking ?? false)),
+                    description: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.Description ?? false)),
+                    expDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ExpDateEnabled ?? false)),
+                    mfgDateEnabled: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.MfgDateEnabled ?? false)),
+                    itemWiseDiscount: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseDiscount ?? false)),
+                    itemWiseTax: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemWiseTax ?? false)),
+                    itemcode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCode ?? false)),
+                    hsnsaccode: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.HsnSacCode ?? false)),
+                    category: @Html.Raw(Json.Serialize(Model.Bill.itemSettings?.ItemCategory ?? false))
+                    };
 
-    function removeRow(index) {
-        const row = document.querySelector(`tr[data-index="${index}"]`);
-        if (row) {
-            row.remove();
+            var transactionSettings = {
+                    freeItemQuantity: @Html.Raw(Json.Serialize(Model.Bill.transactionSettings?.FreeItemQuantity ?? false))
+                    };
+
+                    function addNewRow() {
+
+            const tbody = document.getElementById('itemsTableBody');
+            const newRow = document.createElement('tr');
+            newRow.className = 'item-row';
+            newRow.setAttribute('data-index', itemIndex);
+
+            let rowHTML = `<td class="col-sr-no">${itemIndex + 1}</td>`
+            if(itemSettings.category)
+            {
+              rowHTML += `<td class="col-category">${categoryDropdown.replace('ITEMINDEX', itemIndex).replace('ItemId', 'CategoryId')}</td>`;
+            }
+               // rowHTML += `<td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>`;
+               rowHTML += `<td class="col-item">${itemDropdown}</td>`;
+            if(itemSettings.itemcode)
+            {
+                rowHTML += `<td class="col-item-code"><input name="Bill.BillItems[${itemIndex}].ItemCode" type="text" class="form-control-sm" placeholder="Item Code" /></td>`;
+            }
+            if(itemSettings.hsnsaccode)
+            {
+              rowHTML += `<td class="col-hsn"><input name="Bill.BillItems[${itemIndex}].HSNCode" type="text" class="form-control-sm" placeholder="HSN Code" /></td>`;
+            }
+
+            // Conditional fields
+            if (itemSettings.serialNoTracking) {
+                rowHTML += `<td class="col-serial"><input name="Bill.BillItems[${itemIndex}].SerialNumber" type="text" class="form-control-sm" placeholder="Serial No." /></td>`;
+            }
+
+            if (itemSettings.description) {
+                rowHTML += `<td class="col-description"><input name="Bill.BillItems[${itemIndex}].Description" type="text" class="form-control-sm" placeholder="Description" /></td>`;
+            }
+
+            rowHTML += `
+                <td class="col-count"><input name="Bill.BillItems[${itemIndex}].Count" type="number" class="form-control-sm" placeholder="Count" /></td>
+                <td class="col-batch"><input name="Bill.BillItems[${itemIndex}].BatchNumber" type="text" class="form-control-sm" placeholder="Batch No." /></td>
+                <td class="col-model"><input name="Bill.BillItems[${itemIndex}].ModelNumber" type="text" class="form-control-sm" placeholder="Model No." /></td>`;
+
+            if (itemSettings.expDateEnabled) {
+                rowHTML += `<td class="col-exp-date"><input name="Bill.BillItems[${itemIndex}].ExpiryDate" type="date" class="form-control-sm" /></td>`;
+            }
+
+            if (itemSettings.mfgDateEnabled) {
+                rowHTML += `<td class="col-mfg-date"><input name="Bill.BillItems[${itemIndex}].ManufacturingDate" type="date" class="form-control-sm" /></td>`;
+            }
+
+            rowHTML += `
+                <td class="col-mrp"><input name="Bill.BillItems[${itemIndex}].MRP" type="number" step="0.01" class="form-control-sm" placeholder="MRP" /></td>
+                <td class="col-size"><input name="Bill.BillItems[${itemIndex}].Size" type="text" class="form-control-sm" placeholder="Size" /></td>
+                <td class="col-qty"><input name="Bill.BillItems[${itemIndex}].Quantity" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(${itemIndex})" /></td>`;
+
+            if (transactionSettings.freeItemQuantity) {
+                rowHTML += `<td class="col-free-qty"><input name="Bill.BillItems[${itemIndex}].FreeQuantity" type="number" step="0.01" class="form-control-sm" placeholder="Free Qty" /></td>`;
+            }
+
+            // Unit dropdown
+            let unitDropdown = `<select name="Bill.BillItems[${itemIndex}].Unit" class="form-control-sm">`;
+
+
+        @foreach (var item in Model.UnitOptions)
+        {
+            @:unitDropdown += `<option value="@item">@item</option>`;
+
+        }
+
+            unitDropdown += `</select>`;
+
+            rowHTML += `<td class="col-unit">${unitDropdown}</td>`;
+            rowHTML += `<td class="col-price"><input name="Bill.BillItems[${itemIndex}].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(${itemIndex})" /></td>`;
+
+            if (itemSettings.itemWiseDiscount) {
+                rowHTML += `<td class="col-discount-pct"><input name="Bill.BillItems[${itemIndex}].DiscountPercentage" type="number" step="0.01" class="form-control-sm discount-input" onchange="calculateItemAmount(${itemIndex})" /></td>`;
+            }
+
+            rowHTML += `<td class="col-amount1"><input name="Bill.BillItems[${itemIndex}].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly /></td>`;
+
+            if (itemSettings.itemWiseTax) {
+                       // Check if this is an existing row or new row
+                        let existingElement = document.querySelector(`[name="Bill.BillItems[${itemIndex}].TaxPercentage"]`);
+                        let currentTax = existingElement?.value || null;
+                        if (currentTax === "") currentTax = null;
+
+                        let taxDropdown = `<select name="Bill.BillItems[${itemIndex}].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount(${itemIndex})">`;
+                        taxDropdown += `<option value="0" ${currentTax == null ? "selected" : ""}>Select</option>`;
+                        taxDropdown += `<option value="0" ${currentTax == "0" ? "selected" : ""}>0%</option>`;
+                        taxDropdown += `<option value="5" ${currentTax == "5" ? "selected" : ""}>5%</option>`;
+                        taxDropdown += `<option value="12" ${currentTax == "12" ? "selected" : ""}>12%</option>`;
+                        taxDropdown += `<option value="18" ${currentTax == "18" ? "selected" : ""}>18%</option>`;
+                        taxDropdown += `<option value="28" ${currentTax == "28" ? "selected" : ""}>28%</option>`;
+                        taxDropdown += `</select>`;
+                        rowHTML += `<td class="col-tax">${taxDropdown}</td>`;
+            }
+
+            rowHTML += `
+                <td class="col-amount2"><input name="Bill.BillItems[${itemIndex}].TaxAmount" type="number" step="0.01" class="form-control-sm tax-amount" readonly /></td>
+
+                 <td class="col-Cess"> <input asp-for="Bill.BillItems[i].AddCessAmount" type="number"step="0.01"class="form-control-sm cess-input"onchange="calculateItemAmount(${itemIndex})" /> </td>
+                 <td class="col-amount3"> <input asp-for="Bill.BillItems[i].TotalAmount" type="number" step="0.01" class="form-control-sm total-amount" readonly /></td>
+                <td class="col-action"><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${itemIndex})">×</button></td>`;
+
+            newRow.innerHTML = rowHTML;
+            tbody.appendChild(newRow);
+            itemIndex++;
+        }
+
+
+
+
+        function removeRow(index) {
+            const row = document.querySelector(`tr[data-index="${index}"]`);
+            if (row) {
+                row.remove();
+                updateGrandTotal();
+            }
+        }
+
+        function calculateItemAmount(index) {
+
+            const row = document.querySelector(`tr[data-index="${index}"]`);
+            if (!row) return;
+
+            const quantity = parseFloat(row.querySelector('.qty-input').value) || 0;
+            const pricePerUnit = parseFloat(row.querySelector('.price-input').value) || 0;
+            const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
+            const CessAmount = parseFloat(row.querySelector('.cess-input').value) || 0;
+            const taxSelect = row.querySelector('.tax-select').value;
+
+            const subtotal = quantity * pricePerUnit;
+            const discountAmount = subtotal * (discountPercentage / 100);
+            const afterDiscount = subtotal - discountAmount;
+
+            let taxRate = 0;
+            // if (taxSelect && taxSelect !== 'Select') {
+                taxRate = parseFloat(taxSelect) || 0;
+            // }
+
+            const taxAmount = afterDiscount * (taxRate / 100);
+            const finalAmount = afterDiscount + taxAmount + CessAmount;
+
+            row.querySelector('.discount-amount').value = discountAmount.toFixed(2);
+            row.querySelector('.tax-amount').value = taxAmount.toFixed(2);
+            row.querySelector('.total-amount').value = finalAmount.toFixed(2);
+
             updateGrandTotal();
         }
-    }
 
-    function calculateItemAmount(index) {
-        const row = document.querySelector(`tr[data-index="${index}"]`);
-        if (!row) return;
+        function updateGrandTotal() {
 
-        const quantity = parseFloat(row.querySelector('.qty-input').value) || 0;
-        const pricePerUnit = parseFloat(row.querySelector('.price-input').value) || 0;
-        const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
-        const taxSelect = row.querySelector('.tax-select').value;
 
-        const subtotal = quantity * pricePerUnit;
-        const discountAmount = subtotal * (discountPercentage / 100);
-        const afterDiscount = subtotal - discountAmount;
+            let total = 0;
+            document.querySelectorAll('.total-amount').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
 
-        let taxRate = 0;
-        if (taxSelect && taxSelect !== 'Select') {
-            taxRate = parseFloat(taxSelect.replace('%', '')) || 0;
+            document.getElementById('grandTotal').textContent = total.toFixed(2);
+
+
+
+            const TotalDiscount = document.querySelector('.total-discount');
+            const discountValueInput = document.querySelector('.total-discountvalue');
+
+            const shipingValueInput = document.querySelector('.shipping-value');
+            const packingValueInput = document.querySelector('.packing-value');
+            const adjustValueInput = document.querySelector('.adjustment-value');
+
+            const shipingShow = document.querySelector('.shipping-show');
+            const packingShow = document.querySelector('.packing-show');
+            const adjustShow = document.querySelector('.adjustment-show');
+
+            const discountPercentage = parseFloat(TotalDiscount.value) || 0;
+
+            const TotalDiscountvalue =  total * (discountPercentage/100);
+
+            discountValueInput.value  =  TotalDiscountvalue.toFixed(2);
+            total = total-TotalDiscountvalue.toFixed(2);
+
+             const shippingvalue = parseFloat(shipingValueInput.value) || 0;
+             shipingShow.textContent =  shippingvalue.toFixed(2);
+             const packingvalue = parseFloat(packingValueInput.value) || 0;
+             packingShow.textContent  = packingvalue.toFixed(2);
+             const adjustvalue = parseFloat(adjustValueInput.value) || 0;
+             adjustShow.textContent=  adjustvalue.toFixed(2);
+
+                     total = total + shippingvalue + packingvalue + adjustvalue;
+                     total = total.toFixed(2);
+
+
+
+            const roundOff = document.querySelector('input[name="Bill.IsRoundOff"]').checked;
+            let finalTotal = roundOff ? Math.round(total) : total;
+            let roundOffAmount = finalTotal - total;
+
+             const totalbalance = document.querySelector('.total-balance');
+             totalbalance.value =  finalTotal.toFixed(2);
+
+             const receivedElement = document.querySelector('.received-amount');
+             const receivedamount = parseFloat(receivedElement.value) || 0;
+             const finalamount =  finalTotal-receivedamount;
+            document.getElementById('finalTotal').textContent = finalamount.toFixed(2);
+            document.getElementById('finalTotalinput').value =  finalamount.toFixed(2);
         }
 
-        const taxAmount = afterDiscount * (taxRate / 100);
-        const finalAmount = afterDiscount + taxAmount;
-
-        row.querySelector('.discount-amount').value = discountAmount.toFixed(2);
-        row.querySelector('.tax-amount').value = taxAmount.toFixed(2);
-        row.querySelector('.item-amount').value = finalAmount.toFixed(2);
-
-        updateGrandTotal();
-    }
-
-    function updateGrandTotal() {
-        let total = 0;
-        document.querySelectorAll('.item-amount').forEach(input => {
-            total += parseFloat(input.value) || 0;
+        // Initialize calculations on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.item-row').forEach((row, index) => {
+                calculateItemAmount(index);
+            });
         });
 
-        document.getElementById('grandTotal').textContent = total.toFixed(2);
+        // Handle round off checkbox change
+        document.querySelector('input[name="Bill.IsRoundOff"]').addEventListener('change', updateGrandTotal);
+    </script>
+    <script>
+        // Toggle between Credit and Cash
+                document.getElementById('paymentToggle').addEventListener('click', function() {
 
-        const roundOff = document.querySelector('input[name="Bill.RoundOff"]').checked;
-        let finalTotal = roundOff ? Math.round(total) : total;
-        let roundOffAmount = finalTotal - total;
+                    const toggle = this;
+                    const modeText = document.getElementById('paymentMode');
 
-        document.getElementById('roundOffAmount').textContent = roundOffAmount.toFixed(2);
-        document.getElementById('finalTotal').textContent = finalTotal.toFixed(2);
-    }
+                    // const dueDateContainer = document.getElementById('dueDateContainer');
 
-    // Initialize calculations on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.item-row').forEach((row, index) => {
-            calculateItemAmount(index);
+                    toggle.classList.toggle('cash');
+
+                    if (toggle.classList.contains('cash')) {
+                        // modeText.textContent = 'Cash';
+                        // dueDateContainer.style.display='none';
+                        document.getElementById('iscreditinput').value = "false";
+
+                        }
+                    else {
+                        // modeText.textContent = 'Credit';
+                        // dueDateContainer.style.display = 'block';
+                        document.getElementById('iscreditinput').value = "true";
+
+
+                    }
+                });
+
+
+
+                         //  function showColumnSettings()
+                         // {
+                         //     debugger;
+                         //    const dropdown = document.getElementById('columnSettings');
+                         //    const button = document.querySelector('th.col-action .column-toggle-btn'); // Changed this line
+                         //    dropdown.classList.toggle('show');
+                         //    if (dropdown.classList.contains('show')) {
+                         //        const buttonRect = button.getBoundingClientRect();
+                         //        dropdown.style.position = 'absolute';
+                         //        dropdown.style.top = (buttonRect.bottom + 5) + 'px';
+                         //        dropdown.style.left = (buttonRect.right - 200) + 'px';
+                         //    }
+                         // }
+
+
+               function closeView() {
+                       window.location.href = '/Web/Home/Index'; // Or your desired controller/action
+               }
+
+                // function toggleColumn(columnClass, isChecked) {
+                //          const columns = document.querySelectorAll('.' + columnClass);
+                //          columns.forEach(column => {
+                //                 if (isChecked) {
+                //                     column.classList.remove('hidden-column');
+                //                 } else {
+                //                     column.classList.add('hidden-column');
+                //                 }
+                //          });
+                //  }
+
+
+                document.addEventListener('click', function(event) {
+
+            const button = document.querySelector('th.col-action .column-toggle-btn');
+            const dropdown = document.getElementById('columnSettings');
+
+            // if (!button.contains(event.target) && !dropdown.contains(event.target)) {
+            //     dropdown.classList.remove('show');
+            // }
         });
-    });
+    </script>
 
-    // Handle round off checkbox change
-    document.querySelector('input[name="Bill.RoundOff"]').addEventListener('change', updateGrandTotal);
-</script>
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePopover();
+        });
+
+        function initializePopover() {
+
+            const columnToggleBtn = document.getElementById('columnToggleBtn');
+            const columnSettingsContent = document.getElementById('columnSettingsContent');
+
+            if (columnToggleBtn && columnSettingsContent) {
+                // Create popover instance
+                const popover = new bootstrap.Popover(columnToggleBtn, {
+                    content: function() {
+                        return columnSettingsContent.innerHTML;
+                    },
+                    html: true,
+                    placement: 'bottom',
+                    trigger: 'click',
+                    title: 'Column Settings',
+                    sanitize: false
+                });
+
+                // Handle checkbox changes in popover content
+                columnToggleBtn.addEventListener('shown.bs.popover', function() {
+                    const popoverElement = document.querySelector('.popover');
+                    if (popoverElement) {
+                        const checkboxes = popoverElement.querySelectorAll('input[type="checkbox"]');
+                        // checkboxes.forEach(checkbox => {
+                        //     checkbox.addEventListener('change', function() {
+                        //         const columnClass = this.getAttribute('data-column');
+                        //         if (columnClass) {
+                        //             toggleColumnFromPopover(columnClass, this.checked);
+                        //         }
+                        //     });
+                        // });
+
+                        // Handle save button in popover
+                        // const saveBtn = popoverElement.querySelector('.btn-primary');
+                        // if (saveBtn) {
+                        //     saveBtn.addEventListener('click', function() {
+                        //         saveColumnSettingsFromPopover();
+                        //         popover.hide();
+                        //     });
+                        // }
+                    }
+                });
+
+                // Handle clicks outside to close popover
+                document.addEventListener('click', function(event) {
+                    if (!columnToggleBtn.contains(event.target) && !event.target.closest('.popover')) {
+                        popover.hide();
+                    }
+                });
+            }
+        }
+
+                function saveColumnSettingsFromPopover() {
+
+            const popoverElement = document.querySelector('.popover');
+            if (!popoverElement) {
+                console.error("Popover not found");
+                return;
+            }
+
+            // Get checkboxes from the popover
+            const categoryEl = popoverElement.querySelector('#col-category-popup');
+            const itemCodeEl = popoverElement.querySelector('#col-item-code-popup');
+            const hsnEl = popoverElement.querySelector('#col-hsn-popup');
+            const descriptionEl = popoverElement.querySelector('#col-description-popup');
+            const discountEl = popoverElement.querySelector('#col-discount-pct-popup');
+
+            // Check if elements exist
+            if (!categoryEl || !itemCodeEl || !hsnEl || !descriptionEl || !discountEl) {
+                console.error("Some checkbox elements are missing from popover");
+                return;
+            }
+
+            // Collect checkbox values
+            const model = {
+                ItemCategory: categoryEl.checked,
+                ItemCode: itemCodeEl.checked,
+                HsnSacCode: hsnEl.checked,
+                Description: descriptionEl.checked,
+                ItemWiseDiscount: discountEl.checked
+            };
+
+            console.log("Model being sent from popover:", model);
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch('/Settings/ItemSettings/SaveOrUpdateColumnSettings', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token
+                },
+                body: JSON.stringify(model)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    if (data.redirectUrl) {
+                        window.location.href = '/Sales/Create';
+                    } else {
+                        alert('Settings saved successfully!');
+                    }
+                } else {
+                    alert("Failed: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while saving settings: " + error.message);
+            });
+        }
+                // Define the toggleColumn function
+        // function toggleColumn(columnClass, isChecked) {
+        //     const columns = document.querySelectorAll('.' + columnClass);
+
+        //     columns.forEach(column => {
+        //         if (isChecked) {
+        //             column.classList.remove('hidden-column');
+        //         } else {
+        //             column.classList.add('hidden-column');
+        //         }
+        //     });
+        // }
+        //         function toggleColumnFromPopover(columnClass, isChecked) {
+        //     toggleColumn(columnClass, isChecked);
+        // }
+               function saveColumnSettings() {
+
+            // Get checkboxes from the column settings container (not from popover)
+            const categoryEl = document.querySelector('#col-category-popup');
+            const itemCodeEl = document.querySelector('#col-item-code-popup');
+            const hsnEl = document.querySelector('#col-hsn-popup');
+            const descriptionEl = document.querySelector('#col-description-popup');
+            const discountEl = document.querySelector('#col-discount-pct-popup');
+
+            // Check if elements exist
+            if (!categoryEl || !itemCodeEl || !hsnEl || !descriptionEl || !discountEl) {
+                console.error("Some checkbox elements are missing");
+                return;
+            }
+
+            // Collect checkbox values
+            const model = {
+                ItemCategory: categoryEl.checked,
+                ItemCode: itemCodeEl.checked,
+                HsnSacCode: hsnEl.checked,
+                Description: descriptionEl.checked,
+                ItemWiseDiscount: discountEl.checked
+            };
+
+            console.log("Model being sent:", model);
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            fetch('/Settings/ItemSettings/SaveOrUpdateColumnSettings', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token
+                },
+                body: JSON.stringify(model)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    if (data.redirectUrl) {
+                        window.location.href = '/Sales/Create';
+                    } else {
+                        // Hide the settings container after successful save
+                        document.getElementById('columnSettingsContainer').style.display = 'none';
+                        alert('Settings saved successfully!');
+                    }
+                } else {
+                    alert("Failed: " + data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while saving settings: " + error.message);
+            });
+        }
+
+    </script>
+    <script>
+                      function previewImage(input) {
+            const container = input.closest('.upload-area-imgshow');
+            const uploadContent = container.querySelector('.upload-content-imgshow');
+            const preview = container.querySelector('.image-preview-imgshow');
+            const img = document.getElementById('preview-img-imgshow');
+            const imageName = document.getElementById('image-name-imgshow');
+            const label = container.querySelector('.upload-label-imgshow');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    imageName.textContent = input.files[0].name; // Add this line
+                    uploadContent.style.display = 'none';
+                    preview.style.display = 'block';
+                    label.style.color = '#007bff';
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage(event) {
+            event.stopPropagation();
+            const input = document.querySelector('input[name="Bill.imageFile"]');
+            const container = input.closest('.upload-area-imgshow');
+            const uploadContent = container.querySelector('.upload-content-imgshow');
+            const preview = container.querySelector('.image-preview-imgshow');
+
+            input.value = '';
+            preview.style.display = 'none';
+            uploadContent.style.display = 'block';
+        }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const shareButton = document.getElementById('shareButtonshareshow');
+            const shareDropdown = document.getElementById('shareDropdownshareshow');
+
+            shareButton.addEventListener('click', function() {
+                shareDropdown.classList.toggle('show-shareshow');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                if (!shareButton.contains(event.target) && !shareDropdown.contains(event.target)) {
+                    shareDropdown.classList.remove('show-shareshow');
+                }
+            });
+        });
+
+        function openShareWindow() {
+            // Your existing share functionality or create new share window
+            const shareWindow = window.open('', 'shareWindow', 'width=400,height=300');
+            shareWindow.document.write(`
+                <div style="padding: 20px; font-family: Arial;">
+                    <h3>Share Options</h3>
+                    <p>Share functionality would go here</p>
+                    <button onclick="window.close()">Close</button>
+                </div>
+            `);
+            document.getElementById('shareDropdownshareshow').classList.remove('show-shareshow');
+        }
+
+        function printDocument() {
+            window.print();
+            document.getElementById('shareDropdownshareshow').classList.remove('show-shareshow');
+        }
+    </script>
+
+
+    <script>
+              function toggleItemDropdownPopdorp(index) {
+            // Remove any existing dropdown
+            const existingDropdown = document.getElementById('floatingDropdownPopdorp');
+            if (existingDropdown) {
+                existingDropdown.remove();
+            }
+
+            const button = document.getElementById(`itemBtnPopdorp-${index}`);
+            const buttonRect = button.getBoundingClientRect();
+
+            // Create dropdown element
+
+            const dropdown = document.createElement('div');
+            dropdown.id = 'floatingDropdownPopdorp';
+            dropdown.innerHTML = `
+                <div style="background: #f8f9fa; padding: 8px; border-bottom: 1px solid #dee2e6; display: flex; font-weight: bold; font-size: 12px;">
+                    <div style="flex: 2; padding: 4px;">ITEM NAME</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">SALE PRICE</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">PURCHASE PRICE</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">MFG COST</div>
+                    <div style="flex: 1; padding: 4px; text-align: center;">STOCK</div>
+                </div>
+                <div style="display: flex; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; align-items: center;" onclick="showAddItemFormPopdorp(${index})">
+                    <div style="flex: 2; padding: 4px; color: #007bff;">
+                        <i class="bi bi-plus-circle"></i> Add Item
+                    </div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                    <div style="flex: 1;"></div>
+                </div>
+
+                ${itemOptions.map(item => `
+                    <div style="display: flex; padding: 6px 8px; border-bottom: 1px solid #eee; cursor: pointer;"
+                         onclick="selectItemFromTablePopdorp(${index}, '${item.id}', '${item.itemName}')"
+                         onmouseover="this.style.backgroundColor='#f8f9fa'"
+                         onmouseout="this.style.backgroundColor='white'">
+                        <div style="flex: 2; padding: 4px; font-size: 12px;">${item.itemName}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${item.salePrice}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${item.purchasePrice}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px;">${new Date(item.asOfDate).toLocaleDateString('en-GB')}</div>
+                        <div style="flex: 1; padding: 4px; text-align: center; font-size: 12px; color: #dc3545;">${item.openingQuantity}</div>
+                    </div>
+                `).join('')}
+            `;
+
+            // Style the dropdown
+            dropdown.style.cssText = `
+                position: fixed;
+                background: white;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                min-width: 600px;
+                max-height: 300px;
+                overflow-y: auto;
+                z-index: 10000;
+                top: ${buttonRect.bottom + 5}px;
+                left: ${buttonRect.left}px;
+            `;
+
+            // Append to body
+            document.body.appendChild(dropdown);
+          }
+
+        function selectItemFromTablePopdorp(index, itemId, itemName) {
+            // Update button text
+            const button = document.getElementById(`itemBtnPopdorp-${index}`);
+            button.textContent = itemName;
+
+            // Update hidden select
+            const hiddenSelect = document.getElementById(`hiddenSelectPopdorp-${index}`);
+            hiddenSelect.value = itemId;
+
+                autoFillItemData(index, itemId);
+
+            // Remove dropdown
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown) {
+                dropdown.remove();
+            }
+
+            // Call your existing function
+            onItemChange(hiddenSelect, index);
+        }
+
+        function showAddItemFormPopdorp(index) {
+
+
+            window.location.href='/Web/billitem/create';
+
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown && !dropdown.contains(event.target) && !event.target.id.includes('itemBtnPopdorp')) {
+                dropdown.remove();
+            }
+        });
+
+                    window.addEventListener('scroll', function() {
+            const dropdown = document.getElementById('floatingDropdownPopdorp');
+            if (dropdown) {
+                dropdown.remove();
+            }
+        });
+
+                function autoFillItemData(rowIndex, itemId) {
+            // Find the selected item from itemOptions
+            const selectedItem = itemOptions.find(item => item.id == itemId);
+            if (!selectedItem) return;
+
+            const row = document.querySelector(`tr[data-index="${rowIndex}"]`);
+            if (!row) return;
+
+            // Auto-fill the fields based on item data
+            const itemCodeInput = row.querySelector('input[name*="ItemCode"]');
+            if (itemCodeInput && selectedItem.itemCode) {
+                itemCodeInput.value = selectedItem.itemCode;
+            }
+
+            const hsnCodeInput = row.querySelector('input[name*="HSNCode"]');
+            if (hsnCodeInput && selectedItem.itemHsn) {
+                hsnCodeInput.value = selectedItem.itemHsn;
+            }
+
+            const mrpInput = row.querySelector('input[name*="MRP"]');
+            if (mrpInput && selectedItem.mrp) {
+                mrpInput.value = selectedItem.mrp;
+            }
+
+            const priceInput = row.querySelector('input[name*="PricePerUnit"]');
+            if (priceInput && selectedItem.salePrice) {
+                priceInput.value = selectedItem.salePrice;
+            }
+
+             const Qty = row.querySelector('input[name*="Quantity"]');
+            if (Qty) {
+                Qty.value = 1;
+            }
+
+            calculateItemAmount(rowIndex);
+        }
+
+    </script>
+</body>
+</html>

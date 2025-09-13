@@ -1,5 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
-
+using static MUNEEMJI.Models.Template;
 namespace MUNEEMJI.Models
 {
     public class InventoryViewModel
@@ -22,7 +22,7 @@ namespace MUNEEMJI.Models
         public List<BillItem> ItemView { get; set; }
         public BillItem SelectedItem { get; set; }
 
-
+        public List<Category> Categories { get; set; }
 
 
     }

@@ -1,0 +1,984 @@
+﻿@model ItemViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+}
+
+<header>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Bootstrap CSS and JS for Popover -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</header>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: white;
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+    }
+
+    .main-container {
+        width: 100vw;
+        height: 100vh;
+        margin: 0 auto;
+        background: white;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .header-tabs {
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        padding: 0;
+        flex-shrink: 0;
+    }
+
+    .tab {
+        padding: 15px 30px;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        color: #6c757d;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+    }
+
+        .tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            background: white;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+    .tab-content {
+        flex: 1;
+        overflow: hidden;
+        display: none;
+    }
+
+        .tab-content.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+    .main-content {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        padding-left: 0px;
+    }
+
+    .sidebar {
+        width: 322px;
+        background: #f8f9fa;
+        border-right: 1px solid #e9ecef;
+        padding: 20px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        overflow-x: visible;
+        height: calc(100vh - 120px);
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+            .search-box input:focus {
+                outline: none;
+                border-color: #007bff;
+                box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+            }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+    .add-item-btn {
+        background: linear-gradient(45deg, #ff9500, #ffb347);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255,149,0,0.3);
+    }
+
+        .add-item-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,149,0,0.4);
+        }
+
+    .add-category-btn {
+        background: linear-gradient(45deg, #ff9500, #ffb347);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+    }
+
+        .add-category-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40,167,69,0.4);
+        }
+
+    .godown-select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+    }
+
+    .item-list, .category-list {
+        background: white;
+        border-radius: 8px;
+        overflow: visible;
+    }
+
+    .item-list-header, .category-list-header {
+        display: flex;
+        background: #f8f9fa;
+        padding: 10px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .item-name, .category-name {
+        flex: 1;
+    }
+
+    .item-quantity, .category-count {
+        width: 80px;
+        text-align: center;
+    }
+
+    .item-row, .category-row {
+        display: flex;
+        padding: 12px;
+        align-items: center;
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        margin: 1px 0;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .item-row:hover, .category-row:hover {
+            background: #bbdefb;
+            transform: translateX(5px);
+        }
+
+    .category-row {
+        background: #e8f5e8;
+        border-left: 4px solid #28a745;
+    }
+
+        .category-row:hover {
+            background: #c8e6c9;
+        }
+
+    .content-area {
+        padding: 0;
+        overflow-y: auto;
+        width: 62%;
+        flex-direction: column;
+    }
+
+    .product-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .product-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .adjust-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 12px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+    }
+
+        .adjust-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+    .product-info {
+        display: flex;
+        background: white;
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+        gap: 40px;
+        flex-shrink: 0;
+    }
+
+    .info-card {
+        flex: 1;
+    }
+
+    .info-label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .info-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .stock-warning {
+        color: #dc3545;
+    }
+
+    .stock-value {
+        color: #28a745;
+    }
+
+    .transactions-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+        text-transform: uppercase;
+    }
+
+    .search-transactions {
+        position: relative;
+        width: 300px;
+    }
+
+        .search-transactions input {
+            width: 100%;
+            padding: 8px 15px 8px 35px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-transactions i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+    .transactions-table {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+        flex: 1;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        background: #f8f9fa;
+        color: #495057;
+        padding: 12px 15px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #f1f3f4;
+        color: #2c3e50;
+        font-size: 14px;
+    }
+
+    tr:hover {
+        background: #f8f9ff;
+    }
+
+    .status-badge {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-partial {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .status-complete {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-pending {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .transaction-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    .indicator-purchase {
+        background: #28a745;
+    }
+
+    .indicator-sale {
+        background: #dc3545;
+    }
+
+    .sort-icon {
+        margin-left: 5px;
+        opacity: 0.7;
+        font-size: 10px;
+    }
+
+    .no-transactions {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    /* Custom popover styles */
+    .popover {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        min-width: 120px;
+    }
+
+    .popover-body {
+        padding: 0;
+    }
+
+    .popover-action {
+        display: block;
+        padding: 12px 16px;
+        text-decoration: none;
+        color: #333;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s ease;
+    }
+
+        .popover-action:last-child {
+            border-bottom: none;
+        }
+
+        .popover-action:hover {
+            background-color: #f8f9fa;
+            color: #333;
+            text-decoration: none;
+        }
+
+    /* Category specific styles */
+    .category-section {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .category-main {
+        padding: 20px;
+        overflow-y: auto;
+        width: 63%;
+    }
+
+    .category-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #28a745;
+    }
+
+    .category-content {
+        background: white;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .category-items-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .category-items-table {
+        padding: 20px;
+    }
+
+    .category-items-list {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e9ecef;
+    }
+
+    .loading-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        color: #6c757d;
+    }
+
+    .move-category-btn {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        font-size: 12px;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+    }
+
+        .move-category-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+    @@media (max-width: 768px) {
+        .main-content {
+            flex-direction: column;
+        }
+
+        .sidebar {
+            width: 100%;
+            max-height: 300px;
+        }
+
+        .product-info {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .search-transactions {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="main-container">
+    <div class="header-tabs">
+        <a href="#" class="tab active" data-tab="products" id="products-tab">
+            PRODUCTS
+        </a>
+        <a href="#" class="tab" data-tab="services" id="services-tab">
+            SERVICES
+        </a>
+        <a href="#" class="tab" data-tab="category" id="category-tab">
+            CATEGORY
+        </a>
+        <a href="#" class="tab" data-tab="units" id="units-tab">
+            UNITS
+        </a>
+    </div>
+
+    <!-- Products Tab Content -->
+    <div class="tab-content active" id="products-content">
+        <div id="products-partial-content">
+            @await Html.PartialAsync("_ProductsPartial", Model)
+        </div>
+    </div>
+
+    <!-- Services Tab Content -->
+    <div class="tab-content" id="services-content">
+        <div id="service-partial-content">
+            @await Html.PartialAsync("_ServicePartial", Model)
+        </div>
+    </div>
+
+    <!-- Category Tab Content -->
+    <div class="tab-content" id="category-content">
+        <div id="category-partial-content">
+            @await Html.PartialAsync("_CategoryPartial", Model)
+        </div>
+    </div>
+
+    <!-- Units Tab Content -->
+    <div class="tab-content" id="units-content">
+        <div class="loading-content">
+            <div>
+                <i class="fas fa-ruler fa-spin"></i>
+                <p>Units functionality coming soon...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Global popover management - Universal solution for all tabs
+    let globalPopoverList = [];
+    let clickHandlerAttached = false;
+    debugger;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Main page DOM loaded');
+        debugger;
+        // Initialize popovers immediately
+        initializeGlobalPopovers();
+
+        // Attach universal click handler only once
+        attachUniversalClickHandler();
+
+        // Tab switching functionality
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Close any open popovers when switching tabs
+                hideAllPopovers();
+
+                const targetTab = this.getAttribute('data-tab');
+
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                this.classList.add('active');
+
+                const targetContent = document.getElementById(targetTab + '-content');
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
+
+                // Reinitialize popovers after tab switch
+                setTimeout(function() {
+                    initializeGlobalPopovers();
+                }, 150);
+
+                if (targetTab === 'category') {
+                    loadCategoryContent();
+                }
+                if(targetTab === 'services')
+                {
+                    loadServiceContent();
+                }
+            });
+        });
+
+        console.log('Universal popover management initialized');
+    });
+
+    function attachUniversalClickHandler() {
+        if (clickHandlerAttached) return;
+
+        // Use document.body to catch all clicks, including those in partial views
+        document.body.addEventListener('click', function(e) {
+            console.log('Universal click detected on:', e.target);
+            handleUniversalClick(e);
+        }, true); // Use capture phase to catch events early
+
+        // Also attach to document as fallback
+        document.addEventListener('click', function(e) {
+            handleUniversalClick(e);
+        });
+
+        clickHandlerAttached = true;
+        console.log('Universal click handler attached');
+    }
+
+    function handleUniversalClick(e) {
+        // Don't close popovers if clicking on:
+        // 1. Popover trigger buttons
+        // 2. Elements inside popovers
+        // 3. Elements that should keep popovers open
+
+        const isPopoverTrigger = e.target.closest('[data-bs-toggle="popover"]');
+        const isInsidePopover = e.target.closest('.popover');
+        const isPopoverAction = e.target.classList.contains('popover-action');
+
+        console.log('Click analysis:', {
+            target: e.target.tagName + (e.target.className ? '.' + e.target.className : ''),
+            isPopoverTrigger: !!isPopoverTrigger,
+            isInsidePopover: !!isInsidePopover,
+            isPopoverAction: !!isPopoverAction
+        });
+
+        // Close popovers if clicking outside or on popover actions
+        if (!isPopoverTrigger && (!isInsidePopover || isPopoverAction)) {
+            const closedCount = hideAllPopovers();
+            if (closedCount > 0) {
+                console.log('Closed popovers due to outside click');
+            }
+        }
+    }
+
+    function initializeGlobalPopovers() {
+        console.log('Initializing global popovers...');
+
+        // Destroy existing popovers
+        globalPopoverList.forEach(popover => {
+            if (popover && popover.dispose) {
+                try {
+                    popover.dispose();
+                } catch (e) {
+                    console.log('Error disposing popover:', e);
+                }
+            }
+        });
+        globalPopoverList = [];
+
+        // Wait a moment for DOM to be ready
+        setTimeout(function() {
+            // Find all popover triggers in the entire document
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            console.log('Found ' + popoverTriggerList.length + ' popover triggers');
+
+            globalPopoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                console.log('Initializing popover for:', popoverTriggerEl.outerHTML.substring(0, 100));
+
+                const popover = new bootstrap.Popover(popoverTriggerEl, {
+                    sanitize: false,
+                    html: true,
+                    trigger: 'click',
+                    placement: 'left'
+                });
+
+                // Add event listeners for popover lifecycle
+                popoverTriggerEl.addEventListener('shown.bs.popover', function() {
+                    console.log('Popover shown');
+                });
+
+                popoverTriggerEl.addEventListener('hidden.bs.popover', function() {
+                    console.log('Popover hidden');
+                });
+
+                return popover;
+            });
+
+            console.log('Successfully initialized ' + globalPopoverList.length + ' popovers');
+        }, 100);
+    }
+
+    function hideAllPopovers() {
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        let closedCount = 0;
+
+        popoverTriggerList.forEach(function(popoverEl) {
+            const popover = bootstrap.Popover.getInstance(popoverEl);
+            if (popover) {
+                try {
+                    popover.hide();
+                    closedCount++;
+                } catch (e) {
+                    console.log('Error hiding popover:', e);
+                }
+            }
+        });
+
+        if (closedCount > 0) {
+            console.log('Closed ' + closedCount + ' popovers');
+        }
+
+        return closedCount;
+    }
+
+    // Category content loading
+    function loadCategoryContent() {
+        const categoryPartialContent = document.getElementById('category-partial-content');
+
+        categoryPartialContent.innerHTML = `
+            <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                <div style="text-align: center; color: #6c757d;">
+                    <i class="fas fa-cog fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
+                    <p>Loading categories...</p>
+                </div>
+            </div>`;
+
+        fetch('/Web/Items/GetCategoriespartialView', {
+            method: 'GET'
+        })
+        .then(async response => {
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server Error: ${errorText}`);
+            }
+            return response.text();
+        })
+        .then(html => {
+            categoryPartialContent.innerHTML = html;
+            // Reinitialize popovers after loading category content
+            setTimeout(function() {
+                initializeGlobalPopovers();
+            }, 200);
+        })
+        .catch(error => {
+            console.error('Error loading categories:', error);
+            categoryPartialContent.innerHTML = `
+                <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                    <div style="text-align: center; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
+                        <p>Error: ${error.message}</p>
+                        <button class="btn btn-primary btn-sm" onclick="loadCategoryContent()">Retry</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+     // Service content loading
+    function loadServiceContent() {
+        debugger;
+        const categoryPartialContent = document.getElementById('service-partial-content');
+
+        categoryPartialContent.innerHTML = `
+            <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                <div style="text-align: center; color: #6c757d;">
+                    <i class="fas fa-cog fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
+                    <p>Loading Serives...</p>
+                </div>
+            </div>`;
+
+        fetch('/Web/items/GetServicePartialView', {
+            method: 'GET'
+        })
+        .then(async response => {
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server Error: ${errorText}`);
+            }
+            return response.text();
+        })
+        .then(html => {
+            categoryPartialContent.innerHTML = html;
+            // Reinitialize popovers after loading category content
+            setTimeout(function() {
+                initializeGlobalPopovers();
+            }, 200);
+        })
+        .catch(error => {
+            console.error('Error loading Serives:', error);
+            categoryPartialContent.innerHTML = `
+                <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                    <div style="text-align: center; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
+                        <p>Error: ${error.message}</p>
+                        <button class="btn btn-primary btn-sm" onclick="loadServiceContent()">Retry</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    // Action functions - called from popover content
+    function viewItem(itemId) {
+         // Hide all popovers
+         document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(popoverEl) {
+             const popover = bootstrap.Popover.getInstance(popoverEl);
+             if (popover) {
+                 popover.hide();
+             }
+         });
+
+         // Redirect to the ViewItem page
+         window.location.href = `/Web/items/ViewItem/${itemId}`;
+     }
+
+     function viewService(itemId) {
+         // Hide all popovers
+         document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(popoverEl) {
+             const popover = bootstrap.Popover.getInstance(popoverEl);
+             if (popover) {
+                 popover.hide();
+             }
+         });
+
+         // Redirect to the ViewItem page
+         window.location.href = `/Web/items/ViewItem/${itemId}`;
+     }
+
+
+
+    function deleteItem(itemId) {
+       
+        console.log('Delete item:', itemId);
+        hideAllPopovers();     
+            
+            fetch('/Web/Items/DeleteItem/' + itemId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // Or update UI dynamically
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error deleting item');
+            });           
+        
+    }
+
+    function addCategory() {
+        hideAllPopovers();
+        alert('Add Category - Replace with your actual implementation');
+        // Example: window.location.href = '/Web/Categories/Create';
+    }
+
+    function editCategory(categoryId) {
+        console.log('Edit category:', categoryId);
+        hideAllPopovers();
+        alert('Edit Category ' + categoryId + ' - Replace with your actual implementation');
+        // Example: window.location.href = '/Web/Categories/Edit/' + categoryId;
+    }
+
+    function deleteCategory(categoryId) {
+        console.log('Delete category:', categoryId);
+        hideAllPopovers();
+
+        if (confirm('Are you sure you want to delete this category?')) {
+            alert('Delete Category ' + categoryId + ' - Replace with your actual implementation');
+        }
+    }
+
+    function selectCategory(categoryId) {
+        // Remove active class from all category links
+        document.querySelectorAll('.category-row a').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Add active class to clicked category
+        if (event && event.target.closest('a')) {
+            event.target.closest('a').classList.add('active');
+        }
+
+        console.log('Selected category:', categoryId);
+    }
+
+    function searchCategories(searchTerm) {
+        const categoryRows = document.querySelectorAll('.category-row');
+        categoryRows.forEach(row => {
+            const categoryName = row.querySelector('.category-name')?.textContent.toLowerCase();
+            if (categoryName && (categoryName.includes(searchTerm.toLowerCase()) || searchTerm === '')) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    // Optional: Add scroll-based closing as backup
+    window.addEventListener('scroll', function() {
+        hideAllPopovers();
+    });
+
+    // Optional: Add keyboard support
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            hideAllPopovers();
+        }
+    });
+</script>

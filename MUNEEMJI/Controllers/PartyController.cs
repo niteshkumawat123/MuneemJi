@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
@@ -18,10 +19,14 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public IActionResult Add(int id=0)
         {
+            StateController stateObj = new StateController();
+            
             var data = new  PartyModel();
+            data.States = stateObj.StateDropDown();
             if (id > 0)
             {
                  data = PartGetById(id);
+                data.States = stateObj.StateDropDown();
             }
            
 
@@ -217,7 +222,7 @@ namespace MUNEEMJI.Controllers
                 if (save == "new")
                 {
                     TempData["Message"] = model.Id > 0 ? "Party updated. Ready to add new." : "Party saved. Ready to add new.";
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Add");
                 }
 
                 TempData["Message"] = model.Id > 0 ? "Party updated successfully." : "Party saved successfully.";
@@ -505,7 +510,7 @@ namespace MUNEEMJI.Controllers
 
                     string sql = "SELECT id, party_name AS PartyName, balance,phone_number as phonenumber FROM parties ORDER BY party_name";
 
-                    var result = await conn.QueryAsync<PartyDropDownModel>(sql);
+                    var result = await conn.QuerySqlAsync<PartyDropDownModel>(sql);
                     model = result?.ToList() ?? new List<PartyDropDownModel>();
                 }
             }
@@ -516,6 +521,17 @@ namespace MUNEEMJI.Controllers
             }
 
             return model;
+        }
+
+
+
+        public void DeleteParty(int id = 0)
+        {
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                string query = "DELETE FROM parties WHERE id = @p_id";
+                conn.QuerySql(query, new { p_id = id });
+            }
         }
 
     }

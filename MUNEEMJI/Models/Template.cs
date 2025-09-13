@@ -101,30 +101,17 @@ namespace MUNEEMJI.Models
         public DateTime? DownloadDate { get; set; }
     }
 
-    [Table("categories")]
+   
     public class Category
     {
-        [Key]
-        [Column("id")]
-        public int Id { get; set; }
-
-        [Required]
-        [MaxLength(100)]
-        [Column("name")]
-        public string Name { get; set; } = string.Empty;
-
-        [MaxLength(50)]
-        [Column("type")]
-        public string Type { get; set; } = string.Empty; // Greetings, Trending, Business, Offers
-
-        [Column("is_active")]
+        
+        public int Id { get; set; }    
+        public string Name { get; set; } = string.Empty;        
+        public string Type { get; set; } = string.Empty;      
         public bool IsActive { get; set; } = true;
-
-        [Column("sort_order")]
         public int SortOrder { get; set; } = 0;
-
-        [Column("created_date")]
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public decimal itemCount { get; set; }
     }
 
     public class CategoryDropdownModel

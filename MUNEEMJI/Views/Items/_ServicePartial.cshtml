@@ -1,0 +1,153 @@
+﻿@model ItemViewModel
+
+<div class="d-flex">
+    <div class="sidebar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search Service...">
+        </div>
+
+        <button class="add-item-btn" onclick="window.location.href='/Web/Services/create';">
+            <i class="fas fa-plus"></i> Add Service
+        </button>
+
+        <select class="godown-select">
+            <option>Godown: All Godowns</option>
+            <option>Main Warehouse</option>
+            <option>Secondary Storage</option>
+            <option>Retail Store</option>
+        </select>
+
+        <div class="item-list">
+            <div class="item-list-header">
+                <div class="item-name">ITEM <i class="fas fa-filter"></i></div>
+               @*  <div class="item-quantity">QUANTITY</div> *@
+            </div>
+            @foreach (var item in Model.ItemView)
+            {
+                <div class="item-row">
+                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
+                       asp-action="MainIndex" asp-route-id="@item.Id" style="text-decoration: none; color: inherit; width: 100%; display: flex;">
+                        <div class="item-name">@item.ItemName</div>
+@*                         <div class="item-quantity">@item.OpeningQuantity</div>
+ *@                        <i class="fas fa-ellipsis-v" style=" color: #6c757d;"></i>
+                    </a>
+
+                    <!-- Updated button with Bootstrap popover -->
+                    <button type="button"
+                            class="btn btn-link p-1"
+                            data-bs-toggle="popover"
+                            data-bs-placement="left"
+                            data-bs-trigger="click"
+                            data-bs-html="true"
+                            data-bs-content='<a href="#" class="popover-action" onclick="viewService(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteService(@item.Id); return false;">Delete</a>'
+                            style="border: none; background: none; outline: none; cursor: pointer;">
+                        <span style="font-size: 16px; color: #6c757d;">⋮</span>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="content-area">
+        @if (Model.SelectedItem != null)
+        {
+            <div class="product-header">
+                <div class="product-title">
+                    <span>@Model.SelectedItem.ItemName</span>
+                    <a asp-action="Create" asp-controller="Services" asp-route-id="@Model.SelectedItem.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+                <button class="adjust-btn">
+                    <i class="fas fa-sliders-h"></i> ADJUST ITEM
+                </button>
+            </div>
+
+            <div class="product-info">
+                <div class="info-card">
+                    <div class="info-label">Sale Price</div>
+                    <div class="info-value">₹ @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
+                </div>
+              @*   <div class="info-card">
+                    <div class="info-label">Purchase Price</div>
+                    <div class="info-value">₹ @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label stock-warning">Stock Quantity</div>
+                    <div class="info-value stock-warning">@(Model.SelectedItem?.OpeningQuantity ?? 0)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Stock Value</div>
+                    <div class="info-value stock-value">₹ @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
+                </div> *@
+            </div>
+
+            <div class="transactions-section">
+                <div class="section-header">
+                    <h3 class="section-title">TRANSACTIONS</h3>
+                    <div class="search-transactions">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search transactions...">
+                    </div>
+                </div>
+
+                <div class="transactions-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TYPE <i class="fas fa-sort sort-icon"></i></th>
+                                <th>INVOICE/REF. <i class="fas fa-sort sort-icon"></i></th>
+                                <th>NAME <i class="fas fa-sort sort-icon"></i></th>
+                                <th>DATE <i class="fas fa-sort-down sort-icon"></i></th>
+                                <th>QUANTITY <i class="fas fa-sort sort-icon"></i></th>
+                                <th>PRICE/UNIT <i class="fas fa-sort sort-icon"></i></th>
+                                <th>STATUS <i class="fas fa-sort sort-icon"></i></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.SelectedItem.OpeningQuantity > 0)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="transaction-indicator indicator-purchase"></span>
+                                        Purchase (Main ...)
+                                    </td>
+                                    <td>-</td>
+                                    <td>test</td>
+                                    <td>14/06/2025</td>
+                                    <td>1 Btl</td>
+                                    <td>₹ 1,233.00</td>
+                                    <td>
+                                        <span class="status-badge status-partial">Partial</span>
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="no-transactions">No transactions to show</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="loading-content">
+                <div>
+                    <i class="fas fa-box"></i>
+                    <p>Select an item to view details</p>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+

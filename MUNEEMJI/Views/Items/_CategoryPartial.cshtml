@@ -1,0 +1,129 @@
+﻿@model ItemViewModel
+
+<div class="category-section">
+    <div class="sidebar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" placeholder="Search categories..." onkeyup="searchCategories(this.value)">
+        </div>
+
+        <button class="add-category-btn" onclick="addCategory();">
+            <i class="fas fa-plus"></i> Add Category
+        </button>
+
+        <div class="category-list">
+            <div class="category-list-header">
+                <div class="category-name">CATEGORY <i class="fas fa-filter"></i></div>
+                <div class="category-count">ITEM</div>
+            </div>
+
+            <!-- Items not in any category -->
+            <div class="category-row">
+                <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center active"
+                   href="#" onclick="selectCategory('uncategorized')" style="text-decoration: none; color: inherit; width: 100%; display: flex;">
+                    <div class="category-name">Items not in any Category</div>
+                    <div class="category-count">@((Model.ItemView?.Count() ?? 0))</div>
+                    <i class="fas fa-ellipsis-v" style="color: #6c757d;"></i>
+                </a>
+
+                <button type="button"
+                        class="btn btn-link p-1"
+                        data-bs-toggle="popover"
+                        data-bs-placement="left"
+                        data-bs-trigger="click"
+                        data-bs-html="true"
+                        data-bs-content='<a href="#" class="popover-action" onclick="editCategory(0); return false;">Edit</a>'
+                        style="border: none; background: none; outline: none; cursor: pointer;">
+                    <span style="font-size: 16px; color: #6c757d;">⋮</span>
+                </button>
+            </div>
+
+            <!-- Dynamic Categories from Database -->
+            @if (Model.Categories != null && Model.Categories.Any())
+            {
+                @foreach (var category in Model.Categories)
+                {
+                    <div class="category-row">
+                        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                           href="#" onclick="selectCategory('@category.Id')" style="text-decoration: none; color: inherit; width: 100%; display: flex;">
+                            <div class="category-name">@category.Name</div>
+                            <div class="category-count">@category.itemCount</div>
+                            <i class="fas fa-ellipsis-v" style="color: #6c757d;"></i>
+                        </a>
+
+                        <button type="button"
+                                class="btn btn-link p-1"
+                                data-bs-toggle="popover"
+                                data-bs-placement="left"
+                                data-bs-trigger="click"
+                                data-bs-html="true"
+                                data-bs-content='<a href="#" class="popover-action" onclick="editCategory(@category.Id); return false;">Edit</a><a href="#" class="popover-action" onclick="deleteCategory(@category.Id); return false;">Delete</a>'
+                                style="border: none; background: none; outline: none; cursor: pointer;">
+                            <span style="font-size: 16px; color: #6c757d;">⋮</span>
+                        </button>
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- Show message if no categories exist -->
+                <div class="no-categories" style="text-align: center; padding: 20px; color: #6c757d; font-size: 14px;">
+                    <i class="fas fa-folder-open" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                    <p style="margin: 0;">No categories created yet</p>
+                    <small>Click "Add Category" to create your first category</small>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="category-main">
+        <div class="category-header">
+            <h2 style="color: black; margin: 0; font-size: 15px;" id="category-title">ITEMS NOT IN ANY CATEGORY</h2>
+            <p style="color: #6c757d; margin: 5px 0 0 0; font-size: 14px;" id="category-subtitle">
+                @(Model.ItemView?.Count() ?? 0) items
+            </p>
+        </div>
+
+        <div class="category-content">
+            <div class="category-items-header">
+                <h3 style="margin: 0; font-size: 16px; color: #2c3e50;">ITEMS</h3>
+                <button class="move-category-btn">
+                    Move To This Category
+                </button>
+            </div>
+
+            <div class="category-items-table">
+                <div class="search-box" style="margin-bottom: 20px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search items...">
+                </div>
+
+                <div class="category-items-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable(0)">NAME <i class="fas fa-sort sort-icon"></i></th>
+                                <th onclick="sortTable(1)">QUANTITY <i class="fas fa-sort sort-icon"></i></th>
+                                <th onclick="sortTable(2)">STOCK VALUE <i class="fas fa-sort sort-icon"></i></th>
+                            </tr>
+                        </thead>
+                        <tbody id="category-items-tbody">
+                            @if (Model.ItemView != null && Model.ItemView.Count() > 0)
+                            {
+                                @foreach (var item in Model.ItemView)
+                                {
+                                    <tr>
+                                        <td>@item.ItemName</td>
+                                        <td style="color: #dc3545;">@item.OpeningQuantity</td>
+                                        <td style="color: #28a745;">₹ @((item.OnlineStorePrice ?? 0).ToString("0.00"))</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

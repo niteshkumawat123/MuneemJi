@@ -696,7 +696,7 @@
                     <span class="stat-title">Total Receivable</span>
                     <div class="stat-icon green">↓</div>
                 </div>
-                <div class="stat-value">₹ 0</div>
+                <div class="stat-value">₹@ViewBag.TotalReceivable</div>
                 <div class="stat-description">You don't have any receivables as of now.</div>
             </div>
             <div class="stat-card">
@@ -704,7 +704,7 @@
                     <span class="stat-title">Total Payable</span>
                     <div class="stat-icon red">↑</div>
                 </div>
-                <div class="stat-value">₹ 0</div>
+                <div class="stat-value">₹@ViewBag.TotalPayable</div>
                 <div class="stat-description">You don't have any payables as of now.</div>
             </div>
         </div>
@@ -714,7 +714,11 @@
             <div class="chart-header">
                 <span class="chart-title">Sales VS Profit by Products</span>
                 <select class="chart-filter">
-                    <option>This Month</option>
+                    <option>Last Month</option>
+                    <option>This Week</option>
+                    <option>This Quarter</option>
+                    <option>Half Year</option>
+                    <option>This Year</option>
                 </select>
             </div>
 
@@ -756,38 +760,38 @@
                     <div class="product-group">
                         <div class="sales-bar" style="height: 21%;" data-value="$150"></div>
                         <div class="profit-point" style="bottom: 57%;" data-value="16%">16%</div>
-                        <div class="product-label">Product1</div>
-                    </div>
+@*                         <div class="product-label">Product1</div>
+ *@                    </div>
 
                     <div class="product-group">
                         <div class="sales-bar" style="height: 25%;" data-value="$175"></div>
                         <div class="profit-point" style="bottom: 60%;" data-value="17%">17%</div>
-                        <div class="product-label">Product2</div>
-                    </div>
+@*                         <div class="product-label">Product2</div>
+ *@                    </div>
 
                     <div class="product-group">
                         <div class="sales-bar" style="height: 29%;" data-value="$200"></div>
                         <div class="profit-point" style="bottom: 68%;" data-value="19%">19%</div>
-                        <div class="product-label">Product3</div>
-                    </div>
+@*                         <div class="product-label">Product3</div>
+ *@                    </div>
 
                     <div class="product-group">
                         <div class="sales-bar" style="height: 43%;" data-value="$300"></div>
                         <div class="profit-point" style="bottom: 75%;" data-value="21%">21%</div>
-                        <div class="product-label">Product4</div>
-                    </div>
+@*                         <div class="product-label">Product4</div>
+ *@                    </div>
 
                     <div class="product-group">
                         <div class="sales-bar" style="height: 71%;" data-value="$500"></div>
                         <div class="profit-point" style="bottom: 82%;" data-value="23%">23%</div>
-                        <div class="product-label">Product5</div>
-                    </div>
+@*                         <div class="product-label">Product5</div>
+ *@                    </div>
 
                     <div class="product-group">
                         <div class="sales-bar" style="height: 100%;" data-value="$700"></div>
                         <div class="profit-point" style="bottom: 100%;" data-value="28%">28%</div>
-                        <div class="product-label">Product6</div>
-                    </div>
+@*                         <div class="product-label">Product6</div>
+ *@                    </div>
 
                     <!-- Profit Line -->
                     <svg class="profit-line" viewBox="0 0 100 100">
@@ -814,14 +818,23 @@
                     <a href="#" class="view-all">View All</a>
                 </div>
                 <div class="reports-grid">
-                    <div class="report-item">
-                        <span class="report-name">Sale Report</span>
-                        <span class="report-arrow">›</span>
+
+                    <div class="report-item" onclick="window.location.href='/Web/Sales/index'">
+                         <span class="report-name">Sale Report</span>
+                         <span class="report-arrow">›</span>
                     </div>
-                    <div class="report-item">
+
+                    @* <div class="report-item">
                         <span class="report-name">All Transactions</span>
                         <span class="report-arrow">›</span>
+                    </div> *@
+
+                    <div class="report-item" onclick="window.location.href='/Web/Home/AllTransection'">
+                            <span class="report-name">All Transactions</span>
+                            <span class="report-arrow">›</span>
                     </div>
+
+
                     <div class="report-item">
                         <span class="report-name">Daybook Report</span>
                         <span class="report-arrow">›</span>

@@ -67,7 +67,8 @@ namespace MUNEEMJI.Controllers
                 // Update download count
                 await UpdateDownloadCountAsync(request.TemplateId);
 
-                return File(imageBytes, "image/png", $"whatsapp-template-{DateTime.Now:yyyyMMddHHmmss}.png");
+                return Ok();
+                //return File(imageBytes, "image/png", $"whatsapp-template-{DateTime.Now:yyyyMMddHHmmss}.png");
             }
             catch (Exception ex)
             {

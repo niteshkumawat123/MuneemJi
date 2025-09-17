@@ -290,12 +290,16 @@
         <table class="transactions-table">
             <thead>
                 <tr>
-                    <th>DATE <span class="filter-icon">⇅</span></th>
-                    <th>PARTY <span class="filter-icon">⇅</span></th>
-                    <th>CHALLAN NO. <span class="filter-icon">⇅</span></th>
-                    <th>DUE DATE <span class="filter-icon">⇅</span></th>
-                    <th>TOTAL AMOUNT <span class="filter-icon">⇅</span></th>
-                    <th>STATUS <span class="filter-icon">⇅</span></th>
+                    <th>DATE</th>
+                    <th>REF NO.</th>
+                    <th>PARTY NAME</th>
+                    <th>CATEGORY NAME</th>
+                    <th>TYPE</th>
+                    <th>TOTAL</th>
+                    <th>RECEIVED/PAID</th>
+                    <th>BALANCE</th>
+                    <th>DUEDATE</th>
+                    <th>STATUS</th>
                     <th>ACTION</th>
                 </tr>
             </thead>
@@ -305,18 +309,23 @@
 
 
                     <tr class="row-highlight">
-                        <td>@item.Challandate</td>
-                        <td>@item.PartyName</td>
-                        <td>@item.ChallanNo</td>
-                        <td>@item.DueDate</td>
-                        <td>@item.Total</td>
+                        <td>@(item.BillDate.ToString("yyyy-MM-dd") ?? "-")</td>
+                        <td>@(item.ReturnNo>0?item.ReturnNo: "-")</td>
+                        <td>@(item.PartyName ?? "-")</td>
+                        <td>@(item.CategoryName ?? "-")</td>
+                        <td>Debit Note</td>
+                        <td>@(item.Total)</td>
+                        <td>@(item.paidReciveamount)</td>
+                        <td>@(item.FinalAmount)</td>
+                        <td>@(item.DueDate.ToString("yyyy-MM-dd") ?? "-")</td>
+
                         <td>
                             <span class="status-closed">@Enum.GetName(typeof(TradeDocumentStatusEnum), item.orderstatusid);</span>
                             <div style="font-size: 12px; color: #6c757d;">-</div>
 
                         </td>
                         <td class="actions-cell">
-                            <a href="/Web/Sales/Edit?id=@item.Id" class="converted-link">@(item.orderstatusid == 3 ? "CONVERT TO SALE" : "Convert To Invoice")</a>
+                            <a href="/Web/DebitNote/Edit?id=@item.Id" class="converted-link">@(item.orderstatusid == 3 ? "CONVERT TO SALE" : "Convert To Invoice")</a>
                             <button class="menu-dots" onclick="showActionMenu(this)">⋮</button>
                         </td>
                     </tr>
@@ -325,10 +334,7 @@
         </table>
     </div>
 
-    <div class="activate-windows">
-        <div>Activate Windows</div>
-        <div>Go to Settings to activate Windows.</div>
-    </div>
+ 
 </div>
 
 <script>

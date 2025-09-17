@@ -9,7 +9,7 @@ namespace MUNEEMJI.Areas.Settings.Controllers
     [Area("Settings")]
     public class TransactionController : Controller
     {
-        public IActionResult Index()
+        public IActionResult Index(string? returnUrl)
         {
             var connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
             TransactionSettingsViewModel settings = null;

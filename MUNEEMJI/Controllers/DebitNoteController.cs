@@ -31,7 +31,6 @@ namespace MUNEEMJI.Controllers
                 string vendorFilter = null;
                 using var connection = new NpgsqlConnection(_connectionString);
 
-
                 string query = @"
                 SELECT 
                     td.id AS ""Id"",
@@ -54,41 +53,59 @@ namespace MUNEEMJI.Controllers
                     td.paidreciveamount AS ""paidReciveamount"",
                     td.partyid AS ""PartyId"",
                     pt.party_name as PartyName,
-                    td.orderstatusid,
-                    td.orderno,
-                    td.orderdate,
-                    td.duedate,
-                    td.Challandate,
-                    td.challanno
-                FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id where td.TradeDocumentTypesid=@TradeDocumentTypesid;
-            ";
+                    td.final_amount as""FinalAmount"",
+                    td.invoicenumber as ""InvoiceNumber"",
+                    td.IsCredit as ""IsCredit"",
+                    td.ReturnNo 
+                FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id   where td.TradeDocumentTypesid=@TradeDocumentTypesid;
+                ";
 
-                List<PurchaseBill> PurchaseList = connection.QuerySql<PurchaseBill>(query, new { TradeDocumentTypesid = (int)TradeDocumentTypes.DebitNote }).ToList();
+                var PurchaseBill = connection.QuerySql<PurchaseBill>(query, new { TradeDocumentTypesid = (int)TradeDocumentTypes.DebitNote }).ToList();
 
-                if (PurchaseList != null && PurchaseList.Count() > 0)
+
+                if (PurchaseBill != null && PurchaseBill.Count() > 0)
                 {
+                    var paidTotal = PurchaseBill.Sum(b => b.paidReciveamount);
+                    var unpaidTotal = PurchaseBill.Sum(x => x.Total) - paidTotal;
+                    var grandTotal = paidTotal + unpaidTotal;
 
+                    ViewBag.PaidTotal = paidTotal;
+                    ViewBag.UnpaidTotal = unpaidTotal;
+                    ViewBag.GrandTotal = grandTotal;
+                    ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
+                    ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
+                    ViewBag.FirmFilter = firmFilter;
+                    ViewBag.VendorFilter = vendorFilter;
                 }
                 else
                 {
-                    PurchaseList = new List<PurchaseBill>();
+                    PurchaseBill = new List<PurchaseBill>();
                 }
 
-                return View(PurchaseList);
+                return View(PurchaseBill);
             }
             catch (Exception ex)
             {
                 // Log error
                 ViewBag.Error = "An error occurred while loading purchase bills.";
-                return View(new List<PurchaseBill>());
+                return View(new List<dynamic>());
             }
-
         }
+
+
+
+        // GET: Bill/Create
         public async Task<IActionResult> Create()
         {
             PartyController partyController = new PartyController();
+            var viewModel = new PurchaseBillViewModel();
+            var transactionSettingsController = new TransactionSettingsController();
+            var CategoryController = new CategoryController();
+
+            int firmid = 1;
             await Task.Delay(1);
-            var viewModel = new PurchaseBillViewModel
+
+            viewModel = new PurchaseBillViewModel
             {
                 Bill = new PurchaseBill
                 {
@@ -96,53 +113,59 @@ namespace MUNEEMJI.Controllers
 
                     BillDate = DateTime.Now,
                     BillItems = new List<PurchaseBillItem>
-                    {
+                        {
                         new PurchaseBillItem(),
                         new PurchaseBillItem()
-                    }
+                        },
+
+                    transactionSettings = transactionSettingsController.GetTransactionByFirmId(firmid),
+                    itemSettings = transactionSettingsController.GetItemSettings()
                 },
-                DropDownItem = await _IBillItemService.GetItems()
+                ViewTypeId = (int)ViewTypeEnum.Create,
+                DropDownItem = await _IBillItemService.GetItems(),
+                DropDownCategory = CategoryController.GetCategoriesDropdown()
+
             };
-            ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
+
+            var PartyList = await partyController.GetPartyDropDownAsync();
+            ViewBag.PartyList = PartyList;
             return View(viewModel);
         }
 
         // POST: Bill/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(PurchaseBillViewModel viewModel, IFormFile? imageFile)
+        public async Task<IActionResult> Create(PurchaseBillViewModel viewModel)
         {
             try
             {
-                if (ModelState.IsValid)
+
+                if (viewModel.Bill.imageFile != null && viewModel.Bill.imageFile.Length > 0)
                 {
-                    // Handle image upload
-                    if (imageFile != null && imageFile.Length > 0)
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                    if (!Directory.Exists(uploadsFolder))
                     {
-                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-                        if (!Directory.Exists(uploadsFolder))
-                        {
-                            Directory.CreateDirectory(uploadsFolder);
-                        }
-
-                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await imageFile.CopyToAsync(fileStream);
-                        }
-
-                        viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;
+                        Directory.CreateDirectory(uploadsFolder);
                     }
 
-                    // Calculate totals
-                    CalculateBillTotals(viewModel.Bill);
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + viewModel.Bill.imageFile.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                    var billId = await _billService.CreateBillAsync(viewModel.Bill);
-                    TempData["SuccessMessage"] = "Bill created successfully!";
-                    return RedirectToAction(nameof(Index));
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await viewModel.Bill.imageFile.CopyToAsync(fileStream);
+                    }
+
+                    viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;
                 }
+
+                // Calculate totals
+                CalculateBillTotals(viewModel.Bill);
+
+                var billId = await _billService.CreateBillAsync(viewModel.Bill);
+                TempData["SuccessMessage"] = "Bill created successfully!";
+                return RedirectToAction(nameof(Index));
+
             }
             catch (Exception ex)
             {
@@ -167,6 +190,8 @@ namespace MUNEEMJI.Controllers
         // GET: Bill/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
+            PartyController partyController = new PartyController();
+
             var bill = await _billService.GetBillByIdAsync(id);
             if (bill == null)
             {
@@ -175,10 +200,13 @@ namespace MUNEEMJI.Controllers
 
             var viewModel = new PurchaseBillViewModel
             {
-                Bill = bill
+                Bill = bill,
+                DropDownItem = await _IBillItemService.GetItems()
             };
+            ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
 
-            return View(viewModel);
+
+            return View("create", viewModel);
         }
 
         // POST: Bill/Edit/5
@@ -243,23 +271,7 @@ namespace MUNEEMJI.Controllers
             return View(bill);
         }
 
-        // POST: Bill/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            try
-            {
-                await _billService.DeleteBillAsync(id);
-                TempData["SuccessMessage"] = "Bill deleted successfully!";
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"Error deleting bill: {ex.Message}";
-            }
 
-            return RedirectToAction(nameof(Index));
-        }
 
         [HttpPost]
         public IActionResult AddBillItem(PurchaseBillViewModel viewModel)
@@ -313,27 +325,27 @@ namespace MUNEEMJI.Controllers
         {
             decimal total = 0;
 
-            foreach (var item in bill.BillItems)
-            {
-                var subtotal = item.Quantity * item.PricePerUnit;
-                item.DiscountAmount = subtotal * (item.DiscountPercentage / 100);
-                var afterDiscount = subtotal - item.DiscountAmount;
+            //foreach (var item in bill.BillItems)
+            //{
+            //    var subtotal = item.Quantity * item.PricePerUnit;
+            //    item.DiscountAmount = subtotal * (item.DiscountPercentage / 100);
+            //    var afterDiscount = subtotal - item.DiscountAmount;
 
-                var taxRate = ExtractTaxRate(item.Tax);
-                item.TaxAmount = afterDiscount * (taxRate / 100);
-                item.Amount = afterDiscount + item.TaxAmount;
+            //    var taxRate = ExtractTaxRate(item.Tax);
+            //    item.TaxAmount = afterDiscount * (taxRate / 100);
+            //    item.Amount = afterDiscount + item.TaxAmount;
 
-                total += item.Amount;
-            }
+            //    total += item.Amount;
+            //}
 
-            if (bill.RoundOff)
-            {
-                bill.Total = Math.Round(total);
-            }
-            else
-            {
-                bill.Total = Math.Round(total, 2);
-            }
+            //if (bill.RoundOff)
+            //{
+            //    bill.Total = Math.Round(total);
+            //}
+            //else
+            //{
+            //    bill.Total = Math.Round(total, 2);
+            //}
         }
 
         private decimal ExtractTaxRate(string tax)
@@ -347,5 +359,115 @@ namespace MUNEEMJI.Controllers
 
             return 0;
         }
+
+        #region  Add Edit Delete
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                await _billService.DeleteBillAsync(id);
+                TempData["SuccessMessage"] = "Bill deleted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error deleting bill: {ex.Message}";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> GetById(int id = 0, int typeid = 0)
+        {
+            PartyController partyController = new PartyController();
+            var viewModel = new PurchaseBillViewModel();
+            await Task.Delay(1);
+            if (id > 0)
+            {
+                var bill = await _billService.GetBillByIdAsync(id);
+                viewModel = new PurchaseBillViewModel
+                {
+                    //Bill = new PurchaseBill
+                    //{
+                    //    BillNumber = _billService.GenerateBillNumber(),
+
+                    //    BillDate = DateTime.Now,
+                    //    BillItems = new List<PurchaseBillItem>
+                    //{
+                    //    new PurchaseBillItem(),
+                    //    new PurchaseBillItem()
+                    //}
+                    //},
+                    Bill = bill,
+                    ViewTypeId = typeid,
+                    DropDownItem = await _IBillItemService.GetItems()
+                };
+            }
+            else
+            {
+                viewModel = new PurchaseBillViewModel
+                {
+                    Bill = new PurchaseBill
+                    {
+                        BillNumber = _billService.GenerateBillNumber(),
+
+                        BillDate = DateTime.Now,
+                        BillItems = new List<PurchaseBillItem>
+                    {
+                        new PurchaseBillItem(),
+                        new PurchaseBillItem()
+                    }
+                    },
+                    ViewTypeId = typeid,
+                    DropDownItem = await _IBillItemService.GetItems()
+                };
+            }
+            ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
+            return View("Create", viewModel);
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateEntries(PurchaseBillViewModel viewModel, IFormFile? imageFile)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    // Handle image upload
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+
+                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageFile.CopyToAsync(fileStream);
+                        }
+
+                        viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;
+                    }
+                    viewModel.ViewTypeId = (int)ViewTypeEnum.Edit;
+
+                    // Calculate totals
+                    CalculateBillTotals(viewModel.Bill);
+
+                    var billId = await _billService.UpdateEntries(viewModel.Bill);
+                    TempData["SuccessMessage"] = "Bill created successfully!";
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error creating bill: {ex.Message}";
+            }
+
+            return View("Create", viewModel);
+        }
+
+
+        #endregion
     }
 }

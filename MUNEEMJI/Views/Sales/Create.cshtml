@@ -555,7 +555,9 @@
             @Html.AntiForgeryToken()
             <div class="form-container">
                 <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
-
+                <input type="hidden" id="deleteLogoFlag" name="@Model.Bill.IsDeleteImage" value="false" />
+@*                 <input type="hidden" id="deleteSignatureFlag" name="DeleteSignature" value="false" />
+ *@
                 <div class="header-top">
                     <div class="sale-toggle">
 
@@ -578,10 +580,9 @@
                                         height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
                                         padding-right: 6px;" aria-label="Close" onclick="closeView()">
                         </button>
-                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index'"
-                                style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
-                                        padding-bottom:7px;padding-top:0px;padding-left:6px;
-                                        padding-right:6px;">
+                       <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index?returnUrl=' + encodeURIComponent(window.location.href)" style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
+                                padding-bottom:7px;padding-top:0px;padding-left:6px;
+                                padding-right:6px;">
                         </button>
                     </div>
                 </div>
@@ -1250,19 +1251,33 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="floating-label-container upload-area-imgshow" style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;" onclick="document.querySelector('input[name=\'Bill.imageFile\']').click()">
-                                        <span class="upload-label-imgshow" style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">Add Image</span>
-                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*" onchange="previewImage(this)" style="display: none;" />
+                                    <div class="floating-label-container upload-area-imgshow"
+                                         style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;"
+                                         onclick="document.querySelector('input[name=\'Bill.imageFile\']').click()">
+
+                                        <span class="upload-label-imgshow" 
+                                        style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">
+                                        Add Image
+                                        </span>
+
+                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*"
+                                        onchange="previewImage(this)" style="display: none;" />
+
                                         <div class="upload-content-imgshow">
                                             <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
                                             <div style="color: #007bff; font-weight: 500;">Upload</div>
+                                            <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">Click to browse files</div>
                                         </div>
 
+
                                         <div class="image-preview-imgshow" style="display: none;">
-                                            <img id="preview-img-imgshow" src="" alt="Preview" style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
+                                            <img id="preview-img-imgshow" src="" alt="Preview" 
+                                            style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
                                             <div id="image-name-imgshow" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
                                             <div style="margin-top: 8px;">
-                                                <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+                                                <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                                    Delete
+                                                </button>
                                             </div>
                                         </div>
 
@@ -1274,7 +1289,7 @@
 
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
-                                        <input type="file" name="Bill.DocumentPath" class="floating-input" accept="image/*" />
+                                        <input type="file" name="Bill.DocumentFile" class="floating-input" accept="image/*" />
                                         <label class="floating-label">Add Document</label>
                                     </div>
                                 </div>
@@ -2072,40 +2087,55 @@
 
     </script>
     <script>
-                      function previewImage(input) {
-            const container = input.closest('.upload-area-imgshow');
-            const uploadContent = container.querySelector('.upload-content-imgshow');
-            const preview = container.querySelector('.image-preview-imgshow');
-            const img = document.getElementById('preview-img-imgshow');
-            const imageName = document.getElementById('image-name-imgshow');
-            const label = container.querySelector('.upload-label-imgshow');
 
-            if (input.files && input.files[0]) {
+        function previewImage(input) {
+            const file = input.files[0];
+            if (file) {
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    img.src = e.target.result;
-                    imageName.textContent = input.files[0].name; // Add this line
-                    uploadContent.style.display = 'none';
-                    preview.style.display = 'block';
-                    label.style.color = '#007bff';
-                }
-
-                reader.readAsDataURL(input.files[0]);
+                    document.querySelector('.upload-content-imgshow').style.display = 'none';
+                    document.querySelector('.image-preview-imgshow').style.display = 'block';
+                    document.getElementById('preview-img-imgshow').src = e.target.result;
+                    document.getElementById('image-name-imgshow').textContent = file.name;
+                    document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
+                    document.getElementById('deleteLogoFlag').value = 'false';
+                };
+                reader.readAsDataURL(file);
             }
         }
+                function setLogoFromData(imageUrl, imageName) {
+            document.querySelector('.upload-content-imgshow').style.display = 'none';
+            document.querySelector('.image-preview-imgshow').style.display = 'block';
+            document.getElementById('preview-img-imgshow').src = imageUrl;
+            document.getElementById('image-name-imgshow').textContent = imageName || 'Loaded Image';
+            document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
+            document.getElementById('deleteLogoFlag').value = 'false';
+        }
+
 
         function removeImage(event) {
-            event.stopPropagation();
-            const input = document.querySelector('input[name="Bill.imageFile"]');
-            const container = input.closest('.upload-area-imgshow');
-            const uploadContent = container.querySelector('.upload-content-imgshow');
-            const preview = container.querySelector('.image-preview-imgshow');
-
-            input.value = '';
-            preview.style.display = 'none';
-            uploadContent.style.display = 'block';
+              event.stopPropagation();
+              document.querySelector('input[name="Bill.imageFile"]').value = '';
+             document.querySelector('.upload-content-imgshow').style.display = 'block';
+             document.querySelector('.image-preview-imgshow').style.display = 'none';
+             document.getElementById('preview-img-imgshow').src = '';
+             document.getElementById('image-name-imgshow').textContent = '';
+             document.querySelector('.upload-area-imgshow').style.borderColor = 'lightgray';
+             document.getElementById('deleteLogoFlag').value = 'true';
         }
+            document.addEventListener('DOMContentLoaded', function() {
+            var logoPath = '@Html.Raw(Model.Bill.ImagePath ?? "")';
+
+            // If logo exists, display it
+            if (logoPath && logoPath !== '') {
+                var logoUrl = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
+                var logoFileName = logoPath.split('/').pop();
+                setLogoFromData(logoUrl, logoFileName);
+            }
+
+            
+        });
+
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

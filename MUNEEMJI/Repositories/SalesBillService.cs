@@ -179,13 +179,20 @@ namespace MUNEEMJI.Repositories
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
+            // ✅ Explicit column list for tradedocuments
             var billQuery = @"
-                SELECT id, bill_number, bill_date, state_of_supply, phone_no, po_no, po_date, 
-                       eway_bill_no, transport_name, delivery_location, vehicle_number, 
-                       delivery_date, payment_type, description, image_path, round_off, 
-                       total, created_date,partyid
-                FROM TradeDocuments 
-                WHERE id = @Id";
+        SELECT 
+            id, bill_number, bill_date, stateid, state_of_supply, phone_no, po_no, po_date,
+            eway_bill_no, transport_name, delivery_location, vehicle_number, delivery_date,
+            payment_type, description, image_path, round_off, total, paidreciveamount,
+            created_date, tradedocumenttypesid, partyid, orderstatusid, duedate, orderno,
+            orderdate, challanno, challandate, iscredit, billingname, billingaddress,
+            shippingaddress, invoicenumber, invoicedate, ""time"", paymenttermid, field5,
+            field6, documentpath, noofcopi, discount_percent, discount_amount, tax_percentage,
+            tax_amount, shipping_amount, packing_amount, adjustment_amount, tdstcs_percentage,
+            tdstcs_amount, isroundoff, final_amount, tcstdstype, isreceive, returnno
+        FROM tradedocuments
+        WHERE id = @Id";
 
             using var billCommand = new NpgsqlCommand(billQuery, connection);
             billCommand.Parameters.AddWithValue("@Id", id);
@@ -198,34 +205,67 @@ namespace MUNEEMJI.Repositories
             var bill = new PurchaseBill
             {
                 Id = billReader.GetInt32("id"),
-                BillNumber = billReader.GetString("bill_number"),
-                BillDate = billReader.GetDateTime("bill_date"),
-                StateOfSupply = billReader.GetString("state_of_supply"),
-                PhoneNo = billReader.GetString("phone_no"),
-                PONo = billReader.GetString("po_no"),
-                PODate = billReader.IsDBNull("po_date") ? null : billReader.GetDateTime("po_date"),
-                EWayBillNo = billReader.GetString("eway_bill_no"),
-                TransportName = billReader.GetString("transport_name"),
-                DeliveryLocation = billReader.GetString("delivery_location"),
-                VehicleNumber = billReader.GetString("vehicle_number"),
-                DeliveryDate = billReader.IsDBNull("delivery_date") ? null : billReader.GetDateTime("delivery_date"),
-                PaymentType = billReader.GetString("payment_type"),
-                Description = billReader.GetString("description"),
-                ImagePath = billReader.GetString("image_path"),
-                RoundOffValue = billReader.GetDecimal("round_off"),
-                Total = billReader.GetDecimal("total"),
-                CreatedDate = billReader.GetDateTime("created_date"),
-                PartyId = billReader.GetInt32("partyid")
+                BillNumber = billReader.IsDBNull("bill_number") ? "" : billReader.GetString("bill_number"),
+                BillDate = billReader.IsDBNull("bill_date") ? DateTime.MinValue : billReader.GetDateTime("bill_date"),
+                StateId = billReader.IsDBNull("stateid") ? 0 : billReader.GetInt32("stateid"),
+                StateOfSupply = billReader.IsDBNull("state_of_supply") ? "" : billReader.GetString("state_of_supply"),
+                PhoneNo = billReader.IsDBNull("phone_no") ? "" : billReader.GetString("phone_no"),
+                PONo = billReader.IsDBNull("po_no") ? "" : billReader.GetString("po_no"),
+                PODate = billReader.IsDBNull("po_date") ? DateTime.MinValue : billReader.GetDateTime("po_date"),
+                EWayBillNo = billReader.IsDBNull("eway_bill_no") ? "" : billReader.GetString("eway_bill_no"),
+                TransportName = billReader.IsDBNull("transport_name") ? "" : billReader.GetString("transport_name"),
+                DeliveryLocation = billReader.IsDBNull("delivery_location") ? "" : billReader.GetString("delivery_location"),
+                VehicleNumber = billReader.IsDBNull("vehicle_number") ? "" : billReader.GetString("vehicle_number"),
+                DeliveryDate = billReader.IsDBNull("delivery_date") ? DateTime.MinValue : billReader.GetDateTime("delivery_date"),
+                PaymentType = billReader.IsDBNull("payment_type") ? "" : billReader.GetString("payment_type"),
+                Description = billReader.IsDBNull("description") ? "" : billReader.GetString("description"),
+                ImagePath = billReader.IsDBNull("image_path") ? "" : billReader.GetString("image_path"),
+                RoundOffValue = billReader.IsDBNull("round_off") ? 0 : billReader.GetDecimal("round_off"),
+                Total = billReader.IsDBNull("total") ? 0 : billReader.GetDecimal("total"),
+                paidReciveamount = billReader.IsDBNull("paidreciveamount") ? 0 : billReader.GetDecimal("paidreciveamount"),
+                CreatedDate = billReader.IsDBNull("created_date") ? DateTime.MinValue : billReader.GetDateTime("created_date"),
+                PartyId = billReader.IsDBNull("partyid") ? 0 : billReader.GetInt32("partyid"),
+                DueDate = billReader.IsDBNull("duedate") ? DateTime.MinValue : billReader.GetDateTime("duedate"),
+                OrderNo = billReader.IsDBNull("orderno") ? "" : billReader.GetString("orderno"),
+                OrderDate = billReader.IsDBNull("orderdate") ? DateTime.MinValue : billReader.GetDateTime("orderdate"),
+                ChallanNo = billReader.IsDBNull("challanno") ? "" : billReader.GetString("challanno"),
+                Challandate = billReader.IsDBNull("challandate") ? DateTime.MinValue : billReader.GetDateTime("challandate"),
+                IsCredit = billReader.IsDBNull("iscredit") ? false : billReader.GetBoolean("iscredit"),
+                BillingName = billReader.IsDBNull("billingname") ? "" : billReader.GetString("billingname"),
+                BillingAddress = billReader.IsDBNull("billingaddress") ? "" : billReader.GetString("billingaddress"),
+                ShippingAddress = billReader.IsDBNull("shippingaddress") ? "" : billReader.GetString("shippingaddress"),
+                InvoiceNumber = billReader.IsDBNull("invoicenumber") ? 0 : billReader.GetInt32("invoicenumber"),
+                InvoiceDate = billReader.IsDBNull("invoicedate") ? DateTime.MinValue : billReader.GetDateTime("invoicedate"),
+                PaymentTermId = billReader.IsDBNull("paymenttermid") ? 0 : billReader.GetInt32("paymenttermid"),
+                Field5 = billReader.IsDBNull("field5") ? "" : billReader.GetString("field5"),
+                Field6 = billReader.IsDBNull("field6") ? "" : billReader.GetString("field6"),
+                DocumentPath = billReader.IsDBNull("documentpath") ? "" : billReader.GetString("documentpath"),
+                NoOfCopi = billReader.IsDBNull("noofcopi") ? 0 : billReader.GetInt32("noofcopi"),
+                DiscountPercent = billReader.IsDBNull("discount_percent") ? 0 : billReader.GetDecimal("discount_percent"),
+                DiscountAmount = billReader.IsDBNull("discount_amount") ? 0 : billReader.GetDecimal("discount_amount"),
+                TaxPercentage = billReader.IsDBNull("tax_percentage") ? 0 : billReader.GetDecimal("tax_percentage"),
+                TaxAmount = billReader.IsDBNull("tax_amount") ? 0 : billReader.GetDecimal("tax_amount"),
+                ShippingAmount = billReader.IsDBNull("shipping_amount") ? 0 : billReader.GetDecimal("shipping_amount"),
+                PackingAmount = billReader.IsDBNull("packing_amount") ? 0 : billReader.GetDecimal("packing_amount"),
+                AdjustmentAmount = billReader.IsDBNull("adjustment_amount") ? 0 : billReader.GetDecimal("adjustment_amount"),
+                TdsTcsPercentage = billReader.IsDBNull("tdstcs_percentage") ? 0 : billReader.GetDecimal("tdstcs_percentage"),
+                TdsTcsAmount = billReader.IsDBNull("tdstcs_amount") ? 0 : billReader.GetDecimal("tdstcs_amount"),
+                IsRoundOff = billReader.IsDBNull("isroundoff") ? false : billReader.GetBoolean("isroundoff"),
+                FinalAmount = billReader.IsDBNull("final_amount") ? 0 : billReader.GetDecimal("final_amount"),
+                IsReceive = billReader.IsDBNull("isreceive") ? false : billReader.GetBoolean("isreceive"),
+                ReturnNo = billReader.IsDBNull("returnno") ? 0 : billReader.GetDecimal("returnno"),
             };
 
             await billReader.CloseAsync();
 
-            // Get Bill Items
+            // ✅ Explicit column list for tradedocumentitems
             var itemsQuery = @"
-                SELECT id, tradedocumentsid, item, quantity, unit, price_per_unit, 
-                       discount_percentage, discount_amount, tax, tax_amount, amount,itemid
-                FROM TradeDocumentItems 
-                WHERE tradedocumentsid = @BillId";
+        SELECT 
+            id, tradedocumentsid, itemid, categoryid, serialno, batchno, modelno, expirydate,
+            mfgdate, item, quantity, unit, price_per_unit, discount_percentage, discount_amount,
+            created_on, tax_amount, tax_percentage, total_amount, itemcode, addcessamount
+        FROM tradedocumentitems
+        WHERE tradedocumentsid = @BillId";
 
             using var itemsCommand = new NpgsqlCommand(itemsQuery, connection);
             itemsCommand.Parameters.AddWithValue("@BillId", id);
@@ -238,21 +278,31 @@ namespace MUNEEMJI.Repositories
                 {
                     Id = itemsReader.GetInt32("id"),
                     BillId = itemsReader.GetInt32("tradedocumentsid"),
-                    Item = itemsReader.GetString("item"),
-                    Quantity = itemsReader.GetDecimal("quantity"),
-                    Unit = itemsReader.GetString("unit"),
-                    PricePerUnit = itemsReader.GetDecimal("price_per_unit"),
-                    DiscountPercentage = itemsReader.GetDecimal("discount_percentage"),
-                    DiscountAmount = itemsReader.GetDecimal("discount_amount"),
-                    Tax = itemsReader.GetString("tax"),
-                    TaxAmount = itemsReader.GetDecimal("tax_amount"),
-                    Amount = itemsReader.GetDecimal("amount"),
-                    ItemId = itemsReader.GetInt32("itemid"),
+                    ItemId = itemsReader.IsDBNull("itemid") ? 0 : itemsReader.GetInt32("itemid"),
+                    CategoryId = itemsReader.IsDBNull("categoryid") ? 0 : itemsReader.GetInt32("categoryid"),
+                    serialno = itemsReader.IsDBNull("serialno") ? "" : itemsReader.GetString("serialno"),
+                    batchno = itemsReader.IsDBNull("batchno") ? "" : itemsReader.GetString("batchno"),
+                    modelno = itemsReader.IsDBNull("modelno") ? "" : itemsReader.GetString("modelno"),
+                    ExpiryDate = itemsReader.IsDBNull("expirydate") ? DateTime.MinValue : itemsReader.GetDateTime("expirydate"),
+                    Item = itemsReader.IsDBNull("item") ? "" : itemsReader.GetString("item"),
+                    Quantity = itemsReader.IsDBNull("quantity") ? 0 : itemsReader.GetDecimal("quantity"),
+                    Unit = itemsReader.IsDBNull("unit") ? "" : itemsReader.GetString("unit"),
+                    PricePerUnit = itemsReader.IsDBNull("price_per_unit") ? 0 : itemsReader.GetDecimal("price_per_unit"),
+                    DiscountPercentage = itemsReader.IsDBNull("discount_percentage") ? 0 : itemsReader.GetDecimal("discount_percentage"),
+                    DiscountAmount = itemsReader.IsDBNull("discount_amount") ? 0 : itemsReader.GetDecimal("discount_amount"),
+                    CreatedOn = itemsReader.IsDBNull("created_on") ? DateTime.MinValue : itemsReader.GetDateTime("created_on"),
+                    TaxAmount = itemsReader.IsDBNull("tax_amount") ? 0 : itemsReader.GetDecimal("tax_amount"),
+                    TaxPercentage = itemsReader.IsDBNull("tax_percentage") ? 0 : itemsReader.GetDecimal("tax_percentage"),
+                    TotalAmount = itemsReader.IsDBNull("total_amount") ? 0 : itemsReader.GetDecimal("total_amount"),
+                    ItemCode = itemsReader.IsDBNull("itemcode") ? "" : itemsReader.GetString("itemcode"),
+                    AddCessAmount = itemsReader.IsDBNull("addcessamount") ? 0 : itemsReader.GetDecimal("addcessamount"),
                 });
             }
 
             return bill;
         }
+
+
 
         public async Task<List<PurchaseBill>> GetAllBillsAsync()
         {

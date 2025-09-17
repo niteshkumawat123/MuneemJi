@@ -289,9 +289,10 @@ namespace MUNEEMJI.Controllers
 
                 // Insert new business
                 var insertQuery = @"
-                    INSERT INTO businesses (business_name, phone, email, created_at, updated_at) 
-                    VALUES (@BusinessName, @Phone, @Email, @CreatedAt, @UpdatedAt)
-                    RETURNING id";
+                            INSERT INTO businesses 
+                            (business_name, phone, email, created_at, updated_at, status, roleid, isactive, companyid, username, isowner) 
+                            VALUES (@BusinessName, @Phone, @Email, @CreatedAt, @UpdatedAt, @Status, @RoleId, @IsActive, @CompanyId, @Username, @IsOwner)
+                            RETURNING id";
 
                 using var insertCommand = new NpgsqlCommand(insertQuery, connection);
                 insertCommand.Parameters.AddWithValue("@BusinessName", model.BusinessName);
@@ -300,7 +301,40 @@ namespace MUNEEMJI.Controllers
                 insertCommand.Parameters.AddWithValue("@CreatedAt", DateTime.UtcNow);
                 insertCommand.Parameters.AddWithValue("@UpdatedAt", DateTime.UtcNow);
 
+                insertCommand.Parameters.AddWithValue("@Status", 1);
+                insertCommand.Parameters.AddWithValue("@RoleId", 1);
+                insertCommand.Parameters.AddWithValue("@IsActive", true);
+                insertCommand.Parameters.AddWithValue("@CompanyId", 0);
+                insertCommand.Parameters.AddWithValue("@Username", "");
+                insertCommand.Parameters.AddWithValue("@IsOwner", true);
+
                 var newBusinessId = await insertCommand.ExecuteScalarAsync();
+
+                if(newBusinessId!=null)
+                {
+                    string updateQuery = @"UPDATE businesses SET companyid = @CompanyId WHERE id = @Id";
+
+                    using var updateCommand = new NpgsqlCommand(updateQuery, connection);
+                    updateCommand.Parameters.AddWithValue("@CompanyId", (int)newBusinessId);
+                    updateCommand.Parameters.AddWithValue("@Id", (int)newBusinessId);
+
+                    await updateCommand.ExecuteNonQueryAsync();
+
+
+                    string sql = @"INSERT INTO public.business_profiles
+                          (business_name, phone_number, email, businessesid) 
+                          VALUES (@businessName, @phoneNumber, @email, @businessesId)";
+
+                    using (var cmd = new NpgsqlCommand(sql, connection))
+                    {
+                        cmd.Parameters.AddWithValue("businessName", model.BusinessName);
+                        cmd.Parameters.AddWithValue("phoneNumber", model.Phone);
+                        cmd.Parameters.AddWithValue("email", model.Email);
+                        cmd.Parameters.AddWithValue("businessesId", newBusinessId);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
 
                 if (newBusinessId != null)
                 {
@@ -336,13 +370,13 @@ namespace MUNEEMJI.Controllers
                 {
                     Subject = subject,
                     Body = body,
-                    From = new MailAddress("lokeshjpr229@gmail.com", "MuneemJiApp"),
+                    From = new MailAddress("noreplymuneemjii@gmail.com", "MuneemJiApp"),
                     IsBodyHtml = true
                 };
 
                 mail.To.Add(to);
 
-                NetworkCredential networkCredential = new NetworkCredential("lokeshjpr229@gmail.com", "deli btxe wkek mhhx");
+                NetworkCredential networkCredential = new NetworkCredential("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre");
 
                 SmtpClient smtpClient = new SmtpClient
                 {

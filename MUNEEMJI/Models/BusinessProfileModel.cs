@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MUNEEMJI.Controllers;
+using System.ComponentModel.DataAnnotations;
 
 namespace MUNEEMJI.Models
 {
@@ -24,5 +25,6 @@ namespace MUNEEMJI.Models
         // Paths to uploaded images (stored in wwwroot/uploads)
         public string LogoPath { get; set; }
         public string SignaturePath { get; set; }
+        public int businessesid { get; set;  }
     }
 }

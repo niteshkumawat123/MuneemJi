@@ -1,4 +1,5 @@
-﻿using MUNEEMJI.Models.Setting;
+﻿using MUNEEMJI.Controllers;
+using MUNEEMJI.Models.Setting;
 using System.ComponentModel.DataAnnotations;
 
 namespace MUNEEMJI.Models
@@ -20,6 +21,7 @@ namespace MUNEEMJI.Models
         public string PaymentType { get; set; } = "Cash";
         public string Description { get; set; } = string.Empty;
         public string ImagePath { get; set; } = string.Empty;
+        public string DocumentPath { get; set; } = string.Empty;
         public bool RoundOff { get; set; } = true;
         public decimal RoundOffValue { get; set; }
         public decimal Total { get; set; }
@@ -44,7 +46,7 @@ namespace MUNEEMJI.Models
         public TimeSpan? Time { get; set; }
         public string Field5 { get; set; } = string.Empty;
         public string Field6 { get; set; } = string.Empty;
-        public IFormFile? DocumentPath { get; set; } 
+        public IFormFile? DocumentFile { get; set; } 
         public IFormFile? imageFile { get; set; }
 
         public int NoOfCopi { get; set; } = 1;
@@ -66,6 +68,12 @@ namespace MUNEEMJI.Models
         public string ShippingAddress { get; set; } = string.Empty;
         public int? InvoiceNumber { get; set; }
         public bool IsReceive { get; set; }
+
+        // use for Debit note receive no
+        public decimal ReturnNo { get; set; }
+        // show on debi note list 
+        public string CategoryName { get; set; }
+        public bool IsDeleteImage { get; set; }
     }
     public class PurchaseBillItem
     {

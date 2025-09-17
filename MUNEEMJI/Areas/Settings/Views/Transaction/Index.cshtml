@@ -234,8 +234,15 @@
 
 <form id="transactionSettingsForm">
     <div class="settings-container position-relative">
-        <button type="button" class="close-btn" onclick="window.close()">×</button>
-
+        <div style="display: flex; justify-content: flex-end;">
+            <button type="button" class="btn-close btn-close-custom"
+                    style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
+               height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
+               padding-right: 6px;"
+                    aria-label="Close"
+                    onclick="window.location.href = new URLSearchParams(window.location.search).get('returnUrl') || window.history.back();">
+            </button>
+        </div>
         <!-- Alert Messages -->
         <div id="alertContainer"></div>
 
@@ -356,7 +363,7 @@
                         <span class="help-icon">i</span>
                     </label>
                 </div>
-               @*  <div class="ms-4">
+                @*  <div class="ms-4">
                     <a href="#" class="change-text-link">Set Payment Terms</a>
                 </div> *@
 

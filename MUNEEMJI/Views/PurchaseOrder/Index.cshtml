@@ -187,7 +187,7 @@
 <div class="container">
     <div class="header">
         <h1 class="page-title">TRANSACTIONS</h1>
-        <button class="add-btn" onclick="addPurchaseOrder()">Add Purchase Order</button>
+        <button class="add-btn" onclick="addPurchaseOrder()">Add Purchase Order </button>
     </div>
 
     <div class="search-container">
@@ -215,24 +215,39 @@
                 {
                     <tr class="row-odd">
                         <td class="party-cell">@item.PartyName</td>
-                        <td>@(item.OrderNo != null ? item.OrderNo : "")</td>
-                        <td>@(item.BillDate != null ? item.BillDate.ToString("dd/MM/yyyy") : "")</td>
-                        <td>@(item.OrderDate!=null ? item.OrderDate.ToString("dd/MM/yyyy") : "")</td>
+                        <td>@(item.InvoiceNumber != null ? item.InvoiceNumber : "")</td>
+                        <td>@(item.InvoiceDate != null ? item.InvoiceDate.Value.ToString("dd/MM/yyyy") : "")</td>
+                        <td>@(item.DueDate != null ? item.DueDate.ToString("dd/MM/yyyy") : "")</td>
                         <td class="amount-cell">₹ @item.Total.ToString("N2")</td>
-                        <td class="amount-cell">₹ @item.Total.ToString("N2")</td>
-                        <td class="type-cell">Purchase Order</td>
+                        <td class="amount-cell">₹ @item.FinalAmount.ToString("N2")</td>
+                        <td class="type-cell">Sales Order</td>
                         <td class="@(item.orderstatusid ==1 ? "status-overdue" : "status-completed")">@(item.orderstatusid == 1 ? "Order Overdue" : "Order Completed")</td>
                         <td class="action-cell">
                             @if (item.orderstatusid == 1)
                             {
-                                <a href="/Web/PurchaseBill/Edit?id=@item.Id">CONVERT TO PURCHASE</a>
+                                <a href="/Web/Sales/Edit?id=@item.Id">CONVERT TO SALES</a>
                             }
                             else
                             {
                                 <a></a>
                             }
                         </td>
-                        <td class="more-actions">⋮</td>
+                        <td>
+                              <button class="btn border-0 me-2" type="button" data-bs-toggle="dropdown" title="More Options">
+                                    <img src="~/images/ThreeDots.png" alt="Share" style="width: 16px; height: 16px;">
+
+                                    <!-- Option 1: FontAwesome Icon -->
+                                    @*  <i class="fas fa-ellipsis-v" style="color: #6c757d; font-size: 16px;"></i> *@
+                                    <!-- Option 2: Custom Image Icon -->
+                                    <!-- <img src="~/images/icons/more-icon.png" alt="More" style="width: 16px; height: 16px;"> -->
+                                </button>
+                                <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/Web/PurchaseOrder/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
+                                <li><a class="dropdown-item" href="/Web/PurchaseOrder/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                <li><a class="dropdown-item" href="/Web/PurchaseOrder/DeleteConfirmed?id=@(item.Id)">Delete</a></li>
+                                </ul>
+                            
+                        </td>
                     </tr>
                 }
 
@@ -310,7 +325,7 @@
 
     // Add Purchase Order functionality
     function addPurchaseOrder() {
-         window.location.href = "/Web/Purchaseorder/create";
+         window.location.href = "/Web/PurchaseOrder/create";
     }
 
     //  function addPurchase(int id) {

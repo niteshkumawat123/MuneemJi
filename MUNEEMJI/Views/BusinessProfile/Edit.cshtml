@@ -17,6 +17,9 @@
             @Html.AntiForgeryToken()
 
             <input asp-for="Id" type="hidden" />
+            <input type="hidden" id="deleteLogoFlag" name="DeleteLogo" value="false" />
+            <input type="hidden" id="deleteSignatureFlag" name="DeleteSignature" value="false" />
+
 
             <div class="row">
                 <!-- Column 1: Business Details -->
@@ -40,7 +43,7 @@
                         <input asp-for="Email" class="form-control" placeholder="Enter Email ID" />
                     </div>
 
-                  @*   <div class="form-group">
+                    @*   <div class="form-group">
                         <label>Business Logo</label>
                         <input type="file" name="LogoFile" class="form-control-file" />
                     </div> *@
@@ -154,7 +157,7 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      
+
         function previewLogo(input) {
             const file = input.files[0];
             if (file) {
@@ -165,6 +168,8 @@
                     document.getElementById('preview-img-logo').src = e.target.result;
                     document.getElementById('image-name-logo').textContent = file.name;
                     document.querySelector('.upload-area-logo').style.borderColor = '#28a745';
+                     document.getElementById('deleteLogoFlag').value = 'false';
+
                 };
                 reader.readAsDataURL(file);
             }
@@ -178,8 +183,20 @@
             document.getElementById('preview-img-logo').src = '';
             document.getElementById('image-name-logo').textContent = '';
             document.querySelector('.upload-area-logo').style.borderColor = 'lightgray';
+            document.getElementById('deleteLogoFlag').value = 'true';
         }
-                function previewSignature(input) {
+
+        // NEW FUNCTION: Set logo from data
+        function setLogoFromData(imageUrl, imageName) {
+            document.querySelector('.upload-content-logo').style.display = 'none';
+            document.querySelector('.image-preview-logo').style.display = 'block';
+            document.getElementById('preview-img-logo').src = imageUrl;
+            document.getElementById('image-name-logo').textContent = imageName || 'Loaded Image';
+            document.querySelector('.upload-area-logo').style.borderColor = '#28a745';
+            document.getElementById('deleteLogoFlag').value = 'false';
+        }
+
+        function previewSignature(input) {
             const file = input.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -189,6 +206,7 @@
                     document.getElementById('preview-img-signature').src = e.target.result;
                     document.getElementById('image-name-signature').textContent = file.name;
                     document.querySelector('.upload-area-signature').style.borderColor = '#28a745';
+                    document.getElementById('deleteSignatureFlag').value = 'false';
                 };
                 reader.readAsDataURL(file);
             }
@@ -202,7 +220,37 @@
             document.getElementById('preview-img-signature').src = '';
             document.getElementById('image-name-signature').textContent = '';
             document.querySelector('.upload-area-signature').style.borderColor = 'lightgray';
+            document.getElementById('deleteSignatureFlag').value = 'true';
         }
+
+        // NEW FUNCTION: Set signature from data
+        function setSignatureFromData(imageUrl, imageName) {
+            document.querySelector('.upload-content-signature').style.display = 'none';
+            document.querySelector('.image-preview-signature').style.display = 'block';
+            document.getElementById('preview-img-signature').src = imageUrl;
+            document.getElementById('image-name-signature').textContent = imageName || 'Loaded Image';
+            document.querySelector('.upload-area-signature').style.borderColor = '#28a745';
+            document.getElementById('deleteSignatureFlag').value = 'false';
+        }
+
+            document.addEventListener('DOMContentLoaded', function() {
+            var logoPath = '@Html.Raw(Model.LogoPath ?? "")';
+            var signaturePath = '@Html.Raw(Model.SignaturePath ?? "")';
+
+            // If logo exists, display it
+            if (logoPath && logoPath !== '') {
+                var logoUrl = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
+                var logoFileName = logoPath.split('/').pop();
+                setLogoFromData(logoUrl, logoFileName);
+            }
+
+            // If signature exists, display it
+            if (signaturePath && signaturePath !== '') {
+                var signatureUrl = signaturePath.startsWith('/') ? signaturePath : '/' + signaturePath;
+                var signatureFileName = signaturePath.split('/').pop();
+                setSignatureFromData(signatureUrl, signatureFileName);
+            }
+        });
     </script>
 </body>
 </html>

@@ -1,216 +1,403 @@
 ﻿@using MUNEEMJI.Controllers
-@model IEnumerable<PaymentInOutViewModel>
-
+@model List<PaymentInOutViewModel>
 @{
-    ViewBag.Title = "Payment-In";
-    decimal totalAmount = Model?.Sum(x => x.Total) ?? 0;
+    ViewData["Title"] = "Payment-In";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    decimal totalAmount = Model?.Sum(x => x.ReceivedPaid) ?? 0;
     decimal totalBalance = Model?.Sum(x => x.Balance) ?? 0;
 }
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+</head>
+
+<div class="container-fluid px-4 py-3">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <h4 class="mb-0 me-3">Payment-Out</h4>
+            <i class="bi bi-chevron-down text-muted"></i>
+        </div>
+        <div>
+            <button class="btn btn-danger" onclick="openAddPaymentModal()">
+                <i class="bi bi-plus"></i> Add Payment-Out
+            </button>
+            <button class="btn btn-outline-secondary ms-2" onclick="window.location.href='/Web/Settings/General/Index'" style="background-color: blue;">
+                <i class="bi bi-gear" style="color: white;"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="row mb-4 align-items-center">
+        <div class="col-auto">
+            <span class="text-muted me-2">Filter by :</span>
+        </div>
+        <div class="col-auto">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="timeFilterDropdown">
+                    This Month
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="setTimeFilter('today')">Today</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="setTimeFilter('thisWeek')">This Week</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="setTimeFilter('thisMonth')">This Month</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="setTimeFilter('thisYear')">This Year</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-auto">
+            <input type="date" class="form-control" id="startDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" onchange="filterByDate()" />
+        </div>
+        <div class="col-auto">
+            <span class="text-muted">To</span>
+        </div>
+        <div class="col-auto">
+            <input type="date" class="form-control" id="endDate" value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")" onchange="filterByDate()">
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="firmFilter" onchange="filterData()">
+                <option value="all" selected>All Firms</option>
+                <option>FIRM 1</option>
+                <option>FIRM 2</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="userFilter" onchange="filterData()">
+                <option value="all" selected>All Users</option>
+                <option>User 1</option>
+                <option>User 2</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <select class="form-select" id="paymentTypeFilter" onchange="filterData()">
+                <option value="all" selected>All Payment Types</option>
+                <option value="Cash">Cash</option>
+                <option value="Bank">Bank</option>
+                <option value="Card">Card</option>
+                <option value="Online">Online</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Summary Card -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="summary-card">
+                <div class="summary-header">
+                    <span class="summary-title">Total Payment Amount</span>
+                    <div class="summary-trend">
+                        <span class="trend-percentage">100% ↗</span>
+                        <small class="trend-text">vs last month</small>
+                    </div>
+                </div>
+                <div class="summary-amount">
+                    <span class="currency">₹</span> @totalAmount.ToString("N0")
+                </div>
+                <div class="summary-breakdown">
+                    <span class="received-text">Paid: ₹ @Model?.Sum(x => x.Total).ToString("N0") </span>
+                    @*     <span class="separator">|</span>
+                    <span class="balance-text">Balance: ₹ @totalBalance.ToString("N0") </span> *@
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Section -->
+    <div class="transactions-section">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Transactions</h5>
+            <div class="d-flex gap-2">
+                <div class="search-container">
+                    <input type="text" class="form-control" placeholder="Search..." id="transactionSearch">
+                    <i class="bi bi-search search-icon"></i>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-bar-chart"></i>
+                </button>
+                <a href="/Web/PaymentIn/ExcelReport" download>
+                    <button type="button" class="btn btn-success btn-sm" title="Download Excel" style="height: 38px;">
+                        <i class="bi bi-file-earmark-excel"></i>
+                    </button>
+                </a>
+                <button class="btn btn-outline-secondary btn-sm" onclick="window.print()">
+                    <i class="bi bi-printer"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="table-responsive">
+            <table class="table transactions-table" id="paymentsTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">
+                            #
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th onclick="sortTable(1)">
+                            Date
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th onclick="sortTable(2)">
+                            Ref.no.
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th onclick="sortTable(3)">
+                            Party Name
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+
+
+                        <th onclick="sortTable(6)">
+                            Total Amount
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th onclick="sortTable(7)">
+                            Received
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th onclick="sortTable(5)">
+                            Payment Type
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th onclick="sortTable(5)">
+                            Status
+                            <i class="bi bi-funnel ms-1 filter-icon"></i>
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+
+                        int counter = 1;
+
+                        @foreach (var item in Model)
+                        {
+                            <tr class="transaction-row" onclick="openEditPaymentModal(@item.Id)" style="cursor: pointer;">
+                                <td>@counter</td>
+                                <td>@(item.Date != null ? ((DateTime)item.Date).ToString("dd/MM/yyyy") : "-")</td>
+                                <td>@(item.RefNo ?? "NA")</td>
+                                <td>@(item.PartyName ?? "NA")</td>
+                                <td>₹ @(item.ReceivedPaid.ToString("N2") ?? "0.00")</td>
+                                <td>₹ @(item.Total.ToString("N2") ?? "0.00")</td>
+                                <td> @item.paymenttype</td>
+                                <td>UnUsed</td>
+                                <td onclick="event.stopPropagation();">
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-secondary" title="Print" onclick="window.print()">
+                                            <i class="bi bi-printer"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" title="Share" onclick="sharePayment(@item.Id)">
+                                            <i class="bi bi-share"></i>
+                                        </button>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" title="More Options">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#" onclick="openViewPaymentModal(@item.Id)">View</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="openEditPaymentModal(@item.Id)">Edit</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="deletePayment(@item.Id)">Delete</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            counter++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="10" class="text-center py-4 text-muted">
+                                <div style="font-size: 60px; margin-bottom: 20px;">📄</div>
+                                <h5>No data is available for Payment-In.</h5>
+                                <p>Please try again after making relevant changes.</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="paymentModal" class="modal">
+    <div class="modal-content">
+        <div id="modalContent">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <style>
-    .header-container {
+    body {
         background-color: #f8f9fa;
-        padding: 15px 20px;
-        border-bottom: 1px solid #dee2e6;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 10px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
-    .header-controls {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .time-filter {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-        .time-filter select,
-        .time-filter input {
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .time-filter .btn {
-            background-color: #6c757d;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-    .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .btn-excel, .btn-print {
-        background-color: #ffffff;
-        border: 1px solid #dee2e6;
-        padding: 8px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        text-decoration: none;
-        color: #495057;
-        font-size: 14px;
-    }
-
-        .btn-excel:hover, .btn-print:hover {
-            background-color: #f8f9fa;
-            text-decoration: none;
-            color: #495057;
-        }
-
-    .content-container {
+    .summary-card {
+        background: white;
+        border-radius: 8px;
         padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
     }
 
-    .search-add-container {
+    .summary-header {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+        justify-content: between;
+        align-items: flex-start;
+        margin-bottom: 15px;
     }
 
-    .search-box {
-        padding: 10px 15px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        width: 300px;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>');
-        background-repeat: no-repeat;
-        background-position: 10px center;
-        padding-left: 40px;
-    }
-
-    .btn-add-payment {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+    .summary-title {
+        color: #6c757d;
         font-size: 14px;
+        font-weight: 500;
+    }
+
+    .summary-trend {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-left: auto;
+    }
+
+    .trend-percentage {
+        color: #28a745;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .trend-text {
+        color: #6c757d;
+        font-size: 11px;
+    }
+
+    .summary-amount {
+        font-size: 32px;
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 10px;
+    }
+
+    .currency {
+        font-size: 24px;
+    }
+
+    .summary-breakdown {
         display: flex;
         align-items: center;
         gap: 8px;
-    }
-
-        .btn-add-payment:hover {
-            background-color: #0056b3;
-        }
-
-    .table-container {
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        overflow: hidden;
-    }
-
-    .data-table {
-        width: 100%;
-        border-collapse: collapse;
         font-size: 14px;
     }
 
-        .data-table th {
+    .received-text {
+        color: #6c757d;
+    }
+
+    .separator {
+        color: #dee2e6;
+    }
+
+    .balance-text {
+        color: #6c757d;
+    }
+
+    .transactions-section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border: 1px solid #e9ecef;
+    }
+
+    .transactions-table {
+        margin-bottom: 0;
+    }
+
+        .transactions-table thead th {
             background-color: #f8f9fa;
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 2px solid #dee2e6;
+            color: #6c757d;
             font-weight: 600;
-            color: #495057;
+            font-size: 13px;
+            padding: 12px 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            position: relative;
         }
 
-            .data-table th:hover {
+            .transactions-table thead th:hover {
                 background-color: #e9ecef;
             }
 
-            .data-table th::after {
-                content: '↕';
-                position: absolute;
-                right: 8px;
-                color: #6c757d;
-                font-size: 12px;
-            }
-
-        .data-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f1f3f4;
-            color: #495057;
-        }
-
-        .data-table tr:hover {
-            background-color: #f8f9fa;
-        }
-
-    .empty-state {
-        text-align: center;
-        padding: 80px 20px;
-        color: #6c757d;
+    .filter-icon {
+        color: #ced4da;
+        font-size: 10px;
+        cursor: pointer;
     }
 
-        .empty-state img {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
+    .transaction-row {
+        background-color: #e7f3ff;
+        border-left: 3px solid #007bff;
+    }
 
-        .empty-state h3 {
-            margin: 0 0 10px 0;
-            color: #495057;
-        }
-
-        .empty-state p {
-            margin: 0;
+        .transaction-row td {
+            padding: 12px 8px;
             font-size: 14px;
+            vertical-align: middle;
         }
 
-    .footer-summary {
-        background-color: #f8f9fa;
-        padding: 15px 20px;
-        border-top: 1px solid #dee2e6;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-weight: 600;
-        color: #495057;
+        .transaction-row:hover {
+            background-color: #cce7ff !important;
+        }
+
+    .search-container {
+        position: relative;
     }
 
-    .windows-activate {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background-color: rgba(0,0,0,0.1);
+    .search-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
         color: #6c757d;
-        padding: 10px 15px;
-        border-radius: 4px;
-        font-size: 12px;
-        text-align: center;
     }
 
-        .windows-activate div:first-child {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
+    .btn {
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
+    }
 
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .form-control, .form-select {
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+        font-size: 14px;
+    }
+
+    .badge {
+        font-size: 11px;
+        padding: 4px 8px;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    /* Modal Styles */
     .modal {
         display: none;
         position: fixed;
@@ -220,208 +407,131 @@
         width: 100%;
         height: 100%;
         background-color: rgba(0,0,0,0.5);
+        overflow-y: auto;
     }
 
         .modal.show {
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px;
         }
 
     .modal-content {
         background-color: white;
         border-radius: 8px;
         width: 90%;
-        max-width: 600px;
+        max-width: 800px;
         max-height: 90vh;
         overflow-y: auto;
         box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        position: relative;
+    }
+
+    .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 50px;
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #007bff;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     @@media (max-width: 768px) {
-        .header-container
-
-    {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .search-add-container {
-        flex-direction: column;
-        gap: 15px;
-        align-items: stretch;
-    }
-
-    .search-box {
-        width: 100%;
-    }
-
-    .data-table {
-        font-size: 12px;
-    }
-
-        .data-table th,
-        .data-table td {
-            padding: 8px 10px;
+        .modal-content {
+            width: 95%;
+            max-height: 95vh;
         }
 
+        .transactions-table {
+            font-size: 12px;
+        }
+
+            .transactions-table th,
+            .transactions-table td {
+                padding: 8px 4px;
+            }
     }
 </style>
 
-<div class="header-container">
-    <div class="header-controls">
-        <div class="time-filter">
-            <select id="timeFilter">
-                <option value="thisMonth">This Month</option>
-                <option value="lastMonth">Last Month</option>
-                <option value="thisYear">This Year</option>
-                <option value="custom">Custom</option>
-            </select>
-            <button class="btn">Between</button>
-            <input type="date" id="startDate" value="2025-07-01">
-            <span>To</span>
-            <input type="date" id="endDate" value="2025-07-31">
-        </div>
-        <div class="time-filter">
-            <select id="firmFilter">
-                <option value="all">ALL FIRMS</option>
-            </select>
-        </div>
-        <div class="time-filter">
-            <select id="paymentFilter">
-                <option value="paymentIn">Payment-In</option>
-                <option value="paymentOut">Payment-Out</option>
-            </select>
-        </div>
-    </div>
-    <div class="header-actions">
-        <a href="#" class="btn-excel">
-            📊 Excel Report
-        </a>
-        <a href="#" class="btn-print">
-            🖨️ Print
-        </a>
-    </div>
-</div>
-
-<div class="content-container">
-    <div class="search-add-container">
-        <input type="text" class="search-box" placeholder="Search..." id="searchInput">
-        <button class="btn-add-payment" onclick="openAddPaymentModal()">
-            ➕ Add Payment-Out
-        </button>
-    </div>
-
-    <div class="table-container">
-        @if (Model != null && Model.Any())
-        {
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>DATE</th>
-                        <th>REF NO.</th>
-                        <th>PARTY NAME</th>
-                        <th>CATEGORY NAME</th>
-                        <th>TYPE</th>
-                        <th>TOTAL</th>
-                        <th>RECEIVED/PAID</th>
-                        <th>BALANCE</th>
-                        <th>PRINT / SHARE</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        int counter = 1;
-                    }
-                    @foreach (var item in Model)
-                    {
-                        <tr onclick="openEditPaymentModal(@item.Id)">
-                            <td>@counter</td>
-                            <td>@item.Date.ToString("dd/MM/yyyy")</td>
-                            <td>@item.RefNo</td>
-                            <td>@item.PartyName</td>
-                            <td>@item.CategoryName</td>
-                            <td>@item.Type</td>
-                            <td>₹ @item.Total.ToString("N2")</td>
-                            <td>₹ @item.ReceivedPaid.ToString("N2")</td>
-                            <td>₹ @item.Balance.ToString("N2")</td>
-                            <td>
-                                🖨️&nbsp;&nbsp;&nbsp;🔗&nbsp;&nbsp;&nbsp;✏
-                            </td>
-                        </tr>
-                        counter++;
-                    }
-                </tbody>
-            </table>
-        }
-        else
-        {
-            <div class="empty-state">
-                <div style="font-size: 60px; margin-bottom: 20px;">📄</div>
-                <h3>No data is available for Payment-In.</h3>
-                <p>Please try again after making relevant changes.</p>
-            </div>
-        }
-    </div>
-
-    <div class="footer-summary">
-        <div>Total Amount: ₹ @totalAmount.ToString("N2")</div>
-        <div>Balance: ₹ @totalBalance.ToString("N2")</div>
-    </div>
-</div>
-
-
-
-<!-- Modal -->
-<div id="paymentModal" class="modal">
-    <div class="modal-content">
-        <div id="modalContent"></div>
-    </div>
-</div>
-
 <script>
+    // Modal functionality
     function openAddPaymentModal() {
-        fetch('/PaymentOut/Create')
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('modalContent').innerHTML = html;
-                document.getElementById('paymentModal').classList.add('show');
-            });
+        showModal();
+        loadModalContent('/Web/PaymentOut/Create');
     }
 
     function openEditPaymentModal(id) {
-        fetch('/PaymentOut/Edit/' + id)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('modalContent').innerHTML = html;
-                document.getElementById('paymentModal').classList.add('show');
-            });
+        if (!id) return;
+        showModal();
+        loadModalContent('/Web/PaymentOut/Edit/' + id);
+    }
+
+    function openViewPaymentModal(id) {
+        if (!id) return;
+        showModal();
+        loadModalContent('/Web/PaymentOut/GetById?id=' + id);
+    }
+
+    function showModal() {
+        document.getElementById('paymentModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
     }
 
     function closeModal() {
         document.getElementById('paymentModal').classList.remove('show');
+        document.body.style.overflow = 'auto';
+        document.getElementById('modalContent').innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
     }
 
-    // Close modal when clicking outside
-    document.getElementById('paymentModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
-        }
-    });
-
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        const rows = document.querySelectorAll('.data-table tbody tr');
-
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(searchTerm) ? '' : 'none';
+    function loadModalContent(url) {
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'text/html',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(html => {
+            document.getElementById('modalContent').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error loading modal content:', error);
+            document.getElementById('modalContent').innerHTML = `
+                <div class="alert alert-danger m-3" role="alert">
+                    <h4 class="alert-heading">Error!</h4>
+                    <p>Failed to load content. Please try again.</p>
+                    <hr>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Close</button>
+                </div>
+            `;
         });
-    });
+    }
 
-    // Handle form submission
+    // Form submission handler
     function handleFormSubmit(form) {
         const formData = new FormData(form);
 
@@ -443,5 +553,128 @@
             console.error('Error:', error);
             alert('An error occurred. Please try again.');
         });
+    }
+
+    // Close modal events
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && document.getElementById('paymentModal').classList.contains('show')) {
+            closeModal();
+        }
+    });
+
+    // Search functionality
+    document.getElementById('transactionSearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll('#paymentsTable tbody tr');
+
+        tableRows.forEach(function(row) {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Filter functionality
+    function setTimeFilter(period) {
+        document.getElementById('timeFilterDropdown').textContent = period.charAt(0).toUpperCase() + period.slice(1);
+        // Add logic to filter by time period
+        filterData();
+    }
+
+    function filterByDate() {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        if (startDate && endDate) {
+            filterData();
+        }
+    }
+
+    function filterData() {
+        // Combine all filters and apply to table
+        const firmFilter = document.getElementById('firmFilter').value;
+        const userFilter = document.getElementById('userFilter').value;
+        const paymentTypeFilter = document.getElementById('paymentTypeFilter').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        // Apply filters to table rows
+        // Implementation depends on your specific filtering requirements
+    }
+
+    // Table sorting
+    let sortDirection = {};
+    function sortTable(columnIndex) {
+        const table = document.getElementById('paymentsTable');
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+        const direction = sortDirection[columnIndex] === 'asc' ? 'desc' : 'asc';
+        sortDirection[columnIndex] = direction;
+
+        rows.sort((a, b) => {
+            const aText = a.cells[columnIndex].textContent.trim();
+            const bText = b.cells[columnIndex].textContent.trim();
+
+            if (direction === 'asc') {
+                return aText.localeCompare(bText, undefined, {numeric: true});
+            } else {
+                return bText.localeCompare(aText, undefined, {numeric: true});
+            }
+        });
+
+        tbody.innerHTML = '';
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
+    // Action functions
+    function printPayment(id) {
+        window.open('/Web/PaymentOut/Print/' + id, '_blank');
+    }
+
+    function sharePayment(id) {
+        const url = window.location.origin + '/Web/PaymentOut/GetById?id=' + id;
+        if (navigator.share) {
+            navigator.share({
+                title: 'Payment Receipt',
+                url: url
+            });
+        } else {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Payment link copied to clipboard!');
+            });
+        }
+    }
+
+    function deletePayment(id) {
+        if (confirm('Are you sure you want to delete this payment?')) {
+            fetch('/Web/PaymentOut/Delete/' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Payment deleted successfully');
+                    location.reload();
+                } else {
+                    alert('Error deleting payment');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting payment');
+            });
+        }
     }
 </script>

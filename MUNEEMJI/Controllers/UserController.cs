@@ -132,11 +132,11 @@ namespace MUNEEMJI.Controllers
                     using var smtp = new SmtpClient("smtp.gmail.com")
                     {
                         Port = 587,
-                        Credentials = new NetworkCredential("lokeshjpr229@gmail.com", "deli btxe wkek mhhx"),
+                        Credentials = new NetworkCredential("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre"),
                         EnableSsl = true,
                     };
 
-                    var mail = new MailMessage("lokeshjpr229@gmail.com", model.PhoneOrEmail)
+                    var mail = new MailMessage("noreplymuneemjii@gmail.com", model.PhoneOrEmail)
                     {
                         Subject = "You have been invited to join MunnemJi",
                         Body = emailBody,

@@ -20,7 +20,7 @@ namespace MUNEEMJI.Controllers
             _billService = billService;
             _environment = environment;
             _IBillItemService = iBillItemService;
-          
+
         }
         public async Task<IActionResult> Index()
         {
@@ -60,7 +60,7 @@ namespace MUNEEMJI.Controllers
                 FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id  where td.TradeDocumentTypesid=@TradeDocumentTypesid;
                 ";
 
-                var PurchaseBill = connection.QuerySql<PurchaseBill>(query,new { TradeDocumentTypesid = (int)TradeDocumentTypes.SalesChallan }).ToList();
+                var PurchaseBill = connection.QuerySql<PurchaseBill>(query, new { TradeDocumentTypesid = (int)TradeDocumentTypes.SalesChallan }).ToList();
 
 
                 if (PurchaseBill != null && PurchaseBill.Count() > 0)
@@ -104,7 +104,7 @@ namespace MUNEEMJI.Controllers
 
             int firmid = 1;
             await Task.Delay(1);
-           
+
             viewModel = new PurchaseBillViewModel
             {
                 Bill = new PurchaseBill
@@ -126,12 +126,12 @@ namespace MUNEEMJI.Controllers
                 DropDownCategory = CategoryController.GetCategoriesDropdown()
 
             };
-            
+
             var PartyList = await partyController.GetPartyDropDownAsync();
             ViewBag.PartyList = PartyList;
             return View(viewModel);
         }
-        
+
         // POST: Bill/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -139,33 +139,51 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
-                
-                    if (viewModel.Bill.imageFile != null && viewModel.Bill.imageFile.Length > 0)
+
+                if (viewModel.Bill.imageFile != null && viewModel.Bill.imageFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "transaction");
+                    if (!Directory.Exists(uploadsFolder))
                     {
-                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-                        if (!Directory.Exists(uploadsFolder))
-                        {
-                            Directory.CreateDirectory(uploadsFolder);
-                        }
-
-                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + viewModel.Bill.imageFile.FileName;
-                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await viewModel.Bill.imageFile.CopyToAsync(fileStream);
-                        }
-
-                        viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;
+                        Directory.CreateDirectory(uploadsFolder);
                     }
 
-                    // Calculate totals
-                    CalculateBillTotals(viewModel.Bill);
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + viewModel.Bill.imageFile.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                    var billId = await _billService.CreateBillAsync(viewModel.Bill);
-                    TempData["SuccessMessage"] = "Bill created successfully!";
-                    return RedirectToAction(nameof(Index));
-                
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await viewModel.Bill.imageFile.CopyToAsync(fileStream);
+                    }
+
+                    viewModel.Bill.ImagePath = "/Web/uploads/" + uniqueFileName;
+                }
+                if (viewModel.Bill.DocumentFile != null && viewModel.Bill.DocumentFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "transaction");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + viewModel.Bill.DocumentFile.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await viewModel.Bill.DocumentFile.CopyToAsync(fileStream);
+                    }
+
+                    viewModel.Bill.DocumentPath = "/Web/uploads/" + uniqueFileName;
+                }
+
+                // Calculate totals
+                CalculateBillTotals(viewModel.Bill);
+
+                var billId = await _billService.CreateBillAsync(viewModel.Bill);
+                TempData["SuccessMessage"] = "Bill created successfully!";
+                return RedirectToAction(nameof(Index));
+
             }
             catch (Exception ex)
             {
@@ -271,7 +289,7 @@ namespace MUNEEMJI.Controllers
             return View(bill);
         }
 
-              
+
 
         [HttpPost]
         public IActionResult AddBillItem(PurchaseBillViewModel viewModel)
@@ -464,7 +482,7 @@ namespace MUNEEMJI.Controllers
                 TempData["ErrorMessage"] = $"Error creating bill: {ex.Message}";
             }
 
-            return View("Create",viewModel);
+            return View("Create", viewModel);
         }
 
 

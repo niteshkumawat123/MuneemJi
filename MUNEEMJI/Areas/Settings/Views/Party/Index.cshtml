@@ -463,8 +463,16 @@
 
             <!-- Enable Loyalty Point Section -->
             <div class="settings-section">
-                <h3 class="section-title">Enable Loyalty Point</h3>
-
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 class="section-title">Enable Loyalty Point</h3>
+                    <button type="button" class="btn-close btn-close-custom"
+                            style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
+                    height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
+                    padding-right: 6px;"
+                            aria-label="Close"
+                            onclick="window.location.href = new URLSearchParams(window.location.search).get('returnUrl') || window.history.back();">
+                    </button>
+                </div>
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="EnableLoyaltyPoint" id="enableLoyaltyPoint" @(Model?.EnableLoyaltyPoint == true ? "checked" : "")>
                     <label class="form-check-label" for="enableLoyaltyPoint">
@@ -473,6 +481,7 @@
                     </label>
                 </div>
             </div>
+          
         </div>
 
         <!-- Save Button -->

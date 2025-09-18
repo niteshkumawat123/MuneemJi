@@ -231,7 +231,15 @@
 </style>
 
 <div class="settings-container">
-    <button class="close-btn">×</button>
+    <div style="display: flex; justify-content: flex-end;">
+        <button type="button" class="btn-close btn-close-custom"
+                style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
+               height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
+               padding-right: 6px;"
+                aria-label="Close"
+                onclick="window.location.href = new URLSearchParams(window.location.search).get('returnUrl') || window.history.back();">
+        </button>
+    </div>
 
     <div class="settings-row">
         <!-- Left Column -->
@@ -404,32 +412,7 @@
                 </div>
             </div>
 
-            <!-- Customize Your View Section -->
-            <div class="settings-section">
-                <h3 class="section-title">Customize Your View</h3>
-
-                <div style="font-size: 14px; color: #333; font-weight: 600; margin-bottom: 10px;">
-                    Choose Your Screen Zoom/Scale
-                </div>
-
-                <div class="description-text" style="margin-bottom: 15px;">
-                    You can use this setting to resize the Vyapar screen, making it larger or smaller to fit your preferences.
-                </div>
-
-                <div class="zoom-labels">
-                    <span>70%</span>
-                    <span>80%</span>
-                    <span>90%</span>
-                    <span>100%</span>
-                    <span>110%</span>
-                    <span>115%</span>
-                    <span>120%</span>
-                    <span>130%</span>
-                </div>
-
-                <input type="range" class="zoom-slider" min="70" max="130" value="100" step="5">
-                <button class="apply-btn">Apply</button>
-            </div>
+           
         </div>
     </div>
 

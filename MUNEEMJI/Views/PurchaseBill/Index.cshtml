@@ -11,9 +11,7 @@
             <h4 class="page-title mb-0">Purchase Bills</h4>
         </div>
         <div class="col-md-6 text-end">
-            <button class="btn btn-outline-primary me-2">
-                <i class="fa fa-upload"></i> Upload Bill
-            </button>
+           
             <a href="/PurchaseBill/Create">
                 <button class="btn btn-primary">
                     <i class="fa fa-plus"></i> Add Purchase
@@ -76,11 +74,13 @@
         </div>
 
         <div class="col-auto ms-auto">
-            <button class="btn btn-outline-secondary me-2" title="Excel Report">
-                <i class="fa fa-file-excel"></i>
-            </button>
-            <button class="btn btn-outline-secondary" title="Print">
-                <i class="fa fa-print"></i>
+            <a href="/path/to/file.xlsx" download>
+                <button type="button" class="btn btn-success btn-sm" title="Download Excel" style="padding: 8px;padding-left: 11px;padding-right: 11px;">
+                    <i class="bi bi-file-earmark-excel"></i>
+                </button>
+            </a>
+            <button class="btn btn-outline-secondary btn-sm" onclick="window.print()" style="background-color: lightgray;">
+                <i class="bi bi-printer"></i>
             </button>
         </div>
     </div>

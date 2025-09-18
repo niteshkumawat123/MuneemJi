@@ -147,7 +147,15 @@
 </style>
 
 <div class="settings-container">
-    <button type="button" class="close-btn">&times;</button>
+    <div style="display: flex; justify-content: flex-end;">
+        <button type="button" class="btn-close btn-close-custom"
+                style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
+            height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
+            padding-right: 6px;"
+                aria-label="Close"
+                onclick="window.location.href = new URLSearchParams(window.location.search).get('returnUrl') || window.history.back();">
+        </button>
+    </div>
 
     @if (TempData["SuccessMessage"] != null)
     {
@@ -420,7 +428,7 @@
             if (result.success) {
                 showSuccessMessage(result.message || 'Settings saved successfully!');
 
-                
+
                 // If there's a redirect URL in the response, you can use it
                 if (result.redirectUrl) {
                     setTimeout(() => {

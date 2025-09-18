@@ -8,11 +8,14 @@
     <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
         <div class="d-flex align-items-center">
             <h4 class="mb-0 me-2">Parties</h4>
-            @* <i class="bi bi-chevron-down"></i> *@
         </div>
-        <button class="btn btn-danger btn-sm" onclick="window.location.href='/Web/party/add'">
-            <i class="bi bi-plus"></i> Add Party
-        </button>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-danger btn-sm" onclick="window.location.href='/Web/party/add'">
+                <i class="bi bi-plus"></i> Add Party
+            </button>
+            <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Party/Index?returnUrl=' + encodeURIComponent(window.location.href)" style="font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%; padding-bottom:2px;padding-top:0px;padding-left:6px; padding-right:6px;">
+            </button>
+        </div>
     </div>
 
     <div class="row g-0">

@@ -557,17 +557,8 @@
                 <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
 
                 <div class="header-top">
-                    @* <div class="sale-toggle"> *@
 
-                    <div style="font-size: 21px; white-space: nowrap;">Credit Note</div>
-                    @* <div class="toggle-switch" id="paymentToggle">
-
-                            <div class="toggle-slider"></div>
-                        </div> *@
-                    @*                         <span id="paymentMode">Credit</span>
- *@                    
-
-                    @*  </div> *@
+                    <div style="font-size: 21px; white-space: nowrap;">Credit Note</div> 
 
                     <div class="text-end w-100">
                         <button class="btn btn-primary" style="background-color:#007bff" onclick="window.open('https://www.google.com/search?q=calculator', '_blank')">
@@ -577,10 +568,9 @@
                                         height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
                                         padding-right: 6px;" aria-label="Close" onclick="closeView()">
                         </button>
-                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index'"
-                                style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
-                                        padding-bottom:7px;padding-top:0px;padding-left:6px;
-                                        padding-right:6px;">
+                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/General/Index?returnUrl=' + encodeURIComponent(window.location.href)" style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
+                                padding-bottom:7px;padding-top:0px;padding-left:6px;
+                                padding-right:6px;">
                         </button>
                     </div>
                 </div>

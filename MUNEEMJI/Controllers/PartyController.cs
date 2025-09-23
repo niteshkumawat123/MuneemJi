@@ -3,6 +3,8 @@ using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
+using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 using Npgsql;
 using System.Drawing;
 using System.IO;
@@ -15,6 +17,13 @@ namespace MUNEEMJI.Controllers
 
 
         private readonly string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private readonly ICompanyTenancy _CompayTenancy;
+        public IParty _party;
+        public PartyController(ICompanyTenancy companyTenancy, IParty party)
+        {
+            _CompayTenancy = companyTenancy;
+            _party = party;
+        }
 
         [HttpGet]
         public IActionResult Add(int id=0)
@@ -121,6 +130,8 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var companyId = _CompayTenancy.GetCurrentCompanyId(); 
+
                 using (var conn = new NpgsqlConnection(_connectionString))
                 {
                     conn.Open();
@@ -164,14 +175,16 @@ namespace MUNEEMJI.Controllers
                                     additional_field1_enabled, additional_field1_value,
                                     additional_field2_enabled, additional_field2_value,
                                     additional_field3_enabled, additional_field3_value,
-                                    additional_field4_enabled, additional_field4_value
+                                    additional_field4_enabled, additional_field4_value,
+                                    companyid
                                      ) VALUES (
                                     @party_name, @gstin, @phone_number, @gst_type, @state, @email, @billing_address, @shipping_address, @is_shipping_disabled,
                                     @opening_balance, @as_of_date, @has_custom_credit_limit, @credit_limit,
                                     @additional_field1_enabled, @additional_field1_value,
                                     @additional_field2_enabled, @additional_field2_value,
                                     @additional_field3_enabled, @additional_field3_value,
-                                    @additional_field4_enabled, @additional_field4_value
+                                    @additional_field4_enabled, @additional_field4_value,
+                                    @p_companyid
                                   );";
                     }
 
@@ -209,6 +222,7 @@ namespace MUNEEMJI.Controllers
                         cmd.Parameters.AddWithValue("additional_field4_value", model.AdditionalField4Enabled && model.AdditionalField4Value.HasValue
                             ? (object)model.AdditionalField4Value.Value
                             : DBNull.Value);
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
 
                         if (model.Id > 0)
                         {
@@ -389,14 +403,17 @@ namespace MUNEEMJI.Controllers
         {
             var model = new PartyViewModel();
             model.Parties = new List<PartyModel>();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
 
             using (var conn = new NpgsqlConnection(_connectionString))
             {
                 conn.Open();  // establish PostgreSQL connection:contentReference[oaicite:3]{index=3}
                               // 1) Query all parties
-                string sql = "SELECT id, party_name,opening_balance FROM parties ORDER BY party_name";
+                string sql = "SELECT id, party_name,opening_balance FROM parties where companyid = @p_companyid ORDER BY party_name";
                 using (var cmd = new NpgsqlCommand(sql, conn))
-                {
+                {     cmd.Parameters.AddWithValue("p_companyid", companyId);
+
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -498,29 +515,19 @@ namespace MUNEEMJI.Controllers
         }
 
 
-        public async Task<List<PartyDropDownModel>> GetPartyDropDownAsync()
-        {
-            List<PartyDropDownModel> model = new List<PartyDropDownModel>();
-
+        public async Task<IActionResult> GetPartyDropDownAsync()
+        {          
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
             try
             {
-                using (var conn = new NpgsqlConnection(_connectionString))
-                {
-                    await conn.OpenAsync();
-
-                    string sql = "SELECT id, party_name AS PartyName, balance,phone_number as phonenumber FROM parties ORDER BY party_name";
-
-                    var result = await conn.QuerySqlAsync<PartyDropDownModel>(sql);
-                    model = result?.ToList() ?? new List<PartyDropDownModel>();
-                }
+                var Record = await _party.GetPartyDropDownAsync(companyId);
+                return Ok(Record);
+                
             }
             catch (Exception ex)
             {
-                // Log or handle the exception
                 throw;
-            }
-
-            return model;
+            }           
         }
 
 

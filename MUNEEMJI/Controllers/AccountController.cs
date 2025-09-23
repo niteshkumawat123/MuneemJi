@@ -144,19 +144,24 @@ namespace MUNEEMJI.Controllers
                             UpdatedAt = reader.GetDateTime("updated_at")
                         };
 
+
+                        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
                         // Create authentication cookie
                         var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, business.Id.ToString()),
                     new Claim(ClaimTypes.Name, business.BusinessName),
                     new Claim(ClaimTypes.Email, business.Email),
-                    new Claim("Phone", business.Phone)
+                    new Claim("Phone", business.Phone),
+                    new Claim("CompanyId", business.Id.ToString())
                 };
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+                        HttpContext.User = claimsPrincipal;
 
                         // Store business info in session (optional, since you have claims now)
                         HttpContext.Session.SetString("BusinessId", business.Id.ToString());

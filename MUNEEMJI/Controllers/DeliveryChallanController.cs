@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Models.BusinessDashboard.Models;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
@@ -12,12 +13,16 @@ namespace MUNEEMJI.Controllers
         private readonly IDeliveryChallanService _billService;
         private readonly IWebHostEnvironment _environment;
         private readonly IBillItemService _IBillItemService;
+        private readonly ICompanyTenancy _CompayTenancy;
+        private readonly IParty partyController;
         string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
-        public DeliveryChallanController(IDeliveryChallanService billService, IWebHostEnvironment environment, IBillItemService iBillItemService)
+        public DeliveryChallanController(IDeliveryChallanService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy CompayTenancy, IParty partyController)
         {
             _billService = billService;
             _environment = environment;
             _IBillItemService = iBillItemService;
+            _CompayTenancy = CompayTenancy;
+            this.partyController = partyController;
         }
 
         public async Task<IActionResult> Index()
@@ -29,7 +34,7 @@ namespace MUNEEMJI.Controllers
                 string firmFilter = "ALL FIRMS";
                 string vendorFilter = null;
                 using var connection = new NpgsqlConnection(_connectionString);
-
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
 
                 string query = @"
                 SELECT 
@@ -61,10 +66,10 @@ namespace MUNEEMJI.Controllers
                     td.challanno,
                     td.INVOICENUMBER,
                     td.final_amount as ""finalamount""
-                FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id where td.TradeDocumentTypesid=@TradeDocumentTypesid;
+                FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id where td.TradeDocumentTypesid=@TradeDocumentTypesid and  td.companyid = @p_companyid ;
             ";
 
-                List<PurchaseBill> PurchaseList = connection.QuerySql<PurchaseBill>(query, new { TradeDocumentTypesid = (int)TradeDocumentTypes.DeliveryChallan }).ToList();
+                List<PurchaseBill> PurchaseList = connection.QuerySql<PurchaseBill>(query, new { TradeDocumentTypesid = (int)TradeDocumentTypes.DeliveryChallan, p_companyid= companyId }).ToList();
 
                 if (PurchaseList != null && PurchaseList.Count() > 0)
                 {
@@ -87,10 +92,10 @@ namespace MUNEEMJI.Controllers
         }
         public async Task<IActionResult> Create()
         {
-            PartyController partyController = new PartyController();
             var viewModel = new PurchaseBillViewModel();
             var transactionSettingsController = new TransactionSettingsController();
             var CategoryController = new CategoryController();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
 
             int firmid = 1;
             await Task.Delay(1);
@@ -112,12 +117,12 @@ namespace MUNEEMJI.Controllers
                     itemSettings = transactionSettingsController.GetItemSettings()
                 },
                 ViewTypeId = (int)ViewTypeEnum.Create,
-                DropDownItem = await _IBillItemService.GetItems(),
+                DropDownItem = await _IBillItemService.GetItems(companyId),
                 DropDownCategory = CategoryController.GetCategoriesDropdown()
 
             };
 
-            var PartyList = await partyController.GetPartyDropDownAsync();
+            var PartyList = await partyController.GetPartyDropDownAsync(companyId);
             ViewBag.PartyList = PartyList;
             return View(viewModel);
         }
@@ -129,6 +134,8 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
 
                 if (viewModel.Bill.imageFile != null && viewModel.Bill.imageFile.Length > 0)
                 {
@@ -152,7 +159,7 @@ namespace MUNEEMJI.Controllers
                 // Calculate totals
                 CalculateBillTotals(viewModel.Bill);
 
-                var billId = await _billService.CreateBillAsync(viewModel.Bill);
+                var billId = await _billService.CreateBillAsync(viewModel.Bill, companyId);
                 TempData["SuccessMessage"] = "Bill created successfully!";
                 return RedirectToAction(nameof(Index));
 
@@ -362,8 +369,9 @@ namespace MUNEEMJI.Controllers
         }
         public async Task<IActionResult> GetById(int id = 0, int typeid = 0)
         {
-            PartyController partyController = new PartyController();
             var viewModel = new PurchaseBillViewModel();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
             await Task.Delay(1);
             if (id > 0)
             {
@@ -383,7 +391,7 @@ namespace MUNEEMJI.Controllers
                     //},
                     Bill = bill,
                     ViewTypeId = typeid,
-                    DropDownItem = await _IBillItemService.GetItems()
+                    DropDownItem = await _IBillItemService.GetItems(companyId)
                 };
             }
             else
@@ -402,10 +410,10 @@ namespace MUNEEMJI.Controllers
                     }
                     },
                     ViewTypeId = typeid,
-                    DropDownItem = await _IBillItemService.GetItems()
+                    DropDownItem = await _IBillItemService.GetItems(companyId)
                 };
             }
-            ViewBag.PartyList = await partyController.GetPartyDropDownAsync();
+            ViewBag.PartyList = await partyController.GetPartyDropDownAsync(companyId);
             return View("Create", viewModel);
         }
         [HttpPost]

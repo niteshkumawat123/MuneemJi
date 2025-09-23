@@ -150,7 +150,9 @@ namespace MUNEEMJI.Models
         SalesChallan = 5,
         DebitNote = 6,
         CreditNote = 7,
-        Estimation=8
+        Estimation=8,
+        PaymentIn =9,
+        PaymentOut = 10
     }
 
     public enum TradeDocumentStatusEnum

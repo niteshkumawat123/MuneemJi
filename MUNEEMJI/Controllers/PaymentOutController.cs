@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using MUNEEMJI.Models;
+using MUNEEMJI.Services;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
@@ -13,15 +14,17 @@ namespace MUNEEMJI.Controllers
     public class PaymentOutController: Controller
     {
         private readonly string _connectionString;
-
-        public PaymentOutController(IConfiguration configuration)
+        private readonly ICompanyTenancy _tenancy;
+        public PaymentOutController(IConfiguration configuration, ICompanyTenancy company)
         {
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _tenancy = company;
         }
 
         public async Task<IActionResult> Index()
         {
             using var connection = new NpgsqlConnection(_connectionString);
+            var CompanyId = _tenancy.GetCurrentCompanyId();
 
             var paymentInOuts = connection.QuerySql<PaymentInOutViewModel>(@"
                 SELECT 
@@ -36,9 +39,9 @@ namespace MUNEEMJI.Controllers
                     p.Balance,
                     p.PrintShare
                 FROM PaymentInOut p
-                LEFT JOIN parties pt ON p.PartyId = pt.Id
+                LEFT JOIN parties pt ON p.PartyId = pt.Id where p.companyid =  @p_companyid and moduleid = @p_moduleid
                 ORDER BY p.Date DESC
-            ").ToList();
+            ",new { p_companyid   = CompanyId , p_moduleid  = (int)TradeDocumentTypes.PaymentOut }).ToList();
 
             return View(paymentInOuts);
         }
@@ -55,13 +58,14 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var CompanyId = _tenancy.GetCurrentCompanyId();
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     string query = @"
                             INSERT INTO PaymentInOut 
-                            (Date, RefNo, PartyId, CategoryName, Type, Total, ReceivedPaid, Balance, PrintShare, PaymentType, Description, CreatedDate)
+                            (Date, RefNo, PartyId, CategoryName, Type, Total, ReceivedPaid, Balance, PrintShare, PaymentType, Description, CreatedDate,CompanyId,moduleid)
                             VALUES 
-                            (@Date, @RefNo, @PartyId, @CategoryName, @Type, @Total, @ReceivedPaid, @Balance, @PrintShare, @PaymentType, @Description, @CreatedDate)
+                            (@Date, @RefNo, @PartyId, @CategoryName, @Type, @Total, @ReceivedPaid, @Balance, @PrintShare, @PaymentType, @Description, @CreatedDate,@p_companyid,@p_moduleid)
                                 ";
 
                     connection.ExecuteSql(query, new
@@ -77,7 +81,9 @@ namespace MUNEEMJI.Controllers
                         PrintShare = model.PrintShare,
                         PaymentType = model.PaymentType,
                         Description = model.Description,
-                        CreatedDate = model.CreatedDate
+                        CreatedDate = model.CreatedDate,
+                        p_companyid  = CompanyId,
+                        p_moduleid = (int)TradeDocumentTypes.PaymentOut
                     });
                 }
 
@@ -87,7 +93,7 @@ namespace MUNEEMJI.Controllers
 
             }
 
-            return Json(new { success = true, message = "Payment-In saved successfully!" });
+            //return Json(new { success = true, message = "Payment-In saved successfully!" });
 
 
             await LoadViewBag();
@@ -147,10 +153,10 @@ namespace MUNEEMJI.Controllers
         private async Task LoadViewBag()
         {
             using var connection = new NpgsqlConnection(_connectionString);
-
+            var Companyid = _tenancy.GetCurrentCompanyId();
             var parties = connection.QuerySql<Party>(@"
-                SELECT Id,party_name as Name FROM parties ORDER BY party_name
-            ").ToList();
+                SELECT Id,party_name as Name FROM parties where companyid = @Companyid   ORDER BY party_name 
+            ", new { Companyid  =  Companyid}).ToList();
 
             ViewBag.Parties = parties.Select(p => new SelectListItem
             {

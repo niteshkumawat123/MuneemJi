@@ -1,17 +1,19 @@
-﻿using MUNEEMJI.Models;
+﻿using Insight.Database;
+using MUNEEMJI.Models;
 using Npgsql;
+using System.ComponentModel.Design;
 using System.Data;
 
 namespace MUNEEMJI.Repositories
 {
     public interface IGodownService
     {
-        Task<List<Godown>> GetAllGodownsAsync();
+        Task<List<Godown>> GetAllGodownsAsync(int CompanyId);
         Task<Godown> GetGodownByIdAsync(int id);
-        Task<bool> CreateGodownAsync(Godown godown);
+        Task<bool> CreateGodownAsync(Godown godown , int CompanyId);
         Task<bool> UpdateGodownAsync(Godown godown);
         Task<bool> DeleteGodownAsync(int id);
-        Task<int> GetGodownCountAsync();
+        Task<int> GetGodownCountAsync(int CompanyId);
     }
 
     public class GodownService : IGodownService
@@ -23,7 +25,7 @@ namespace MUNEEMJI.Repositories
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
         }
 
-        public async Task<List<Godown>> GetAllGodownsAsync()
+        public async Task<List<Godown>> GetAllGodownsAsync(int CompanyId)
         {
             var godowns = new List<Godown>();
 
@@ -32,9 +34,10 @@ namespace MUNEEMJI.Repositories
 
             string query = @"SELECT Id, GodownName, GodownType, PhoneNo, EmailId, GSTIN, 
                            GodownAddress, GodownPincode, CreatedDate, UpdatedDate 
-                           FROM Godowns ORDER BY CreatedDate DESC";
+                           FROM Godowns where CompanyId =  @p_companyid ORDER BY CreatedDate DESC";
 
             using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("p_companyid", CompanyId);
             using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -91,15 +94,15 @@ namespace MUNEEMJI.Repositories
             return null;
         }
 
-        public async Task<bool> CreateGodownAsync(Godown godown)
+        public async Task<bool> CreateGodownAsync(Godown godown,int CompanyId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
             string query = @"INSERT INTO Godowns (GodownName, GodownType, PhoneNo, EmailId, GSTIN, 
-                           GodownAddress, GodownPincode, CreatedDate, UpdatedDate) 
+                           GodownAddress, GodownPincode, CreatedDate, UpdatedDate,companyId) 
                            VALUES (@GodownName, @GodownType, @PhoneNo, @EmailId, @GSTIN, 
-                           @GodownAddress, @GodownPincode, @CreatedDate, @UpdatedDate)";
+                           @GodownAddress, @GodownPincode, @CreatedDate, @UpdatedDate,@companyId)";
 
             using var command = new NpgsqlCommand(query, connection);
             command.Parameters.AddWithValue("@GodownName", godown.GodownName);
@@ -111,6 +114,7 @@ namespace MUNEEMJI.Repositories
             command.Parameters.AddWithValue("@GodownPincode", (object)godown.GodownPincode ?? DBNull.Value);
             command.Parameters.AddWithValue("@CreatedDate", DateTime.UtcNow);
             command.Parameters.AddWithValue("@UpdatedDate", DateTime.UtcNow);
+            command.Parameters.AddWithValue("@companyId", CompanyId);
 
             int result = await command.ExecuteNonQueryAsync();
             return result > 0;
@@ -155,14 +159,16 @@ namespace MUNEEMJI.Repositories
             return result > 0;
         }
 
-        public async Task<int> GetGodownCountAsync()
+        public async Task<int> GetGodownCountAsync(int CompanyId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
+            
             await connection.OpenAsync();
 
-            string query = "SELECT COUNT(*) FROM Godowns";
+            string query = "SELECT COUNT(*) FROM Godowns where Companyid = @p_Companyid";
 
             using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("p_Companyid", CompanyId);
             object result = await command.ExecuteScalarAsync();
 
             return Convert.ToInt32(result);

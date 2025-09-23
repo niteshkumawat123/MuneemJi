@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using MUNEEMJI.Models;
+using MUNEEMJI.Services;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
@@ -13,14 +14,16 @@ namespace MUNEEMJI.Controllers
     public class PaymentInController : Controller
     {
         private readonly string _connectionString;
-
-        public PaymentInController(IConfiguration configuration)
+        private readonly ICompanyTenancy companyTenancy;
+        public PaymentInController(IConfiguration configuration, ICompanyTenancy tenancy)
         {
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            companyTenancy = tenancy;
         }
 
         public async Task<IActionResult> Index()
         {
+            var CompanyId = companyTenancy.GetCurrentCompanyId();
             using var connection = new NpgsqlConnection(_connectionString);
 
             var paymentInOuts =  connection.QuerySql<PaymentInOutViewModel>(@"
@@ -37,9 +40,9 @@ namespace MUNEEMJI.Controllers
                     p.PrintShare,
                     p.PaymentType
                 FROM PaymentInOut p
-                LEFT JOIN parties pt ON p.PartyId = pt.Id
+                LEFT JOIN parties pt ON p.PartyId = pt.Id where p.companyid = @p_companyid  and p.moduleid = @p_moduleid
                 ORDER BY p.Date DESC
-            ").ToList();
+            ", new { p_companyid  = CompanyId, p_moduleid = TradeDocumentTypes.PaymentIn }).ToList();
 
             return View(paymentInOuts);
         }
@@ -56,13 +59,15 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var CompanyId = companyTenancy.GetCurrentCompanyId();
+
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     string query = @"
                             INSERT INTO PaymentInOut 
-                            (Date, RefNo, PartyId, CategoryName, Type, Total, ReceivedPaid, Balance, PrintShare, PaymentType, Description, CreatedDate)
+                            (Date, RefNo, PartyId, CategoryName, Type, Total, ReceivedPaid, Balance, PrintShare, PaymentType, Description, CreatedDate,companyid,moduleid)
                             VALUES 
-                            (@Date, @RefNo, @PartyId, @CategoryName, @Type, @Total, @ReceivedPaid, @Balance, @PrintShare, @PaymentType, @Description, @CreatedDate)
+                            (@Date, @RefNo, @PartyId, @CategoryName, @Type, @Total, @ReceivedPaid, @Balance, @PrintShare, @PaymentType, @Description, @CreatedDate,@p_companyid,@p_moduleid)
                                 ";
 
                     connection.ExecuteSql(query, new
@@ -78,7 +83,9 @@ namespace MUNEEMJI.Controllers
                         PrintShare = model.PrintShare,
                         PaymentType = model.PaymentType,
                         Description = model.Description,
-                        CreatedDate = model.CreatedDate
+                        CreatedDate = model.CreatedDate,
+                        p_companyid  = CompanyId,
+                        p_moduleid = (int)TradeDocumentTypes.PaymentIn
                     });
                 }
 

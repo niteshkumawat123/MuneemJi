@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 
 namespace MUNEEMJI.Controllers
 {
@@ -9,17 +10,20 @@ namespace MUNEEMJI.Controllers
     public class GodownController : Controller
     {
         private readonly IGodownService _godownService;
+        private readonly ICompanyTenancy _companyTenancy;
 
-        public GodownController(IGodownService godownService)
+        public GodownController(IGodownService godownService, ICompanyTenancy tenancy)
         {
             _godownService = godownService;
+            _companyTenancy = tenancy;
         }
 
         // GET: Godown
         public async Task<IActionResult> Index()
         {
-            var godowns = await _godownService.GetAllGodownsAsync();
-            var totalCount = await _godownService.GetGodownCountAsync();
+            var CompanyId = _companyTenancy.GetCurrentCompanyId();
+            var godowns = await _godownService.GetAllGodownsAsync(CompanyId);
+            var totalCount = await _godownService.GetGodownCountAsync(CompanyId);
 
             var viewModel = new GodownViewModel
             {
@@ -84,9 +88,10 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var Companyid = _companyTenancy.GetCurrentCompanyId();
                 if (ModelState.IsValid)
                 {
-                    var result = await _godownService.CreateGodownAsync(godown);
+                    var result = await _godownService.CreateGodownAsync(godown, Companyid);
                     if (result)
                     {
                         return Json(new { success = true, message = "Godown created successfully!" });
@@ -119,7 +124,9 @@ namespace MUNEEMJI.Controllers
             {
                 try
                 {
-                    var result = await _godownService.CreateGodownAsync(godown);
+                    
+                    var CompanyId = _companyTenancy.GetCurrentCompanyId();
+                    var result = await _godownService.CreateGodownAsync(godown, CompanyId);
                     if (result)
                     {
                         TempData["SuccessMessage"] = "Godown created successfully!";

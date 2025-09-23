@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 using Npgsql;
 using System.Transactions;
 
@@ -15,13 +16,14 @@ namespace MUNEEMJI.Controllers
         private readonly IBillItemService _billItemService;
         private readonly ILogger<BillItemController> _logger;
         string _connectionString = string.Empty;
+        private readonly ICompanyTenancy _CompayTenancy;
 
-
-        public BillItemController(IBillItemService billItemService, ILogger<BillItemController> logger)
+        public BillItemController(IBillItemService billItemService, ILogger<BillItemController> logger, ICompanyTenancy tenancy)
         {
             _billItemService = billItemService;
             _logger = logger;
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _CompayTenancy = tenancy;
         }
 
         [HttpGet]
@@ -94,6 +96,8 @@ namespace MUNEEMJI.Controllers
         public async Task<IActionResult> Create([FromBody]BillItem model)
         {
             BillItemViewModel viewModel = new BillItemViewModel();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
             try
             {
                 if (ModelState.IsValid)
@@ -106,7 +110,7 @@ namespace MUNEEMJI.Controllers
                         model.ServiceCode = model.ItemCode;
                     }
 
-                    bool result = await _billItemService.SaveBillItemAsync(model);
+                    bool result = await _billItemService.SaveBillItemAsync(model, companyId);
 
                     if (result)
                     {

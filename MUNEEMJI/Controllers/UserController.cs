@@ -4,31 +4,36 @@ using Npgsql;
 using System.Data;
 using System.Net.Mail;
 using System.Net;
+using MUNEEMJI.Services;
 
 namespace MUNEEMJI.Controllers
 {
     public class UserController: Controller
     {
         private readonly string _connectionString;
+        private ICompanyTenancy _companyTenancy;
 
-        public UserController(IConfiguration configuration)
+        public UserController(IConfiguration configuration, ICompanyTenancy companyTenancy)
         {
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _companyTenancy = companyTenancy;
         }
 
         public async Task<IActionResult> Index()
         {
             var users = new List<MUNEEMJI.Models.Business>();
+            var CompanyId = _companyTenancy.GetCurrentCompanyId();
 
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
             var query = @"
                 SELECT id, business_name, phone, email, status, roleid, created_at, updated_at
-                FROM businesses 
+                FROM businesses where companyid = @p_companyid
                 ORDER BY created_at DESC";
 
             using var command = new NpgsqlCommand(query, connection);
+            command.Parameters.AddWithValue("p_companyid", CompanyId);
             using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
@@ -64,6 +69,8 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUser(AddUserViewModel model)
         {
+            var CompanyId = _companyTenancy.GetCurrentCompanyId();
+
             if (!ModelState.IsValid)
             {
                 model.AvailableRoles = await GetAvailableRoles();
@@ -100,23 +107,27 @@ namespace MUNEEMJI.Controllers
 
             // 🔹 Step 2: Insert new user if not exists
             var insertQuery = @"
-                                INSERT INTO businesses (business_name, phone, email, status, roleid, created_at, updated_at, isactive, companyid, username)
-                                VALUES (@businessName, @phone, @email, @status, @roleid, @createdAt, @updatedAt, @isactive, @companyid, @username)";
+                                INSERT INTO businesses 
+                                ( business_name, phone, email, created_at, updated_at, status, roleid, isactive, companyid, username, isowner)
+                                VALUES ( @businessName, @phone, @email, @createdAt, @updatedAt, @status, @roleid, @isactive, @companyid, @username, @isowner)";
+
 
             using (var command = new NpgsqlCommand(insertQuery, connection))
             {
+
                 command.Parameters.AddWithValue("businessName", BusinessName);
                 command.Parameters.AddWithValue("phone", model.PhoneOrEmail);
                 command.Parameters.AddWithValue("email", model.PhoneOrEmail);
-                command.Parameters.AddWithValue("status", 0); // Pending
-                command.Parameters.AddWithValue("roleid", model.SelectedRoleId);
                 command.Parameters.AddWithValue("createdAt", DateTime.Now);
                 command.Parameters.AddWithValue("updatedAt", DateTime.Now);
+                command.Parameters.AddWithValue("status", 0); // Pending
+                command.Parameters.AddWithValue("roleid", model.SelectedRoleId);
                 command.Parameters.AddWithValue("isactive", true);
-                command.Parameters.AddWithValue("companyid", Convert.ToInt32(businessIdString));
+                command.Parameters.AddWithValue("companyid", CompanyId);
                 command.Parameters.AddWithValue("username", model.FullName);
-
+                command.Parameters.AddWithValue("isowner", false); // or true depending on logic
                 var rows = await command.ExecuteNonQueryAsync();
+
 
                 if (rows > 0)
                 {

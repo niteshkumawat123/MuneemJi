@@ -1,8 +1,12 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
+
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IPurchaseBillService, PurchaseBillService>();
 builder.Services.AddScoped<IBillItemService, BillItemService>();
@@ -15,6 +19,8 @@ builder.Services.AddScoped<IDebitNoteRepository, DebitNoteRepository>();
 builder.Services.AddScoped<ICreditNoteRepository, CreditNoteRepository>();
 builder.Services.AddScoped<IEstimate_QuotationsRepository, Estimate_QuotationsRepository>();
 builder.Services.AddScoped<IOtherIncomeRepository, OtherIncomeRepository>();
+builder.Services.AddScoped<ICompanyTenancy, CompanyTenancyService>();
+builder.Services.AddScoped<IParty, PartyRepository>();
 builder.Services.AddRazorPages();
 
 // Add Session services

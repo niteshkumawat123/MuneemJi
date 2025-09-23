@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 using Npgsql;
 using System.Globalization;
 using static MUNEEMJI.Models.ItemModel;
@@ -16,17 +17,22 @@ namespace MUNEEMJI.Controllers
         private readonly IWebHostEnvironment _webHostEnv;
         string _connectionString = string.Empty;
         private readonly IBillItemService _billItemService;
-        public ItemsController(IWebHostEnvironment webHostEnv, IBillItemService billItemService)
+        private readonly ICompanyTenancy _CompayTenancy;
+
+        public ItemsController(IWebHostEnvironment webHostEnv, IBillItemService billItemService, ICompanyTenancy CompayTenancy)
         {
             _webHostEnv = webHostEnv;
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
             _billItemService = billItemService;
+            _CompayTenancy = CompayTenancy;
         }
 
         [HttpGet]
         public IActionResult MainIndex(int? id)
         {
-            var viewModel =  GetItemsAsync();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+            var viewModel =  GetItemsAsync(companyId);
 
             ItemViewModel itemViewModel = new ItemViewModel();
             itemViewModel.ItemView = viewModel;
@@ -52,11 +58,13 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
                 BillItem billItem = new BillItem();
                 var model = new BillItemViewModel();
                 if (id > 0)
                 {
-                    var data = GetItemsAsync();
+                    var data = GetItemsAsync(companyId);
                     if (data != null && data.Count() > 0)
                     {
                         billItem = data.Where(x => x.Id == id).FirstOrDefault();
@@ -117,6 +125,8 @@ namespace MUNEEMJI.Controllers
         public async Task<IActionResult> Create([FromBody] BillItem model)
         {
             BillItemViewModel viewModel = new BillItemViewModel();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
             try
             {
                 if (ModelState.IsValid)
@@ -129,7 +139,7 @@ namespace MUNEEMJI.Controllers
                         model.ServiceCode = model.ItemCode;
                     }
 
-                    bool result = await _billItemService.SaveBillItemAsync(model);
+                    bool result = await _billItemService.SaveBillItemAsync(model, companyId);
 
                     if (result)
                     {
@@ -164,7 +174,7 @@ namespace MUNEEMJI.Controllers
                 return View(viewModel);
             }
         }
-        public  List<BillItem> GetItemsAsync()
+        public  List<BillItem> GetItemsAsync(int CompanyId)
         {
           var  _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
 
@@ -207,12 +217,12 @@ namespace MUNEEMJI.Controllers
                                         service_code AS ""ServiceCode"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
-                                    FROM billitem where  item_type = @p_itemtype
+                                    FROM billitem where  item_type = @p_itemtype and companyid = @p_companyid
                                     ORDER BY id;
                                     ";
 
                 // ✅ Fetch bill items
-                var billItems = connection.QuerySql<BillItem>(billItemSql,new { p_itemtype= "product" }).ToList();
+                var billItems = connection.QuerySql<BillItem>(billItemSql,new { p_itemtype= "product" , p_companyid  = CompanyId }).ToList();
 
                 if (billItems != null && billItems.Count > 0)
                 {
@@ -250,6 +260,8 @@ namespace MUNEEMJI.Controllers
         {
             ItemViewModel ViewModel = new ItemViewModel();
             ViewModel.Categories = new List<Category>();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
             try
             {
 
@@ -258,22 +270,28 @@ namespace MUNEEMJI.Controllers
                 {
                     conn.Open();
                     string query = @"SELECT id, name 
-                             FROM categorieses 
-                             ";
+                     FROM categorieses 
+                     WHERE companyid = @p_companyid";
 
                     using (var cmd = new NpgsqlCommand(query, conn))
-                    using (var reader = cmd.ExecuteReader())
                     {
-                        while (reader.Read())
+                        // Add parameter value here
+                        cmd.Parameters.AddWithValue("p_companyid", companyId); // 👈 replace companyId with your variable
+
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            ViewModel.Categories.Add(new Category
+                            while (reader.Read())
                             {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1)
-                            });
+                                ViewModel.Categories.Add(new Category
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1)
+                                });
+                            }
                         }
                     }
                 }
+
 
 
             }
@@ -310,12 +328,14 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
                 BillItem billItem = new BillItem();
                 var model = new BillItemViewModel();
                 model.IsView = true;
                 if (id > 0)
                 {
-                    var data =  GetItemsAsync();
+                    var data =  GetItemsAsync(companyId);
                     if (data != null && data.Count() > 0)
                     {
                         billItem = data.Where(x => x.Id == id).FirstOrDefault();

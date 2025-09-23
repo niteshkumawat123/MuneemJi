@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using MUNEEMJI.Models;
+using MUNEEMJI.Services;
 using Npgsql;
 using NuGet.Protocol.Plugins;
 using System.Collections.Generic;
@@ -14,15 +15,18 @@ namespace MUNEEMJI.Controllers
     public class ExpenseController : Controller
     {
         private readonly string _connectionString;
+        private readonly ICompanyTenancy _CompanyTenancy;
 
-        public ExpenseController(IConfiguration configuration)
+        public ExpenseController(IConfiguration configuration, ICompanyTenancy tenancy)
         {
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _CompanyTenancy = tenancy;
         }
 
         public IActionResult Index(int category = 1)
         {
-            var Value = GetExpensesByCategory(category);
+            var CompanyId = _CompanyTenancy.GetCurrentCompanyId();
+            var Value = GetExpensesByCategory(category, CompanyId);
             var viewModel = new ExpenseViewModel
             {
                 SelectedCategoryId = category,
@@ -146,7 +150,7 @@ namespace MUNEEMJI.Controllers
             return Json(new { success = false, message = "Please fill all required fields." });
         }
 
-        private List<Expense> GetExpensesByCategory(int categoryId)
+        private List<Expense> GetExpensesByCategory(int categoryId,int CompanyId)
         {
             var expenses = new List<Expense>();
 
@@ -159,12 +163,13 @@ namespace MUNEEMJI.Controllers
                    roundoffvalue, total, amount, partyid, paymenttype, 
                    description, imagepath
             FROM expenses
-            WHERE categoryid = @categoryid
+            WHERE categoryid = @categoryid and CompanyId = @p_companyid
             ORDER BY expensedate DESC";
 
                 using (var command = new NpgsqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@categoryid", categoryId);
+                    command.Parameters.AddWithValue("@p_companyid", CompanyId);
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -252,6 +257,8 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var CompanyId = _CompanyTenancy.GetCurrentCompanyId();
+
                 if (viewModel != null && viewModel.Expenses != null && viewModel.Expenses.Amount > 0)
                 {
                     using (var connection = new Npgsql.NpgsqlConnection(_connectionString))
@@ -261,12 +268,12 @@ namespace MUNEEMJI.Controllers
                                     INSERT INTO public.expenses
                                     (
                                         categoryid, category, expenseno, expensedate, isroundoff, roundoffvalue,
-                                        total, amount, partyid, paymenttype, description, imagepath
+                                        total, amount, partyid, paymenttype, description, imagepath , CompanyId
                                     )
                                     VALUES
                                     (
                                         @categoryid, @category, @expenseno, @expensedate, @isroundoff, @roundoffvalue,
-                                        @total, @amount, @partyid, @paymenttype, @description, @imagepath
+                                        @total, @amount, @partyid, @paymenttype, @description, @imagepath , @p_CompanyId
                                     )  returning id "
                                         ;
 
@@ -283,7 +290,8 @@ namespace MUNEEMJI.Controllers
                             partyid = viewModel.Expenses.PartyId,
                             paymenttype = viewModel.Expenses.PaymentType ?? "",
                             description = viewModel.Expenses.Description ?? "",
-                            imagepath = viewModel.Expenses.ImageUrl ?? ""
+                            imagepath = viewModel.Expenses.ImageUrl ?? "",
+                            p_CompanyId = CompanyId
                         });
 
                         if (viewModel != null && viewModel.ItemTransection != null && viewModel.ItemTransection.Count() > 0)

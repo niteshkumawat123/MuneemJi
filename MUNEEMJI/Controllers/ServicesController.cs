@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
@@ -13,24 +14,32 @@ namespace MUNEEMJI.Controllers
     {
         private readonly IBillItemService _billItemService;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ServicesController(IBillItemService billItem, IWebHostEnvironment webHostEnvironment) 
+        private readonly ICompanyTenancy _CompayTenancy;
+
+
+        public ServicesController(IBillItemService billItem, IWebHostEnvironment webHostEnvironment, ICompanyTenancy companyTenancy) 
         {
             _billItemService = billItem;
             _webHostEnvironment = webHostEnvironment;
+            _CompayTenancy = companyTenancy;
+
         }
 
-      
+
 
         [HttpGet]
         public async Task<IActionResult> Create(int id = 0)
         {
+
             try
             {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
                 BillItem billItem = new BillItem();
                 var model = new BillItemViewModel();
                 if (id > 0)
                 {
-                    var data = GetItemsAsync();
+                    var data = GetItemsAsync(companyId);
                     if (data != null && data.Count() > 0)
                     {
                         billItem = data.Where(x => x.Id == id).FirstOrDefault();
@@ -91,6 +100,8 @@ namespace MUNEEMJI.Controllers
         public async Task<IActionResult> Create([FromBody] BillItem model)
         {
             BillItemViewModel viewModel = new BillItemViewModel();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
             try
             {
                 if (ModelState.IsValid)
@@ -107,7 +118,7 @@ namespace MUNEEMJI.Controllers
                         model.ImageUrl = await SaveImageToServer(model.ImageBase64, model.ImageFileName, "Item");
                     }
 
-                    bool result = await _billItemService.SaveBillItemAsync(model);
+                    bool result = await _billItemService.SaveBillItemAsync(model,companyId);
 
                     if (result)
                     {
@@ -143,8 +154,10 @@ namespace MUNEEMJI.Controllers
                 return View(viewModel);
             }
         }
-        public List<BillItem> GetItemsAsync()
+        public List<BillItem> GetItemsAsync(int CompanyId)
         {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
             var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
 
             List<BillItem> items = new List<BillItem>();
@@ -186,12 +199,12 @@ namespace MUNEEMJI.Controllers
                                         service_code AS ""ServiceCode"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
-                                    FROM billitem
+                                    FROM billitem where Companyid = @p_companyid
                                     ORDER BY id;
                                     ";
 
                 // ✅ Fetch bill items
-                var billItems = connection.QuerySql<BillItem>(billItemSql).ToList();
+                var billItems = connection.QuerySql<BillItem>(billItemSql,new { p_companyid  = companyId }).ToList();
 
                 if (billItems != null && billItems.Count > 0)
                 {

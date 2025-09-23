@@ -8,11 +8,11 @@ namespace MUNEEMJI.Repositories
 {
     public interface IBillItemService
     {
-        Task<bool> SaveBillItemAsync(BillItem model);
+        Task<bool> SaveBillItemAsync(BillItem model,int companyId);
         Task<List<string>> GetCategoriesAsync();
         Task<List<string>> GetUnitsAsync();
         Task<List<string>> GetTaxRatesAsync();
-        Task<List<BillItem>> GetItems();
+        Task<List<BillItem>> GetItems(int companyid );
     }
     public class BillItemService : IBillItemService
     {
@@ -135,7 +135,7 @@ namespace MUNEEMJI.Repositories
         //    }
         //}
 
-        public async Task<bool> SaveBillItemAsync(BillItem model)
+        public async Task<bool> SaveBillItemAsync(BillItem model, int companyId)
         {
             try
             {
@@ -162,7 +162,7 @@ namespace MUNEEMJI.Repositories
                 opening_quantity, at_price, as_of_date, location, min_stock_to_maintain,
                 online_store_price, description, total_estimated_cost,
                 service_name, service_hsn, service_code,
-                created_at, updated_at
+                created_at, updated_at,companyid
             )
             VALUES (
                 @item_type, @item_name, @item_hsn, @item_code, @category, @unit, @item_image_url,
@@ -171,12 +171,12 @@ namespace MUNEEMJI.Repositories
                 @opening_quantity, @at_price, @as_of_date, @location, @min_stock_to_maintain,
                 @online_store_price, @description, @total_estimated_cost,
                 @service_name, @service_hsn, @service_code,
-                @created_at, @updated_at
+                @created_at, @updated_at,@p_companyid
             )
             RETURNING id;";
 
                     using var insertCommand = new NpgsqlCommand(insertSql, connection, transaction);
-                    AddBillItemParameters(insertCommand, model, totalEstimatedCost);
+                    AddBillItemParameters(insertCommand, model, totalEstimatedCost, companyId);
                     itemBillingId = (int)(await insertCommand.ExecuteScalarAsync())!;
                 }
                 else
@@ -214,7 +214,7 @@ namespace MUNEEMJI.Repositories
             WHERE id = @id;";
 
                     using var updateCommand = new NpgsqlCommand(updateSql, connection, transaction);
-                    AddBillItemParameters(updateCommand, model, totalEstimatedCost);
+                    AddBillItemParameters(updateCommand, model, totalEstimatedCost, companyId);
                     updateCommand.Parameters.AddWithValue("@id", model.Id);
                     await updateCommand.ExecuteNonQueryAsync();
                     itemBillingId = model.Id;
@@ -260,7 +260,7 @@ namespace MUNEEMJI.Repositories
             }
         }
 
-        private void AddBillItemParameters(NpgsqlCommand command, BillItem model, decimal totalEstimatedCost)
+        private void AddBillItemParameters(NpgsqlCommand command, BillItem model, decimal totalEstimatedCost,int CompanyId)
         {
             command.Parameters.AddWithValue("@item_type", model.ItemType);
             command.Parameters.AddWithValue("@item_name", model.ItemName ?? string.Empty);
@@ -290,6 +290,7 @@ namespace MUNEEMJI.Repositories
             command.Parameters.AddWithValue("@service_code", (object?)model.ServiceCode ?? DBNull.Value);
             command.Parameters.AddWithValue("@created_at", DateTime.UtcNow); // safe to reuse for insert
             command.Parameters.AddWithValue("@updated_at", DateTime.UtcNow);
+            command.Parameters.AddWithValue("@p_companyid", CompanyId);
         }
 
         public async Task<List<string>> GetCategoriesAsync()
@@ -356,7 +357,7 @@ namespace MUNEEMJI.Repositories
             }
         }
 
-        public async Task<List<BillItem>> GetItems()
+        public async Task<List<BillItem>> GetItems(int Companyid)
         {
             List<BillItem> items = new List<BillItem>();
             using var connection = new NpgsqlConnection(_connectionString);
@@ -397,12 +398,12 @@ namespace MUNEEMJI.Repositories
                                    created_at AS ""CreatedAt"",
                                    updated_at AS ""UpdatedAt"",
                                    mrp
-                               FROM billitem
+                               FROM billitem where companyid = @p_companyid
                                ORDER BY id;
 ";
 
             // ✅ Fetch bill items
-            items = connection.QuerySql<BillItem>(billItemSql).ToList();
+            items = connection.QuerySql<BillItem>(billItemSql,new { p_companyid = Companyid }).ToList();
             return items;
         }
     }

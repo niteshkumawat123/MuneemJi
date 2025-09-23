@@ -6,7 +6,7 @@ namespace MUNEEMJI.Repositories
 {
     public interface IDebitNoteRepository
     {
-        Task<int> CreateBillAsync(PurchaseBill bill);
+        Task<int> CreateBillAsync(PurchaseBill bill,int companyId);
         Task<PurchaseBill?> GetBillByIdAsync(int id);
         Task<List<PurchaseBill>> GetAllBillsAsync();
         Task<bool> UpdateBillAsync(PurchaseBill bill);
@@ -23,7 +23,7 @@ namespace MUNEEMJI.Repositories
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
         }
 
-        public async Task<int> CreateBillAsync(PurchaseBill bill)
+        public async Task<int> CreateBillAsync(PurchaseBill bill, int companyId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
@@ -43,7 +43,7 @@ INSERT INTO TradeDocuments (bill_number, bill_date, stateid, state_of_supply, ph
                  invoicedate, time, paymenttermid, field5, field6, documentpath,
                  noofcopi, discount_percent, discount_amount, tax_percentage, tax_amount,
                  shipping_amount, packing_amount, adjustment_amount, TCSTDSType, tdstcs_percentage,
-                 tdstcs_amount, isroundoff, final_amount,isreceive,ReturnNo)
+                 tdstcs_amount, isroundoff, final_amount,isreceive,ReturnNo,Companyid)
 VALUES (@BillNumber, @BillDate, @StateId, @StateOfSupply, @PhoneNo, @PONo, @PODate, 
        @EWayBillNo, @TransportName, @DeliveryLocation, @VehicleNumber, 
        @DeliveryDate, @PaymentType, @Description, @ImagePath, @RoundOff, 
@@ -53,7 +53,7 @@ VALUES (@BillNumber, @BillDate, @StateId, @StateOfSupply, @PhoneNo, @PONo, @PODa
        @InvoiceDate, @Time, @PaymentTermId, @Field5, @Field6, @DocumentPath,
        @NoOfCopi, @DiscountPercent, @DiscountAmount, @TaxPercentage, @TaxAmount,
        @ShippingAmount, @PackingAmount, @AdjustmentAmount, @TCSTDSType, @TdsTcsPercentage,
-       @TdsTcsAmount, @IsRoundOff, @FinalAmount,@isreceive,@p_ReturnNo)
+       @TdsTcsAmount, @IsRoundOff, @FinalAmount,@isreceive,@p_ReturnNo,@p_companyid)
 RETURNING id";
 
                 using var billCommand = new NpgsqlCommand(billQuery, connection, transaction);
@@ -114,6 +114,7 @@ RETURNING id";
                 billCommand.Parameters.AddWithValue("@FinalAmount", bill.FinalAmount);
                 billCommand.Parameters.AddWithValue("@isreceive", bill.IsReceive);
                 billCommand.Parameters.AddWithValue("@p_ReturnNo", bill.ReturnNo);
+                billCommand.Parameters.AddWithValue("@p_companyid", companyId);
 
                 var billId = (int)(await billCommand.ExecuteScalarAsync() ?? 0);
 

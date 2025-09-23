@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MUNEEMJI.Models;
 using MUNEEMJI.Models.BusinessDashboard.Models;
+using MUNEEMJI.Services;
 using Npgsql;
 using Npgsql.Internal.Postgres;
 using System.Diagnostics;
@@ -15,10 +16,12 @@ namespace MUNEEMJI.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private readonly ICompanyTenancy _comapnytenancy;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, ICompanyTenancy tenancy)
         {
             _logger = logger;
+            _comapnytenancy = tenancy;
         }
 
         // Main dashboard action
@@ -26,7 +29,9 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
-                var dashboardData = await GetDashboardDataAsync();
+                var CompanyId = _comapnytenancy.GetCurrentCompanyId();
+
+                var dashboardData = await GetDashboardDataAsync(CompanyId);
                 ViewBag.TotalReceivable=  dashboardData.TotalReceivable;
                 ViewBag.TotalPayable = dashboardData.TotalPayable;
                 return View(dashboardData);
@@ -302,7 +307,7 @@ namespace MUNEEMJI.Controllers
         }
 
         // Private helper methods
-        private async Task<DashboardViewModel> GetDashboardDataAsync()
+        private async Task<DashboardViewModel> GetDashboardDataAsync(int CompanyId)
         {
             // Simulate async data loading
             await Task.Delay(100);
@@ -312,13 +317,13 @@ namespace MUNEEMJI.Controllers
             using (var conn = new NpgsqlConnection(_connectionString))
             {
 
-                string QueryString = "SELECT SUM(CAST(PaidReciveAmount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid";
+                string QueryString = "SELECT SUM(CAST(PaidReciveAmount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid and companyid = @p_companyid ";
 
-                 TotalReceivable = conn.QuerySql<decimal?>(QueryString, new { P_typeid = (int)TradeDocumentTypes.SalesChallan }).FirstOrDefault() ?? 0;
+                 TotalReceivable = conn.QuerySql<decimal?>(QueryString, new { P_typeid = (int)TradeDocumentTypes.SalesChallan , p_companyid  = CompanyId}).FirstOrDefault() ?? 0;
 
-                string QueryString1 = "SELECT SUM(CAST(PaidReciveAmount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid";
+                string QueryString1 = "SELECT SUM(CAST(PaidReciveAmount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid and companyid = @p_companyid ";
 
-                 TotalPayable = conn.QuerySql<decimal?>(QueryString1, new { P_typeid = (int)TradeDocumentTypes.PurchaseChallan }).FirstOrDefault() ?? 0;
+                 TotalPayable = conn.QuerySql<decimal?>(QueryString1, new { P_typeid = (int)TradeDocumentTypes.PurchaseChallan, p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
             }
 

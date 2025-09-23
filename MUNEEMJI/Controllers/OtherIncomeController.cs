@@ -3,6 +3,7 @@ using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 using Npgsql;
 using System.Collections.Generic;
 using System.Data;
@@ -14,11 +15,13 @@ namespace MUNEEMJI.Controllers
         private readonly IOtherIncomeRepository _billItemService;
         private readonly ILogger<BillItemController> _logger;
         string _connectionString = string.Empty;
-        public OtherIncomeController(IOtherIncomeRepository billItemService, ILogger<BillItemController> logger)
+        private readonly ICompanyTenancy _companyTenancy;
+        public OtherIncomeController(IOtherIncomeRepository billItemService, ILogger<BillItemController> logger, ICompanyTenancy companyTenancy)
         {
             _billItemService = billItemService;
             _logger = logger;
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _companyTenancy = companyTenancy;
         }
 
         [HttpGet]
@@ -49,6 +52,7 @@ namespace MUNEEMJI.Controllers
         public async Task<IActionResult> Create([FromBody] OtherIncomeModel model)
         {
             using var db = new NpgsqlConnection(_connectionString);
+            var Companyid = _companyTenancy.GetCurrentCompanyId();
             await db.OpenAsync();
 
             using var transaction = await db.BeginTransactionAsync();
@@ -60,9 +64,9 @@ namespace MUNEEMJI.Controllers
                 // Insert into income_entries
                 var insertEntrySql = @"
             INSERT INTO income_entries 
-                (income_category, incomecategoryid, entry_date, round_off, total, payment_type, description, image_url)
+                (income_category, incomecategoryid, entry_date, round_off, total, payment_type, description, image_url,companyid)
             VALUES 
-                (@income_category, @incomecategoryid, @entry_date, @round_off, @total, @payment_type, @description, @image_url)
+                (@income_category, @incomecategoryid, @entry_date, @round_off, @total, @payment_type, @description, @image_url,@p_companyid)
             RETURNING id;
         ";
 
@@ -76,6 +80,7 @@ namespace MUNEEMJI.Controllers
                     cmd.Parameters.AddWithValue("payment_type", model.OtherIncomeView.PaymentType);
                     cmd.Parameters.AddWithValue("description", (object?)model.OtherIncomeView.Description ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("image_url", (object?)model.OtherIncomeView.ImageUrl ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_companyid", Companyid);
 
                     object result = await cmd.ExecuteScalarAsync();
                     entryId = Convert.ToInt32(result);

@@ -5,6 +5,7 @@ using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
+using NuGet.Protocol.Plugins;
 
 namespace MUNEEMJI.Controllers
 {
@@ -19,13 +20,13 @@ namespace MUNEEMJI.Controllers
         private readonly IParty partyController;
 
         string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
-        public SalesController(ISalesBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy companyTenancy, IParty partyController)
+        public SalesController(ISalesBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy companyTenancy, IParty _partyController)
         {
             _billService = billService;
             _environment = environment;
             _IBillItemService = iBillItemService;
             _CompayTenancy = companyTenancy;
-            this.partyController = partyController;
+            partyController = _partyController;
         }
         public async Task<IActionResult> Index()
         {
@@ -104,39 +105,57 @@ namespace MUNEEMJI.Controllers
         // GET: Bill/Create
         public async Task<IActionResult> Create()
         {
-            var companyId = _CompayTenancy.GetCurrentCompanyId();
-            var viewModel = new PurchaseBillViewModel();
-            var transactionSettingsController = new TransactionSettingsController();
-            var CategoryController = new CategoryController();
-
-            int firmid = 1;
-            await Task.Delay(1);
-
-            viewModel = new PurchaseBillViewModel
+            try
             {
-                Bill = new PurchaseBill
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var viewModel = new PurchaseBillViewModel();
+                var transactionSettingsController = new TransactionSettingsController();
+                var CategoryController = new CategoryController();
+                int firmid = 1;
+                await Task.Delay(1);
+                viewModel = new PurchaseBillViewModel
                 {
-                    BillNumber = _billService.GenerateBillNumber(),
+                    Bill = new PurchaseBill
+                    {
+                        BillNumber = _billService.GenerateBillNumber(),
+                        BillDate = DateTime.Now,
+                        BillItems = new List<PurchaseBillItem>
+                    {
+                    new PurchaseBillItem(),
+                    new PurchaseBillItem()
+                    },
+                        transactionSettings = transactionSettingsController.GetTransactionByFirmId(firmid),
+                        itemSettings = transactionSettingsController.GetItemSettings()
+                    },
+                    ViewTypeId = (int)ViewTypeEnum.Create,
+                    DropDownItem = await _IBillItemService.GetItems(companyId),
+                    DropDownCategory = CategoryController.GetCategoriesDropdown()
+                };
+                var PartyList = await partyController.GetPartyDropDownAsync(companyId);
+                ViewBag.PartyList = PartyList;
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                var errorQuery = @"
+                             INSERT INTO error_logs (error_message, stack_trace, created_at)
+                             VALUES (@message, @stack, NOW());";
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    using (var command = new NpgsqlCommand(errorQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@message", ex.Message);
+                        command.Parameters.AddWithValue("@stack", (object)ex.StackTrace ?? DBNull.Value);
 
-                    BillDate = DateTime.Now,
-                    BillItems = new List<PurchaseBillItem>
-                        {
-                        new PurchaseBillItem(),
-                        new PurchaseBillItem()
-                        },
+                        command.ExecuteNonQuery();
+                    }
+                }
 
-                    transactionSettings = transactionSettingsController.GetTransactionByFirmId(firmid),
-                    itemSettings = transactionSettingsController.GetItemSettings()
-                },
-                ViewTypeId = (int)ViewTypeEnum.Create,
-                DropDownItem = await _IBillItemService.GetItems(companyId),
-                DropDownCategory = CategoryController.GetCategoriesDropdown()
 
-            };
 
-            var PartyList = await partyController.GetPartyDropDownAsync(companyId);
-            ViewBag.PartyList = PartyList;
-            return View(viewModel);
+                return View(new PurchaseBillViewModel());
+            }
         }
 
         // POST: Bill/Create

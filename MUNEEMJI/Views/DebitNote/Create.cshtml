@@ -547,6 +547,196 @@
             }
     </style>
 
+    <style>
+        .calculatorModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .calculatorOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .calculatorContainer {
+            position: relative;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 320px;
+            max-width: 90vw;
+            overflow: hidden;
+        }
+
+        .calculatorHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #2c3e50;
+            color: white;
+        }
+
+            .calculatorHeader h3 {
+                margin: 0;
+                font-size: 18px;
+            }
+
+        .calculatorCloseBtn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+            .calculatorCloseBtn:hover {
+                background-color: rgba(255, 255, 255, 0.2);
+            }
+
+        .calculatorBody {
+            padding: 20px;
+        }
+
+        .calculatorDisplay {
+            margin-bottom: 15px;
+        }
+
+        #calculatorDisplay {
+            width: 100%;
+            height: 50px;
+            font-size: 24px;
+            text-align: right;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 0 15px;
+            background: #f8f9fa;
+            box-sizing: border-box;
+        }
+
+        .calculatorButtons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calculatorBtn {
+            height: 50px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .calculatorBtn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            }
+
+            .calculatorBtn:active {
+                transform: translateY(0);
+            }
+
+            .calculatorBtn.calculatorNumber {
+                background: #ecf0f1;
+                color: #2c3e50;
+            }
+
+                .calculatorBtn.calculatorNumber:hover {
+                    background: #d5dbdb;
+                }
+
+            .calculatorBtn.calculatorOperator {
+                background: #3498db;
+                color: white;
+            }
+
+                .calculatorBtn.calculatorOperator:hover {
+                    background: #2980b9;
+                }
+
+            .calculatorBtn.calculatorEquals {
+                background: #e74c3c;
+                color: white;
+            }
+
+                .calculatorBtn.calculatorEquals:hover {
+                    background: #c0392b;
+                }
+
+            .calculatorBtn.calculatorClear {
+                background: #95a5a6;
+                color: white;
+            }
+
+                .calculatorBtn.calculatorClear:hover {
+                    background: #7f8c8d;
+                }
+
+            .calculatorBtn.calculatorZero {
+                grid-column: span 2;
+            }
+
+        /* Calculator Toggle Button Styles */
+        .calculatorToggleBtn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 25px;
+            background: #3498db;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            transition: all 0.3s ease;
+        }
+
+            .calculatorToggleBtn:hover {
+                background: #2980b9;
+                transform: translateY(-2px);
+            }
+
+            .calculatorToggleBtn:active {
+                transform: translateY(0);
+            }
+
+        @@media (max-width: 480px) {
+            .calculatorContainer {
+                width: 95vw;
+                margin: 10px;
+            }
+
+            .calculatorToggleBtn {
+                bottom: 15px;
+                right: 15px;
+                padding: 10px 16px;
+                font-size: 14px;
+            }
+        }
+    </style>
 
 </head>
 <body>
@@ -571,9 +761,11 @@
                     </div>
 
                     <div class="text-end w-100">
-                        <button class="btn btn-primary" style="background-color:#007bff" onclick="window.open('https://www.google.com/search?q=calculator', '_blank')">
+
+                        <button type="button" class="btn btn-primary" style="background-color:#007bff" onclick="calculatorOpen()">
                             <i class="bi bi-calculator"></i> Calculator
                         </button>
+
                         <button type="button" class="btn-close btn-close-custom" style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
                                         height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
                                         padding-right: 6px;" aria-label="Close" onclick="closeView()">
@@ -660,33 +852,10 @@
                                 <label class="floating-label">Phone No.</label>
                             </div>
 
-                          @*   @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.CustomerPODetails == true)
-                            {
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.PONo" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">P.O No.</label>
-                                </div>
-
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">P.O Date</label>
-                                </div>
-                            } *@
+                        
                         </div>
 
-                        <!-- Column 4 -->
-                      @*   <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 142px;">
-                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.EwayBillNo == true)
-                            {
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">E-Way Bill No.</label>
-                                </div>
-                            }
-
-
-                        </div> *@
-
+                   
                         <!-- Column 5 -->
                         <div class="col-md-2" style="display: flex; flex-direction: column; gap: 0px;">
 
@@ -721,28 +890,7 @@
                                 </div>
                             }
 
-                         @*    <div class="floating-label-container">
-                                <select asp-for="Bill.PaymentTermId" class="floating-input">
-                                    <option value="">Select Payment Term</option>
-                                    <option value="1">Net 15 Days</option>
-                                    <option value="2">Net 30 Days</option>
-                                    <option value="3">Net 45 Days</option>
-                                    <option value="4">Net 60 Days</option>
-                                    <option value="5">Due on Receipt</option>
-                                    <option value="6">Cash on Delivery</option>
-                                    <option value="7">Advance Payment</option>
-                                    <option value="8">2/10 Net 30</option>
-                                    <option value="9">1/15 Net 30</option>
-                                    <option value="10">End of Month</option>
-                                </select>
-                                <label class="floating-label">Payment Term</label>
-                            </div> *@
-
-                          @*   <div class="floating-label-container" id="dueDateContainer">
-                                <input asp-for="Bill.DueDate" type="date" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Due Date</label>
-                            </div>
- *@
+                  
                             <div class="floating-label-container">
                                 <select asp-for="Bill.StateOfSupply" class="floating-select">
                                     <option value="">Select State</option>
@@ -962,12 +1110,7 @@
                                             </td>
                                         }
 
-                                        @* <td class="col-item">
-                                            @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
-                                                     new SelectList(Model.DropDownItem, "Id", "ItemName"),
-                                                     "-- Select Item --",
-                                                     new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
-                                        </td> *@
+                                      
 
                                         <td class="col-item">
                                             <div style="position: relative; background-color: white;">
@@ -1548,12 +1691,7 @@
          var CategoryOptions =  @Html.Raw(Json.Serialize(Model.DropDownCategory));
          let itemIndex =  @Model.Bill.BillItems.Count;
 
-        //  let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
-        // itemDropdown += `<option value="">-- Select Item --</option>`;
-        // itemOptions.forEach(item => {
-        //     itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
-        // });
-        // itemDropdown += `</select>`;
+      
 
                 let itemDropdown = `
                          <div style="position: relative; background-color: white;">
@@ -1841,35 +1979,11 @@
 
 
 
-                         //  function showColumnSettings()
-                         // {
-                         //     debugger;
-                         //    const dropdown = document.getElementById('columnSettings');
-                         //    const button = document.querySelector('th.col-action .column-toggle-btn'); // Changed this line
-                         //    dropdown.classList.toggle('show');
-                         //    if (dropdown.classList.contains('show')) {
-                         //        const buttonRect = button.getBoundingClientRect();
-                         //        dropdown.style.position = 'absolute';
-                         //        dropdown.style.top = (buttonRect.bottom + 5) + 'px';
-                         //        dropdown.style.left = (buttonRect.right - 200) + 'px';
-                         //    }
-                         // }
-
-
                function closeView() {
                        window.location.href = '/Web/Home/Index'; // Or your desired controller/action
                }
 
-                // function toggleColumn(columnClass, isChecked) {
-                //          const columns = document.querySelectorAll('.' + columnClass);
-                //          columns.forEach(column => {
-                //                 if (isChecked) {
-                //                     column.classList.remove('hidden-column');
-                //                 } else {
-                //                     column.classList.add('hidden-column');
-                //                 }
-                //          });
-                //  }
+               
 
 
                 document.addEventListener('click', function(event) {
@@ -1912,23 +2026,7 @@
                     const popoverElement = document.querySelector('.popover');
                     if (popoverElement) {
                         const checkboxes = popoverElement.querySelectorAll('input[type="checkbox"]');
-                        // checkboxes.forEach(checkbox => {
-                        //     checkbox.addEventListener('change', function() {
-                        //         const columnClass = this.getAttribute('data-column');
-                        //         if (columnClass) {
-                        //             toggleColumnFromPopover(columnClass, this.checked);
-                        //         }
-                        //     });
-                        // });
-
-                        // Handle save button in popover
-                        // const saveBtn = popoverElement.querySelector('.btn-primary');
-                        // if (saveBtn) {
-                        //     saveBtn.addEventListener('click', function() {
-                        //         saveColumnSettingsFromPopover();
-                        //         popover.hide();
-                        //     });
-                        // }
+                    
                     }
                 });
 
@@ -2005,21 +2103,7 @@
                 alert("An error occurred while saving settings: " + error.message);
             });
         }
-                // Define the toggleColumn function
-        // function toggleColumn(columnClass, isChecked) {
-        //     const columns = document.querySelectorAll('.' + columnClass);
-
-        //     columns.forEach(column => {
-        //         if (isChecked) {
-        //             column.classList.remove('hidden-column');
-        //         } else {
-        //             column.classList.add('hidden-column');
-        //         }
-        //     });
-        // }
-        //         function toggleColumnFromPopover(columnClass, isChecked) {
-        //     toggleColumn(columnClass, isChecked);
-        // }
+               
                function saveColumnSettings() {
 
             // Get checkboxes from the column settings container (not from popover)
@@ -2302,5 +2386,226 @@
         }
 
     </script>
+    <div class="calculatorModal" id="calculatorModal" style="display: none;">
+        <div class="calculatorOverlay" onclick="calculatorClose()"></div>
+        <div class="calculatorContainer">
+            <div class="calculatorHeader">
+                <h3>Calculator</h3>
+                <button class="calculatorCloseBtn" onclick="calculatorClose()">×</button>
+            </div>
+            <div class="calculatorBody">
+                <div class="calculatorDisplay">
+                    <input type="text" id="calculatorDisplay" readonly value="0">
+                </div>
+                <div class="calculatorButtons">
+                    <button class="calculatorBtn calculatorClear" onclick="calculatorClearAll()">C</button>
+                    <button class="calculatorBtn calculatorClear" onclick="calculatorClearEntry()">CE</button>
+                    <button class="calculatorBtn calculatorOperator" onclick="calculatorDeleteLast()">⌫</button>
+                    <button class="calculatorBtn calculatorOperator" onclick="calculatorAppendOperator('/')">/</button>
+
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('7')">7</button>
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('8')">8</button>
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('9')">9</button>
+                    <button class="calculatorBtn calculatorOperator" onclick="calculatorAppendOperator('*')">×</button>
+
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('4')">4</button>
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('5')">5</button>
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('6')">6</button>
+                    <button class="calculatorBtn calculatorOperator" onclick="calculatorAppendOperator('-')">-</button>
+
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('1')">1</button>
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('2')">2</button>
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('3')">3</button>
+                    <button class="calculatorBtn calculatorOperator" onclick="calculatorAppendOperator('+')">+</button>
+
+                    <button class="calculatorBtn calculatorNumber calculatorZero" onclick="calculatorAppendNumber('0')">0</button>
+                    <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendDecimal()">.</button>
+                    <button class="calculatorBtn calculatorEquals" onclick="calculatorCalculate()">=</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let calculatorCurrentInput = '0';
+        let calculatorOperator = '';
+        let calculatorPreviousInput = '';
+        let calculatorWaitingForOperand = false;
+
+        function calculatorUpdateDisplay() {
+            const display = document.getElementById('calculatorDisplay');
+            display.value = calculatorCurrentInput;
+        }
+
+               function calculatorAppendNumber(number) {
+            if (calculatorWaitingForOperand) {
+                calculatorCurrentInput = calculatorCurrentInput + number;
+                calculatorWaitingForOperand = false;
+            } else {
+                calculatorCurrentInput = calculatorCurrentInput === '0' ? number : calculatorCurrentInput + number;
+            }
+            calculatorUpdateDisplay();
+        }
+
+        function calculatorAppendDecimal() {
+            if (calculatorWaitingForOperand) {
+                calculatorCurrentInput = '0.';
+                calculatorWaitingForOperand = false;
+            } else if (calculatorCurrentInput.indexOf('.') === -1) {
+                calculatorCurrentInput += '.';
+            }
+            calculatorUpdateDisplay();
+        }
+
+              function calculatorAppendOperator(nextOperator) {
+            const inputValue = parseFloat(calculatorCurrentInput);
+
+            if (calculatorPreviousInput === '') {
+                calculatorPreviousInput = inputValue;
+            } else if (calculatorOperator) {
+                const result = calculatorPerformCalculation();
+
+                if (result === null) {
+                    return;
+                }
+
+                calculatorCurrentInput = String(result);
+                calculatorPreviousInput = result;
+            }
+
+            // Show current number with operator
+            calculatorCurrentInput = calculatorCurrentInput + nextOperator;
+            calculatorWaitingForOperand = true;
+            calculatorOperator = nextOperator;
+            calculatorUpdateDisplay();
+        }
+
+        function calculatorCalculate() {
+            if (calculatorPreviousInput === '' || calculatorOperator === '' || calculatorWaitingForOperand) {
+                return;
+            }
+
+            const result = calculatorPerformCalculation();
+
+            if (result === null) {
+                return;
+            }
+
+            calculatorCurrentInput = String(result);
+            calculatorPreviousInput = '';
+            calculatorOperator = '';
+            calculatorWaitingForOperand = true;
+            calculatorUpdateDisplay();
+        }
+
+               function calculatorPerformCalculation() {
+            let prev, current;
+
+            // If we have the full expression in calculatorCurrentInput (like "77+3")
+            if (calculatorCurrentInput.includes(calculatorOperator)) {
+                const parts = calculatorCurrentInput.split(calculatorOperator);
+                prev = parseFloat(parts[0]);
+                current = parseFloat(parts[1]);
+            } else {
+                // Fallback to the old way
+                prev = parseFloat(calculatorPreviousInput);
+                current = parseFloat(calculatorCurrentInput);
+            }
+
+            let result;
+
+            switch (calculatorOperator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    if (current === 0) {
+                        alert('Cannot divide by zero!');
+                        return null;
+                    }
+                    result = prev / current;
+                    break;
+                default:
+                    return null;
+            }
+
+            return Math.round((result + Number.EPSILON) * 100000000) / 100000000;
+        }
+
+        function calculatorClearAll() {
+            calculatorCurrentInput = '';
+            calculatorPreviousInput = '';
+            calculatorOperator = '';
+            calculatorWaitingForOperand = false;
+            calculatorUpdateDisplay();
+        }
+
+        function calculatorClearEntry() {
+            calculatorCurrentInput = '';
+            calculatorUpdateDisplay();
+        }
+
+        function calculatorDeleteLast() {
+            if (calculatorCurrentInput.length > 1) {
+                calculatorCurrentInput = calculatorCurrentInput.slice(0, -1);
+            } else {
+                calculatorCurrentInput = '0';
+            }
+            calculatorUpdateDisplay();
+        }
+
+        function calculatorOpen() {
+                 // Reset calculator to initial state
+        calculatorCurrentInput = '0';
+        calculatorPreviousInput = '';
+        calculatorOperator = '';
+        calculatorWaitingForOperand = false;
+        calculatorUpdateDisplay();
+            document.getElementById('calculatorModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function calculatorClose() {
+            document.getElementById('calculatorModal').style.display = 'none';
+            document.body.style.overflow = ''; // Restore background scrolling
+        }
+
+        // Keyboard support for calculator
+        document.addEventListener('keydown', function(event) {
+            const modal = document.getElementById('calculatorModal');
+            if (!modal || modal.style.display === 'none') return;
+
+            const key = event.key;
+
+            if (key >= '0' && key <= '9') {
+                calculatorAppendNumber(key);
+            } else if (key === '.') {
+                calculatorAppendDecimal();
+            } else if (key === '+' || key === '-') {
+                calculatorAppendOperator(key);
+            } else if (key === '*') {
+                calculatorAppendOperator('*');
+            } else if (key === '/') {
+                event.preventDefault();
+                calculatorAppendOperator('/');
+            } else if (key === 'Enter' || key === '=') {
+                calculatorCalculate();
+            } else if (key === 'Escape') {
+                calculatorClose();
+            } else if (key === 'Backspace') {
+                calculatorDeleteLast();
+            } else if (key === 'Delete') {
+                calculatorClearEntry();
+            }
+        });
+    </script>
+
+
 </body>
 </html>

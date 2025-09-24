@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.Design;
 using System.Data;
 using System.Net;
 using System.Net.Mail;
@@ -125,7 +126,7 @@ namespace MUNEEMJI.Controllers
                     using var connection = new NpgsqlConnection(_connectionString);
                     await connection.OpenAsync();
                     var query = @"
-                SELECT id, business_name, phone, email, created_at, updated_at 
+                SELECT id, business_name, phone, email, created_at, updated_at ,isowner , companyid
                 FROM businesses 
                 WHERE email = @Email";
                     using var command = new NpgsqlCommand(query, connection);
@@ -141,8 +142,13 @@ namespace MUNEEMJI.Controllers
                             Phone = reader.GetString("phone"),
                             Email = reader.GetString("email"),
                             CreatedAt = reader.GetDateTime("created_at"),
-                            UpdatedAt = reader.GetDateTime("updated_at")
+                            UpdatedAt = reader.GetDateTime("updated_at"),
+                            isowner = reader.GetBoolean("isowner"),
+                            Companyid  =  reader.GetInt32("companyid")
+
                         };
+
+                        int CompanyId = business.isowner == true ? business.Id : business.Companyid;
 
 
                         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -150,21 +156,27 @@ namespace MUNEEMJI.Controllers
                         // Create authentication cookie
                         var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.NameIdentifier, business.Id.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, CompanyId.ToString()),
                     new Claim(ClaimTypes.Name, business.BusinessName),
                     new Claim(ClaimTypes.Email, business.Email),
                     new Claim("Phone", business.Phone),
-                    new Claim("CompanyId", business.Id.ToString())
+                    new Claim("CompanyId", CompanyId.ToString())
                 };
 
                         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
-                        HttpContext.User = claimsPrincipal;
+                        await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            claimsPrincipal,
+                            new AuthenticationProperties
+                            {
+                                IsPersistent = true,
+                                ExpiresUtc = DateTime.UtcNow.AddYears(10) 
+                            }); HttpContext.User = claimsPrincipal;
 
                         // Store business info in session (optional, since you have claims now)
-                        HttpContext.Session.SetString("BusinessId", business.Id.ToString());
+                        HttpContext.Session.SetString("BusinessId", CompanyId.ToString());
                         HttpContext.Session.SetString("BusinessName", business.BusinessName);
                         HttpContext.Session.SetString("Phone", business.Phone);
                         HttpContext.Session.SetString("Email", business.Email);
@@ -446,6 +458,8 @@ public class Business
     public int RoleId { get; set; }
 
     public bool IsActive { get; set; }
+    public bool isowner { get; set; }
+    public int Companyid { get; set; }
 }
 
 public class OtpViewModel

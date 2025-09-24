@@ -39,10 +39,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login"; // Change this to your login controller/action
         options.LogoutPath = "/Account/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromDays(30);
-        options.SlidingExpiration = true;
-        options.Cookie.HttpOnly = true;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+        options.SlidingExpiration = false;
+        options.ExpireTimeSpan = TimeSpan.FromDays(365 * 10); 
+        options.Cookie.IsEssential = true;
     });
 
 var app = builder.Build();

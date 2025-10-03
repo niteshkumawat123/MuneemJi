@@ -26,7 +26,7 @@ namespace MUNEEMJI.Controllers
             var CompanyId = companyTenancy.GetCurrentCompanyId();
             using var connection = new NpgsqlConnection(_connectionString);
 
-            var paymentInOuts =  connection.QuerySql<PaymentInOutViewModel>(@"
+            var paymentInOuts = connection.QuerySql<PaymentInOutViewModel>(@"
                 SELECT 
                     p.Id,
                     p.Date,
@@ -42,7 +42,7 @@ namespace MUNEEMJI.Controllers
                 FROM PaymentInOut p
                 LEFT JOIN parties pt ON p.PartyId = pt.Id where p.companyid = @p_companyid  and p.moduleid = @p_moduleid
                 ORDER BY p.Date DESC
-            ", new { p_companyid  = CompanyId, p_moduleid = TradeDocumentTypes.PaymentIn }).ToList();
+            ", new { p_companyid = CompanyId, p_moduleid = TradeDocumentTypes.PaymentIn }).ToList();
 
             return View(paymentInOuts);
         }
@@ -84,20 +84,20 @@ namespace MUNEEMJI.Controllers
                         PaymentType = model.PaymentType,
                         Description = model.Description,
                         CreatedDate = model.CreatedDate,
-                        p_companyid  = CompanyId,
+                        p_companyid = CompanyId,
                         p_moduleid = (int)TradeDocumentTypes.PaymentIn
                     });
                 }
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
-                //return Json(new { success = true, message = "Payment-In saved successfully!" });
-            
+            //return Json(new { success = true, message = "Payment-In saved successfully!" });
 
-           //await  LoadViewBag();
+
+            //await  LoadViewBag();
             return RedirectToAction(nameof(Index));
         }
 
@@ -118,7 +118,7 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult>GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             using var connection = new NpgsqlConnection(_connectionString);
 
@@ -159,22 +159,22 @@ namespace MUNEEMJI.Controllers
                                 WHERE id = @Id;
                                  ";
 
-                     connection.ExecuteSql(sql, new
+                    connection.ExecuteSql(sql, new
                     {
-                         Id = model.Id,
-                         Date = model.Date.ToUniversalTime(), // Ensures UTC
-                         RefNo = model.RefNo,
-                         PartyId = model.PartyId,
-                         CategoryName = model.CategoryName,
-                         Type = model.Type,
-                         Total = model.Total,
-                         ReceivedPaid = model.ReceivedPaid,
-                         Balance = model.Balance,
-                         PrintShare = model.PrintShare,
-                         PaymentType = model.PaymentType,
-                         Description = model.Description
+                        Id = model.Id,
+                        Date = model.Date.ToUniversalTime(), // Ensures UTC
+                        RefNo = model.RefNo,
+                        PartyId = model.PartyId,
+                        CategoryName = model.CategoryName,
+                        Type = model.Type,
+                        Total = model.Total,
+                        ReceivedPaid = model.ReceivedPaid,
+                        Balance = model.Balance,
+                        PrintShare = model.PrintShare,
+                        PaymentType = model.PaymentType,
+                        Description = model.Description
 
-                     });
+                    });
                 }
 
                 return RedirectToAction(nameof(Index));
@@ -195,12 +195,36 @@ namespace MUNEEMJI.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.ExecuteSql(@"
+                                     DELETE FROM PaymentInOut WHERE Id = @Id
+                                     ", new { Id = id });
+                }
+
+
+
+                return Json(new { success = true, message = "Record deleted successfully!" });
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error: " + ex.Message });
+
+            }
+
+        }
 
         private async Task LoadViewBag()
         {
             using var connection = new NpgsqlConnection(_connectionString);
 
-            var parties =  connection.QuerySql<Party>(@"
+            var parties = connection.QuerySql<Party>(@"
                 SELECT Id,party_name as Name FROM parties ORDER BY party_name
             ").ToList();
 

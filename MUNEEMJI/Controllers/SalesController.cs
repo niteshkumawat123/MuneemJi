@@ -6,6 +6,7 @@ using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
 using NuGet.Protocol.Plugins;
+using System.Reflection;
 
 namespace MUNEEMJI.Controllers
 {
@@ -28,77 +29,101 @@ namespace MUNEEMJI.Controllers
             _CompayTenancy = companyTenancy;
             partyController = _partyController;
         }
-        public async Task<IActionResult> Index()
+   public async Task<IActionResult> Index()
+{
+    try
+    {
+        var companyId = _CompayTenancy.GetCurrentCompanyId();
+        DateTime? startDate = DateTime.UtcNow;
+        DateTime? endDate = DateTime.UtcNow;
+        string firmFilter = "ALL FIRMS";
+        string vendorFilter = null;
+        
+        using var connection = new NpgsqlConnection(_connectionString);
+        string query = @"
+            SELECT 
+                td.id AS ""Id"",
+                td.bill_number AS ""BillNumber"",
+                td.bill_date AS ""BillDate"",
+                td.state_of_supply AS ""StateOfSupply"",
+                td.phone_no AS ""PhoneNo"",
+                td.po_no AS ""PONo"",
+                td.po_date AS ""PODate"",
+                td.eway_bill_no AS ""EWayBillNo"",
+                td.transport_name AS ""TransportName"",
+                td.delivery_location AS ""DeliveryLocation"",
+                td.vehicle_number AS ""VehicleNumber"",
+                td.delivery_date AS ""DeliveryDate"",
+                td.payment_type AS ""PaymentType"",
+                td.description AS ""Description"",
+                td.image_path AS ""ImagePath"",
+                td.round_off AS ""RoundOff"",
+                td.total AS ""Total"",
+                td.paidreciveamount AS ""paidReciveamount"",
+                td.partyid AS ""PartyId"",
+                pt.party_name as PartyName,
+                td.final_amount as ""FinalAmount"",
+                td.invoicenumber as ""InvoiceNumber"",
+                td.IsCredit as ""IsCredit""
+            FROM public.tradedocuments as td 
+            LEFT JOIN parties as pt ON td.partyid = pt.id  
+            WHERE td.TradeDocumentTypesid = @TradeDocumentTypesid 
+            AND td.companyid = @p_companyid;
+        ";
+        
+        var PurchaseBill = connection.QuerySql<PurchaseBill>(query, 
+            new { 
+                TradeDocumentTypesid = (int)TradeDocumentTypes.SalesChallan, 
+                p_companyid = companyId 
+            }).ToList();
+        
+        if (PurchaseBill != null && PurchaseBill.Count > 0)
         {
-            try
-            {
-                var companyId = _CompayTenancy.GetCurrentCompanyId();
-
-                DateTime? startDate = DateTime.UtcNow;
-                DateTime? endDate = DateTime.UtcNow;
-                string firmFilter = "ALL FIRMS";
-                string vendorFilter = null;
-                using var connection = new NpgsqlConnection(_connectionString);
-
-                string query = @"
-                SELECT 
-                    td.id AS ""Id"",
-                    td.bill_number AS ""BillNumber"",
-                    td.bill_date AS ""BillDate"",
-                    td.state_of_supply AS ""StateOfSupply"",
-                    td.phone_no AS ""PhoneNo"",
-                    td.po_no AS ""PONo"",
-                    td.po_date AS ""PODate"",
-                    td.eway_bill_no AS ""EWayBillNo"",
-                    td.transport_name AS ""TransportName"",
-                    td.delivery_location AS ""DeliveryLocation"",
-                    td.vehicle_number AS ""VehicleNumber"",
-                    td.delivery_date AS ""DeliveryDate"",
-                    td.payment_type AS ""PaymentType"",
-                    td.description AS ""Description"",
-                    td.image_path AS ""ImagePath"",
-                    td.round_off AS ""RoundOff"",
-                    td.total AS ""Total"",
-                    td.paidreciveamount AS ""paidReciveamount"",
-                    td.partyid AS ""PartyId"",
-                    pt.party_name as PartyName,
-                    td.final_amount as""FinalAmount"",
-                    td.invoicenumber as ""InvoiceNumber"",
-                    td.IsCredit as ""IsCredit""
-                FROM public.tradedocuments as td left join parties as pt on td.partyid = pt.id  where td.TradeDocumentTypesid=@TradeDocumentTypesid and td.companyid = @p_companyid;
-                ";
-
-                var PurchaseBill = connection.QuerySql<PurchaseBill>(query, new { TradeDocumentTypesid = (int)TradeDocumentTypes.SalesChallan, p_companyid = companyId }).ToList();
-
-
-                if (PurchaseBill != null && PurchaseBill.Count() > 0)
-                {
-                    var paidTotal = PurchaseBill.Sum(b => b.paidReciveamount);
-                    var unpaidTotal = PurchaseBill.Sum(x => x.Total) - paidTotal;
-                    var grandTotal = paidTotal + unpaidTotal;
-
-                    ViewBag.PaidTotal = paidTotal;
-                    ViewBag.UnpaidTotal = unpaidTotal;
-                    ViewBag.GrandTotal = grandTotal;
-                    ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
-                    ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
-                    ViewBag.FirmFilter = firmFilter;
-                    ViewBag.VendorFilter = vendorFilter;
-                }
-                else
-                {
-                    PurchaseBill = new List<PurchaseBill>();
-                }
-
-                return View(PurchaseBill);
-            }
-            catch (Exception ex)
-            {
-                // Log error
-                ViewBag.Error = "An error occurred while loading purchase bills.";
-                return View(new List<dynamic>());
-            }
+            // Handle potential null values with null-coalescing operator
+            var paidTotal = PurchaseBill.Any(x=>x.paidReciveamount>0)?PurchaseBill.Sum(b => b.paidReciveamount):decimal.Zero;
+            var unpaidTotal = PurchaseBill.Any(y=>y.Total>0)? (PurchaseBill.Sum(x => (x.Total)) - paidTotal):decimal.Zero;
+            var grandTotal = paidTotal + unpaidTotal;
+            
+            ViewBag.PaidTotal = paidTotal;
+            ViewBag.UnpaidTotal = unpaidTotal;
+            ViewBag.GrandTotal = grandTotal;
+            ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
+            ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
+            ViewBag.FirmFilter = firmFilter;
+            ViewBag.VendorFilter = vendorFilter;
         }
+        else
+        {
+            ViewBag.PaidTotal = 0m;
+            ViewBag.UnpaidTotal = 0m;
+            ViewBag.GrandTotal = 0m;
+            ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
+            ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
+            ViewBag.FirmFilter = firmFilter;
+            ViewBag.VendorFilter = vendorFilter;
+            
+            PurchaseBill = new List<PurchaseBill>();
+        }
+        
+        return View(PurchaseBill);
+    }
+    catch (Exception ex)
+    {
+        // Log error
+        Console.WriteLine($"Error: {ex.Message}");
+        
+        ViewBag.PaidTotal = 0m;
+        ViewBag.UnpaidTotal = 0m;
+        ViewBag.GrandTotal = 0m;
+        ViewBag.StartDate = DateTime.UtcNow.ToString("dd/MM/yyyy");
+        ViewBag.EndDate = DateTime.UtcNow.ToString("dd/MM/yyyy");
+        ViewBag.FirmFilter = "ALL FIRMS";
+        ViewBag.VendorFilter = null;
+        ViewBag.Error = "An error occurred while loading purchase bills.";
+        
+        return View(new List<PurchaseBill>());
+    }
+}
 
 
 
@@ -185,7 +210,7 @@ namespace MUNEEMJI.Controllers
                         await viewModel.Bill.imageFile.CopyToAsync(fileStream);
                     }
 
-                    viewModel.Bill.ImagePath = "/Web/uploads/" + uniqueFileName;
+                    viewModel.Bill.ImagePath = "/Web/uploads/transaction/" + uniqueFileName;
                 }
                 if (viewModel.Bill.DocumentFile != null && viewModel.Bill.DocumentFile.Length > 0)
                 {
@@ -203,26 +228,26 @@ namespace MUNEEMJI.Controllers
                         await viewModel.Bill.DocumentFile.CopyToAsync(fileStream);
                     }
 
-                    viewModel.Bill.DocumentPath = "/Web/uploads/" + uniqueFileName;
+                    viewModel.Bill.DocumentPath = "/Web/uploads/transaction/" + uniqueFileName;
                 }
 
                 // Calculate totals
                 CalculateBillTotals(viewModel.Bill);
 
                 var billId = await _billService.CreateBillAsync(viewModel.Bill, companyId);
-                TempData["SuccessMessage"] = "Bill created successfully!";
-                return RedirectToAction(nameof(Index));
+
+                return Json(new { success = true, message = "Data saved successfully!" });
+
 
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Error creating bill: {ex.Message}";
+                return Json(new { success = false, message = "Error: " + ex.Message });
+
             }
 
-            return View(viewModel);
         }
 
-        // GET: Bill/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var bill = await _billService.GetBillByIdAsync(id);
@@ -233,92 +258,6 @@ namespace MUNEEMJI.Controllers
 
             return View(bill);
         }
-
-        // GET: Bill/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            var companyId = _CompayTenancy.GetCurrentCompanyId();
-
-            var bill = await _billService.GetBillByIdAsync(id);
-            if (bill == null)
-            {
-                return NotFound();
-            }
-
-            var viewModel = new PurchaseBillViewModel
-            {
-                Bill = bill,
-                DropDownItem = await _IBillItemService.GetItems(companyId)
-            };
-            ViewBag.PartyList = await partyController.GetPartyDropDownAsync(companyId);
-
-
-            return View("create", viewModel);
-        }
-
-        // POST: Bill/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, PurchaseBillViewModel viewModel, IFormFile? imageFile)
-        {
-            if (id != viewModel.Bill.Id)
-            {
-                return NotFound();
-            }
-
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    // Handle image upload
-                    if (imageFile != null && imageFile.Length > 0)
-                    {
-                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-                        if (!Directory.Exists(uploadsFolder))
-                        {
-                            Directory.CreateDirectory(uploadsFolder);
-                        }
-
-                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await imageFile.CopyToAsync(fileStream);
-                        }
-
-                        viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;
-                    }
-
-                    // Calculate totals
-                    CalculateBillTotals(viewModel.Bill);
-
-                    await _billService.UpdateBillAsync(viewModel.Bill);
-                    TempData["SuccessMessage"] = "Bill updated successfully!";
-                    return RedirectToAction(nameof(Details), new { id = viewModel.Bill.Id });
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = $"Error updating bill: {ex.Message}";
-            }
-
-            return View(viewModel);
-        }
-
-        // GET: Bill/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var bill = await _billService.GetBillByIdAsync(id);
-            if (bill == null)
-            {
-                return NotFound();
-            }
-
-            return View(bill);
-        }
-
-
 
         [HttpPost]
         public IActionResult AddBillItem(PurchaseBillViewModel viewModel)
@@ -413,11 +352,13 @@ namespace MUNEEMJI.Controllers
             try
             {
                 await _billService.DeleteBillAsync(id);
-                TempData["SuccessMessage"] = "Bill deleted successfully!";
+                return Json(new { success = true, message = "Record deleted successfully!" });
+
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Error deleting bill: {ex.Message}";
+                return Json(new { success = false, message = "Error: " + ex.Message });
+
             }
 
             return RedirectToAction(nameof(Index));
@@ -426,27 +367,23 @@ namespace MUNEEMJI.Controllers
         {
             var viewModel = new PurchaseBillViewModel();
             var companyId = _CompayTenancy.GetCurrentCompanyId();
+            var transactionSettingsController = new TransactionSettingsController();
+            var CategoryController = new CategoryController();
 
             await Task.Delay(1);
             if (id > 0)
             {
                 var bill = await _billService.GetBillByIdAsync(id);
+                bill.transactionSettings = transactionSettingsController.GetTransactionByFirmId(1);
+                bill.itemSettings = transactionSettingsController.GetItemSettings();
                 viewModel = new PurchaseBillViewModel
                 {
-                    //Bill = new PurchaseBill
-                    //{
-                    //    BillNumber = _billService.GenerateBillNumber(),
-
-                    //    BillDate = DateTime.Now,
-                    //    BillItems = new List<PurchaseBillItem>
-                    //{
-                    //    new PurchaseBillItem(),
-                    //    new PurchaseBillItem()
-                    //}
-                    //},
                     Bill = bill,
+
                     ViewTypeId = typeid,
-                    DropDownItem = await _IBillItemService.GetItems(companyId)
+                    DropDownItem = await _IBillItemService.GetItems(companyId),
+                    DropDownCategory = CategoryController.GetCategoriesDropdown()
+
                 };
             }
             else
@@ -472,47 +409,103 @@ namespace MUNEEMJI.Controllers
             return View("Create", viewModel);
         }
         [HttpPost]
-        public async Task<IActionResult> UpdateEntries(PurchaseBillViewModel viewModel, IFormFile? imageFile)
+        public async Task<IActionResult> UpdateEntries(PurchaseBillViewModel viewModel)
         {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
             try
             {
-                if (ModelState.IsValid)
+                PurchaseBill existingProImage = null;
+                if (viewModel.Bill.Id > 0)
                 {
-                    // Handle image upload
-                    if (imageFile != null && imageFile.Length > 0)
+                    using (var conn = new NpgsqlConnection(_connectionString))
                     {
-                        var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads");
-                        if (!Directory.Exists(uploadsFolder))
+                        conn.Open();
+                        string selectSql = "SELECT image_path,documentpath FROM TradeDocuments WHERE id = @Id";
+                        using (var cmd = new NpgsqlCommand(selectSql, conn))
                         {
-                            Directory.CreateDirectory(uploadsFolder);
+                            cmd.Parameters.AddWithValue("@Id", viewModel.Bill.Id);
+                            using (var reader = cmd.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    existingProImage = new PurchaseBill
+                                    {
+                                        ImagePath = reader["image_path"] as string,
+                                        DocumentPath = reader["documentpath"] as string
+
+
+                                    };
+                                }
+                            }
                         }
-
-                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
-                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await imageFile.CopyToAsync(fileStream);
-                        }
-
-                        viewModel.Bill.ImagePath = "/uploads/" + uniqueFileName;
                     }
-                    viewModel.ViewTypeId = (int)ViewTypeEnum.Edit;
-
-                    // Calculate totals
-                    CalculateBillTotals(viewModel.Bill);
-
-                    var billId = await _billService.UpdateEntries(viewModel.Bill);
-                    TempData["SuccessMessage"] = "Bill created successfully!";
-                    return RedirectToAction(nameof(Index));
                 }
+
+                if (viewModel.Bill.IsDeleteImage)
+                {
+                    viewModel.Bill.imageFile = null;
+                }
+                else if (viewModel.Bill.imageFile != null && viewModel.Bill.imageFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "transaction");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + viewModel.Bill.imageFile.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await viewModel.Bill.imageFile.CopyToAsync(fileStream);
+                    }
+
+                    viewModel.Bill.ImagePath = "/Web/uploads/transaction/" + uniqueFileName;
+                }
+                else
+                {
+                    viewModel.Bill.ImagePath = existingProImage.ImagePath;
+
+                }
+                if (viewModel.Bill.DocumentFile != null && viewModel.Bill.DocumentFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "transaction");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + viewModel.Bill.DocumentFile.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await viewModel.Bill.DocumentFile.CopyToAsync(fileStream);
+                    }
+
+                    viewModel.Bill.DocumentPath = "/Web/uploads/transaction/" + uniqueFileName;
+                }
+                else
+                {
+                    viewModel.Bill.DocumentPath = existingProImage.DocumentPath;
+                }
+
+                // Calculate totals
+                CalculateBillTotals(viewModel.Bill);
+
+                var billId = await _billService.UpdateEntries(viewModel.Bill);
+               
+                return Json(new { success = true, message = "Data Update successfully!" });
+
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = $"Error creating bill: {ex.Message}";
+                return Json(new { success = false, message = "Error: " + ex.Message });
+
             }
 
-            return View("Create", viewModel);
         }
 
 

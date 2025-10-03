@@ -21,10 +21,12 @@
             <button class="btn btn-danger" onclick="openAddPaymentModal()">
                 <i class="bi bi-plus"></i> Add Payment-in
             </button>
-            <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/General/Index?returnUrl=' + encodeURIComponent(window.location.href)" style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
-                                padding-bottom:4px;padding-top:0px;padding-left:6px;
+
+            <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index?returnUrl=' + encodeURIComponent(window.location.href)" style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
+                                padding-bottom:7px;padding-top:0px;padding-left:6px;
                                 padding-right:6px;">
             </button>
+
         </div>
     </div>
 
@@ -35,47 +37,45 @@
         </div>
         <div class="col-auto">
             <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" id="timeFilterDropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                     This Month
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#" onclick="setTimeFilter('today')">Today</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="setTimeFilter('thisWeek')">This Week</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="setTimeFilter('thisMonth')">This Month</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="setTimeFilter('thisYear')">This Year</a></li>
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Week</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
                 </ul>
             </div>
         </div>
         <div class="col-auto">
-            <input type="date" class="form-control" id="startDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" onchange="filterByDate()" />
+            <input type="date" class="form-control" id="startDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
         </div>
         <div class="col-auto">
             <span class="text-muted">To</span>
         </div>
         <div class="col-auto">
-            <input type="date" class="form-control" id="endDate" value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")" onchange="filterByDate()">
+            <input type="date" class="form-control" id="endDate" value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")">
         </div>
         <div class="col-auto">
-            <select class="form-select" id="firmFilter" onchange="filterData()">
-                <option value="all" selected>All Firms</option>
+            <select class="form-select">
+                <option selected>All Firms</option>
                 <option>FIRM 1</option>
                 <option>FIRM 2</option>
             </select>
         </div>
         <div class="col-auto">
-            <select class="form-select" id="userFilter" onchange="filterData()">
-                <option value="all" selected>All Users</option>
+            <select class="form-select">
+                <option selected>All Users</option>
                 <option>User 1</option>
                 <option>User 2</option>
             </select>
         </div>
         <div class="col-auto">
-            <select class="form-select" id="paymentTypeFilter" onchange="filterData()">
-                <option value="all" selected>All Payment Types</option>
-                <option value="Cash">Cash</option>
-                <option value="Bank">Bank</option>
-                <option value="Card">Card</option>
-                <option value="Online">Online</option>
+            <select class="form-select">
+                <option selected>All Godown</option>
+                <option>Godown 1</option>
+                <option>Godown 2</option>
             </select>
         </div>
     </div>
@@ -96,8 +96,6 @@
                 </div>
                 <div class="summary-breakdown">
                     <span class="received-text">Received: ₹ @Model?.Sum(x => x.Total).ToString("N0") </span>
-                @*     <span class="separator">|</span>
-                    <span class="balance-text">Balance: ₹ @totalBalance.ToString("N0") </span> *@
                 </div>
             </div>
         </div>
@@ -108,15 +106,14 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="mb-0">Transactions</h5>
             <div class="d-flex gap-2">
-                <div class="search-container">
-                    <input type="text" class="form-control" placeholder="Search..." id="transactionSearch">
-                    <i class="bi bi-search search-icon"></i>
-                </div>
+                <button class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-search"></i>
+                </button>
                 <button class="btn btn-outline-secondary btn-sm">
                     <i class="bi bi-bar-chart"></i>
                 </button>
-                <a href="/Web/PaymentIn/ExcelReport" download>
-                    <button type="button" class="btn btn-success btn-sm" title="Download Excel" style="height: 38px;">
+                <a href="/path/to/file.xlsx" download>
+                    <button type="button" class="btn btn-success btn-sm" title="Download Excel">
                         <i class="bi bi-file-earmark-excel"></i>
                     </button>
                 </a>
@@ -147,8 +144,6 @@
                             Party Name
                             <i class="bi bi-funnel ms-1 filter-icon"></i>
                         </th>
-                    
-                       
                         <th onclick="sortTable(6)">
                             Total Amount
                             <i class="bi bi-funnel ms-1 filter-icon"></i>
@@ -171,9 +166,8 @@
                 <tbody>
                     @if (Model != null && Model.Any())
                     {
-                       
-                            int counter = 1;
-                        
+                        int counter = 1;
+
                         @foreach (var item in Model)
                         {
                             <tr class="transaction-row" onclick="openEditPaymentModal(@item.Id)" style="cursor: pointer;">
@@ -187,7 +181,7 @@
                                 <td>UnUsed</td>
                                 <td onclick="event.stopPropagation();">
                                     <div class="d-flex gap-1">
-                                                <button class="btn btn-sm btn-outline-secondary" title="Print"  onclick="window.print()">
+                                        <button class="btn btn-sm btn-outline-secondary" title="Print" onclick="window.print()">
                                             <i class="bi bi-printer"></i>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-outline-secondary" title="Share" onclick="sharePayment(@item.Id)">
@@ -200,7 +194,11 @@
                                             <ul class="dropdown-menu">
                                                 <li><a class="dropdown-item" href="#" onclick="openViewPaymentModal(@item.Id)">View</a></li>
                                                 <li><a class="dropdown-item" href="#" onclick="openEditPaymentModal(@item.Id)">Edit</a></li>
-                                                <li><a class="dropdown-item" href="#" onclick="deletePayment(@item.Id)">Delete</a></li>
+                                                <li>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="showDeleteConfirmation(@item.Id)">
+                                                        Delete
+                                                    </a>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -223,17 +221,56 @@
             </table>
         </div>
     </div>
-</div>
 
-<!-- Modal -->
-<div id="paymentModal" class="modal">
-    <div class="modal-content">
-        <div id="modalContent">
-            <div class="loading-spinner">
-                <div class="spinner"></div>
+    <!-- Delete Confirmation Modal (Bootstrap) -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this record?</p>
+                    <p class="text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete</button>
+                </div>
             </div>
         </div>
     </div>
+
+    <!-- Delete Result Modal (Bootstrap) -->
+    <div class="modal fade" id="deleteResultModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" id="deleteResultHeader">
+                    <h5 class="modal-title" id="deleteResultTitle">Message</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="deleteResultBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="location.reload()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Payment Modal (Renamed Classes) -->
+    <div id="paymentModal" class="custom-payment-modal">
+        <div class="custom-payment-modal-content">
+            <button type="button" class="custom-modal-close-btn" onclick="closeModal()">&times;</button>
+            <div id="modalContent">
+                <div class="custom-loading-spinner">
+                    <div class="custom-spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <style>
@@ -252,7 +289,7 @@
 
     .summary-header {
         display: flex;
-        justify-content: between;
+        justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 15px;
     }
@@ -332,11 +369,6 @@
             padding: 12px 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            cursor: pointer;
-        }
-
-        .transactions-table thead th:hover {
-            background-color: #e9ecef;
         }
 
     .filter-icon {
@@ -356,20 +388,12 @@
             vertical-align: middle;
         }
 
-        .transaction-row:hover {
-            background-color: #cce7ff !important;
-        }
-
-    .search-container {
-        position: relative;
-    }
-
-    .search-icon {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #6c757d;
+    .activation-notice {
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-size: 12px;
     }
 
     .btn {
@@ -398,77 +422,236 @@
         color: #6c757d !important;
     }
 
-    /* Modal Styles */
-    .modal {
+    .dropdown-menu {
+        z-index: 1050 !important;
+    }
+
+    .table-responsive {
+        overflow: visible !important;
+    }
+
+    /* Custom Payment Modal Styles - No Conflict with Bootstrap */
+    .custom-payment-modal {
         display: none;
         position: fixed;
-        z-index: 1000;
+        z-index: 1060;
         left: 0;
         top: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0,0,0,0.5);
+        background-color: rgba(0, 0, 0, 0.5);
         overflow-y: auto;
+        backdrop-filter: blur(2px);
     }
 
-        .modal.show {
-            display: flex;
+        .custom-payment-modal.show {
+            display: flex !important;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
 
-    .modal-content {
+    .custom-payment-modal-content {
         background-color: white;
         border-radius: 8px;
         width: 90%;
-        max-width: 800px;
+        max-width: 900px;
         max-height: 90vh;
         overflow-y: auto;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         position: relative;
+        animation: slideIn 0.3s ease-out;
     }
 
-    .loading-spinner {
+    @@keyframes slideIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .custom-modal-close-btn {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        z-index: 1070;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        font-size: 24px;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+        .custom-modal-close-btn:hover {
+            background: #c82333;
+            transform: rotate(90deg);
+        }
+
+    .custom-loading-spinner {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 50px;
+        padding: 60px;
+        min-height: 200px;
     }
 
-    .spinner {
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #007bff;
+    .custom-spinner {
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #007bff;
         border-radius: 50%;
-        width: 40px;
-        height: 40px;
+        width: 50px;
+        height: 50px;
         animation: spin 1s linear infinite;
     }
 
     @@keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0%
+
+    {
+        transform: rotate(0deg);
     }
 
-    @@media (max-width: 768px) {
-        .modal-content {
-            width: 95%;
-            max-height: 95vh;
-        }
-        
-        .transactions-table {
-            font-size: 12px;
-        }
-        
-        .transactions-table th,
-        .transactions-table td {
-            padding: 8px 4px;
-        }
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    /* Click outside modal to close */
+    .custom-payment-modal.show::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: -1;
     }
 </style>
 
 <script>
-    // Modal functionality
+    // Search functionality
+    document.getElementById('transactionSearch')?.addEventListener('keyup', function() {
+        var searchTerm = this.value.toLowerCase();
+        var tableRows = document.querySelectorAll('tbody tr');
+
+        tableRows.forEach(function(row) {
+            var text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    // Date filter functionality
+    document.getElementById('startDate').addEventListener('change', function() {
+        filterByDate();
+    });
+
+    document.getElementById('endDate').addEventListener('change', function() {
+        filterByDate();
+    });
+
+    function filterByDate() {
+        var startDate = document.getElementById('startDate').value;
+        var endDate = document.getElementById('endDate').value;
+
+        if (startDate && endDate) {
+            window.location.href = '?startDate=' + startDate + '&endDate=' + endDate;
+        }
+    }
+
+    // Add click handlers for action buttons
+    document.querySelectorAll('.filter-icon').forEach(function(icon) {
+        icon.addEventListener('click', function() {
+            console.log('Filter clicked for column');
+        });
+    });
+
+    // Click outside modal to close
+    document.getElementById('paymentModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeModal();
+        }
+    });
+</script>
+
+<script>
+    let deleteRecordId = null;
+
+    function showDeleteConfirmation(id) {
+        deleteRecordId = id;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        deleteModal.show();
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (deleteRecordId) {
+            deleteRecord(deleteRecordId);
+        }
+    });
+
+    function deleteRecord(id) {
+        const confirmModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+        confirmModal.hide();
+
+        // Update this URL to match your PaymentIn controller
+        fetch(`/Web/PaymentIn/DeleteConfirmed?id=${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            showDeleteResult(data.success, data.message);
+        })
+        .catch(error => {
+            console.error('Delete error:', error);
+            showDeleteResult(false, 'An error occurred while deleting the record.');
+        });
+    }
+
+    function showDeleteResult(isSuccess, message) {
+        const resultModal = new bootstrap.Modal(document.getElementById('deleteResultModal'));
+        const resultHeader = document.getElementById('deleteResultHeader');
+        const resultTitle = document.getElementById('deleteResultTitle');
+        const resultBody = document.getElementById('deleteResultBody');
+
+        if (isSuccess) {
+            resultHeader.className = 'modal-header bg-success text-white';
+            resultTitle.textContent = 'Success';
+        } else {
+            resultHeader.className = 'modal-header bg-danger text-white';
+            resultTitle.textContent = 'Error';
+        }
+
+        resultBody.textContent = message;
+        resultModal.show();
+    }
+</script>
+
+<script>
     function openAddPaymentModal() {
         showModal();
         loadModalContent('/Web/PaymentIn/Create');
@@ -494,7 +677,7 @@
     function closeModal() {
         document.getElementById('paymentModal').classList.remove('show');
         document.body.style.overflow = 'auto';
-        document.getElementById('modalContent').innerHTML = '<div class="loading-spinner"><div class="spinner"></div></div>';
+        document.getElementById('modalContent').innerHTML = '<div class="custom-loading-spinner"><div class="custom-spinner"></div></div>';
     }
 
     function loadModalContent(url) {
@@ -527,7 +710,6 @@
         });
     }
 
-    // Form submission handler
     function handleFormSubmit(form) {
         const formData = new FormData(form);
 
@@ -549,128 +731,5 @@
             console.error('Error:', error);
             alert('An error occurred. Please try again.');
         });
-    }
-
-    // Close modal events
-    document.getElementById('paymentModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeModal();
-        }
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && document.getElementById('paymentModal').classList.contains('show')) {
-            closeModal();
-        }
-    });
-
-    // Search functionality
-    document.getElementById('transactionSearch').addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const tableRows = document.querySelectorAll('#paymentsTable tbody tr');
-
-        tableRows.forEach(function(row) {
-            const text = row.textContent.toLowerCase();
-            if (text.includes(searchTerm)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-
-    // Filter functionality
-    function setTimeFilter(period) {
-        document.getElementById('timeFilterDropdown').textContent = period.charAt(0).toUpperCase() + period.slice(1);
-        // Add logic to filter by time period
-        filterData();
-    }
-
-    function filterByDate() {
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        if (startDate && endDate) {
-            filterData();
-        }
-    }
-
-    function filterData() {
-        // Combine all filters and apply to table
-        const firmFilter = document.getElementById('firmFilter').value;
-        const userFilter = document.getElementById('userFilter').value;
-        const paymentTypeFilter = document.getElementById('paymentTypeFilter').value;
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        
-        // Apply filters to table rows
-        // Implementation depends on your specific filtering requirements
-    }
-
-    // Table sorting
-    let sortDirection = {};
-    function sortTable(columnIndex) {
-        const table = document.getElementById('paymentsTable');
-        const tbody = table.querySelector('tbody');
-        const rows = Array.from(tbody.querySelectorAll('tr'));
-        
-        const direction = sortDirection[columnIndex] === 'asc' ? 'desc' : 'asc';
-        sortDirection[columnIndex] = direction;
-        
-        rows.sort((a, b) => {
-            const aText = a.cells[columnIndex].textContent.trim();
-            const bText = b.cells[columnIndex].textContent.trim();
-            
-            if (direction === 'asc') {
-                return aText.localeCompare(bText, undefined, {numeric: true});
-            } else {
-                return bText.localeCompare(aText, undefined, {numeric: true});
-            }
-        });
-        
-        tbody.innerHTML = '';
-        rows.forEach(row => tbody.appendChild(row));
-    }
-
-    // Action functions
-    function printPayment(id) {
-        window.open('/Web/PaymentIn/Print/' + id, '_blank');
-    }
-
-    function sharePayment(id) {
-        const url = window.location.origin + '/Web/PaymentIn/GetById?id=' + id;
-        if (navigator.share) {
-            navigator.share({
-                title: 'Payment Receipt',
-                url: url
-            });
-        } else {
-            navigator.clipboard.writeText(url).then(() => {
-                alert('Payment link copied to clipboard!');
-            });
-        }
-    }
-
-    function deletePayment(id) {
-        if (confirm('Are you sure you want to delete this payment?')) {
-            fetch('/Web/PaymentIn/Delete/' + id, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Payment deleted successfully');
-                    location.reload();
-                } else {
-                    alert('Error deleting payment');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error deleting payment');
-            });
-        }
     }
 </script>

@@ -18,10 +18,12 @@
             <button class="btn btn-danger" onclick="window.location.href='/Web/Estimate_Quotations/Create'">
                 <i class="bi bi-plus"></i> Add Estimate
             </button>
+
             <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index?returnUrl=' + encodeURIComponent(window.location.href)" style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
-                                padding-bottom:4px;padding-top:0px;padding-left:6px;
+                                padding-bottom:7px;padding-top:0px;padding-left:6px;
                                 padding-right:6px;">
             </button>
+
         </div>
     </div>
 
@@ -137,7 +139,7 @@
                             Party Name
                             <i class="bi bi-funnel ms-1 filter-icon"></i>
                         </th>
-                       @*  <th>
+                        @*  <th>
                             Transaction
                             <i class="bi bi-funnel ms-1 filter-icon"></i>
                         </th>
@@ -153,7 +155,7 @@
                             Balance
                             <i class="bi bi-funnel ms-1 filter-icon"></i>
                         </th>
-                      @*   <th>
+                        @*   <th>
                             Due date
                             <i class="bi bi-funnel ms-1 filter-icon"></i>
                         </th> *@
@@ -195,9 +197,14 @@
                                                 <i class="bi bi-three-dots-vertical"></i>
                                             </button>
                                             <ul class="dropdown-menu">
-                                                <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
-                                                <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
-                                                <li><a class="dropdown-item" href="/Web/Sales/DeleteConfirmed?id=@(bill.Id)">Delete</a></li>
+                                                <li><a class="dropdown-item" href="/Web/Estimate_Quotations/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
+                                                <li><a class="dropdown-item" href="/Web/Estimate_Quotations/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+
+                                                <li>
+                                                    <a class="dropdown-item" href="javascript:void(0)" onclick="showDeleteConfirmation(@bill.Id)">
+                                                        Delete
+                                                    </a>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
@@ -215,7 +222,42 @@
             </table>
         </div>
     </div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this record?</p>
+                    <p class="text-muted mb-0">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Delete Result Modal -->
+    <div class="modal fade" id="deleteResultModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header" id="deleteResultHeader">
+                    <h5 class="modal-title" id="deleteResultTitle">Message</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="deleteResultBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="location.reload()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </div>
 
@@ -367,6 +409,14 @@
     .text-muted {
         color: #6c757d !important;
     }
+
+    .dropdown-menu {
+        z-index: 1050 !important;
+    }
+
+    .table-responsive {
+        overflow: visible !important;
+    }
 </style>
 
 <script>
@@ -410,4 +460,61 @@
             console.log('Filter clicked for column');
         });
     });
+</script>
+<script>
+
+        let deleteRecordId = null;
+
+    function showDeleteConfirmation(id) {
+        deleteRecordId = id;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        deleteModal.show();
+    }
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (deleteRecordId) {
+            deleteRecord(deleteRecordId);
+        }
+    });
+
+    function deleteRecord(id) {
+        // Hide confirmation modal
+        const confirmModal = bootstrap.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+        confirmModal.hide();
+
+        // Call delete API
+        fetch(`/Web/Estimate_Quotations/DeleteConfirmed?id=${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            showDeleteResult(data.success, data.message);
+        })
+        .catch(error => {
+            showDeleteResult(false, 'An error occurred while deleting the record.');
+        });
+    }
+
+    function showDeleteResult(isSuccess, message) {
+        const resultModal = new bootstrap.Modal(document.getElementById('deleteResultModal'));
+        const resultHeader = document.getElementById('deleteResultHeader');
+        const resultTitle = document.getElementById('deleteResultTitle');
+        const resultBody = document.getElementById('deleteResultBody');
+
+        if (isSuccess) {
+            resultHeader.className = 'modal-header bg-success text-white';
+            resultTitle.textContent = 'Success';
+        } else {
+            resultHeader.className = 'modal-header bg-danger text-white';
+            resultTitle.textContent = 'Error';
+        }
+
+        resultBody.textContent = message;
+        resultModal.show();
+    }
+
 </script>

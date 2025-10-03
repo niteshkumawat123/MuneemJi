@@ -326,7 +326,7 @@ namespace MUNEEMJI.Repositories
                     TaxPercentage = itemsReader.IsDBNull("tax_percentage") ? 0 : itemsReader.GetDecimal("tax_percentage"),
                     TotalAmount = itemsReader.IsDBNull("total_amount") ? 0 : itemsReader.GetDecimal("total_amount"),
                     ItemId = itemsReader.IsDBNull("itemid") ? 0 : itemsReader.GetInt32("itemid"),
-                    CategoryId = itemsReader.IsDBNull("categoryid") ? 0 : itemsReader.GetInt32("categoryid"),
+                    categoryid = itemsReader.IsDBNull("categoryid") ? 0 : itemsReader.GetInt32("categoryid"),
                     serialno = itemsReader.IsDBNull("serialno") ? null : itemsReader.GetString("serialno"),
                     batchno = itemsReader.IsDBNull("batchno") ? null : itemsReader.GetString("batchno"),
                     modelno = itemsReader.IsDBNull("modelno") ? null : itemsReader.GetString("modelno"),

@@ -95,7 +95,7 @@ namespace MUNEEMJI.Models
         public string Tax { get; set; } = "Select";
         public decimal TaxAmount { get; set; } = 0;
         public decimal Amount { get; set; } = 0;
-        public int CategoryId { get; set; } = 0;
+        //public int CategoryId { get; set; } = 0;
         public string ItemCode { get; set; } = string.Empty;
         public string HSNCode { get; set; } = string.Empty;
         public string SerialNumber { get; set; } = string.Empty;

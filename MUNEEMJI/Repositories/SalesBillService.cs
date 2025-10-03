@@ -7,7 +7,7 @@ namespace MUNEEMJI.Repositories
 
     public interface ISalesBillService
     {
-        Task<int> CreateBillAsync(PurchaseBill bill,int companyId);
+        Task<int> CreateBillAsync(PurchaseBill bill, int companyId);
         Task<PurchaseBill?> GetBillByIdAsync(int id);
         Task<List<PurchaseBill>> GetAllBillsAsync();
         Task<bool> UpdateBillAsync(PurchaseBill bill);
@@ -114,7 +114,7 @@ namespace MUNEEMJI.Repositories
                 billCommand.Parameters.AddWithValue("@IsRoundOff", bill.IsRoundOff);
                 billCommand.Parameters.AddWithValue("@FinalAmount", bill.FinalAmount);
                 billCommand.Parameters.AddWithValue("@isreceive", bill.IsReceive);
-                billCommand.Parameters.AddWithValue("@p_companyid",companyId);
+                billCommand.Parameters.AddWithValue("@p_companyid", companyId);
 
                 var billId = (int)(await billCommand.ExecuteScalarAsync() ?? 0);
 
@@ -202,6 +202,7 @@ namespace MUNEEMJI.Repositories
 
             if (!await billReader.ReadAsync())
                 return null;
+            int timeOrdinal = billReader.GetOrdinal("time");
 
             var bill = new PurchaseBill
             {
@@ -255,6 +256,7 @@ namespace MUNEEMJI.Repositories
                 FinalAmount = billReader.IsDBNull("final_amount") ? 0 : billReader.GetDecimal("final_amount"),
                 IsReceive = billReader.IsDBNull("isreceive") ? false : billReader.GetBoolean("isreceive"),
                 ReturnNo = billReader.IsDBNull("returnno") ? 0 : billReader.GetDecimal("returnno"),
+                Time = billReader.IsDBNull(timeOrdinal) ? TimeSpan.MinValue : billReader.GetTimeSpan(timeOrdinal)
             };
 
             await billReader.CloseAsync();
@@ -280,7 +282,7 @@ namespace MUNEEMJI.Repositories
                     Id = itemsReader.GetInt32("id"),
                     BillId = itemsReader.GetInt32("tradedocumentsid"),
                     ItemId = itemsReader.IsDBNull("itemid") ? 0 : itemsReader.GetInt32("itemid"),
-                    CategoryId = itemsReader.IsDBNull("categoryid") ? 0 : itemsReader.GetInt32("categoryid"),
+                    categoryid = itemsReader.IsDBNull("categoryid") ? 0 : itemsReader.GetInt32("categoryid"),
                     serialno = itemsReader.IsDBNull("serialno") ? "" : itemsReader.GetString("serialno"),
                     batchno = itemsReader.IsDBNull("batchno") ? "" : itemsReader.GetString("batchno"),
                     modelno = itemsReader.IsDBNull("modelno") ? "" : itemsReader.GetString("modelno"),
@@ -430,7 +432,7 @@ namespace MUNEEMJI.Repositories
                 await transaction.RollbackAsync();
                 throw;
             }
-        }     
+        }
         public string GenerateBillNumber()
         {
             return $"BILL-{DateTime.Now:yyyyMMdd}-{DateTime.Now.Ticks.ToString().Substring(10)}";
@@ -479,34 +481,68 @@ namespace MUNEEMJI.Repositories
 
             try
             {
-                // 🔁 Update existing bill
                 var updateQuery = @"
-            UPDATE TradeDocuments 
-            SET bill_number = @BillNumber,
-                bill_date = @BillDate,
-                state_of_supply = @StateOfSupply,
-                phone_no = @PhoneNo,
-                po_no = @PONo,
-                po_date = @PODate,
-                eway_bill_no = @EWayBillNo,
-                transport_name = @TransportName,
-                delivery_location = @DeliveryLocation,
-                vehicle_number = @VehicleNumber,
-                delivery_date = @DeliveryDate,
-                payment_type = @PaymentType,
-                description = @Description,
-                image_path = @ImagePath,
-                round_off = @RoundOff,
-                total = @Total,
-                created_date = @CreatedDate,
-                paidReciveamount = @paidReciveamount,
-                PartyId = @PartyId
-            WHERE id = @Id";
+                                    UPDATE TradeDocuments 
+                                    SET bill_number = @BillNumber,
+                                        bill_date = @BillDate,
+                                        stateid = @StateId,
+                                        state_of_supply = @StateOfSupply,
+                                        phone_no = @PhoneNo,
+                                        po_no = @PONo,
+                                        po_date = @PODate,
+                                        eway_bill_no = @EWayBillNo,
+                                        transport_name = @TransportName,
+                                        delivery_location = @DeliveryLocation,
+                                        vehicle_number = @VehicleNumber,
+                                        delivery_date = @DeliveryDate,
+                                        payment_type = @PaymentType,
+                                        description = @Description,
+                                        image_path = @ImagePath,
+                                        round_off = @RoundOff,
+                                        total = @Total,
+                                        created_date = @CreatedDate,
+                                        paidreciveamount = @PaidReciveAmount,
+                                        partyid = @PartyId,
+                                        orderstatusid = @OrderStatusId,
+                                        duedate = @DueDate,
+                                        orderno = @OrderNo,
+                                        orderdate = @OrderDate,
+                                        challanno = @ChallanNo,
+                                        challandate = @ChallanDate,
+                                        iscredit = @IsCredit,
+                                        billingname = @BillingName,
+                                        billingaddress = @BillingAddress,
+                                        shippingaddress = @ShippingAddress,
+                                        invoicenumber = @InvoiceNumber,
+                                        invoicedate = @InvoiceDate,
+                                        time = @Time,
+                                        paymenttermid = @PaymentTermId,
+                                        field5 = @Field5,
+                                        field6 = @Field6,
+                                        documentpath = @DocumentPath,
+                                        noofcopi = @NoOfCopi,
+                                        discount_percent = @DiscountPercent,
+                                        discount_amount = @DiscountAmount,
+                                        tax_percentage = @TaxPercentage,
+                                        tax_amount = @TaxAmount,
+                                        shipping_amount = @ShippingAmount,
+                                        packing_amount = @PackingAmount,
+                                        adjustment_amount = @AdjustmentAmount,
+                                        TCSTDSType = @TCSTDSType,
+                                        tdstcs_percentage = @TdsTcsPercentage,
+                                        tdstcs_amount = @TdsTcsAmount,
+                                        isroundoff = @IsRoundOff,
+                                        final_amount = @FinalAmount,
+                                        isreceive = @isreceive
+                                    WHERE id = @Id";
 
                 using var updateCommand = new NpgsqlCommand(updateQuery, connection, transaction);
+
                 updateCommand.Parameters.AddWithValue("@Id", bill.Id);
+
                 updateCommand.Parameters.AddWithValue("@BillNumber", bill.BillNumber ?? string.Empty);
                 updateCommand.Parameters.AddWithValue("@BillDate", bill.BillDate);
+                updateCommand.Parameters.AddWithValue("@StateId", (object?)bill.StateId ?? DBNull.Value);
                 updateCommand.Parameters.AddWithValue("@StateOfSupply", bill.StateOfSupply ?? string.Empty);
                 updateCommand.Parameters.AddWithValue("@PhoneNo", bill.PhoneNo ?? string.Empty);
                 updateCommand.Parameters.AddWithValue("@PONo", bill.PONo ?? string.Empty);
@@ -522,46 +558,82 @@ namespace MUNEEMJI.Repositories
                 updateCommand.Parameters.AddWithValue("@RoundOff", bill.RoundOffValue);
                 updateCommand.Parameters.AddWithValue("@Total", bill.Total);
                 updateCommand.Parameters.AddWithValue("@CreatedDate", bill.CreatedDate);
-                updateCommand.Parameters.AddWithValue("@paidReciveamount", bill.paidReciveamount);
+                updateCommand.Parameters.AddWithValue("@PaidReciveAmount", bill.paidReciveamount);
                 updateCommand.Parameters.AddWithValue("@PartyId", bill.PartyId);
+
+                updateCommand.Parameters.AddWithValue("@OrderStatusId", (object?)bill.orderstatusid ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@DueDate", (object?)bill.DueDate ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@OrderNo", bill.OrderNo ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@OrderDate", (object?)bill.OrderDate ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@ChallanNo", bill.ChallanNo ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@ChallanDate", (object?)bill.Challandate ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@IsCredit", bill.IsCredit);
+                updateCommand.Parameters.AddWithValue("@BillingName", bill.BillingName ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@BillingAddress", bill.BillingAddress ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@ShippingAddress", bill.ShippingAddress ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@InvoiceNumber", (object?)bill.InvoiceNumber ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@InvoiceDate", (object?)bill.InvoiceDate ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@Time", (object?)bill.Time ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@PaymentTermId", (object?)bill.PaymentTermId ?? DBNull.Value);
+                updateCommand.Parameters.AddWithValue("@Field5", bill.Field5 ?? string.Empty);
+                updateCommand.Parameters.AddWithValue("@Field6", bill.Field6 ?? string.Empty);
+                updateCommand.Parameters.Add("@DocumentPath", NpgsqlTypes.NpgsqlDbType.Varchar).Value = (object)bill.DocumentPath ?? DBNull.Value;
+                updateCommand.Parameters.AddWithValue("@NoOfCopi", bill.NoOfCopi);
+                updateCommand.Parameters.AddWithValue("@DiscountPercent", bill.DiscountPercent);
+                updateCommand.Parameters.AddWithValue("@DiscountAmount", bill.DiscountAmount);
+                updateCommand.Parameters.AddWithValue("@TaxPercentage", bill.TaxPercentage);
+                updateCommand.Parameters.AddWithValue("@TaxAmount", bill.TaxAmount);
+                updateCommand.Parameters.AddWithValue("@ShippingAmount", bill.ShippingAmount);
+                updateCommand.Parameters.AddWithValue("@PackingAmount", bill.PackingAmount);
+                updateCommand.Parameters.AddWithValue("@AdjustmentAmount", bill.AdjustmentAmount);
+                updateCommand.Parameters.AddWithValue("@TCSTDSType", (int)bill.TCSTDSType);
+                updateCommand.Parameters.AddWithValue("@TdsTcsPercentage", bill.TdsTcsPercentage);
+                updateCommand.Parameters.AddWithValue("@TdsTcsAmount", bill.TdsTcsAmount);
+                updateCommand.Parameters.AddWithValue("@IsRoundOff", bill.IsRoundOff);
+                updateCommand.Parameters.AddWithValue("@FinalAmount", bill.FinalAmount);
+                updateCommand.Parameters.AddWithValue("@isreceive", bill.IsReceive);
 
                 await updateCommand.ExecuteNonQueryAsync();
 
-                // ❌ Delete existing items for this bill (clean slate approach)
-                var deleteItemsQuery = "DELETE FROM TradeDocumentItems WHERE TradeDocumentsid = @BillId";
+                var deleteItemsQuery = "DELETE FROM TradeDocumentItems WHERE tradedocumentsid = @BillId";
                 using var deleteCommand = new NpgsqlCommand(deleteItemsQuery, connection, transaction);
                 deleteCommand.Parameters.AddWithValue("@BillId", bill.Id);
                 await deleteCommand.ExecuteNonQueryAsync();
 
-                // ➕ Re-insert bill items
                 foreach (var item in bill.BillItems)
                 {
                     if (item.ItemId > 0)
                     {
                         var itemQuery = @"
-                    INSERT INTO TradeDocumentItems (TradeDocumentsid, itemid, serialno, batchno, modelno, expirydate, mfgdate, item, categoryid, quantity, unit, price_per_unit, 
-                                                    discount_percentage, discount_amount, tax, tax_amount, amount)
-                    VALUES (@TradeDocumentsid, @itemid, @serialno, @batchno, @modelno, @expirydate, @mfgdate, @item, @categoryid, @Quantity, @Unit, @PricePerUnit, 
-                            @DiscountPercentage, @DiscountAmount, @Tax, @TaxAmount, @Amount)";
-
+                                        INSERT INTO TradeDocumentItems (tradedocumentsid, itemid, categoryid, serialno, batchno, modelno, 
+                                                                        expirydate, mfgdate, item, quantity, unit, price_per_unit, 
+                                                                        discount_percentage, discount_amount, created_on, tax_amount, 
+                                                                        tax_percentage, total_amount, AddCessAmount)
+                                        VALUES (@TradeDocumentsid, @ItemId, @CategoryId, @SerialNo, @BatchNo, @ModelNo, 
+                                                @ExpiryDate, @MfgDate, @Item, @Quantity, @Unit, @PricePerUnit, 
+                                                @DiscountPercentage, @DiscountAmount, @CreatedOn, @TaxAmount, 
+                                                @TaxPercentage, @TotalAmount, @AddCessAmount)";
+                                        
                         using var itemCommand = new NpgsqlCommand(itemQuery, connection, transaction);
                         itemCommand.Parameters.AddWithValue("@TradeDocumentsid", bill.Id);
-                        itemCommand.Parameters.AddWithValue("@itemid", item.ItemId);
-                        itemCommand.Parameters.AddWithValue("@serialno", item.serialno ?? string.Empty);
-                        itemCommand.Parameters.AddWithValue("@batchno", item.batchno ?? string.Empty);
-                        itemCommand.Parameters.AddWithValue("@modelno", item.modelno ?? string.Empty);
-                        itemCommand.Parameters.AddWithValue("@expirydate", item.expirydate ?? (object)DBNull.Value);
-                        itemCommand.Parameters.AddWithValue("@mfgdate", item.mfgdate ?? (object)DBNull.Value);
-                        itemCommand.Parameters.AddWithValue("@item", item.Item ?? string.Empty);
-                        itemCommand.Parameters.AddWithValue("@categoryid", item.categoryid);
+                        itemCommand.Parameters.AddWithValue("@ItemId", (object?)item.ItemId ?? DBNull.Value);
+                        itemCommand.Parameters.AddWithValue("@CategoryId", (object?)item.categoryid ?? DBNull.Value);
+                        itemCommand.Parameters.AddWithValue("@SerialNo", item.serialno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@BatchNo", item.batchno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@ModelNo", item.modelno ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@ExpiryDate", (object?)item.ExpiryDate ?? DBNull.Value);
+                        itemCommand.Parameters.AddWithValue("@MfgDate", (object?)item.ManufacturingDate ?? DBNull.Value);
+                        itemCommand.Parameters.AddWithValue("@Item", item.Item ?? string.Empty);
                         itemCommand.Parameters.AddWithValue("@Quantity", item.Quantity);
-                        itemCommand.Parameters.AddWithValue("@Unit", item.Unit ?? string.Empty);
+                        itemCommand.Parameters.AddWithValue("@Unit", item.Unit ?? "NONE");
                         itemCommand.Parameters.AddWithValue("@PricePerUnit", item.PricePerUnit);
                         itemCommand.Parameters.AddWithValue("@DiscountPercentage", item.DiscountPercentage);
                         itemCommand.Parameters.AddWithValue("@DiscountAmount", item.DiscountAmount);
-                        itemCommand.Parameters.AddWithValue("@Tax", item.Tax);
+                        itemCommand.Parameters.AddWithValue("@CreatedOn", DateTime.UtcNow);
                         itemCommand.Parameters.AddWithValue("@TaxAmount", item.TaxAmount);
-                        itemCommand.Parameters.AddWithValue("@Amount", item.Amount);
+                        itemCommand.Parameters.AddWithValue("@TaxPercentage", item.TaxPercentage);
+                        itemCommand.Parameters.AddWithValue("@TotalAmount", item.TotalAmount ?? item.TotalAmount);
+                        itemCommand.Parameters.AddWithValue("@AddCessAmount", item.AddCessAmount ?? item.AddCessAmount);
 
                         await itemCommand.ExecuteNonQueryAsync();
                     }

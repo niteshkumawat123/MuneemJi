@@ -104,7 +104,6 @@
                     background: #0056b3;
                 }
 
-        /* Ensure table maintains minimum width to preserve column sizes */
         .items-table {
             width: 100%;
             min-width: 2200px; /* Adjust based on your total column widths */
@@ -298,7 +297,7 @@
                     color: #007bff;
                 }
 
-        /* Style floating textarea */
+
         .floating-textarea {
             width: 100%;
             padding: 12px 16px;
@@ -325,12 +324,7 @@
                     color: #007bff;
                 }
 
-        /* Column Toggle Styles - ADD THIS TO YOUR EXISTING CSS */
-        /*  .column-toggle-container {
-                                    position: relative;
-                                    display: inline-block;
-                                    margin-left: 10px;
-                                } */
+
 
         .column-toggle-btn {
             background: #007bff;
@@ -350,27 +344,7 @@
             .column-toggle-btn:hover {
                 background: #0056b3;
             }
-        /*
-                                .column-dropdown {
-                                    position: absolute;
-                                    top: 35px;
-                                    right: 0;
-                                    background: white;
-                                    border: 1px solid #dee2e6;
-                                    border-radius: 8px;
-                                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                                    min-width: 200px;
-                                    z-index: 9999;
-                                    display: none;
-                                    padding: 10px;
-                                    max-height: 300px;
-                                    overflow-y: auto;
-                                } */
 
-        /*  .column-dropdown.show {
-                                        display: block;
-                                        top: -217.4px;
-                                    } */
 
         .column-option {
             display: flex;
@@ -408,10 +382,7 @@
                 color: #0056b3;
             }
 
-        /* Hidden column class */
-        /*   .hidden-column {
-                                    display: none !important;
-                                } */
+     
 
         .table-header-controls {
             display: flex;
@@ -546,7 +517,6 @@
                 width: 16px;
             }
     </style>
-
     <style>
         .calculatorModal {
             position: fixed;
@@ -697,7 +667,6 @@
                 grid-column: span 2;
             }
 
-        /* Calculator Toggle Button Styles */
         .calculatorToggleBtn {
             position: fixed;
             bottom: 20px;
@@ -738,7 +707,6 @@
         }
     </style>
 
-
 </head>
 <body>
     <div class="container-fluid">
@@ -746,14 +714,19 @@
             @Html.AntiForgeryToken()
             <div class="form-container">
                 <input type="hidden" name="Bill.Id" value=@Model.Bill.Id>
+                <input type="hidden" id="deleteLogoFlag" name="Bill.IsDeleteImage" value="false" />
 
                 <div class="header-top">
                     <div class="sale-toggle">
 
                         <span style="font-size: 21px">Estimate/Quotation</span>
 
-                       
-                        <input type="hidden" id="iscreditinput" name="Bill.IsCredit" value="false">
+                      @*   <div class="toggle-switch" id="paymentToggle">
+
+                            <div class="toggle-slider"></div>
+                        </div> *@
+@*                         <span id="paymentMode">Credit</span>
+ *@                        <input type="hidden" id="iscreditinput" name="Bill.IsCredit" value="false">
 
                     </div>
 
@@ -767,10 +740,9 @@
                                         height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
                                         padding-right: 6px;" aria-label="Close" onclick="closeView()">
                         </button>
-                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index'"
-                                style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
-                                        padding-bottom:7px;padding-top:0px;padding-left:6px;
-                                        padding-right:6px;">
+                        <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Transaction/Index?returnUrl=' + encodeURIComponent(window.location.href)" style=" font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%;
+                                padding-bottom:7px;padding-top:0px;padding-left:6px;
+                                padding-right:6px;">
                         </button>
                     </div>
                 </div>
@@ -823,7 +795,7 @@
                                 <label class="floating-label">Search by Name/Phone</label>
                             </div>
 
-                           
+                       
                         </div>
 
                         <!-- Column 2 -->
@@ -831,48 +803,10 @@
                             <div class="floating-label-container">
                                 <input asp-for="Bill.BillingName" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Billing Name</label>
-                            </div>
-
-                            @* <div class="floating-label-container">
-                                <input asp-for="Bill.ShippingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
-                                <label class="floating-label">Shipping Address</label>
-                            </div> *@
+                            </div>                       
                         </div>
 
-                        <!-- Column 3 -->
-                        @*                         <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;margin-right: 40px;">
- *@                           @*  <div class="floating-label-container">
-                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Phone No.</label>
-                            </div> *@
-
-                        @* @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.CustomerPODetails == true)
-                            {
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.PONo" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">P.O No.</label>
-                                </div>
-
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.PODate" type="date" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">P.O Date</label>
-                                </div>
-                            } *@
-                        @* </div> *@
-
-                        <!-- Column 4 -->
-                        @*  <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 142px;">
-                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.EwayBillNo == true)
-                            {
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.EWayBillNo" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">E-Way Bill No.</label>
-                                </div>
-                            }
-
-
-                        </div> *@
-
+                        
                         <!-- Column 5 -->
                         <div class="col-md-2" style="display: flex; flex-direction: column; gap: 0px;">
                             @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
@@ -896,27 +830,7 @@
                                 </div>
                             }
 
-                            @*   <div class="floating-label-container">
-                                <select asp-for="Bill.PaymentTermId" class="floating-input">
-                                    <option value="">Select Payment Term</option>
-                                    <option value="1">Net 15 Days</option>
-                                    <option value="2">Net 30 Days</option>
-                                    <option value="3">Net 45 Days</option>
-                                    <option value="4">Net 60 Days</option>
-                                    <option value="5">Due on Receipt</option>
-                                    <option value="6">Cash on Delivery</option>
-                                    <option value="7">Advance Payment</option>
-                                    <option value="8">2/10 Net 30</option>
-                                    <option value="9">1/15 Net 30</option>
-                                    <option value="10">End of Month</option>
-                                </select>
-                                <label class="floating-label">Payment Term</label>
-                            </div> *@
-                            @* 
-                            <div class="floating-label-container" id="dueDateContainer">
-                                <input asp-for="Bill.DueDate" type="date" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Due Date</label>
-                            </div> *@
+                         
 
                             <div class="floating-label-container">
                                 <select asp-for="Bill.StateOfSupply" class="floating-select">
@@ -1126,35 +1040,51 @@
                                 {
                                     <tr class="item-row" data-index="@i">
                                         <td class="col-sr-no">@(i + 1)</td>
+
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemCategory == true)
                                         {
                                             <td class="col-category">
-                                                @Html.DropDownListFor(model => model.Bill.BillItems[i].categoryid,
-                                                         new SelectList(Model.DropDownCategory, "Id", "Name"),
-                                                         "-- Select Category --",
-
-                                                         new { @class = "form-control-sm", onchange = "onCategoryChange(this, " + i + ")" })
+                                                <select name="Bill.BillItems[@i].categoryid" class="form-control-sm" onchange="onCategoryChange(this, @i)">
+                                                    <option value="">-- Select Category --</option>
+                                                    @foreach (var category in Model.DropDownCategory)
+                                                    {
+                                                        if (Model.Bill.BillItems[i].categoryid.ToString() == category.Id.ToString())
+                                                        {
+                                                            <option value="@category.Id" selected="selected">@category.Name</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@category.Id">@category.Name</option>
+                                                        }
+                                                    }
+                                                </select>
                                             </td>
                                         }
 
-                                        @* <td class="col-item">
-                                            @Html.DropDownListFor(model => model.Bill.BillItems[i].ItemId,
-                                                     new SelectList(Model.DropDownItem, "Id", "ItemName"),
-                                                     "-- Select Item --",
-                                                     new { @class = "form-control-sm", onchange = "onItemChange(this, " + i + ")" })
-                                        </td> *@
+
 
                                         <td class="col-item">
                                             <div style="position: relative; background-color: white;">
+                                                @{
+                                                    var selectedItem = Model.DropDownItem.FirstOrDefault(x => x.Id == Model.Bill.BillItems[i].ItemId);
+                                                    string displayText = selectedItem != null ? selectedItem.ItemName : "--Select Item--";
+                                                }
                                                 <button type="button" class="form-control-sm" style="border: none;background-color: white;" onclick="toggleItemDropdownPopdorp(@i)" id="itemBtnPopdorp-@i">
-                                                    --Select Item--
+                                                    @displayText
                                                 </button>
                                                 <!-- Hidden select for form submission -->
                                                 <select name="Bill.BillItems[@i].ItemId" id="hiddenSelectPopdorp-@i" style="display: none;">
                                                     <option value="">--Select Item--</option>
                                                     @foreach (var item in Model.DropDownItem)
                                                     {
-                                                        <option value="@item.Id">@item.ItemName</option>
+                                                        @if (item.Id == Model.Bill.BillItems[i].ItemId)
+                                                        {
+                                                            <option value="@item.Id" selected>@item.ItemName</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@item.Id">@item.ItemName</option>
+                                                        }
                                                     }
                                                 </select>
                                             </div>
@@ -1295,139 +1225,9 @@
                     <div class="row">
 
                         <div class="col-md-8">
-                            @* <div class="row">
-
-                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.TransportName == true)
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                            <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
-                                            <label class="floating-label">Transport Name</label>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                                                                <input asp-for="Bill.TransportName" class="floating-input" placeholder=" " />
-                                    <label class="floating-label"></label>
-                                        </div>
-                                    </div>
-                                }
-
-                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryLocation == true)
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                            <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
-                                            <label class="floating-label">Delivery Location</label>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                                                                 <input asp-for="Bill.DeliveryLocation" class="floating-input" placeholder=" " />
-                                    <label class="floating-label"></label>
-                                        </div>
-                                    </div>
-
-                                }
-
-                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field5 == true)
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                            <input asp-for="Bill.Field5" class="floating-input" placeholder=" " />
-                                            <label class="floating-label">Field5</label>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                        </div>
-                                    </div>
-
-                                }
-
-
-
-                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.VehicleNumber == true)
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                            <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
-                                            <label class="floating-label">Vehicle Number</label>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                                                                 <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
-                                    <label class="floating-label"></label>
-                                        </div>
-                                    </div>
-                                }
-
-                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.DeliveryDate == true)
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                            <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
-                                            <label class="floating-label">Delivery Date</label>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                                                                <input asp-for="Bill.DeliveryDate" type="date" class="floating-input" placeholder=" " />
-                                     <label class="floating-label"></label>
-                                        </div>
-                                    </div>
-                                }
-
-                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.Field6 == true)
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                            <input asp-for="Bill.Field6" class="floating-input" placeholder=" " />
-                                            <label class="floating-label">Field6</label>
-                                        </div>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-md-4">
-                                        <div class="floating-label-container">
-                                                                                <input asp-for="Bill.VehicleNumber" class="floating-input" placeholder=" " />
-                                     <label class="floating-label"></label>
-                                        </div>
-                                    </div>
-
-                                }
-
-                            </div> *@
+                           
                             <div class="row">
-                                @*  <div class="col-md-6">
-                                    <div class="floating-label-container">
-                                        <select asp-for="Bill.PaymentType" class="floating-select">
-                                            <option value="">Select Payment Type</option>
-                                            @foreach (var payment in Model.PaymentTypes)
-                                            {
-                                                <option value="@payment">@payment</option>
-                                            }
-                                        </select>
-                                        <label class="floating-label">Payment Type</label>
-                                    </div>
-                                </div> *@
+                             
                                 <div class="col-md-6">
                                     <div class="floating-label-container">
                                         <input asp-for="Bill.Description" class="floating-input" placeholder=" " />
@@ -1436,19 +1236,33 @@
                                 </div>
 
                                 <div class="col-md-6">
-                                    <div class="floating-label-container upload-area-imgshow" style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;" onclick="document.querySelector('input[name=\'Bill.imageFile\']').click()">
-                                        <span class="upload-label-imgshow" style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">Add Image</span>
-                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*" onchange="previewImage(this)" style="display: none;" />
+                                    <div class="floating-label-container upload-area-imgshow"
+                                         style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;"
+                                         onclick="document.querySelector('input[name=\'Bill.imageFile\']').click()">
+
+                                        <span class="upload-label-imgshow"
+                                              style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">
+                                            Add Image
+                                        </span>
+
+                                        <input type="file" name="Bill.imageFile" class="floating-input" accept="image/*"
+                                               onchange="previewImage(this)" style="display: none;" />
+
                                         <div class="upload-content-imgshow">
                                             <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
                                             <div style="color: #007bff; font-weight: 500;">Upload</div>
+                                            <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">Click to browse files</div>
                                         </div>
 
+
                                         <div class="image-preview-imgshow" style="display: none;">
-                                            <img id="preview-img-imgshow" src="" alt="Preview" style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
+                                            <img id="preview-img-imgshow" src="" alt="Preview"
+                                                 style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
                                             <div id="image-name-imgshow" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
                                             <div style="margin-top: 8px;">
-                                                <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+                                                <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                                    Delete
+                                                </button>
                                             </div>
                                         </div>
 
@@ -1458,12 +1272,7 @@
 
 
 
-                                @*  <div class="col-md-6">
-                                    <div class="floating-label-container">
-                                        <input type="file" name="Bill.DocumentPath" class="floating-input" accept="image/*" />
-                                        <label class="floating-label">Add Document</label>
-                                    </div>
-                                </div> *@
+                              
 
 
                             </div>
@@ -1490,11 +1299,11 @@
                                             <label>Discount (%)</label>
                                         </div>
                                         <div class="" style="width: 79px;">
-                                            <input type="number" name="Bill.DiscountPercentage" class="form-control form-control-sm total-discount" onchange="updateGrandTotal()" value="0">
+                                            <input type="number" name="Bill.DiscountPercentage" class="form-control form-control-sm total-discount" onchange="updateGrandTotal()" value="@Model.Bill.DiscountPercent">
                                         </div>
                                         <div>-</div>
                                         <div class="" style="width: 75px;">
-                                            <input type="number" name="Bill.DiscountAmount" class="form-control form-control-sm total-discountvalue" readonly value="0">
+                                            <input type="number" name="Bill.DiscountAmount" class="form-control form-control-sm total-discountvalue" readonly value="@Model.Bill.DiscountAmount">
                                         </div>
                                     </div>
 
@@ -1528,7 +1337,7 @@
                                         </div>
 
                                         <div class="" style="width: 79px;">
-                                            <input type="number" name="Bill.ShippingAmount" class="form-control form-control-sm shipping-value" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.ShippingAmount" class="form-control form-control-sm shipping-value" onchange="updateGrandTotal()" value="@Model.Bill.ShippingAmount" />
                                         </div>
 
                                         <div style="width: 97px;text-align: right;">
@@ -1547,7 +1356,7 @@
                                         </div>
 
                                         <div class="" style="width: 79px;">
-                                            <input type="number" name="Bill.PackingAmount" class="form-control form-control-sm packing-value" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.PackingAmount" class="form-control form-control-sm packing-value" onchange="updateGrandTotal()" value="@Model.Bill.PackingAmount" />
                                         </div>
 
                                         <div style="width: 97px;text-align: right;">
@@ -1565,7 +1374,7 @@
                                         </div>
 
                                         <div class="" style="width: 79px;">
-                                            <input type="number" name="Bill.AdjustmentAmount" class="form-control form-control-sm adjustment-value" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.AdjustmentAmount" class="form-control form-control-sm adjustment-value" onchange="updateGrandTotal()" value="@Model.Bill.AdjustmentAmount" />
                                         </div>
 
                                         <div style="width: 97px;text-align: right;">
@@ -1646,7 +1455,7 @@
                                             Received
                                         </div>
                                         <div class="" style="width: 140px;">
-                                            <input type="number" name="Bill.paidReciveamount" class="form-control form-control-sm received-amount" onchange="updateGrandTotal()" value="0" />
+                                            <input type="number" name="Bill.paidReciveamount" class="form-control form-control-sm received-amount" onchange="updateGrandTotal()" value="@Model.Bill.paidReciveamount" />
 
                                         </div>
                                     </div>
@@ -1686,7 +1495,7 @@
                 {
                     <div class="action-buttons">
                         <button type="button" class="btn-share">Share ▼</button>
-                        <button type="submit" class="btn-edit">Edit</button>
+                        <button type="button" class="btn-save" onclick="showSaveConfirmation()">Edit</button>
                     </div>
                 }
                 @if (Model.ViewTypeId == (int)ViewTypeEnum.Create)
@@ -1708,7 +1517,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="btn-save">Save</button>
+
+                        <button type="button" class="btn-save" onclick="showSaveConfirmation()">Save</button>
                     </div>
                 }
 
@@ -1718,17 +1528,12 @@
 
     <script>
 
-
+        debugger;
          var itemOptions =  @Html.Raw(Json.Serialize(Model.DropDownItem));
          var CategoryOptions =  @Html.Raw(Json.Serialize(Model.DropDownCategory));
          let itemIndex =  @Model.Bill.BillItems.Count;
 
-        //  let itemDropdown = `<select name="Bill.BillItems[${itemIndex}].ItemId" class="form-control-sm">`;
-        // itemDropdown += `<option value="">-- Select Item --</option>`;
-        // itemOptions.forEach(item => {
-        //     itemDropdown += `<option value="${item.id}">${item.itemName}</option>`;
-        // });
-        // itemDropdown += `</select>`;
+
 
                 let itemDropdown = `
                          <div style="position: relative; background-color: white;">
@@ -1787,9 +1592,10 @@
             let rowHTML = `<td class="col-sr-no">${itemIndex + 1}</td>`
             if(itemSettings.category)
             {
+                debugger;
               rowHTML += `<td class="col-category">${categoryDropdown.replace('ITEMINDEX', itemIndex).replace('ItemId', 'CategoryId')}</td>`;
             }
-               // rowHTML += `<td class="col-item">${itemDropdown.replace('ITEMINDEX', itemIndex)}</td>`;
+
                rowHTML += `<td class="col-item">${itemDropdown}</td>`;
             if(itemSettings.itemcode)
             {
@@ -1800,7 +1606,7 @@
               rowHTML += `<td class="col-hsn"><input name="Bill.BillItems[${itemIndex}].HSNCode" type="text" class="form-control-sm" placeholder="HSN Code" /></td>`;
             }
 
-            // Conditional fields
+
             if (itemSettings.serialNoTracking) {
                 rowHTML += `<td class="col-serial"><input name="Bill.BillItems[${itemIndex}].SerialNumber" type="text" class="form-control-sm" placeholder="Serial No." /></td>`;
             }
@@ -1831,7 +1637,7 @@
                 rowHTML += `<td class="col-free-qty"><input name="Bill.BillItems[${itemIndex}].FreeQuantity" type="number" step="0.01" class="form-control-sm" placeholder="Free Qty" /></td>`;
             }
 
-            // Unit dropdown
+
             let unitDropdown = `<select name="Bill.BillItems[${itemIndex}].Unit" class="form-control-sm">`;
 
 
@@ -1853,7 +1659,7 @@
             rowHTML += `<td class="col-amount1"><input name="Bill.BillItems[${itemIndex}].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly /></td>`;
 
             if (itemSettings.itemWiseTax) {
-                       // Check if this is an existing row or new row
+
                         let existingElement = document.querySelector(`[name="Bill.BillItems[${itemIndex}].TaxPercentage"]`);
                         let currentTax = existingElement?.value || null;
                         if (currentTax === "") currentTax = null;
@@ -1908,9 +1714,9 @@
             const afterDiscount = subtotal - discountAmount;
 
             let taxRate = 0;
-            // if (taxSelect && taxSelect !== 'Select') {
+
                 taxRate = parseFloat(taxSelect) || 0;
-            // }
+
 
             const taxAmount = afterDiscount * (taxRate / 100);
             const finalAmount = afterDiscount + taxAmount + CessAmount;
@@ -2016,45 +1822,18 @@
 
 
 
-                         //  function showColumnSettings()
-                         // {
-                         //     debugger;
-                         //    const dropdown = document.getElementById('columnSettings');
-                         //    const button = document.querySelector('th.col-action .column-toggle-btn'); // Changed this line
-                         //    dropdown.classList.toggle('show');
-                         //    if (dropdown.classList.contains('show')) {
-                         //        const buttonRect = button.getBoundingClientRect();
-                         //        dropdown.style.position = 'absolute';
-                         //        dropdown.style.top = (buttonRect.bottom + 5) + 'px';
-                         //        dropdown.style.left = (buttonRect.right - 200) + 'px';
-                         //    }
-                         // }
-
-
                function closeView() {
-                       window.location.href = '/Web/Home/Index'; // Or your desired controller/action
+                       window.location.href = '/Web/Home/Index';
                }
 
-                // function toggleColumn(columnClass, isChecked) {
-                //          const columns = document.querySelectorAll('.' + columnClass);
-                //          columns.forEach(column => {
-                //                 if (isChecked) {
-                //                     column.classList.remove('hidden-column');
-                //                 } else {
-                //                     column.classList.add('hidden-column');
-                //                 }
-                //          });
-                //  }
 
 
-                document.addEventListener('click', function(event) {
+          document.addEventListener('click', function(event) {
 
             const button = document.querySelector('th.col-action .column-toggle-btn');
             const dropdown = document.getElementById('columnSettings');
 
-            // if (!button.contains(event.target) && !dropdown.contains(event.target)) {
-            //     dropdown.classList.remove('show');
-            // }
+
         });
     </script>
 
@@ -2087,23 +1866,7 @@
                     const popoverElement = document.querySelector('.popover');
                     if (popoverElement) {
                         const checkboxes = popoverElement.querySelectorAll('input[type="checkbox"]');
-                        // checkboxes.forEach(checkbox => {
-                        //     checkbox.addEventListener('change', function() {
-                        //         const columnClass = this.getAttribute('data-column');
-                        //         if (columnClass) {
-                        //             toggleColumnFromPopover(columnClass, this.checked);
-                        //         }
-                        //     });
-                        // });
 
-                        // Handle save button in popover
-                        // const saveBtn = popoverElement.querySelector('.btn-primary');
-                        // if (saveBtn) {
-                        //     saveBtn.addEventListener('click', function() {
-                        //         saveColumnSettingsFromPopover();
-                        //         popover.hide();
-                        //     });
-                        // }
                     }
                 });
 
@@ -2180,21 +1943,7 @@
                 alert("An error occurred while saving settings: " + error.message);
             });
         }
-                // Define the toggleColumn function
-        // function toggleColumn(columnClass, isChecked) {
-        //     const columns = document.querySelectorAll('.' + columnClass);
 
-        //     columns.forEach(column => {
-        //         if (isChecked) {
-        //             column.classList.remove('hidden-column');
-        //         } else {
-        //             column.classList.add('hidden-column');
-        //         }
-        //     });
-        // }
-        //         function toggleColumnFromPopover(columnClass, isChecked) {
-        //     toggleColumn(columnClass, isChecked);
-        // }
                function saveColumnSettings() {
 
             // Get checkboxes from the column settings container (not from popover)
@@ -2240,7 +1989,7 @@
             .then(data => {
                 if (data.success) {
                     if (data.redirectUrl) {
-                        window.location.href = '/Sales/Create';
+                        window.location.href = '/Estimate_Quotations/Create';
                     } else {
                         // Hide the settings container after successful save
                         document.getElementById('columnSettingsContainer').style.display = 'none';
@@ -2258,40 +2007,57 @@
 
     </script>
     <script>
-                      function previewImage(input) {
-            const container = input.closest('.upload-area-imgshow');
-            const uploadContent = container.querySelector('.upload-content-imgshow');
-            const preview = container.querySelector('.image-preview-imgshow');
-            const img = document.getElementById('preview-img-imgshow');
-            const imageName = document.getElementById('image-name-imgshow');
-            const label = container.querySelector('.upload-label-imgshow');
 
-            if (input.files && input.files[0]) {
+        function previewImage(input) {
+            debugger;
+            const file = input.files[0];
+            if (file) {
                 const reader = new FileReader();
-
                 reader.onload = function(e) {
-                    img.src = e.target.result;
-                    imageName.textContent = input.files[0].name; // Add this line
-                    uploadContent.style.display = 'none';
-                    preview.style.display = 'block';
-                    label.style.color = '#007bff';
-                }
-
-                reader.readAsDataURL(input.files[0]);
+                    document.querySelector('.upload-content-imgshow').style.display = 'none';
+                    document.querySelector('.image-preview-imgshow').style.display = 'block';
+                    document.getElementById('preview-img-imgshow').src = e.target.result;
+                    document.getElementById('image-name-imgshow').textContent = file.name;
+                    document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
+                    document.getElementById('deleteLogoFlag').value = 'false';
+                };
+                reader.readAsDataURL(file);
             }
         }
+                function setLogoFromData(imageUrl, imageName) {
+            document.querySelector('.upload-content-imgshow').style.display = 'none';
+            document.querySelector('.image-preview-imgshow').style.display = 'block';
+            document.getElementById('preview-img-imgshow').src = imageUrl;
+            document.getElementById('image-name-imgshow').textContent = imageName || 'Loaded Image';
+            document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
+            document.getElementById('deleteLogoFlag').value = 'false';
+        }
+
 
         function removeImage(event) {
-            event.stopPropagation();
-            const input = document.querySelector('input[name="Bill.imageFile"]');
-            const container = input.closest('.upload-area-imgshow');
-            const uploadContent = container.querySelector('.upload-content-imgshow');
-            const preview = container.querySelector('.image-preview-imgshow');
-
-            input.value = '';
-            preview.style.display = 'none';
-            uploadContent.style.display = 'block';
+            debugger;
+              event.stopPropagation();
+              document.querySelector('input[name="Bill.imageFile"]').value = '';
+             document.querySelector('.upload-content-imgshow').style.display = 'block';
+             document.querySelector('.image-preview-imgshow').style.display = 'none';
+             document.getElementById('preview-img-imgshow').src = '';
+             document.getElementById('image-name-imgshow').textContent = '';
+             document.querySelector('.upload-area-imgshow').style.borderColor = 'lightgray';
+             document.getElementById('deleteLogoFlag').value = 'true';
         }
+            document.addEventListener('DOMContentLoaded', function() {
+            var logoPath = '@Html.Raw(Model.Bill.ImagePath ?? "")';
+
+            // If logo exists, display it
+            if (logoPath && logoPath !== '') {
+                var logoUrl = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
+                var logoFileName = logoPath.split('/').pop();
+                setLogoFromData(logoUrl, logoFileName);
+            }
+
+
+        });
+
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -2396,16 +2162,32 @@
             document.body.appendChild(dropdown);
           }
 
-        function selectItemFromTablePopdorp(index, itemId, itemName) {
+                function selectItemFromTablePopdorp(index, itemId, itemName) {
             // Update button text
+            debugger;
             const button = document.getElementById(`itemBtnPopdorp-${index}`);
-            button.textContent = itemName;
+            if (button) {
+                button.textContent = itemName;
+            }
 
             // Update hidden select
             const hiddenSelect = document.getElementById(`hiddenSelectPopdorp-${index}`);
-            hiddenSelect.value = itemId;
+            if (hiddenSelect) {
+                hiddenSelect.value = itemId;
 
-                autoFillItemData(index, itemId);
+                // Mark the selected option
+                const options = hiddenSelect.querySelectorAll('option');
+                options.forEach(option => {
+                    if (option.value === itemId) {
+                        option.selected = true;
+                    } else {
+                        option.selected = false;
+                    }
+                });
+            }
+
+            // Auto-fill item data
+            autoFillItemData(index, itemId);
 
             // Remove dropdown
             const dropdown = document.getElementById('floatingDropdownPopdorp');
@@ -2413,14 +2195,36 @@
                 dropdown.remove();
             }
 
-            // Call your existing function
-            onItemChange(hiddenSelect, index);
+            // Trigger change event
+            if (hiddenSelect) {
+                onItemChange(hiddenSelect, index);
+            }
+        }
+                function initializeSelectedItems() {
+            document.querySelectorAll('.item-row').forEach((row, index) => {
+                const hiddenSelect = row.querySelector(`select[id="hiddenSelectPopdorp-${index}"]`);
+                const button = row.querySelector(`button[id="itemBtnPopdorp-${index}"]`);
+
+                if (hiddenSelect && button) {
+                    const selectedOption = hiddenSelect.querySelector('option:checked') || hiddenSelect.querySelector('option[selected]');
+                    if (selectedOption && selectedOption.value) {
+                        // Update button text with selected item name
+                        button.textContent = selectedOption.textContent;
+
+                        // Trigger auto-fill for the selected item
+                        const selectedItemId = selectedOption.value;
+                        if (selectedItemId) {
+                            autoFillItemData(index, selectedItemId);
+                        }
+                    }
+                }
+            });
         }
 
         function showAddItemFormPopdorp(index) {
 
 
-            window.location.href='/Web/billitem/create';
+            window.location.href='/Web/items/create';
 
         }
 
@@ -2439,8 +2243,7 @@
             }
         });
 
-                function autoFillItemData(rowIndex, itemId) {
-            // Find the selected item from itemOptions
+                              function autoFillItemData(rowIndex, itemId) {
             const selectedItem = itemOptions.find(item => item.id == itemId);
             if (!selectedItem) return;
 
@@ -2463,18 +2266,42 @@
                 mrpInput.value = selectedItem.mrp;
             }
 
+            // Only auto-fill price if current value is empty or 0
             const priceInput = row.querySelector('input[name*="PricePerUnit"]');
-            if (priceInput && selectedItem.salePrice) {
-                priceInput.value = selectedItem.salePrice;
+            if (priceInput) {
+                const currentPrice = parseFloat(priceInput.value) || 0;
+                if (currentPrice === 0 && selectedItem.salePrice) {
+                    priceInput.value = selectedItem.salePrice;
+                }
+                // If currentPrice is not 0, keep the existing value from database
             }
 
-             const Qty = row.querySelector('input[name*="Quantity"]');
-            if (Qty) {
-                Qty.value = 1;
+            // Only set quantity to 1 if it's empty or 0
+            const qtyInput = row.querySelector('input[name*="Quantity"]');
+            if (qtyInput && (!qtyInput.value || qtyInput.value == 0)) {
+                qtyInput.value = 1;
             }
 
             calculateItemAmount(rowIndex);
         }
+
+
+
+
+            document.addEventListener('DOMContentLoaded', function() {
+
+                document.querySelectorAll('.item-row').forEach((row, index) => {
+                calculateItemAmount(index);
+                });
+
+               if (typeof initializeSelectedItems === 'function') {
+                    initializeSelectedItems();
+               }
+
+                 initializeDisplayValues();
+
+                 updateGrandTotal();
+            });
 
     </script>
 
@@ -2513,6 +2340,42 @@
                     <button class="calculatorBtn calculatorNumber calculatorZero" onclick="calculatorAppendNumber('0')">0</button>
                     <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendDecimal()">.</button>
                     <button class="calculatorBtn calculatorEquals" onclick="calculatorCalculate()">=</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalTitle">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="confirmationModalBody">
+                    Are you sure you want to proceed?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" id="confirmationModalYes">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalTitle">Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="messageModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="redirectToIndex()">OK</button>
                 </div>
             </div>
         </div>
@@ -2696,6 +2559,123 @@
                 calculatorClearEntry();
             }
         });
+
+               function initializeDisplayValues() {
+            console.log('Initializing display values...');
+
+            // Debug shipping
+            const shippingInput = document.querySelector('input[name="Bill.ShippingAmount"]');
+            const shippingShow = document.querySelector('.shipping-show');
+            console.log('Shipping input:', shippingInput);
+            console.log('Shipping input value:', shippingInput ? shippingInput.value : 'Element not found');
+            console.log('Shipping show element:', shippingShow);
+
+            if (shippingInput && shippingShow) {
+                const shippingValue = parseFloat(shippingInput.value) || 0;
+                console.log('Parsed shipping value:', shippingValue);
+                shippingShow.textContent = shippingValue.toFixed(2);
+                console.log('Set shipping show text to:', shippingValue.toFixed(2));
+            }
+
+            // Debug packing
+            const packingInput = document.querySelector('input[name="Bill.PackingAmount"]');
+            const packingShow = document.querySelector('.packing-show');
+            console.log('Packing input:', packingInput);
+            console.log('Packing input value:', packingInput ? packingInput.value : 'Element not found');
+            console.log('Packing show element:', packingShow);
+
+            if (packingInput && packingShow) {
+                const packingValue = parseFloat(packingInput.value) || 0;
+                console.log('Parsed packing value:', packingValue);
+                packingShow.textContent = packingValue.toFixed(2);
+                console.log('Set packing show text to:', packingValue.toFixed(2));
+            }
+
+            // Debug adjustment
+            const adjustmentInput = document.querySelector('input[name="Bill.AdjustmentAmount"]');
+            const adjustmentShow = document.querySelector('.adjustment-show');
+            console.log('Adjustment input:', adjustmentInput);
+            console.log('Adjustment input value:', adjustmentInput ? adjustmentInput.value : 'Element not found');
+            console.log('Adjustment show element:', adjustmentShow);
+
+            if (adjustmentInput && adjustmentShow) {
+                const adjustmentValue = parseFloat(adjustmentInput.value) || 0;
+                console.log('Parsed adjustment value:', adjustmentValue);
+                adjustmentShow.textContent = adjustmentValue.toFixed(2);
+                console.log('Set adjustment show text to:', adjustmentValue.toFixed(2));
+            }
+
+            // Debug discount
+            const discountInput = document.querySelector('input[name="Bill.DiscountPercentage"]');
+            const discountValueInput = document.querySelector('input[name="Bill.DiscountAmount"]');
+            console.log('Discount input:', discountInput);
+            console.log('Discount input value:', discountInput ? discountInput.value : 'Element not found');
+            console.log('Discount value input:', discountValueInput);
+
+            if (discountInput && discountValueInput) {
+                const discountPercent = parseFloat(discountInput.value) || 0;
+                console.log('Parsed discount percent:', discountPercent);
+                if (discountPercent > 0) {
+                    console.log('Calling updateGrandTotal() because discount > 0');
+                    updateGrandTotal();
+                }
+            }
+        }
+                function showSaveConfirmation() {
+            document.getElementById('confirmationModalTitle').textContent = 'Confirm Save';
+            document.getElementById('confirmationModalBody').textContent = 'Are you sure you want to save?';
+
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            confirmModal.show();
+
+            document.getElementById('confirmationModalYes').onclick = function() {
+                confirmModal.hide();
+                submitForm();
+            };
+        }
+
+        function showCancelConfirmation() {
+            document.getElementById('confirmationModalTitle').textContent = 'Confirm Cancel';
+            document.getElementById('confirmationModalBody').textContent = 'Are you sure you want to cancel? Any unsaved changes will be lost.';
+
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            confirmModal.show();
+
+            document.getElementById('confirmationModalYes').onclick = function() {
+                confirmModal.hide();
+                window.location.href = '/Web/Estimate_Quotations/Index';
+            };
+        }
+                function submitForm() {
+            const form = document.getElementById('billForm');
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                showMessageModal(data.success, data.message);
+            })
+            .catch(error => {
+                showMessageModal(false, 'An error occurred while saving.');
+            });
+        }
+
+        function showMessageModal(isSuccess, message) {
+            const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+            document.getElementById('messageModalTitle').textContent = isSuccess ? 'Success' : 'Error';
+            document.getElementById('messageModalBody').textContent = message;
+            document.getElementById('messageModal').querySelector('.modal-header').style.backgroundColor = isSuccess ? '#28a745' : '#dc3545';
+            document.getElementById('messageModal').querySelector('.modal-header').style.color = 'white';
+            messageModal.show();
+        }
+
+        function redirectToIndex() {
+            window.location.href = '/Web/Estimate_Quotations/Index';
+        }
+
     </script>
 
 </body>

@@ -128,18 +128,24 @@
         padding: 10px 30px;
         border-radius: 4px;
     }
+
+    .upload-area-imgshow:hover {
+        border-color: #0056b3;
+        background: #f0f4ff;
+    }
 </style>
 
 <div class="container-fluid">
     <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
         <div class="form-container">
+            <input type="hidden" id="deleteLogoFlag" name="OtherIncomeView.IsDeleteImage" value="false" />
 
             <!-- Search Section -->
             <div class="search-section">
                 <div class="row">
                     <div class="col-md-2">
                         <label>Category</label>
-                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="OtherIncomeView.CategoryId">
+                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="OtherIncomeView.IncomeCategoryId">
                             <option value="">Select</option>
                             @if (Model.Categories != null)
                             {
@@ -222,15 +228,42 @@
                             <option value="Cash">Cash</option>
                             <option value="Check">Check</option>
                         </select>
-                        <a href="#" style="color: #007bff; font-size: 12px;">+ Add Payment type</a>
                     </div>
                     <div class="col-md-3">
                         <label>ADD DESCRIPTION</label>
                         <textarea asp-for="OtherIncomeView.Description" class="form-control form-control-sm" rows="2" placeholder="Add description"></textarea>
                     </div>
                     <div class="col-md-3">
-                        <label>ADD IMAGE</label>
-                        <input type="file" name="imageFile" class="form-control form-control-sm" accept="image/*" />
+                        <div class="floating-label-container upload-area-imgshow"
+                             style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;"
+                             onclick="document.querySelector('input[name=\'OtherIncomeView.ImageUrl\']').click()">
+
+                            <span class="upload-label-imgshow"
+                                  style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">
+                                Add Image
+                            </span>
+
+                            <input type="file" name="OtherIncomeView.ImageUrl" class="floating-input" accept="image/*"
+                                   onchange="previewImage(this)" style="display: none;" />
+
+                            <div class="upload-content-imgshow">
+                                <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
+                                <div style="color: #007bff; font-weight: 500;">Upload</div>
+                                <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">Click to browse files</div>
+                            </div>
+
+                            <div class="image-preview-imgshow" style="display: none;">
+                                <img id="preview-img-imgshow" src="" alt="Preview"
+                                     style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
+                                <div id="image-name-imgshow" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
+                                <div style="margin-top: 8px;">
+                                    <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                     <div class="col-md-3">
                         <div class="checkbox-container">
@@ -246,11 +279,48 @@
             <!-- Action Buttons -->
             <div class="action-buttons">
                 <button type="button" class="btn-share">Share ▼</button>
-                <button type="submit" class="btn-save">Save</button>
+                <button type="button" class="btn-save" onclick="showSaveConfirmation()">Save</button>
             </div>
 
         </div>
     </form>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalTitle">Confirm Action</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="confirmationModalBody">
+                    Are you sure you want to proceed?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-primary" id="confirmationModalYes">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="messageModalTitle">Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="messageModalBody">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="redirectToIndex()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -327,7 +397,7 @@
             grandTotalElement.textContent = total.toFixed(2);
         }
 
-        const roundOffCheckbox = document.querySelector('input[name="OtherIncomeView.RoundOff"]');
+        const roundOffCheckbox = document.querySelector('input[name="OtherIncomeView.IsRoundOff"]');
         const roundOffAmountElement = document.getElementById('roundOffAmount');
         const finalTotalElement = document.getElementById('finalTotal');
 
@@ -341,7 +411,6 @@
         }
     }
 
-    // Initialize calculations on page load
     document.addEventListener('DOMContentLoaded', function() {
         // Calculate initial amounts for existing rows
         const existingRows = document.querySelectorAll('.item-row');
@@ -352,10 +421,101 @@
             }
         });
 
-        // Handle round off checkbox change
-        const roundOffCheckbox = document.querySelector('input[name="OtherIncomeView.RoundOff"]');
+        const roundOffCheckbox = document.querySelector('input[name="OtherIncomeView.IsRoundOff"]');
         if (roundOffCheckbox) {
             roundOffCheckbox.addEventListener('change', updateGrandTotal);
         }
     });
+</script>
+
+<script>
+    function previewImage(input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('.upload-content-imgshow').style.display = 'none';
+                document.querySelector('.image-preview-imgshow').style.display = 'block';
+                document.getElementById('preview-img-imgshow').src = e.target.result;
+                document.getElementById('image-name-imgshow').textContent = file.name;
+                document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
+                document.getElementById('deleteLogoFlag').value = 'false';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function setLogoFromData(imageUrl, imageName) {
+        document.querySelector('.upload-content-imgshow').style.display = 'none';
+        document.querySelector('.image-preview-imgshow').style.display = 'block';
+        document.getElementById('preview-img-imgshow').src = imageUrl;
+        document.getElementById('image-name-imgshow').textContent = imageName || 'Loaded Image';
+        document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
+        document.getElementById('deleteLogoFlag').value = 'false';
+    }
+
+    function removeImage(event) {
+        event.stopPropagation();
+        document.querySelector('input[name="OtherIncomeView.imageFile"]').value = '';
+        document.querySelector('.upload-content-imgshow').style.display = 'block';
+        document.querySelector('.image-preview-imgshow').style.display = 'none';
+        document.getElementById('preview-img-imgshow').src = '';
+        document.getElementById('image-name-imgshow').textContent = '';
+        document.querySelector('.upload-area-imgshow').style.borderColor = 'lightgray';
+        document.getElementById('deleteLogoFlag').value = 'true';
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var logoPath = '@Html.Raw(Model.OtherIncomeView.BaseImageUrl ?? "")';
+
+        // If logo exists, display it
+        if (logoPath && logoPath !== '') {
+            var logoUrl = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
+            var logoFileName = logoPath.split('/').pop();
+            setLogoFromData(logoUrl, logoFileName);
+        }
+    });
+
+    function showSaveConfirmation() {
+        document.getElementById('confirmationModalTitle').textContent = 'Confirm Save';
+        document.getElementById('confirmationModalBody').textContent = 'Are you sure you want to save?';
+
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+        confirmModal.show();
+
+        document.getElementById('confirmationModalYes').onclick = function() {
+            confirmModal.hide();
+            submitForm();
+        };
+    }
+
+    function submitForm() {
+        const form = document.getElementById('billForm');
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            showMessageModal(data.success, data.message);
+        })
+        .catch(error => {
+            showMessageModal(false, 'An error occurred while saving.');
+        });
+    }
+
+    function showMessageModal(isSuccess, message) {
+        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+        document.getElementById('messageModalTitle').textContent = isSuccess ? 'Success' : 'Error';
+        document.getElementById('messageModalBody').textContent = message;
+        document.getElementById('messageModal').querySelector('.modal-header').style.backgroundColor = isSuccess ? '#28a745' : '#dc3545';
+        document.getElementById('messageModal').querySelector('.modal-header').style.color = 'white';
+        messageModal.show();
+    }
+
+    function redirectToIndex() {
+        window.location.href = '/Web/OtherIncome/Index';
+    }
 </script>

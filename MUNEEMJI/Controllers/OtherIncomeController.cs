@@ -16,12 +16,14 @@ namespace MUNEEMJI.Controllers
         private readonly ILogger<BillItemController> _logger;
         string _connectionString = string.Empty;
         private readonly ICompanyTenancy _companyTenancy;
-        public OtherIncomeController(IOtherIncomeRepository billItemService, ILogger<BillItemController> logger, ICompanyTenancy companyTenancy)
+        private readonly IWebHostEnvironment _environment;
+        public OtherIncomeController(IOtherIncomeRepository billItemService, ILogger<BillItemController> logger, ICompanyTenancy companyTenancy, IWebHostEnvironment environment)
         {
             _billItemService = billItemService;
             _logger = logger;
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
             _companyTenancy = companyTenancy;
+            _environment = environment;
         }
 
         [HttpGet]
@@ -49,16 +51,32 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] OtherIncomeModel model)
+        public async Task<IActionResult> Create( OtherIncomeModel model)
         {
             using var db = new NpgsqlConnection(_connectionString);
             var Companyid = _companyTenancy.GetCurrentCompanyId();
             await db.OpenAsync();
-
             using var transaction = await db.BeginTransactionAsync();
-
             try
             {
+                if (model.OtherIncomeView.ImageUrl != null && model.OtherIncomeView.ImageUrl.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "transaction");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + model.OtherIncomeView.ImageUrl.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.OtherIncomeView.ImageUrl.CopyToAsync(fileStream);
+                    }
+
+                    model.OtherIncomeView.BaseImageUrl = "/Web/uploads/transaction/" + uniqueFileName;
+                }
                 int entryId;
 
                 // Insert into income_entries
@@ -72,14 +90,14 @@ namespace MUNEEMJI.Controllers
 
                 using (var cmd = new NpgsqlCommand(insertEntrySql, db, transaction))
                 {
-                    cmd.Parameters.AddWithValue("income_category", model.OtherIncomeView.IncomeCategory);
+                    cmd.Parameters.AddWithValue("income_category", model.OtherIncomeView.IncomeCategory!=null ? model.OtherIncomeView.IncomeCategory:string.Empty);
                     cmd.Parameters.AddWithValue("incomecategoryid", model.OtherIncomeView.IncomeCategoryId);
                     cmd.Parameters.AddWithValue("entry_date", model.OtherIncomeView.EntryDate);
                     cmd.Parameters.AddWithValue("round_off", model.OtherIncomeView.RoundOff);
                     cmd.Parameters.AddWithValue("total", model.OtherIncomeView.Total);
                     cmd.Parameters.AddWithValue("payment_type", model.OtherIncomeView.PaymentType);
                     cmd.Parameters.AddWithValue("description", (object?)model.OtherIncomeView.Description ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("image_url", (object?)model.OtherIncomeView.ImageUrl ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("image_url", (object?)model.OtherIncomeView.BaseImageUrl ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("p_companyid", Companyid);
 
                     object result = await cmd.ExecuteScalarAsync();
@@ -106,12 +124,14 @@ namespace MUNEEMJI.Controllers
                 }
 
                 await transaction.CommitAsync();
-                return Ok(new { success = true, entryId });
+                //return Ok(new { success = true, entryId });
+                return Json(new { success = true, message = "Saved successfully!" });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, new { success = false, message = "An error occurred.", error = ex.Message });
+                //return StatusCode(500, new { success = false, message = "An error occurred.", error = ex.Message });
+                return Json(new { success = false, message = ex.Message });
             }
         }
 

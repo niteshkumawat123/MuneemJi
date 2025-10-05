@@ -21,7 +21,8 @@
         public decimal Total { get; set; }
         public string PaymentType { get; set; }
         public string Description { get; set; }
-        public string ImageUrl { get; set; }
+        public IFormFile ImageUrl { get; set; }
+        public string BaseImageUrl { get; set; }
         public List<IncomeEntryItem> Items { get; set; } = new();
     }
 

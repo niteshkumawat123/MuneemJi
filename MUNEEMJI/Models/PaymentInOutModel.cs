@@ -8,7 +8,7 @@ namespace MUNEEMJI.Models
         public int Id { get; set; }
 
 
-        [Display(Name = "Date")]
+      
         public DateTime Date { get; set; } = DateTime.UtcNow;
 
       
@@ -53,6 +53,10 @@ namespace MUNEEMJI.Models
 
         [Display(Name = "Print/Share")]
         public string PrintShare { get; set; }
+        public decimal Discount { get; set; }
+        public IFormFile ImageFile { get; set; }
+        public string ImagePath { get; set; }
+        public TimeSpan Time { get; set; }
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public int ViewTypeId { get; set; }

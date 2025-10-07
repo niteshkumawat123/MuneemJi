@@ -5,6 +5,9 @@ using System.Data;
 using System.Net.Mail;
 using System.Net;
 using MUNEEMJI.Services;
+using Insight.Database;
+using Microsoft.Data.SqlClient;
+using System.IO;
 
 namespace MUNEEMJI.Controllers
 {
@@ -261,6 +264,155 @@ namespace MUNEEMJI.Controllers
             roles.Add(new RoleOption { RoleId = 6, RoleName = "Stock Keeper" });
 
             return roles;
+        }
+
+        public async Task<IActionResult> DeleteBusiness(int id)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var parameters = new
+                    {
+                        Id = id,
+                        Status = -1,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    var rowsAffected =  connection.ExecuteSql(@"
+                UPDATE businesses 
+                SET status = @Status, 
+                    updated_at = @UpdatedAt
+                WHERE id = @Id 
+               
+            ", parameters);
+
+                  
+                    return Json(new { success = true, message = "User has been Delete Sucessfully!" });
+
+                }
+            }
+            catch (Exception ex)
+            {
+                
+                return Json(new { success = true, message = $"Error deleting business: {ex.Message}" });
+
+            }
+        }
+        public async Task<IActionResult> RestoreBusiness(int id)
+        {
+            try
+            {
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    var parameters = new
+                    {
+                        Id = id,
+                        Status = 1,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+
+                    var rowsAffected = connection.ExecuteSql(@"
+                UPDATE businesses 
+                SET status = @Status, 
+                    updated_at = @UpdatedAt
+                WHERE id = @Id 
+               
+            ", parameters);
+
+
+                    return Json(new { success = true, message = "User has been Restore Sucessfully!" });
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return Json(new { success = true, message = $"Error deleting business: {ex.Message}" });
+
+            }
+        }
+
+        [HttpGet]
+        public IActionResult EditUser(int userId)
+        {
+            var model = new AddUserViewModel();
+
+            try
+            {
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    // Get user details
+                    string userQuery = @"SELECT UserId, FullName, PhoneOrEmail, RoleId, 
+                                        CreatedDate, LastModifiedDate, Status 
+                                        FROM Users WHERE UserId = @UserId";
+
+                    using (NpgsqlCommand cmd = new NpgsqlCommand(userQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@UserId", userId);
+
+                        using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                model.UserId = Convert.ToInt32(reader["UserId"]);
+                                model.FullName = reader["FullName"].ToString();
+                                model.PhoneOrEmail = reader["PhoneOrEmail"].ToString();
+                                model.SelectedRoleId = Convert.ToInt32(reader["RoleId"]);
+                                model.CreatedDate = reader["CreatedDate"] as DateTime?;
+                                model.LastModifiedDate = reader["LastModifiedDate"] as DateTime?;
+                                model.Status = reader["Status"].ToString();
+                            }
+                            else
+                            {
+                                TempData["ErrorMessage"] = "User not found.";
+                                return RedirectToAction("Index");
+                            }
+                        }
+                    }
+
+                    // Get current role name
+                    string roleQuery = "SELECT RoleName FROM Roles WHERE RoleId = @RoleId";
+                    using (SqlCommand cmd = new SqlCommand(roleQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@RoleId", model.SelectedRoleId);
+                        var roleName = cmd.ExecuteScalar();
+                        model.CurrentRoleName = roleName?.ToString() ?? "Unknown Role";
+                    }
+
+                    // Get available roles
+                    model.AvailableRoles = new List<RoleInfo>();
+                    string rolesQuery = "SELECT RoleId, RoleName FROM Roles WHERE IsActive = 1 ORDER BY RoleName";
+
+                    using (SqlCommand cmd = new SqlCommand(rolesQuery, conn))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                model.AvailableRoles.Add(new RoleInfo
+                                {
+                                    RoleId = Convert.ToInt32(reader["RoleId"]),
+                                    RoleName = reader["RoleName"].ToString()
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error loading user: " + ex.Message;
+                return RedirectToAction("Index");
+            }
+
+            return View(model);
         }
     }
 }

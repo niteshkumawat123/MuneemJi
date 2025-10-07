@@ -213,6 +213,18 @@
             transform: translateY(-1px);
         }
 
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+        color: #ffffff;
+    }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+            transform: translateY(-1px);
+        }
+
     .right-side-fields {
         display: flex;
         flex-direction: column;
@@ -290,6 +302,145 @@
         margin-top: 20px;
     }
 
+    /* Confirmation Modal Styles */
+    .payment-confirm-modal {
+        display: none;
+        position: fixed;
+        z-index: 999999 !important;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        align-items: center;
+        justify-content: center;
+    }
+
+        .payment-confirm-modal.show {
+            display: flex !important;
+        }
+
+    .payment-confirm-modal-content {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        max-width: 450px;
+        width: 90%;
+        position: relative;
+        z-index: 1000000 !important;
+    }
+
+    .payment-confirm-modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #007bff;
+        color: white;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+
+    .payment-confirm-modal-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .payment-confirm-modal-body {
+        padding: 30px 20px;
+        font-size: 15px;
+        color: #333;
+    }
+
+        .payment-confirm-modal-body p {
+            margin: 0 0 10px 0;
+        }
+
+        .payment-confirm-modal-body .text-muted {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+    .payment-confirm-modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    /* Success Modal Styles */
+    .payment-success-modal {
+        display: none;
+        position: fixed;
+        z-index: 999999 !important;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        align-items: center;
+        justify-content: center;
+    }
+
+        .payment-success-modal.show {
+            display: flex !important;
+        }
+
+    .payment-success-modal-content {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        max-width: 400px;
+        width: 90%;
+        position: relative;
+        z-index: 1000000 !important;
+    }
+
+    .payment-success-modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .payment-success-modal-header.bg-success {
+            background-color: #28a745;
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .payment-success-modal-header.bg-danger {
+            background-color: #dc3545;
+            color: white;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+    .payment-success-modal-title {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .payment-success-modal-body {
+        padding: 30px 20px;
+        text-align: center;
+        font-size: 15px;
+        color: #333;
+    }
+
+    .payment-success-modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: flex-end;
+    }
+
     @@media (max-width: 768px) {
         .form-row {
             flex-direction: column;
@@ -332,17 +483,18 @@
 
 <div class="modal-header">
     <h3 class="modal-title">Payment-Out</h3>
-    <button type="button" class="modal-close" onclick="closeModal()">×</button>
+    <button type="button" class="modal-close" onclick="if(typeof window.closeParentModal==='function'){window.closeParentModal();}">×</button>
 </div>
 
 <form asp-action="Create" method="post" enctype="multipart/form-data" id="paymentInEditForm">
+    @Html.AntiForgeryToken()
     <div class="modal-body">
         <!-- Main row with Party selection and Receipt info -->
         <div class="form-row main-row">
             <div class="form-group search-field">
                 <label for="PartyId" class="required">Search by Name/Phone *</label>
                 <select name="PartyId" id="PartyId" class="form-control" required>
-                    <option value="">fasdfae</option>
+                    <option value="">Select Party</option>
                     @foreach (var party in ViewBag.Parties)
                     {
                         <option value="@party.Value">@party.Text</option>
@@ -382,8 +534,6 @@
                     </select>
                 </div>
 
-
-
                 <!-- Add Description input -->
                 <div style="margin-bottom: 20px;">
                     <div class="form-group">
@@ -397,25 +547,25 @@
                     <div class="image-upload" onclick="document.getElementById('imageInput').click()" title="Upload Image">
                         📷
                     </div>
-                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <input type="file" id="imageInput" name="ImageFile" accept="image/*" style="display: none;">
                 </div>
             </div>
 
             <!-- Right section with financial fields -->
             <div class="right-section">
                 <div class="financial-field">
-                    <label for="ReceivedPaid">Paid</label>
-                    <input type="number" name="ReceivedPaid" id="ReceivedPaid" class="form-control" step="0.01" oninput="calculateBalance()">
+                    <label for="ReceivedPaid">Received</label>
+                    <input type="number" name="ReceivedPaid" id="ReceivedPaid" class="form-control" step="0.01" value="0" oninput="(function(){ var t=parseFloat(document.getElementById('Total').value)||0; var r=parseFloat(document.getElementById('ReceivedPaid').value)||0; var d=parseFloat(document.getElementById('Discount').value)||0; document.getElementById('Balance').value=(t-r-d).toFixed(2); })()">
                 </div>
 
                 <div class="financial-field">
                     <label for="Discount">Discount</label>
-                    <input type="number" name="Discount" id="Discount" class="form-control" step="0.01" oninput="calculateBalance()">
+                    <input type="number" name="Discount" id="Discount" class="form-control" step="0.01" value="0" oninput="(function(){ var t=parseFloat(document.getElementById('Total').value)||0; var r=parseFloat(document.getElementById('ReceivedPaid').value)||0; var d=parseFloat(document.getElementById('Discount').value)||0; document.getElementById('Balance').value=(t-r-d).toFixed(2); })()">
                 </div>
 
                 <div class="financial-field total-field">
                     <label for="Total">Total</label>
-                    <input type="number" name="Total" id="Total" class="form-control" step="0.01" value="0" oninput="calculateBalance()">
+                    <input type="number" name="Total" id="Total" class="form-control" step="0.01" value="0" oninput="(function(){ var t=parseFloat(document.getElementById('Total').value)||0; var r=parseFloat(document.getElementById('ReceivedPaid').value)||0; var d=parseFloat(document.getElementById('Discount').value)||0; document.getElementById('Balance').value=(t-r-d).toFixed(2); })()">
                 </div>
             </div>
         </div>
@@ -433,42 +583,42 @@
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" onclick="sharePayment()">Share</button>
-        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" onclick="alert('Share functionality')">Share</button>
+        <button type="button" class="btn btn-primary" onclick="(function(){ console.log('Save clicked'); var f=document.getElementById('paymentInEditForm'); if(!f.checkValidity()){f.reportValidity();return;} document.getElementById('paymentConfirmModal').classList.add('show'); })()">Save</button>
     </div>
 </form>
 
-<script>
-    function toggleDescription() {
-        const container = document.getElementById('descriptionContainer');
-        container.classList.toggle('hidden');
-    }
+<!-- Confirmation Modal -->
+<div class="payment-confirm-modal" id="paymentConfirmModal">
+    <div class="payment-confirm-modal-content">
+        <div class="payment-confirm-modal-header">
+            <h5 class="payment-confirm-modal-title">Confirm Save</h5>
+            <button type="button" class="modal-close" style="color: white;" onclick="document.getElementById('paymentConfirmModal').classList.remove('show')">×</button>
+        </div>
+        <div class="payment-confirm-modal-body">
+            <p>Are you sure you want to save this payment?</p>
+            <p class="text-muted">This action will record the payment transaction.</p>
+        </div>
+        <div class="payment-confirm-modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="document.getElementById('paymentConfirmModal').classList.remove('show')">No</button>
+            <button type="button" class="btn btn-primary" onclick="(function(){ console.log('Confirmed'); document.getElementById('paymentConfirmModal').classList.remove('show'); var f=document.getElementById('paymentInEditForm'); var fd=new FormData(f); fetch(f.action,{method:'POST',body:fd}).then(r=>r.json()).then(d=>{ var m=document.getElementById('paymentSuccessModal'); var h=document.getElementById('paymentSuccessModalHeader'); var t=document.getElementById('paymentSuccessModalTitle'); var b=document.getElementById('paymentSuccessModalBody'); if(d.success){h.className='payment-success-modal-header bg-success';t.textContent='Success';}else{h.className='payment-success-modal-header bg-danger';t.textContent='Error';} b.textContent=d.message; m.classList.add('show'); }).catch(e=>{alert('Error: '+e.message);}); })()">Yes, Save</button>
+        </div>
+    </div>
+</div>
 
-    function togglePaymentType() {
-        // Add functionality for additional payment types if needed
-        alert('Add Payment Type functionality would go here');
-    }
+<!-- Success/Error Result Modal -->
+<div class="payment-success-modal" id="paymentSuccessModal">
+    <div class="payment-success-modal-content">
+        <div class="payment-success-modal-header" id="paymentSuccessModalHeader">
+            <h5 class="payment-success-modal-title" id="paymentSuccessModalTitle">Message</h5>
+            <button type="button" class="modal-close" onclick="(function(){ document.getElementById('paymentSuccessModal').classList.remove('show'); if(document.getElementById('paymentSuccessModalHeader').classList.contains('bg-success')){setTimeout(function(){location.reload();},300);} })()">×</button>
+        </div>
+        <div class="payment-success-modal-body" id="paymentSuccessModalBody">
+        </div>
+        <div class="payment-success-modal-footer">
+            <button type="button" class="btn btn-primary" onclick="(function(){ document.getElementById('paymentSuccessModal').classList.remove('show'); if(document.getElementById('paymentSuccessModalHeader').classList.contains('bg-success')){setTimeout(function(){location.reload();},300);} })()">OK</button>
+        </div>
+    </div>
+</div>
 
-    function calculateBalance() {
-        const total = parseFloat(document.getElementById('Total').value) || 0;
-        const received = parseFloat(document.getElementById('ReceivedPaid').value) || 0;
-        const discount = parseFloat(document.getElementById('Discount').value) || 0;
-        const balance = total - received - discount;
-        document.getElementById('Balance').value = balance.toFixed(2);
-    }
-
-    function closeModal() {
-        // Add close modal functionality
-        console.log('Close modal');
-    }
-
-    function sharePayment() {
-        // Add share functionality
-        alert('Share functionality would go here');
-    }
-
-    // Initialize balance calculation on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        calculateBalance();
-    });
-</script>
+<!-- Remove all the script block, we're using inline JavaScript now -->

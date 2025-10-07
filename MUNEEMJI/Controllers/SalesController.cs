@@ -361,7 +361,6 @@ namespace MUNEEMJI.Controllers
 
             }
 
-            return RedirectToAction(nameof(Index));
         }
         public async Task<IActionResult> GetById(int id = 0, int typeid = 0)
         {

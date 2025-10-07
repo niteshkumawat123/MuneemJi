@@ -11,7 +11,7 @@ using Npgsql;
 namespace MUNEEMJI.Controllers
 {
     [Authorize]
-    public class PaymentOutController: Controller
+    public class PaymentOutController : Controller
     {
         private readonly string _connectionString;
         private readonly ICompanyTenancy _tenancy;
@@ -41,7 +41,7 @@ namespace MUNEEMJI.Controllers
                 FROM PaymentInOut p
                 LEFT JOIN parties pt ON p.PartyId = pt.Id where p.companyid =  @p_companyid and moduleid = @p_moduleid
                 ORDER BY p.Date DESC
-            ",new { p_companyid   = CompanyId , p_moduleid  = (int)TradeDocumentTypes.PaymentOut }).ToList();
+            ", new { p_companyid = CompanyId, p_moduleid = (int)TradeDocumentTypes.PaymentOut }).ToList();
 
             return View(paymentInOuts);
         }
@@ -59,11 +59,12 @@ namespace MUNEEMJI.Controllers
             try
             {
                 var CompanyId = _tenancy.GetCurrentCompanyId();
+
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
                     string query = @"
                             INSERT INTO PaymentInOut 
-                            (Date, RefNo, PartyId, CategoryName, Type, Total, ReceivedPaid, Balance, PrintShare, PaymentType, Description, CreatedDate,CompanyId,moduleid)
+                            (Date, RefNo, PartyId, CategoryName, Type, Total, ReceivedPaid, Balance, PrintShare, PaymentType, Description, CreatedDate,companyid,moduleid)
                             VALUES 
                             (@Date, @RefNo, @PartyId, @CategoryName, @Type, @Total, @ReceivedPaid, @Balance, @PrintShare, @PaymentType, @Description, @CreatedDate,@p_companyid,@p_moduleid)
                                 ";
@@ -82,7 +83,7 @@ namespace MUNEEMJI.Controllers
                         PaymentType = model.PaymentType,
                         Description = model.Description,
                         CreatedDate = model.CreatedDate,
-                        p_companyid  = CompanyId,
+                        p_companyid = CompanyId,
                         p_moduleid = (int)TradeDocumentTypes.PaymentOut
                     });
                 }
@@ -92,12 +93,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
-
-            //return Json(new { success = true, message = "Payment-In saved successfully!" });
-
-
-            await LoadViewBag();
-            return PartialView("_Create", model);
+            return Json(new { success = true, message = "Payment saved successfully!" });
         }
 
         [HttpGet]
@@ -119,35 +115,75 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(PaymentInOutModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                using var connection = new SqlConnection(_connectionString);
+                if (ModelState.IsValid)
+                {
+                    using (var connection = new NpgsqlConnection(_connectionString))
+                    {
+                        await connection.OpenAsync();
 
-                await connection.ExecuteSqlAsync(@"
-                    UPDATE PaymentInOut 
-                    SET Date = @Date, RefNo = @RefNo, PartyId = @PartyId, CategoryName = @CategoryName, 
-                        Type = @Type, Total = @Total, ReceivedPaid = @ReceivedPaid, Balance = @Balance, 
-                        PrintShare = @PrintShare, PaymentType = @PaymentType, Description = @Description
-                    WHERE Id = @Id
-                ", model);
+                        var parameters = new
+                        {
+                            Id = model.Id,
+                            Date = DateTime.SpecifyKind(model.Date, DateTimeKind.Utc),
+                            RefNo = model.RefNo,
+                            PartyId = model.PartyId,
+                            CategoryName = model.CategoryName,
+                            Type = model.Type,
+                            Total = model.Total,
+                            ReceivedPaid = model.ReceivedPaid,
+                            Balance = model.Balance,
+                            PrintShare = model.PrintShare,
+                            PaymentType = model.PaymentType,
+                            Description = model.Description,
+                            UpdatedDate = DateTime.UtcNow
+                        };
 
-                return Json(new { success = true, message = "Payment-In updated successfully!" });
+                         connection.ExecuteSql(@"
+                                                        UPDATE paymentinout 
+                                                        SET date = @Date, 
+                                                            refno = @RefNo, 
+                                                            partyid = @PartyId, 
+                                                            categoryname = @CategoryName, 
+                                                            type = @Type, 
+                                                            total = @Total, 
+                                                            receivedpaid = @ReceivedPaid, 
+                                                            balance = @Balance, 
+                                                            printshare = @PrintShare, 
+                                                            paymenttype = @PaymentType, 
+                                                            description = @Description,
+                                                            updateddate = @UpdatedDate
+                                                        WHERE id = @Id
+                                                    ", parameters);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+
             }
 
             await LoadViewBag();
-            return PartialView("_Edit", model);
+            return Json(new { success = true, message = "Payment-Out updated successfully!" });
+
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            using var connection = new SqlConnection(_connectionString);
+            //using var connection = new SqlConnection(_connectionString);
 
-            await connection.ExecuteScalarAsync(@"
+            using (var connection = new NpgsqlConnection(_connectionString))
+            {
+
+                await connection.ExecuteScalarAsync(@"
                 DELETE FROM PaymentInOut WHERE Id = @Id
             ", new { Id = id });
+            }
 
-            return Json(new { success = true, message = "Payment-In deleted successfully!" });
+            return Json(new { success = true, message = "Payment-Out deleted successfully!" });
         }
 
         private async Task LoadViewBag()
@@ -156,7 +192,7 @@ namespace MUNEEMJI.Controllers
             var Companyid = _tenancy.GetCurrentCompanyId();
             var parties = connection.QuerySql<Party>(@"
                 SELECT Id,party_name as Name FROM parties where companyid = @Companyid   ORDER BY party_name 
-            ", new { Companyid  =  Companyid}).ToList();
+            ", new { Companyid = Companyid }).ToList();
 
             ViewBag.Parties = parties.Select(p => new SelectListItem
             {
@@ -166,7 +202,7 @@ namespace MUNEEMJI.Controllers
         }
     }
 
-   
+
 
 }
 

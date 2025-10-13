@@ -391,7 +391,7 @@
                             @foreach (var user in Model)
                             {
                                 <tr>
-                                    <td>@user.BusinessName</td>
+                                    <td>@user.Username</td>
                                     <td>
                                         <i class="bi bi-envelope me-2"></i>@user.Email
                                     </td>
@@ -636,7 +636,8 @@
 
         // Edit user
         window.editUser = function(userId) {
-            window.location.href = `/User/Edit/${userId}`;
+            debugger;
+            window.location.href = `/User/EditUser/${userId}`;
         }
 
         // Show toast notification

@@ -383,8 +383,6 @@
 
 
     function adduserToggleDropdown() {
-
-
         var dropdown = document.getElementById('adduserRoleDropdown');
         var trigger = document.getElementById('adduserDropdownTrigger');
         var isCurrentlyVisible = dropdown.classList.contains('adduser-dropdown-visible');
@@ -408,7 +406,7 @@
     }
 
     function adduserSelectRole(roleId, roleName) {
-       
+       debugger;
 
         var selectedRoleSpan = document.getElementById('adduserSelectedRole');
         var selectedRoleInput = document.getElementById('adduserSelectedRoleId');
@@ -443,8 +441,8 @@
 
     function adduserLoadRolePermissions(roleId) {
    
-
-        fetch('/User/GetRolePermissions?roleId=' + roleId)
+        debugger;
+        fetch('/Web/User/GetRolePermissions?roleId=' + roleId)
             .then(response => response.json())
             .then(permissions => {
                 debugger;
@@ -457,9 +455,10 @@
     }
 
       function adduserLoadRolePermissions(roleId) {
+          debugger;
         console.log('Loading permissions for role:', roleId);
 
-        fetch('/User/GetRolePermissions?roleId=' + roleId)
+        fetch('/Web/User/GetRolePermissions?roleId=' + roleId)
             .then(response => {
                 console.log('Response status:', response.status);
                 console.log('Response ok:', response.ok);
@@ -484,6 +483,7 @@
     }
 
        function updatePermissionsTable(permissions) {
+           debugger;
           
             const tbody = document.getElementById('permissionsTableBody');
             tbody.innerHTML = '';
@@ -492,11 +492,11 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${permission.moduleName}</td>
-                    <td>${permission.canView ? '<span class="permission-check">✓</span>' : '<span class="permission-cross">✗</span>'}</td>
-                    <td>${permission.canCreate ? '<span class="permission-check">✓</span>' : '<span class="permission-na">NA</span>'}</td>
-                    <td>${permission.canEdit ? '<span class="permission-check">✓</span>' : '<span class="permission-na">NA</span>'}</td>
-                    <td>${permission.canShare ? '<span class="permission-check">✓</span>' : '<span class="permission-na">NA</span>'}</td>
-                    <td>${permission.canDelete ? '<span class="permission-check">✓</span>' : '<span class="permission-na">NA</span>'}</td>
+                    <td>${permission.canView ? '<span style="color: #22c55e; font-weight: bold;">✓</span>' : '<span style="color: #ef4444; font-weight: bold;">✗</span>'}</td>
+                    <td>${permission.canCreate ? '<span style="color: #22c55e; font-weight: bold;">✓</span>' : '<span style="color: #ef4444; font-weight: bold;">✗</span>'}</td>
+                    <td>${permission.canEdit ? '<span style="color: #22c55e; font-weight: bold;">✓</span>' : '<span style="color: #ef4444; font-weight: bold;">✗</span>'}</td>
+                    <td>${permission.canShare ? '<span style="color: #22c55e; font-weight: bold;">✓</span>' : '<span style="color: #ef4444; font-weight: bold;">✗</span>'}</td>
+                    <td>${permission.canDelete ? '<span style="color: #22c55e; font-weight: bold;">✓</span>' : '<span style="color: #ef4444; font-weight: bold;">✗</span>'}</td>
                 `;
                 tbody.appendChild(row);
             });

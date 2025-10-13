@@ -1,0 +1,704 @@
+﻿@{
+    ViewData["Title"] = "Receivables Aging Report";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .filter-section {
+            padding: 21px 0px;
+            background-color: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .filter-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 13px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #0288d1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, .date-input {
+            padding: 10px 35px 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #333;
+            background-color: white;
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        .date-input {
+            padding: 10px 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            padding-top: 25px;
+        }
+
+        .icon-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .icon-btn:hover {
+                background-color: #f5f5f5;
+                border-color: #bbb;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            .icon-btn.excel {
+                border-color: #4CAF50;
+            }
+
+                .icon-btn.excel:hover {
+                    background-color: #e8f5e9;
+                }
+
+        .toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            right: 30px;
+            top: 120px;
+        }
+
+            .toggle-btn:hover {
+                background-color: #e0e0e0;
+            }
+
+        .chart-section {
+            padding: 30px;
+            background-color: #f8f9fa;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+            .chart-section.collapsed {
+                max-height: 0;
+                padding: 0 30px;
+                opacity: 0;
+            }
+
+        .chart-container {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            flex: 0 0 200px;
+        }
+
+        .pie-chart {
+            width: 200px;
+            height: 200px;
+            transform: rotate(-90deg);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .chart-total {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+        }
+
+            .chart-total strong {
+                display: block;
+                font-size: 18px;
+                color: #333;
+                margin-top: 5px;
+                font-weight: 600;
+            }
+
+        .legend {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-width: 300px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+            .legend-item:hover {
+                background-color: rgba(0, 0, 0, 0.02);
+            }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .legend-label {
+            font-size: 14px;
+            color: #333;
+            flex: 1;
+        }
+
+        .summary-section {
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            border-top: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .summary-item {
+            font-size: 14px;
+            color: #666;
+        }
+
+            .summary-item strong {
+                font-weight: 600;
+            }
+
+            .summary-item.unused {
+                color: #00897b;
+            }
+
+            .summary-item.payable {
+                color: #e53935;
+            }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 0 30px 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+
+        thead {
+            background-color: #fafafa;
+        }
+
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+        }
+
+            th .filter-icon {
+                margin-left: 6px;
+                color: #999;
+                font-size: 11px;
+                cursor: pointer;
+            }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+        }
+
+            tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+            tbody tr.expandable {
+                cursor: pointer;
+            }
+
+        td {
+            padding: 16px;
+            font-size: 14px;
+            color: #333;
+        }
+
+            td.party-name {
+                color: #0288d1;
+                font-weight: 500;
+            }
+
+            td.amount {
+                text-align: right;
+            }
+
+            td.action {
+                text-align: center;
+            }
+
+        .expand-icon {
+            color: #0288d1;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+            .expand-icon.expanded {
+                transform: rotate(90deg);
+            }
+
+        tfoot {
+            background-color: #f5f5f5;
+            font-weight: 600;
+        }
+
+            tfoot td {
+                padding: 16px;
+                border-top: 2px solid #e0e0e0;
+            }
+
+        @@keyframes slideIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        @@keyframes drawPie {
+            from
+
+        {
+            stroke-dashoffset: 628;
+        }
+
+        to {
+            stroke-dashoffset: 0;
+        }
+
+        }
+
+        .pie-segment {
+            stroke-dasharray: 628;
+            stroke-dashoffset: 628;
+            animation: drawPie 1.5s ease-out forwards;
+        }
+
+        .chart-section:not(.collapsed) .legend-item {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .legend-item:nth-child(1) {
+            animation-delay: 0.2s;
+            opacity: 0;
+        }
+
+        .legend-item:nth-child(2) {
+            animation-delay: 0.3s;
+            opacity: 0;
+        }
+
+        .legend-item:nth-child(3) {
+            animation-delay: 0.4s;
+            opacity: 0;
+        }
+
+        .legend-item:nth-child(4) {
+            animation-delay: 0.5s;
+            opacity: 0;
+        }
+
+        .legend-item:nth-child(5) {
+            animation-delay: 0.6s;
+            opacity: 0;
+        }
+
+        @@media (max-width: 768px) {
+            .filter-row
+
+        {
+            flex-direction: column;
+        }
+
+        .action-buttons {
+            margin-left: 0;
+        }
+
+        .chart-container {
+            flex-direction: column;
+        }
+
+        }
+
+        @@media print {
+            .filter-section, .action-buttons, .toggle-btn
+
+        {
+            display: none;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="filter-section">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label class="filter-label">FIRM</label>
+                    <select id="firmFilter">
+                        <option value="">ALL FIRMS</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">REPORT BY</label>
+                    <select id="reportByFilter">
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="this_week">This Week</option>
+                        <option value="this_month">This Month</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">DATE</label>
+                    <input type="date" class="date-input" value="2025-10-10" id="dateInput">
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">PARTY GROUP</label>
+                    <select id="partyGroupFilter">
+                        <option value="">ALL Groups</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="icon-btn excel" onclick="exportToExcel()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                        </svg>
+                    </button>
+                    <button class="icon-btn" onclick="printReport()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                            <rect x="6" y="14" width="12" height="8"></rect>
+                        </svg>
+                    </button>
+                    <button class="toggle-btn" id="toggleChart" onclick="toggleChartSection()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" id="toggleIcon">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+       
+
+        <div class="chart-section" id="chartSection">
+            <div class="chart-container">
+                <div class="chart-wrapper">
+                    <svg class="pie-chart" viewBox="0 0 200 200">
+                        <!-- 31-45 Days (50%) - Blue -->
+                        <circle class="pie-segment" cx="100" cy="100" r="80" fill="none"
+                                stroke="#0277bd" stroke-width="40"
+                                stroke-dasharray="251.2 628" stroke-dashoffset="0"
+                                style="animation-delay: 0.2s;" />
+
+                        <!-- 46-60 Days (50%) - Light Purple -->
+                        <circle class="pie-segment" cx="100" cy="100" r="80" fill="none"
+                                stroke="#d1c4e9" stroke-width="40"
+                                stroke-dasharray="251.2 628" stroke-dashoffset="-251.2"
+                                style="animation-delay: 0.4s;" />
+                    </svg>
+                    <div class="chart-total">
+                        Total: <strong>100</strong>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #8bc34a;"></div>
+                        <span class="legend-label">Current (0)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ffa726;"></div>
+                        <span class="legend-label">1-30 Days (0)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #0277bd;"></div>
+                        <span class="legend-label">31-45 Days (50)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #d1c4e9;"></div>
+                        <span class="legend-label">46-60 Days (50)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff7043;"></div>
+                        <span class="legend-label">Over 60 Days (0)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <div class="summary-item unused">
+                Unused Payments & Open Cr Notes: <strong>₹ 2,35,421.00</strong>
+            </div>
+            <div class="summary-item payable">
+                Total Payable: <strong>₹ 2,35,321.00</strong>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="agingTable">
+                <thead>
+                    <tr>
+                        <th>
+                            PARTY
+                            <span class="filter-icon">▼</span>
+                        </th>
+                        <th style="text-align: right;">
+                            Current
+                            <span class="filter-icon">▼</span>
+                        </th>
+                        <th style="text-align: right;">
+                            1-30 Days
+                            <span class="filter-icon">▼</span>
+                        </th>
+                        <th style="text-align: right;">
+                            31-45 Days
+                            <span class="filter-icon">▼</span>
+                        </th>
+                        <th style="text-align: right;">
+                            46-60 Days
+                            <span class="filter-icon">▼</span>
+                        </th>
+                        <th style="text-align: right;">
+                            Over 60 Days
+                            <span class="filter-icon">▼</span>
+                        </th>
+                        <th style="text-align: right;">
+                            Total
+                            <span class="filter-icon">▼</span>
+                        </th>
+                        <th class="action"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr class="expandable">
+                        <td class="party-name">mjoj</td>
+                        <td class="amount">₹ 0.00</td>
+                        <td class="amount">₹ 0.00</td>
+                        <td class="amount">₹ 50.00</td>
+                        <td class="amount">₹ 50.00</td>
+                        <td class="amount">₹ 0.00</td>
+                        <td class="amount">₹ 100.00</td>
+                        <td class="action">
+                            <span class="expand-icon">›</span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total</td>
+                        <td class="amount">₹ 0.00</td>
+                        <td class="amount">₹ 0.00</td>
+                        <td class="amount">₹ 50.00</td>
+                        <td class="amount">₹ 50.00</td>
+                        <td class="amount">₹ 0.00</td>
+                        <td class="amount">₹ 100.00</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Toggle chart section with animation
+        function toggleChartSection() {
+            const chartSection = document.getElementById('chartSection');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            chartSection.classList.toggle('collapsed');
+
+            if (chartSection.classList.contains('collapsed')) {
+                toggleIcon.innerHTML = '<polyline points="6 15 12 9 18 15"></polyline>';
+            } else {
+                toggleIcon.innerHTML = '<polyline points="6 9 12 15 18 9"></polyline>';
+            }
+        }
+
+        // Filter data
+        function filterData() {
+            const filters = {
+                firm: document.getElementById('firmFilter').value,
+                reportBy: document.getElementById('reportByFilter').value,
+                date: document.getElementById('dateInput').value,
+                partyGroup: document.getElementById('partyGroupFilter').value
+            };
+
+            console.log('Filtering with:', filters);
+            // Add your API call here
+            // fetchAgingReport(filters);
+        }
+
+        // Populate table with data
+        function populateTable(data) {
+            const tbody = document.getElementById('tableBody');
+
+            if (!data || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">No data available</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.map(item => `
+                <tr class="expandable" onclick="expandRow(this)">
+                    <td class="party-name">${item.party}</td>
+                    <td class="amount">₹ ${item.current.toFixed(2)}</td>
+                    <td class="amount">₹ ${item.days1_30.toFixed(2)}</td>
+                    <td class="amount">₹ ${item.days31_45.toFixed(2)}</td>
+                    <td class="amount">₹ ${item.days46_60.toFixed(2)}</td>
+                    <td class="amount">₹ ${item.over60.toFixed(2)}</td>
+                    <td class="amount">₹ ${item.total.toFixed(2)}</td>
+                    <td class="action">
+                        <span class="expand-icon">›</span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Expand row to show details
+        function expandRow(row) {
+            const icon = row.querySelector('.expand-icon');
+            icon.classList.toggle('expanded');
+
+            // Add your expand logic here to show detailed transactions
+            console.log('Expanding row for:', row.querySelector('.party-name').textContent);
+        }
+
+        // Update pie chart
+        function updatePieChart(data) {
+            // Calculate percentages and update SVG
+            const total = data.current + data.days1_30 + data.days31_45 + data.days46_60 + data.over60;
+
+            // Update chart segments based on data
+            console.log('Updating chart with total:', total);
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            console.log('Exporting aging report to Excel...');
+            // window.location.href = '/YourController/ExportAgingReport';
+        }
+
+        // Print Report
+        function printReport() {
+            window.print();
+        }
+
+        // Event listeners
+        document.getElementById('firmFilter').addEventListener('change', filterData);
+        document.getElementById('reportByFilter').addEventListener('change', filterData);
+        document.getElementById('dateInput').addEventListener('change', filterData);
+        document.getElementById('partyGroupFilter').addEventListener('change', filterData);
+
+        // Table sorting
+        document.querySelectorAll('th .filter-icon').forEach((icon, index) => {
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('Sorting by column:', index);
+            });
+        });
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load initial data
+            // filterData();
+        });
+    </script>
+</body>
+</html>

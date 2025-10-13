@@ -1,0 +1,553 @@
+﻿@{
+    ViewData["Title"] = "Transaction Reports";
+}
+
+<!-- Transaction Reports Container -->
+<div class="transaction-reports-container">
+
+    <!-- Transaction Slider (Left Panel) -->
+    <div class="transaction-slider">
+        <div class="slider-header">
+            <input type="text" class="slider-search" placeholder="Search Transactions" id="searchTransactions">
+        </div>
+
+        <div class="slider-menu">
+            <!-- Transaction Report Section -->
+            <div class="menu-section-header">
+                Transaction report
+            </div>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("Sale", "Report")">
+                Sale
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("Purchase", "Report")">
+                Purchase
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("DayBook", "Report")">
+                Day book
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("AllTransactions", "Report")">
+                All Transactions
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("ProfitAndLoss", "Report")">
+                Profit And Loss
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("BillWiseProfit", "Report")">
+                Bill Wise Profit
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("SaleAging", "Report")">
+                Sale Aging
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("CashFlow", "Report")">
+                Cash flow
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("TrialBalanceReport", "Report")">
+                Trial Balance Report
+                <span class="badge-dot"></span>
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("BalanceSheet", "Report")">
+                Balance Sheet
+            </a>
+
+            <!-- Party Report Section -->
+            <div class="menu-section-header">
+                Party Report
+            </div>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyReport", "Report")">
+                Party report
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyStatement", "Report")">
+                Party Statement
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyWiseProfitLoss", "Report")">
+                Party wise Profit & Loss
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("AllParties", "Report")">
+                All parties
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyReportByItem", "Report")">
+                Party Report By Item
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("SalePurchaseByParty", "Report")">
+                Sale Purchase By Party
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("SalePurchaseByPartyGroup", "Report")">
+                Sale Purchase By Party Group
+            </a>
+
+            <!-- Item/ Stock report -->
+            <div class="menu-section-header">
+                STOCK SUMMARY
+            </div>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyReport", "Report")">
+                Item Serial report
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyStatement", "Report")">
+                Item Batch report
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyWiseProfitLoss", "Report")">
+                Item Report By Party
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("AllParties", "Report")">
+                Item Wise Profit And Loss
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyReportByItem", "Report")">
+                Low Stock Summary
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("SalePurchaseByParty", "Report")">
+                Stock Detail
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("SalePurchaseByPartyGroup", "Report")">
+                Item Detail
+            </a>
+            <!-- Taxes -->
+            <div class="menu-section-header">
+                TAXES
+            </div>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("GSTReport", "Report")">
+                GST Report
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("GSTRateReport", "Report")">
+                GST Rate Report
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("Form27EQ", "Report")">
+                Form No. 27EQ
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("TCSReceivable", "Report")">
+                TCS Receivable
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("TDSPayable", "Report")">
+                TDS Payable
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("TDSReceivable", "Report")">
+                TDS Receivable
+            </a>
+
+            <!-- Expense Report -->
+            <div class="menu-section-header">
+                EXPENSE REPORT
+            </div>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("Expense", "Report")">
+                Expense
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("ExpenseCategoryReport", "Report")">
+                Expense Category Report
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("ExpenseItemReport", "Report")">
+                Expense Item Report
+            </a>
+
+            <!-- Sale/ Purchase Order Report -->
+            <div class="menu-section-header">
+                SALE/ PURCHASE ORDER REPORT
+            </div>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("SalePurchaseOrders", "Report")">
+                Sale/ Purchase Orders
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("SalePurchaseOrderItem", "Report")">
+                Sale/ Purchase Order Item
+            </a>
+
+            <!-- Other Income Report -->
+            <div class="menu-section-header">
+                OTHER INCOME REPORT
+            </div>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("OtherIncome", "Report")">
+                Other Income
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("OtherIncomeCategoryReport", "Report")">
+                Other Income Category Report
+            </a>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("OtherIncomeItemReport", "Report")">
+                Other Income Item Report
+            </a>
+
+            <!-- Loan Accounts -->
+            <div class="menu-section-header">
+                LOAN ACCOUNTS
+            </div>
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("LoanStatement", "Report")">
+                Loan Statement
+            </a>
+            <!-- GST Reports Section -->
+            <div class="menu-section-header">
+                GST reports
+            </div>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("GSTR3B", "Report")">
+                GSTR 3 B
+            </a>
+
+            <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("GSTR4", "Report")">
+                GSTR 4
+            </a>
+        </div>
+    </div>
+
+    <!-- Content Area (Right Panel) -->
+    <div class="content-area" id="contentArea">
+        <div class="welcome-message">
+            <div class="welcome-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h2>Transaction Reports</h2>
+            <p>Select a report from the left sidebar to view details</p>
+        </div>
+    </div>
+
+</div>
+
+<style>
+    /* Container */
+    .transaction-reports-container {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        background-color: #f9fafb;
+    }
+
+    /* Transaction Slider (Left Panel) */
+    .transaction-slider {
+        width: 280px;
+        background-color: #ffffff;
+        border-right: 1px solid #e5e7eb;
+        height: 100vh;
+        overflow-y: auto;
+        flex-shrink: 0;
+    }
+
+        .transaction-slider::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .transaction-slider::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .transaction-slider::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+            .transaction-slider::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+
+    /* Slider Header */
+    .slider-header {
+        padding: 15px;
+        border-bottom: 1px solid #e5e7eb;
+        position: sticky;
+        top: 0;
+        background-color: #ffffff;
+        z-index: 10;
+    }
+
+    .slider-search {
+        width: 100%;
+        padding: 10px 15px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: #f9fafb;
+        transition: all 0.2s ease;
+    }
+
+        .slider-search:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+    /* Slider Menu */
+    .slider-menu {
+        padding: 10px 0 20px;
+    }
+
+    .menu-section-header {
+        padding: 12px 20px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 8px;
+    }
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        color: #374151;
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        border-left: 3px solid transparent;
+    }
+
+        .menu-item:hover {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+
+        .menu-item.active {
+            background-color: #dbeafe;
+            color: #1e40af;
+            border-left-color: #3b82f6;
+            font-weight: 500;
+        }
+
+    .badge-dot {
+        width: 8px;
+        height: 8px;
+        background-color: #ef4444;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    /* Content Area (Right Panel) */
+    .content-area {
+        flex: 1;
+        overflow-y: auto;
+        background-color: #f9fafb;
+    }
+
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .content-area::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .content-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+            .content-area::-webkit-scrollbar-thumb:hover {
+                background: #94a3b8;
+            }
+
+    /* Welcome Message */
+    .welcome-message {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+        padding: 40px;
+    }
+
+    .welcome-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+
+        .welcome-icon i {
+            font-size: 36px;
+            color: white;
+        }
+
+    .welcome-message h2 {
+        font-size: 28px;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 10px;
+    }
+
+    .welcome-message p {
+        font-size: 16px;
+        color: #6b7280;
+    }
+
+    /* Loading Spinner */
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 400px;
+        padding: 40px;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid #f3f4f6;
+        border-top-color: #3b82f6;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+    }
+
+    @@keyframes spin {
+        to
+
+    {
+        transform: rotate(360deg);
+    }
+
+    }
+
+    .loading-text {
+        font-size: 16px;
+        color: #6b7280;
+    }
+
+    /* Error Message */
+    .error-message {
+        margin: 20px;
+        padding: 20px;
+        background-color: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        color: #991b1b;
+    }
+
+        .error-message strong {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .transaction-reports-container
+
+    {
+        flex-direction: column;
+    }
+
+    .transaction-slider {
+        width: 100%;
+        height: auto;
+        max-height: 40vh;
+    }
+
+    .content-area {
+        height: 60vh;
+    }
+
+    }
+</style>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <script>
+        $(document).ready(function () {
+            const contentArea = $('#contentArea');
+            const menuItems = $('.menu-item');
+            const searchBox = $('#searchTransactions');
+
+            // Handle menu item clicks
+            menuItems.on('click', function (e) {
+                e.preventDefault();
+
+                const url = $(this).data('url');
+                const clickedItem = $(this);
+
+                // Remove active class from all items
+                menuItems.removeClass('active');
+
+                // Add active class to clicked item
+                clickedItem.addClass('active');
+
+                // Show loading spinner
+                contentArea.html(`
+                    <div class="loading-container">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Loading report...</div>
+                    </div>
+                `);
+
+                // Load partial view with AJAX
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (result) {
+                        contentArea.html(result);
+                        // Scroll to top of content area
+                        contentArea.scrollTop(0);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error loading content:', error);
+                        contentArea.html(`
+                            <div class="error-message">
+                                <strong>Error Loading Report</strong>
+                                <p>Unable to load the requested report. Please try again.</p>
+                                <p>Error: ${error}</p>
+                            </div>
+                        `);
+                    }
+                });
+            });
+
+            // Search functionality
+            searchBox.on('keyup', function () {
+                const searchText = $(this).val().toLowerCase();
+
+                menuItems.each(function () {
+                    const itemText = $(this).text().toLowerCase().trim();
+                    if (itemText.includes(searchText)) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                });
+
+                // Show/hide section headers based on visible items
+                $('.menu-section-header').each(function () {
+                    const header = $(this);
+                    const nextItems = header.nextUntil('.menu-section-header', '.menu-item:visible');
+                    if (nextItems.length > 0) {
+                        header.show();
+                    } else {
+                        header.hide();
+                    }
+                });
+            });
+
+            // Optional: Load default report on page load (e.g., Sale)
+            // Uncomment the line below to auto-load the first report
+            // menuItems.first().trigger('click');
+        });
+    </script>
+}

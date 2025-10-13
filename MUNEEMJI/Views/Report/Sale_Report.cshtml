@@ -1,0 +1,735 @@
+﻿@model List<PurchaseBill>
+<div class="report-wrapper">
+    <div class="report-container">
+        <!-- Report Header -->
+        <div class="report-header">
+            <h2>@ViewBag.ReportTitle</h2>
+            <div class="report-actions">
+                <button class="btn btn-outline">
+                    <i class="fas fa-share-alt"></i> Share With CA
+                </button>
+                <button class="btn btn-primary" onclick="window.location.href='/Web/Sales/Create'">
+                    <i class="fas fa-plus"></i> Add Sales
+                </button>
+            </div>
+        </div>
+
+        <!-- Report Filters -->
+        <div class="report-filters">
+            <div class="filter-group">
+                <label>Filter by:</label>
+                <select class="form-select" id="filterBySelect">
+                    <option value="">Custom</option>
+                    <option value="thisMonth">This Month</option>
+                    <option value="lastMonth">Last Month</option>
+                    <option value="thisQuarter">This Quarter</option>
+                    <option value="thisYear">This Year</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Date Range:</label>
+                <div class="date-inputs">
+                    <input type="date" class="form-control" id="startDate" value="2025-10-01" />
+                    <span>To</span>
+                    <input type="date" class="form-control" id="endDate" value="2025-10-31" />
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label>Firms:</label>
+                <select class="form-select" id="firmFilter">
+                    <option value="">-- All --</option>
+                    @if (ViewBag.PartyList != null)
+                    {
+                        @foreach (var item in ViewBag.PartyList)
+                        {
+                            <option value="@item.id">@item.partyname</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Users:</label>
+                <select class="form-select">
+                    <option value="">-- All --</option>
+                    @foreach (var item in ViewBag.UserList)
+                    {
+                        <option value="@item.Id">@item.Username</option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Goods/Services:</label>
+                <select class="form-select">
+                    <option value="">-- All --</option>
+                    @foreach (var item in ViewBag.GodawonList)
+                    {
+                        <option value="@item.Id">@item.GodownName</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <!-- Report Summary Cards -->
+        <div class="report-summary">
+            <div class="summary-card total">
+                <div class="summary-header">
+                    <span>Total Sales Amount</span>
+                    <span class="percentage">0% ↗</span>
+                </div>
+                <h3>₹ @ViewBag.GrandTotal</h3>
+                <p class="summary-footer">
+                    <span>Received: <strong>₹ @ViewBag.PaidTotal</strong></span>
+                    <span>Balance: <strong>₹ @ViewBag.UnpaidTotal</strong></span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Transactions Section -->
+        <div class="transactions-section">
+            <div class="transactions-header">
+                <h4>Transactions</h4>
+                <div class="transactions-actions">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search transactions..." />
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <button class="btn-icon" title="Chart View">
+                        <i class="fas fa-chart-bar"></i>
+                    </button>
+                    <button class="btn-icon" title="Download Excel">
+                        <i class="fas fa-file-excel"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Results Info -->
+            <div class="search-results-info" id="searchResultsInfo" style="display: none;">
+                <span>Found <strong id="resultsCount">0</strong> matching transactions</span>
+                <button class="btn-clear-search" onclick="clearSearch()">Clear Search</button>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="transactions-table">
+                <table id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>Date <i class="fas fa-sort"></i></th>
+                            <th>Invoice no <i class="fas fa-sort"></i></th>
+                            <th>Party Name <i class="fas fa-sort"></i></th>
+                            <th>Transaction <i class="fas fa-sort"></i></th>
+                            <th>Payment Type <i class="fas fa-sort"></i></th>
+                            <th>Amount <i class="fas fa-sort"></i></th>
+                            <th>Balance <i class="fas fa-sort"></i></th>
+                            <th>Due date <i class="fas fa-sort"></i></th>
+                            <th>Status <i class="fas fa-sort"></i></th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            @foreach (var bill in Model)
+                            {
+                                <tr class="data-row" data-firm-id="@bill.PartyId" data-date="@bill.InvoiceDate.Value.ToString("yyyy-MM-dd")">
+                                    <td class="date-cell">@bill.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                    <td class="invoice-cell">@bill.InvoiceNumber</td>
+                                    <td class="party-cell">@bill.PartyName</td>
+                                    <td class="transaction-cell">Sales</td>
+                                    <td class="payment-cell">@bill.PaymentType</td>
+                                    <td class="amount-cell">₹ @bill.Total</td>
+                                    <td class="balance-cell">₹ @bill.FinalAmount</td>
+                                    <td class="duedate-cell">@bill.DueDate.ToString("dd/MM/yyyy")</td>
+                                    <td class="status-cell">@bill.orderstatusid</td>
+                                    <td>
+                                        <button class="btn-icon" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="no-data-row">
+                                <td colspan="10">
+                                    <div class="empty-state">
+                                        <div class="empty-icon">
+                                            <i class="fas fa-inbox"></i>
+                                        </div>
+                                        <h5>No Data Found</h5>
+                                        <p>No purchase bills available for the selected criteria.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .report-wrapper {
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .report-container {
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    /* Report Header */
+    .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+        .report-header h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+    .report-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background-color: #ef4444;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background-color: #dc2626;
+        }
+
+    .btn-outline {
+        background-color: white;
+        color: #3b82f6;
+        border: 1px solid #3b82f6;
+    }
+
+        .btn-outline:hover {
+            background-color: #eff6ff;
+        }
+
+    /* Report Filters */
+    .report-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 20px 24px;
+        background-color: #f9fafb;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        min-width: 104px;
+    }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b7280;
+        }
+
+    .form-select,
+    .form-control {
+        padding: 8px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 14px;
+        background-color: white;
+        transition: all 0.2s ease;
+    }
+
+        .form-select:focus,
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+    .date-inputs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .date-inputs span {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+    /* Report Summary */
+    .report-summary {
+        padding: 24px;
+        width: 300px;
+    }
+
+    .summary-card {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 20px;
+        background-color: #fefce8;
+    }
+
+    .summary-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+        .summary-header span {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+    .percentage {
+        color: #16a34a;
+        font-weight: 500;
+    }
+
+    .summary-card h3 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 12px 0;
+    }
+
+    .summary-footer {
+        display: flex;
+        gap: 24px;
+        font-size: 14px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+        .summary-footer strong {
+            color: #1f2937;
+        }
+
+    /* Transactions Section */
+    .transactions-section {
+        padding: 24px;
+    }
+
+    .transactions-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .transactions-header h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin: 0;
+        }
+
+    .transactions-actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    /* Search Box */
+    .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0 12px;
+        min-width: 250px;
+    }
+
+    .search-input {
+        flex: 1;
+        border: none;
+        padding: 8px 0;
+        font-size: 14px;
+        background-color: transparent;
+        outline: none;
+    }
+
+    .search-box i {
+        color: #9ca3af;
+        margin-left: 8px;
+    }
+
+    .search-input::placeholder {
+        color: #d1d5db;
+    }
+
+    /* Search Results Info */
+    .search-results-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        margin-bottom: 16px;
+        background-color: #dbeafe;
+        border: 1px solid #93c5fd;
+        border-radius: 6px;
+        font-size: 14px;
+        color: #1e40af;
+    }
+
+    .btn-clear-search {
+        padding: 4px 12px;
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+        .btn-clear-search:hover {
+            background-color: #2563eb;
+        }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        border: 1px solid #e5e7eb;
+        background-color: white;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: #6b7280;
+    }
+
+        .btn-icon:hover {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            border-color: #d1d5db;
+        }
+
+    /* Transactions Table */
+    .transactions-table {
+        overflow-x: auto;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+    }
+
+        .transactions-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .transactions-table thead {
+            background-color: #f9fafb;
+        }
+
+        .transactions-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            border-bottom: 2px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+            .transactions-table th i {
+                margin-left: 4px;
+                font-size: 10px;
+                opacity: 0.5;
+            }
+
+        .transactions-table tbody tr {
+            border-bottom: 1px solid #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+            .transactions-table tbody tr:hover {
+                background-color: #f9fafb;
+            }
+
+            .transactions-table tbody tr.hidden {
+                display: none;
+            }
+
+            .transactions-table tbody tr.no-data-row:hover {
+                background-color: white;
+            }
+
+            .transactions-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+        .transactions-table td {
+            padding: 16px;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .transactions-table tr.no-data td {
+            padding: 0;
+            border: none;
+        }
+
+        .transactions-table .highlight {
+            background-color: #fef08a;
+            font-weight: 600;
+        }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 80px 20px;
+        text-align: center;
+    }
+
+    .empty-icon {
+        width: 80px;
+        height: 80px;
+        background-color: #f3f4f6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+        .empty-icon i {
+            font-size: 36px;
+            color: #9ca3af;
+        }
+
+    .empty-state h5 {
+        font-size: 18px;
+        font-weight: 600;
+        color: #1f2937;
+        margin: 0 0 8px 0;
+    }
+
+    .empty-state p {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .report-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .report-filters {
+            flex-direction: column;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .summary-footer {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .transactions-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .transactions-actions {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            min-width: 100%;
+        }
+    }
+</style>
+
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const tableBody = document.getElementById('tableBody');
+    const searchResultsInfo = document.getElementById('searchResultsInfo');
+    const resultsCount = document.getElementById('resultsCount');
+    const firmFilter = document.getElementById('firmFilter');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
+    const filterBySelect = document.getElementById('filterBySelect');
+    const allRows = Array.from(tableBody.querySelectorAll('tr.data-row'));
+
+    // Add event listeners
+    firmFilter.addEventListener('change', applyFilters);
+    startDate.addEventListener('change', applyFilters);
+    endDate.addEventListener('change', applyFilters);
+    filterBySelect.addEventListener('change', handlePresetFilter);
+    searchInput.addEventListener('keyup', applyFilters);
+
+    function handlePresetFilter(e) {
+        const selectedOption = e.target.value;
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const date = String(today.getDate()).padStart(2, '0');
+
+        if (selectedOption === 'thisMonth') {
+            startDate.value = `${year}-${month}-01`;
+            endDate.value = `${year}-${month}-${new Date(year, parseInt(month), 0).getDate()}`;
+        } else if (selectedOption === 'lastMonth') {
+            const lastMonth = new Date(year, parseInt(month) - 2, 1);
+            const lastMonthYear = lastMonth.getFullYear();
+            const lastMonthNum = String(lastMonth.getMonth() + 1).padStart(2, '0');
+            startDate.value = `${lastMonthYear}-${lastMonthNum}-01`;
+            endDate.value = `${lastMonthYear}-${lastMonthNum}-${new Date(lastMonthYear, lastMonth.getMonth() + 1, 0).getDate()}`;
+        } else if (selectedOption === 'thisQuarter') {
+            const quarter = Math.floor((parseInt(month) - 1) / 3);
+            const quarterStart = quarter * 3 + 1;
+            startDate.value = `${year}-${String(quarterStart).padStart(2, '0')}-01`;
+            endDate.value = `${year}-${String(quarterStart + 2).padStart(2, '0')}-${new Date(year, quarterStart + 3, 0).getDate()}`;
+        } else if (selectedOption === 'thisYear') {
+            startDate.value = `${year}-01-01`;
+            endDate.value = `${year}-12-31`;
+        }
+        applyFilters();
+    }
+
+    function applyFilters() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const selectedFirm = firmFilter.value;
+        const start = new Date(startDate.value);
+        const end = new Date(endDate.value);
+        let visibleCount = 0;
+
+        allRows.forEach(row => {
+            const firmId = row.getAttribute('data-firm-id');
+            const rowDate = new Date(row.getAttribute('data-date'));
+            const rowText = row.innerText.toLowerCase();
+
+            // Check all filters
+            const firmMatch = !selectedFirm || firmId === selectedFirm;
+            const dateMatch = rowDate >= start && rowDate <= end;
+            const searchMatch = !searchTerm || rowText.includes(searchTerm);
+
+            if (firmMatch && dateMatch && searchMatch) {
+                row.classList.remove('hidden');
+                if (searchTerm) {
+                    highlightMatches(row, searchTerm);
+                } else {
+                    removeHighlights(row);
+                }
+                visibleCount++;
+            } else {
+                row.classList.add('hidden');
+            }
+        });
+
+        // Show/hide search results info
+        if (searchTerm) {
+            resultsCount.innerText = visibleCount;
+            searchResultsInfo.style.display = 'flex';
+        } else {
+            searchResultsInfo.style.display = 'none';
+        }
+
+        // Show empty state if no results
+        if (visibleCount === 0 && allRows.length > 0) {
+            showEmptyState();
+        } else if (visibleCount > 0) {
+            hideEmptyState();
+        }
+    }
+
+    function highlightMatches(row, searchTerm) {
+        row.querySelectorAll('td').forEach(cell => {
+            const text = cell.innerText;
+            if (text.toLowerCase().includes(searchTerm)) {
+                const regex = new RegExp(`(${searchTerm})`, 'gi');
+                cell.innerHTML = text.replace(regex, '<mark>$1</mark>');
+            }
+        });
+    }
+
+    function removeHighlights(row) {
+        row.querySelectorAll('td').forEach(cell => {
+            cell.innerHTML = cell.innerHTML.replace(/<mark>(.*?)<\/mark>/g, '$1');
+        });
+    }
+
+    function showEmptyState() {
+        let emptyRow = document.querySelector('.filter-empty-state');
+        if (!emptyRow) {
+            emptyRow = document.createElement('tr');
+            emptyRow.className = 'filter-empty-state no-data-row';
+            emptyRow.innerHTML = `
+                <td colspan="10">
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h5>No Results Found</h5>
+                        <p>No purchase bills match your filter criteria.</p>
+                    </div>
+                </td>
+            </tr>`;
+            tableBody.appendChild(emptyRow);
+        }
+    }
+
+    function hideEmptyState() {
+        const emptyRow = document.querySelector('.filter-empty-state');
+        if (emptyRow) {
+            emptyRow.remove();
+        }
+    }
+
+    function clearSearch() {
+        searchInput.value = '';
+        applyFilters();
+        searchInput.focus();
+    }
+</script>

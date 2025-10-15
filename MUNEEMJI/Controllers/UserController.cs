@@ -8,6 +8,7 @@ using MUNEEMJI.Services;
 using Insight.Database;
 using Microsoft.Data.SqlClient;
 using System.IO;
+using MUNEEMJI.Repositories;
 
 namespace MUNEEMJI.Controllers
 {
@@ -15,11 +16,13 @@ namespace MUNEEMJI.Controllers
     {
         private readonly string _connectionString;
         private ICompanyTenancy _companyTenancy;
+        public IUser _iuser;
 
-        public UserController(IConfiguration configuration, ICompanyTenancy companyTenancy)
+        public UserController(IConfiguration configuration, ICompanyTenancy companyTenancy, IUser user)
         {
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
             _companyTenancy = companyTenancy;
+            _iuser = user;
         }
 
         public async Task<IActionResult> Index()
@@ -31,7 +34,7 @@ namespace MUNEEMJI.Controllers
             await connection.OpenAsync();
 
             var query = @"
-                SELECT id, business_name, phone, email, status, roleid, created_at, updated_at
+                SELECT id, business_name, phone, email, status, roleid, created_at, updated_at ,username
                 FROM businesses where companyid = @p_companyid
                 ORDER BY created_at DESC";
 
@@ -50,7 +53,8 @@ namespace MUNEEMJI.Controllers
                     Status = reader["status"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("status")) : 0,
                     RoleId = reader["roleid"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("roleid")) : 0,
                     CreatedAt = reader["created_at"] != DBNull.Value ? reader.GetDateTime(reader.GetOrdinal("created_at")) : DateTime.MinValue,
-                    UpdatedAt = reader["updated_at"] != DBNull.Value ? reader.GetDateTime(reader.GetOrdinal("updated_at")) : DateTime.MinValue
+                    UpdatedAt = reader["updated_at"] != DBNull.Value ? reader.GetDateTime(reader.GetOrdinal("updated_at")) : DateTime.MinValue,
+                    Username  = reader["username"]!=DBNull.Value?reader.GetString(reader.GetOrdinal("username")): reader["business_name"] != DBNull.Value ? reader.GetString(reader.GetOrdinal("business_name")) : null
                 });
             }
 
@@ -60,10 +64,11 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public async Task<IActionResult> AddUser()
         {
+            int Roleid = 0;
             var viewModel = new AddUserViewModel
             {
                 AvailableRoles = await GetAvailableRoles(),
-                ModulePermissions = new List<ModulePermissionViewModel>()
+                ModulePermissions = await GetRolePermissions(Roleid)
             };
 
             return View(viewModel);
@@ -164,49 +169,35 @@ namespace MUNEEMJI.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetRolePermissions(int roleId)
+      
+        public async Task<List<ModulePermissionViewModel>> GetRolePermissions(int roleId)
         {
             var modulePermissions = new List<ModulePermissionViewModel>();
 
-            using var connection = new NpgsqlConnection(_connectionString);
-            await connection.OpenAsync();
 
-            var query = @"
-                SELECT 
-                        m.moduleid,
-                        m.modulename,
-                        (MAX(CASE WHEN p.permissionname = 'VIEW'  THEN (rp.allowed::int) ELSE 0 END) = 1) as can_view,
-                        (MAX(CASE WHEN p.permissionname = 'CREATE' THEN (rp.allowed::int) ELSE 0 END) = 1) as can_create,
-                        (MAX(CASE WHEN p.permissionname = 'EDIT'   THEN (rp.allowed::int) ELSE 0 END) = 1) as can_edit,
-                        (MAX(CASE WHEN p.permissionname = 'SHARE'  THEN (rp.allowed::int) ELSE 0 END) = 1) as can_share,
-                        (MAX(CASE WHEN p.permissionname = 'DELETE' THEN (rp.allowed::int) ELSE 0 END) = 1) as can_delete
-                    FROM modules m
-                    LEFT JOIN rolepermissions rp ON m.moduleid = rp.moduleid AND rp.roleid = @roleId
-                    LEFT JOIN permissions p ON rp.permissionid = p.permissionid
-                    GROUP BY m.moduleid, m.modulename
-                    ORDER BY m.modulename;";
-
-            using var command = new NpgsqlCommand(query, connection);
-            command.Parameters.AddWithValue("roleId", roleId);
-
-            using var reader = await command.ExecuteReaderAsync();
-
-            while (await reader.ReadAsync())
+            using (var connection = new NpgsqlConnection(_connectionString))
             {
-                modulePermissions.Add(new ModulePermissionViewModel
+                var QueryString = "SELECT roleid, moduleid, modulename," +
+                    " BOOL_OR(CASE WHEN permissionid = 1 THEN allowed ELSE false END) AS CanView ,   " +
+                    " BOOL_OR(CASE WHEN permissionid = 2 THEN allowed ELSE false END) AS CanCreate  ,   " +
+                    " BOOL_OR(CASE WHEN permissionid = 3 THEN allowed ELSE false END) AS CanEdit ,    " +
+                    " BOOL_OR(CASE WHEN permissionid = 4 THEN allowed ELSE false END) AS CanShare ,  " +
+                    "  BOOL_OR(CASE WHEN permissionid = 5 THEN allowed ELSE false END) AS CanDelete " +
+                    " FROM     public.rolepermissions  ";
+                   
+
+
+                if (roleId>0)
                 {
-                    ModuleId = reader.GetInt32("moduleid"),
-                    ModuleName = reader.GetString("modulename"),
-                    CanView = reader.GetBoolean("can_view"),
-                    CanCreate = reader.GetBoolean("can_create"),
-                    CanEdit = reader.GetBoolean("can_edit"),
-                    CanShare = reader.GetBoolean("can_share"),
-                    CanDelete = reader.GetBoolean("can_delete")
-                });
+                    QueryString += $" where roleid = {roleId}";
+                }
+                QueryString += "  GROUP BY     roleid, moduleid, modulename  ORDER BY     moduleid ;";
+
+                modulePermissions = connection.QuerySql<ModulePermissionViewModel>(QueryString).ToList();
             }
 
-            return Json(modulePermissions);
+            return modulePermissions;
+
         }
 
         [HttpPost]
@@ -251,19 +242,22 @@ namespace MUNEEMJI.Controllers
         }
 
         private async Task<List<RoleOption>> GetAvailableRoles()
-        {
+            {
             var roles = new List<RoleOption>();
+            try
+            {
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
+                    var QueryString = "select * from roles ";
 
-            // Since you don't have a roles table, I'm creating predefined roles
-            // You can modify this to fetch from a roles table if you create one
-            roles.Add(new RoleOption { RoleId = 1, RoleName = "Secondary Admin" });
-            roles.Add(new RoleOption { RoleId = 2, RoleName = "Salesman" });
-            roles.Add(new RoleOption { RoleId = 3, RoleName = "Biller" });
-            roles.Add(new RoleOption { RoleId = 4, RoleName = "Biller and Salesman" });
-            roles.Add(new RoleOption { RoleId = 5, RoleName = "CA/Accountant" });
-            roles.Add(new RoleOption { RoleId = 6, RoleName = "Stock Keeper" });
+                    roles = connection.QuerySql<RoleOption>(QueryString).ToList();
+                }
+            }
+            catch(Exception ex)
+            {
 
-            return roles;
+            }
+                return roles;
         }
 
         public async Task<IActionResult> DeleteBusiness(int id)
@@ -338,36 +332,32 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditUser(int userId)
+        public IActionResult EditUser(int id)
         {
             var model = new AddUserViewModel();
-
             try
             {
                 using (var conn = new NpgsqlConnection(_connectionString))
                 {
                     conn.Open();
-
-                    // Get user details
-                    string userQuery = @"SELECT UserId, FullName, PhoneOrEmail, RoleId, 
-                                        CreatedDate, LastModifiedDate, Status 
-                                        FROM Users WHERE UserId = @UserId";
+                    string userQuery = @"SELECT id, phone , email, roleid, username ,
+                                        created_at, updated_at, Status 
+                                        FROM businesses WHERE id = @id";
 
                     using (NpgsqlCommand cmd = new NpgsqlCommand(userQuery, conn))
                     {
-                        cmd.Parameters.AddWithValue("@UserId", userId);
+                        cmd.Parameters.AddWithValue("@id", id);
 
                         using (NpgsqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                model.UserId = Convert.ToInt32(reader["UserId"]);
-                                model.FullName = reader["FullName"].ToString();
-                                model.PhoneOrEmail = reader["PhoneOrEmail"].ToString();
-                                model.SelectedRoleId = Convert.ToInt32(reader["RoleId"]);
-                                model.CreatedDate = reader["CreatedDate"] as DateTime?;
-                                model.LastModifiedDate = reader["LastModifiedDate"] as DateTime?;
-                                model.Status = reader["Status"].ToString();
+                                model.Id = reader["id"] == DBNull.Value ? 0 : Convert.ToInt32(reader["id"]);
+                                model.FullName = reader["username"] == DBNull.Value ? string.Empty : reader["username"].ToString();
+                                model.PhoneOrEmail = reader["phone"] == DBNull.Value ? string.Empty : reader["phone"].ToString();
+                                model.PhoneOrEmail = reader["email"] == DBNull.Value ? string.Empty : reader["email"].ToString();
+                                model.SelectedRoleId = reader["RoleId"] == DBNull.Value ? 0 : Convert.ToInt32(reader["RoleId"]);
+
                             }
                             else
                             {
@@ -377,42 +367,23 @@ namespace MUNEEMJI.Controllers
                         }
                     }
 
-                    // Get current role name
-                    string roleQuery = "SELECT RoleName FROM Roles WHERE RoleId = @RoleId";
-                    using (SqlCommand cmd = new SqlCommand(roleQuery, conn))
-                    {
-                        cmd.Parameters.AddWithValue("@RoleId", model.SelectedRoleId);
-                        var roleName = cmd.ExecuteScalar();
-                        model.CurrentRoleName = roleName?.ToString() ?? "Unknown Role";
-                    }
-
-                    // Get available roles
-                    model.AvailableRoles = new List<RoleInfo>();
-                    string rolesQuery = "SELECT RoleId, RoleName FROM Roles WHERE IsActive = 1 ORDER BY RoleName";
-
-                    using (SqlCommand cmd = new SqlCommand(rolesQuery, conn))
-                    {
-                        using (SqlDataReader reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                model.AvailableRoles.Add(new RoleInfo
-                                {
-                                    RoleId = Convert.ToInt32(reader["RoleId"]),
-                                    RoleName = reader["RoleName"].ToString()
-                                });
-                            }
-                        }
-                    }
                 }
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Error loading user: " + ex.Message;
                 return RedirectToAction("Index");
             }
 
             return View(model);
+        }
+        public async Task<List<MUNEEMJI.Models.Business>> GetUserDropdown()
+        {
+            var users = new List<MUNEEMJI.Models.Business>();
+            var CompanyId = _companyTenancy.GetCurrentCompanyId();
+
+            users =  await _iuser.GetUserDropdown(CompanyId);
+            
+            return users;
         }
     }
 }

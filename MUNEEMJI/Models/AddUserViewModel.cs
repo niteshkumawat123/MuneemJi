@@ -2,13 +2,14 @@
 {
     public class AddUserViewModel
     {
+        public int Id { get; set; }
         public string FullName { get; set; }
         public string PhoneOrEmail { get; set; }
         public int SelectedRoleId { get; set; }
         public List<RoleOption> AvailableRoles { get; set; }
         public List<ModulePermissionViewModel> ModulePermissions { get; set; }
     }
-
+    
     public class RoleOption
     {
         public int RoleId { get; set; }
@@ -19,6 +20,10 @@
     {
         public int ModuleId { get; set; }
         public string ModuleName { get; set; }
+        public int permissionid { get; set; }
+        public string permissionname { get; set; }
+        public int RoleId { get; set; }
+        public bool Allowed { get; set; }
         public bool CanView { get; set; }
         public bool CanCreate { get; set; }
         public bool CanEdit { get; set; }

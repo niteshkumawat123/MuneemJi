@@ -1,4 +1,4 @@
-﻿@model ItemViewModel
+﻿@model OtherIncomeModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
@@ -31,7 +31,6 @@
     }
 
     .income-container {
-       
         height: calc(100vh - 80px);
         margin: 0 auto;
         background: white;
@@ -361,6 +360,22 @@
         color: #007bff;
     }
 
+    .empty-state {
+        text-align: center;
+        padding: 40px;
+        color: #6c757d;
+    }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #dee2e6;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+        }
+
     @@media (max-width: 768px) {
         .income-main-content
 
@@ -421,72 +436,113 @@
                     <div class="income-item-name">CATEGORY <i class="fas fa-sort"></i></div>
                     <div class="income-item-quantity">AMOUNT</div>
                 </div>
-                @foreach (var item in Model.ItemView)
+                @if (Model?.Categories != null && Model.Categories.Any())
                 {
-                    <div class="income-item-row">
-                        <a class="@(item.Id == Model.SelectedItem?.Id ? "active" : "")"
-                           asp-action="Index" asp-route-id="@item.Id">
-                            <div class="income-item-name">@item.ItemName</div>
-                            <div class="income-item-quantity">@item.OpeningQuantity</div>
-                            <i class="fas fa-ellipsis-v"></i>
-                        </a>
+                    foreach (var item in Model.Categories)
+                    {
+                        if (item != null)
+                        {
+                            <div class="income-item-row">
+                                <a class="@((Model.SelectedItem?.IncomeCategoryId != null && item.Id == Model.SelectedItem.IncomeCategoryId) ? "active" : "")"
+                                   asp-action="Index" asp-route-id="@item.Id">
+                                    <div class="income-item-name">@(item.Name ?? "Unnamed Category")</div>
+                                    <div class="income-item-quantity">@(item.Amount.ToString("N2") ?? "0.00")</div>
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </a>
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>No categories found</p>
                     </div>
                 }
             </div>
         </div>
 
         <div class="income-content-area">
-            <div class="income-product-header">
-                <div class="income-product-title">
-                    <span>@Model.SelectedItem.ItemName</span>
-                    <i class="fas fa-external-link-alt"></i>
+            @if (Model?.SelectedItem != null)
+            {
+                <div class="income-product-header">
+                    <div class="income-product-title">
+                        <span>@(Model.SelectedItem.IncomeCategory ?? "No Category Selected")</span>
+                        <i class="fas fa-external-link-alt"></i>
+                    </div>
+                    <button class="income-add-other-income-btn" onclick="window.location.href='/Web/OtherIncome/create'">
+                        <i class="fas fa-plus"></i> Add Other Income
+                    </button>
                 </div>
-                <button class="income-add-other-income-btn" onclick="window.location.href='/Web/OtherIncome/create'">
-                    <i class="fas fa-plus"></i> Add Other Income
-                </button>
-            </div>
 
-            <div class="income-product-info">
-                <div class="income-info-card">
-                    <div class="income-info-label">Sale Price</div>
-                    <div class="income-info-value">₹ @Model.SelectedItem.SalePrice</div>
-                </div>
-            </div>
-
-            <div class="income-transactions-section">
-                <div class="income-section-header">
-                    <h3 class="income-section-title">TRANSACTIONS</h3>
-                    <div class="income-search-transactions">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Search transactions...">
+                <div class="income-product-info">
+                    <div class="income-info-card">
+                        <div class="income-info-label">Sale Price</div>
+                        <div class="income-info-value">₹ @(Model.SelectedItem.amount.ToString("N2") ?? "0.00")</div>
                     </div>
                 </div>
 
-                <div class="income-transactions-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>
-                                    DATE <i class="fas fa-sort income-sort-icon"></i>
-                                </th>
-                                <th>
-                                    AMOUNT <i class="fas fa-sort income-sort-icon"></i>
-                                </th>
-                                <th>
-                                    ACTION <i class="fas fa-sort income-sort-icon"></i>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>05/09/2025, 04:50 AM</td>
-                                <td>₹ 1,221.00</td>
-                                <td>⋮</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="income-transactions-section">
+                    <div class="income-section-header">
+                        <h3 class="income-section-title">TRANSACTIONS</h3>
+                        <div class="income-search-transactions">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search transactions...">
+                        </div>
+                    </div>
+
+                    <div class="income-transactions-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        DATE <i class="fas fa-sort income-sort-icon"></i>
+                                    </th>
+                                    <th>
+                                        AMOUNT <i class="fas fa-sort income-sort-icon"></i>
+                                    </th>
+                                    <th>
+                                        ACTION <i class="fas fa-sort income-sort-icon"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.otherIncomeEntries != null && Model.otherIncomeEntries.Any())
+                                {
+                                    foreach (var item in Model.otherIncomeEntries)
+                                    {
+                                        if (item != null)
+                                        {
+                                            <tr>
+                                                <td>@(item.EntryDate != null ? item.EntryDate.ToString("yyyy-MM-dd") : "N/A")</td>
+                                                <td>@(item.amount.ToString("N2") ?? "0.00")</td>
+                                                <td>⋮</td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" style="text-align: center; padding: 40px; color: #6c757d;">
+                                            <i class="fas fa-receipt" style="font-size: 32px; display: block; margin-bottom: 10px; color: #dee2e6;"></i>
+                                            No transactions found
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="empty-state" style="margin-top: 100px;">
+                    <i class="fas fa-hand-pointer"></i>
+                    <p>Select a category from the sidebar to view details</p>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -496,44 +552,58 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Search functionality
         const searchInputs = document.querySelectorAll('input[type="text"]');
-        searchInputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.style.borderColor = '#007bff';
+        if (searchInputs && searchInputs.length > 0) {
+            searchInputs.forEach(input => {
+                if (input) {
+                    input.addEventListener('focus', function() {
+                        this.style.borderColor = '#007bff';
+                    });
+                    input.addEventListener('blur', function() {
+                        this.style.borderColor = '#ddd';
+                    });
+                }
             });
-            input.addEventListener('blur', function() {
-                this.style.borderColor = '#ddd';
-            });
-        });
+        }
 
         // Add hover effects to cards
         const infoCards = document.querySelectorAll('.income-info-card');
-        infoCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
+        if (infoCards && infoCards.length > 0) {
+            infoCards.forEach(card => {
+                if (card) {
+                    card.addEventListener('mouseenter', function() {
+                        this.style.transform = 'translateY(-5px)';
+                    });
+                    card.addEventListener('mouseleave', function() {
+                        this.style.transform = 'translateY(0)';
+                    });
+                }
             });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
+        }
 
         // Sortable table headers
         const sortHeaders = document.querySelectorAll('.income-transactions-table th');
-        sortHeaders.forEach(header => {
-            header.addEventListener('click', function() {
-                // Reset all sort icons
-                sortHeaders.forEach(h => {
-                    const icon = h.querySelector('.income-sort-icon');
-                    if (icon) {
-                        icon.className = 'fas fa-sort income-sort-icon';
-                    }
-                });
+        if (sortHeaders && sortHeaders.length > 0) {
+            sortHeaders.forEach(header => {
+                if (header) {
+                    header.addEventListener('click', function() {
+                        // Reset all sort icons
+                        sortHeaders.forEach(h => {
+                            if (h) {
+                                const icon = h.querySelector('.income-sort-icon');
+                                if (icon) {
+                                    icon.className = 'fas fa-sort income-sort-icon';
+                                }
+                            }
+                        });
 
-                // Set clicked header to sorted
-                const icon = this.querySelector('.income-sort-icon');
-                if (icon) {
-                    icon.className = 'fas fa-sort-down income-sort-icon';
+                        // Set clicked header to sorted
+                        const icon = this.querySelector('.income-sort-icon');
+                        if (icon) {
+                            icon.className = 'fas fa-sort-down income-sort-icon';
+                        }
+                    });
                 }
             });
-        });
+        }
     });
 </script>

@@ -1,0 +1,397 @@
+﻿@model MUNEEMJI.Models.ReportModel.OtherIncomeReportModel;
+@using System.Linq;
+
+@{
+    var TotalAmount = Model.OtherIncomeEntries.Sum(x => x.Total);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Transactions</title>
+    <style>
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        }
+
+        body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+        }
+
+        .container {
+        background-color: white;
+        border-radius: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+        }
+
+        .header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        }
+
+        .dropdown {
+        position: relative;
+        }
+
+        select {
+        padding: 8px 30px 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: white;
+        font-size: 14px;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        }
+
+        select:focus {
+        outline: 2px solid #0078d4;
+        outline-offset: 1px;
+        }
+
+        .date-filter {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background-color: #6c757d21;
+        padding: 8px 15px;
+        border-radius: 4px;
+        color: #060606;
+        font-size: 14px;
+        }
+
+        .date-input {
+        padding: 6px 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        font-size: 14px;
+        }
+
+        .export-buttons {
+        margin-left: auto;
+        display: flex;
+        gap: 15px;
+        }
+
+        .export-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: #0078d4;
+        font-size: 12px;
+        }
+
+        .export-btn:hover {
+        opacity: 0.8;
+        }
+
+        .icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        }
+
+        .excel-icon {
+        color: #217346;
+        font-size: 24px;
+        }
+
+        .print-icon {
+        color: #333;
+        font-size: 24px;
+        }
+
+        .section-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+        }
+
+        .search-container {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 15px;
+        }
+
+        .search-box {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 250px;
+        font-size: 14px;
+        }
+
+        .search-box:focus {
+        outline: 2px solid #0078d4;
+        outline-offset: 1px;
+        }
+
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        }
+
+        thead {
+        background-color: #f8f9fa;
+        }
+
+        th {
+        padding: 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 13px;
+        color: #333;
+        border-bottom: 2px solid #dee2e6;
+        position: relative;
+        }
+
+        th .filter-icon {
+        margin-left: 5px;
+        color: #6c757d;
+        font-size: 12px;
+        cursor: pointer;
+        }
+
+        td {
+        padding: 12px;
+        border-bottom: 1px solid #dee2e6;
+        font-size: 14px;
+        color: #333;
+        }
+
+        tbody tr:hover {
+        background-color: #f8f9fa;
+        }
+
+        .amount {
+        text-align: right;
+        font-weight: 500;
+        }
+
+        .total-row {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        }
+
+        .watermark {
+        text-align: right;
+        color: #d3d3d3;
+        font-size: 18px;
+        margin-top: 50px;
+        font-weight: 300;
+        }
+
+        .no-results {
+        text-align: center;
+        padding: 40px;
+        color: #6c757d;
+        font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="dropdown">
+                <select id="monthFilter">
+                    <option value="">This Month</option>
+                    <option value="last-month">Last Month</option>
+                    <option value="this-year">This Year</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+
+            <div class="date-filter">
+                <span>Between</span>
+                <input type="date" class="date-input" id="startDate" value="2025-10-01">
+                <span>To</span>
+                <input type="date" class="date-input" id="endDate" value="2025-10-31">
+            </div>
+
+            <div class="dropdown">
+                <select id="firmFilter">
+                    <option value="">ALL FIRMS</option>
+                    <option value="firm1">Firm 1</option>
+                    <option value="firm2">Firm 2</option>
+                    <option value="firm3">Firm 3</option>
+                </select>
+            </div>
+
+            <div class="export-buttons">
+                <button class="export-btn" onclick="exportToExcel()">
+                    <div class="icon excel-icon">📊</div>
+                    <span>Excel Report</span>
+                </button>
+                <button class="export-btn" onclick="printReport()">
+                    <div class="icon print-icon">🖨️</div>
+                    <span>Print</span>
+                </button>
+            </div>
+        </div>
+
+        <h2 class="section-title">INCOME TRANSACTIONS</h2>
+
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍">
+        </div>
+
+        <table id="transactionTable">
+            <thead>
+                <tr>
+                    <th>INCOME CATEGORY <span class="filter-icon">▼</span></th>
+                    <th class="amount">AMOUNT <span class="filter-icon">▼</span></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @foreach (var item in Model.OtherIncomeEntries)
+                {
+                    <tr>
+                        <td>@item.IncomeCategory</td>
+                        <td class="amount">₹@item.amount</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+
+        
+        <div class="total-row">
+            Total Income: <span id="totalIncome">₹ @TotalAmount</span>
+        </div>
+
+
+    </div>
+
+    <script>
+        // Sample data
+        const transactions = [
+            { date: '14/10/2025, 08:40 PM', category: 'qwer', amount: 125433.00 },
+            { date: '14/10/2025, 08:57 PM', category: 'StockMarket', amount: 288054.00 },
+            { date: '14/10/2025, 09:17 PM', category: 'Digital Market', amount: 2456360.00 },
+            { date: '14/10/2025, 09:17 PM', category: 'Digital Market', amount: 2456360.00 }
+        ];
+
+        let filteredTransactions = [...transactions];
+
+        // Format currency
+        function formatCurrency(amount) {
+            return '₹ ' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Render table
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+
+            if (filteredTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="no-results">No transactions found</td></tr>';
+                document.getElementById('totalIncome').textContent = formatCurrency(0);
+                return;
+            }
+
+            tbody.innerHTML = filteredTransactions.map(t => `
+                <tr>
+                    <td>${t.date}</td>
+                    <td>${t.category}</td>
+                    <td class="amount">${formatCurrency(t.amount)}</td>
+                </tr>
+            `).join('');
+
+            // Calculate total
+            const total = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
+            document.getElementById('totalIncome').textContent = formatCurrency(total);
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            applyFilters(searchTerm);
+        });
+
+        // Category filter
+        document.getElementById('categoryFilter').addEventListener('change', function(e) {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            applyFilters(searchTerm);
+        });
+
+        // Apply all filters
+        function applyFilters(searchTerm = '') {
+            const categoryFilter = document.getElementById('categoryFilter').value;
+
+            filteredTransactions = transactions.filter(t => {
+                const matchesSearch =
+                    t.date.toLowerCase().includes(searchTerm) ||
+                    t.category.toLowerCase().includes(searchTerm) ||
+                    t.amount.toString().includes(searchTerm);
+
+                const matchesCategory = !categoryFilter || t.category === categoryFilter;
+
+                return matchesSearch && matchesCategory;
+            });
+
+            renderTable();
+        }
+
+        // Month filter
+        document.getElementById('monthFilter').addEventListener('change', function(e) {
+            console.log('Month filter changed:', e.target.value);
+            // Implement date range logic here
+        });
+
+        // Firm filter
+        document.getElementById('firmFilter').addEventListener('change', function(e) {
+            console.log('Firm filter changed:', e.target.value);
+            // Implement firm filtering logic here
+        });
+
+        // Date filters
+        document.getElementById('startDate').addEventListener('change', function(e) {
+            console.log('Start date changed:', e.target.value);
+            // Implement date filtering logic here
+        });
+
+        document.getElementById('endDate').addEventListener('change', function(e) {
+            console.log('End date changed:', e.target.value);
+            // Implement date filtering logic here
+        });
+
+        // Export functions
+        function exportToExcel() {
+            alert('Export to Excel functionality');
+        }
+
+        function printReport() {
+            window.print();
+        }
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+</html>

@@ -21,6 +21,7 @@ builder.Services.AddScoped<IEstimate_QuotationsRepository, Estimate_QuotationsRe
 builder.Services.AddScoped<IOtherIncomeRepository, OtherIncomeRepository>();
 builder.Services.AddScoped<ICompanyTenancy, CompanyTenancyService>();
 builder.Services.AddScoped<IParty, PartyRepository>();
+builder.Services.AddScoped<IUser, UserRepository>();
 builder.Services.AddRazorPages();
 
 // Add Session services

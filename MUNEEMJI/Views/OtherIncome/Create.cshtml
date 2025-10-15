@@ -139,26 +139,40 @@
     <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
         <div class="form-container">
             <input type="hidden" id="deleteLogoFlag" name="OtherIncomeView.IsDeleteImage" value="false" />
+            
+            <!-- Hidden fields for category name and totals -->
+            <input type="hidden" id="categoryNameHidden" name="OtherIncomeView.IncomeCategory" value="" />
+            <input type="hidden" id="totalAmountHidden" name="OtherIncomeView.Total" value="0" />
+            <input type="hidden" id="roundOffValueHidden" name="OtherIncomeView.RoundOff" value="0" />
 
             <!-- Search Section -->
             <div class="search-section">
                 <div class="row">
                     <div class="col-md-2">
                         <label>Category</label>
-                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="OtherIncomeView.IncomeCategoryId">
+                        <select class="form-control form-control-sm custom-dropdown" id="partyDropdown" name="OtherIncomeView.IncomeCategoryId" onchange="updateCategoryName()">
                             <option value="">Select</option>
-                            @if (Model.Categories != null)
+                            @if (Model?.Categories != null)
                             {
                                 <!-- Header Option (disabled and styled) -->
                                 <option disabled class="dropdown-header">
                                     <span class="header-item">Category Name</span>
                                 </option>
 
-                                @foreach (var category in Model.Categories)
+                                @if (Model?.Categories != null)
                                 {
-                                    <option value="@category.Id" data-name="@category.Name" class="category-option">
-                                        @category.Name
-                                    </option>
+                                    foreach (var category in Model.Categories)
+                                    {
+                                        if (category != null)
+                                        {
+                                            <option value="@category.Id"
+                                                    data-name="@category.Name"
+                                                    class="category-option"
+                                                    selected="@(Model?.OtherIncomeView?.IncomeCategoryId == category.Id)">
+                                                @(category.Name ?? "Unnamed Category")
+                                            </option>
+                                        }
+                                    }
                                 }
                             }
                         </select>
@@ -184,28 +198,32 @@
                         </tr>
                     </thead>
                     <tbody id="itemsTableBody">
-                        @if (Model.OtherIncomeView?.Items != null)
+                        @if (Model?.OtherIncomeView?.Items != null && Model.OtherIncomeView.Items.Any())
                         {
                             @for (int i = 0; i < Model.OtherIncomeView.Items.Count; i++)
                             {
-                                <tr class="item-row" data-index="@i">
-                                    <td>@(i + 1)</td>
-                                    <td>
-                                        <input asp-for="OtherIncomeView.Items[i].ItemName" type="text" class="form-control-sm item-name-input" />
-                                    </td>
-                                    <td>
-                                        <input asp-for="OtherIncomeView.Items[i].Qty" type="number" step="0.01" class="form-control-sm qty-input" onchange="calculateItemAmount(@i)" />
-                                    </td>
-                                    <td>
-                                        <input asp-for="OtherIncomeView.Items[i].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" onchange="calculateItemAmount(@i)" />
-                                    </td>
-                                    <td>
-                                        <input asp-for="OtherIncomeView.Items[i].Amount" type="number" step="0.01" class="form-control-sm item-amount" readonly />
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
-                                    </td>
-                                </tr>
+                                var item = Model.OtherIncomeView.Items[i];
+                                if (item != null)
+                                {
+                                    <tr class="item-row" data-index="@i">
+                                        <td>@(i + 1)</td>
+                                        <td>
+                                            <input asp-for="OtherIncomeView.Items[i].ItemName" type="text" class="form-control-sm item-name-input" value="@(item.ItemName ?? "")" />
+                                        </td>
+                                        <td>
+                                            <input asp-for="OtherIncomeView.Items[i].Qty" type="number" step="0.01" class="form-control-sm qty-input" value="@(item.Qty)" onchange="calculateItemAmount(@i)" />
+                                        </td>
+                                        <td>
+                                            <input asp-for="OtherIncomeView.Items[i].PricePerUnit" type="number" step="0.01" class="form-control-sm price-input" value="@(item.PricePerUnit)" onchange="calculateItemAmount(@i)" />
+                                        </td>
+                                        <td>
+                                            <input asp-for="OtherIncomeView.Items[i].Amount" type="number" step="0.01" class="form-control-sm item-amount" value="@(item.Amount)" readonly />
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
+                                        </td>
+                                    </tr>
+                                }
                             }
                         }
                     </tbody>
@@ -267,7 +285,7 @@
                     </div>
                     <div class="col-md-3">
                         <div class="checkbox-container">
-                            <input asp-for="OtherIncomeView.IsRoundOff" type="checkbox" checked />
+                            <input asp-for="OtherIncomeView.IsRoundOff" type="checkbox" checked onchange="updateGrandTotal()" />
                             <label asp-for="OtherIncomeView.RoundOff">Round Off</label>
                             <span id="roundOffAmount">0</span>
                             <span style="margin-left: 20px;">Total: <strong id="finalTotal">0</strong></span>
@@ -324,10 +342,24 @@
 </div>
 
 <script>
-    let itemIndex = @(Model.OtherIncomeView?.Items?.Count ?? 0);
+    let itemIndex = @(Model?.OtherIncomeView?.Items?.Count ?? 0);
+
+    // Update category name in hidden field when dropdown changes
+    function updateCategoryName() {
+        const dropdown = document.getElementById('partyDropdown');
+        const categoryNameHidden = document.getElementById('categoryNameHidden');
+        
+        if (dropdown && categoryNameHidden) {
+            const selectedOption = dropdown.options[dropdown.selectedIndex];
+            const categoryName = selectedOption ? selectedOption.getAttribute('data-name') : '';
+            categoryNameHidden.value = categoryName || '';
+        }
+    }
 
     function addNewRow() {
         const tbody = document.getElementById('itemsTableBody');
+        if (!tbody) return;
+
         const newRow = document.createElement('tr');
         newRow.className = 'item-row';
         newRow.setAttribute('data-index', itemIndex);
@@ -357,12 +389,14 @@
 
     function updateRowNumbers() {
         const rows = document.querySelectorAll('#itemsTableBody .item-row');
-        rows.forEach((row, index) => {
-            const firstCell = row.querySelector('td:first-child');
-            if (firstCell) {
-                firstCell.textContent = index + 1;
-            }
-        });
+        if (rows) {
+            rows.forEach((row, index) => {
+                const firstCell = row.querySelector('td:first-child');
+                if (firstCell) {
+                    firstCell.textContent = index + 1;
+                }
+            });
+        }
     }
 
     function calculateItemAmount(index) {
@@ -387,10 +421,12 @@
         let total = 0;
         const amountInputs = document.querySelectorAll('.item-amount');
 
-        amountInputs.forEach(input => {
-            const value = parseFloat(input.value) || 0;
-            total += value;
-        });
+        if (amountInputs) {
+            amountInputs.forEach(input => {
+                const value = parseFloat(input.value) || 0;
+                total += value;
+            });
+        }
 
         const grandTotalElement = document.getElementById('grandTotal');
         if (grandTotalElement) {
@@ -401,6 +437,11 @@
         const roundOffAmountElement = document.getElementById('roundOffAmount');
         const finalTotalElement = document.getElementById('finalTotal');
 
+        // Update hidden fields
+        const totalAmountHidden = document.getElementById('totalAmountHidden');
+        const roundOffValueHidden = document.getElementById('roundOffValueHidden');
+        const finalTotalHidden = document.getElementById('finalTotalHidden');
+
         if (roundOffCheckbox && roundOffAmountElement && finalTotalElement) {
             const roundOff = roundOffCheckbox.checked;
             let finalTotal = roundOff ? Math.round(total) : total;
@@ -408,65 +449,103 @@
 
             roundOffAmountElement.textContent = roundOffAmount.toFixed(2);
             finalTotalElement.textContent = finalTotal.toFixed(2);
+
+            // Update hidden fields
+            if (totalAmountHidden) totalAmountHidden.value = total.toFixed(2);
+            if (roundOffValueHidden) roundOffValueHidden.value = roundOffAmount.toFixed(2);
+            if (finalTotalHidden) finalTotalHidden.value = finalTotal.toFixed(2);
         }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize category name on load
+        updateCategoryName();
+
         // Calculate initial amounts for existing rows
         const existingRows = document.querySelectorAll('.item-row');
-        existingRows.forEach((row, index) => {
-            const dataIndex = row.getAttribute('data-index');
-            if (dataIndex !== null) {
-                calculateItemAmount(parseInt(dataIndex));
-            }
-        });
+        if (existingRows) {
+            existingRows.forEach((row, index) => {
+                const dataIndex = row.getAttribute('data-index');
+                if (dataIndex !== null && dataIndex !== undefined) {
+                    calculateItemAmount(parseInt(dataIndex));
+                }
+            });
+        }
 
         const roundOffCheckbox = document.querySelector('input[name="OtherIncomeView.IsRoundOff"]');
         if (roundOffCheckbox) {
             roundOffCheckbox.addEventListener('change', updateGrandTotal);
         }
+
+        // Initial total calculation
+        updateGrandTotal();
     });
 </script>
 
 <script>
     function previewImage(input) {
+        if (!input || !input.files || !input.files[0]) return;
+
         const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.querySelector('.upload-content-imgshow').style.display = 'none';
-                document.querySelector('.image-preview-imgshow').style.display = 'block';
-                document.getElementById('preview-img-imgshow').src = e.target.result;
-                document.getElementById('image-name-imgshow').textContent = file.name;
-                document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
-                document.getElementById('deleteLogoFlag').value = 'false';
-            };
-            reader.readAsDataURL(file);
-        }
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const uploadContent = document.querySelector('.upload-content-imgshow');
+            const imagePreview = document.querySelector('.image-preview-imgshow');
+            const previewImg = document.getElementById('preview-img-imgshow');
+            const imageName = document.getElementById('image-name-imgshow');
+            const uploadArea = document.querySelector('.upload-area-imgshow');
+            const deleteFlag = document.getElementById('deleteLogoFlag');
+
+            if (uploadContent) uploadContent.style.display = 'none';
+            if (imagePreview) imagePreview.style.display = 'block';
+            if (previewImg) previewImg.src = e.target.result;
+            if (imageName) imageName.textContent = file.name;
+            if (uploadArea) uploadArea.style.borderColor = '#28a745';
+            if (deleteFlag) deleteFlag.value = 'false';
+        };
+        
+        reader.readAsDataURL(file);
     }
 
     function setLogoFromData(imageUrl, imageName) {
-        document.querySelector('.upload-content-imgshow').style.display = 'none';
-        document.querySelector('.image-preview-imgshow').style.display = 'block';
-        document.getElementById('preview-img-imgshow').src = imageUrl;
-        document.getElementById('image-name-imgshow').textContent = imageName || 'Loaded Image';
-        document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
-        document.getElementById('deleteLogoFlag').value = 'false';
+        const uploadContent = document.querySelector('.upload-content-imgshow');
+        const imagePreview = document.querySelector('.image-preview-imgshow');
+        const previewImg = document.getElementById('preview-img-imgshow');
+        const imageNameEl = document.getElementById('image-name-imgshow');
+        const uploadArea = document.querySelector('.upload-area-imgshow');
+        const deleteFlag = document.getElementById('deleteLogoFlag');
+
+        if (uploadContent) uploadContent.style.display = 'none';
+        if (imagePreview) imagePreview.style.display = 'block';
+        if (previewImg) previewImg.src = imageUrl;
+        if (imageNameEl) imageNameEl.textContent = imageName || 'Loaded Image';
+        if (uploadArea) uploadArea.style.borderColor = '#28a745';
+        if (deleteFlag) deleteFlag.value = 'false';
     }
 
     function removeImage(event) {
-        event.stopPropagation();
-        document.querySelector('input[name="OtherIncomeView.imageFile"]').value = '';
-        document.querySelector('.upload-content-imgshow').style.display = 'block';
-        document.querySelector('.image-preview-imgshow').style.display = 'none';
-        document.getElementById('preview-img-imgshow').src = '';
-        document.getElementById('image-name-imgshow').textContent = '';
-        document.querySelector('.upload-area-imgshow').style.borderColor = 'lightgray';
-        document.getElementById('deleteLogoFlag').value = 'true';
+        if (event) event.stopPropagation();
+
+        const fileInput = document.querySelector('input[name="OtherIncomeView.ImageUrl"]');
+        const uploadContent = document.querySelector('.upload-content-imgshow');
+        const imagePreview = document.querySelector('.image-preview-imgshow');
+        const previewImg = document.getElementById('preview-img-imgshow');
+        const imageName = document.getElementById('image-name-imgshow');
+        const uploadArea = document.querySelector('.upload-area-imgshow');
+        const deleteFlag = document.getElementById('deleteLogoFlag');
+
+        if (fileInput) fileInput.value = '';
+        if (uploadContent) uploadContent.style.display = 'block';
+        if (imagePreview) imagePreview.style.display = 'none';
+        if (previewImg) previewImg.src = '';
+        if (imageName) imageName.textContent = '';
+        if (uploadArea) uploadArea.style.borderColor = 'lightgray';
+        if (deleteFlag) deleteFlag.value = 'true';
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        var logoPath = '@Html.Raw(Model.OtherIncomeView.BaseImageUrl ?? "")';
+        var logoPath = '@Html.Raw(Model?.OtherIncomeView?.BaseImageUrl ?? "")';
 
         // If logo exists, display it
         if (logoPath && logoPath !== '') {
@@ -477,41 +556,73 @@
     });
 
     function showSaveConfirmation() {
-        document.getElementById('confirmationModalTitle').textContent = 'Confirm Save';
-        document.getElementById('confirmationModalBody').textContent = 'Are you sure you want to save?';
+        const confirmTitle = document.getElementById('confirmationModalTitle');
+        const confirmBody = document.getElementById('confirmationModalBody');
 
-        const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-        confirmModal.show();
+        if (confirmTitle) confirmTitle.textContent = 'Confirm Save';
+        if (confirmBody) confirmBody.textContent = 'Are you sure you want to save?';
 
-        document.getElementById('confirmationModalYes').onclick = function() {
-            confirmModal.hide();
-            submitForm();
-        };
+        const confirmModalElement = document.getElementById('confirmationModal');
+        if (confirmModalElement) {
+            const confirmModal = new bootstrap.Modal(confirmModalElement);
+            confirmModal.show();
+
+            const yesButton = document.getElementById('confirmationModalYes');
+            if (yesButton) {
+                yesButton.onclick = function() {
+                    confirmModal.hide();
+                    submitForm();
+                };
+            }
+        }
     }
 
     function submitForm() {
+        // Update hidden fields before submission
+        updateCategoryName();
+        updateGrandTotal();
+
         const form = document.getElementById('billForm');
+        if (!form) return;
+
         const formData = new FormData(form);
 
         fetch(form.action, {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             showMessageModal(data.success, data.message);
         })
         .catch(error => {
+            console.error('Error:', error);
             showMessageModal(false, 'An error occurred while saving.');
         });
     }
 
     function showMessageModal(isSuccess, message) {
-        const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
-        document.getElementById('messageModalTitle').textContent = isSuccess ? 'Success' : 'Error';
-        document.getElementById('messageModalBody').textContent = message;
-        document.getElementById('messageModal').querySelector('.modal-header').style.backgroundColor = isSuccess ? '#28a745' : '#dc3545';
-        document.getElementById('messageModal').querySelector('.modal-header').style.color = 'white';
+        const messageModalElement = document.getElementById('messageModal');
+        if (!messageModalElement) return;
+
+        const messageModal = new bootstrap.Modal(messageModalElement);
+        const messageTitle = document.getElementById('messageModalTitle');
+        const messageBody = document.getElementById('messageModalBody');
+        const modalHeader = messageModalElement.querySelector('.modal-header');
+
+        if (messageTitle) messageTitle.textContent = isSuccess ? 'Success' : 'Error';
+        if (messageBody) messageBody.textContent = message || 'No message provided';
+        
+        if (modalHeader) {
+            modalHeader.style.backgroundColor = isSuccess ? '#28a745' : '#dc3545';
+            modalHeader.style.color = 'white';
+        }
+
         messageModal.show();
     }
 

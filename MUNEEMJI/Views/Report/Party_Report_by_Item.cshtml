@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Party Report by Item";
 }
+@model List<MUNEEMJI.Models.ReportModel.PartyReportByItemModel>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -411,28 +412,45 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="6">
-                                <div class="empty-state-container">
-                                    <div class="empty-icon">
-                                        <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <rect x="20" y="25" width="50" height="65" rx="2" fill="#e0e0e0" stroke="#d0d0d0" stroke-width="2" />
-                                            <rect x="50" y="35" width="50" height="65" rx="2" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="2" />
-                                            <line x1="58" y1="45" x2="85" y2="45" stroke="#c0c0c0" stroke-width="2" />
-                                            <line x1="58" y1="52" x2="92" y2="52" stroke="#c0c0c0" stroke-width="2" />
-                                            <line x1="58" y1="59" x2="88" y2="59" stroke="#c0c0c0" stroke-width="2" />
-                                            <line x1="58" y1="66" x2="92" y2="66" stroke="#c0c0c0" stroke-width="2" />
-                                            <line x1="58" y1="73" x2="85" y2="73" stroke="#c0c0c0" stroke-width="2" />
-                                            <rect x="85" y="85" width="12" height="3" rx="1.5" fill="#2196F3" />
-                                        </svg>
+                        @if (Model != null && Model.Count > 0)
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td style="text-align:center;">@(Model.IndexOf(item) + 1)</td>
+                                    <td>@item.PartyName</td>
+                                    <td style="text-align:right;">@item.SaleQuantity</td>
+                                    <td style="text-align:right;">₹ @item.SaleAmount.ToString("F2")</td>
+                                    <td style="text-align:right;">@item.PurchaseQuantity</td>
+                                    <td style="text-align:right;">₹ @item.PurchaseAmount.ToString("F2")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6">
+                                    <div class="empty-state-container">
+                                        <div class="empty-icon">
+                                            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <rect x="20" y="25" width="50" height="65" rx="2" fill="#e0e0e0" stroke="#d0d0d0" stroke-width="2" />
+                                                <rect x="50" y="35" width="50" height="65" rx="2" fill="#f0f0f0" stroke="#d0d0d0" stroke-width="2" />
+                                                <line x1="58" y1="45" x2="85" y2="45" stroke="#c0c0c0" stroke-width="2" />
+                                                <line x1="58" y1="52" x2="92" y2="52" stroke="#c0c0c0" stroke-width="2" />
+                                                <line x1="58" y1="59" x2="88" y2="59" stroke="#c0c0c0" stroke-width="2" />
+                                                <line x1="58" y1="66" x2="92" y2="66" stroke="#c0c0c0" stroke-width="2" />
+                                                <line x1="58" y1="73" x2="85" y2="73" stroke="#c0c0c0" stroke-width="2" />
+                                                <rect x="85" y="85" width="12" height="3" rx="1.5" fill="#2196F3" />
+                                            </svg>
+                                        </div>
+                                        <div class="empty-message">
+                                            <strong>No data is available for Party Report by Item.</strong>
+                                            Please try again after making relevant changes.
+                                        </div>
                                     </div>
-                                    <div class="empty-message">
-                                        <strong>No data is available for Party Report by Item.</strong>
-                                        Please try again after making relevant changes.
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>
@@ -455,10 +473,7 @@
                 </div>
             </div>
 
-            <div class="windows-message">
-                Activate Windows<br>
-                Go to Settings to activate Windows.
-            </div>
+          
         </div>
     </div>
 

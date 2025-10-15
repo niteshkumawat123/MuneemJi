@@ -33,8 +33,8 @@ namespace MUNEEMJI.Controllers
             {
                 var model = new OtherIncomeModel
                 {
-                    Categories = GetAllOtherIncomeCategories(),
-                    SelectedItem = new IncomeEntry(),
+                    Categories = await _billItemService.GetAllOtherIncomeCategories(),
+                    SelectedItem = new OtherIncomeViewModel(),
                     OtherIncomeView  = new IncomeEntry
                     {
                         Items = new List<IncomeEntryItem> { new IncomeEntryItem() }
@@ -139,46 +139,45 @@ namespace MUNEEMJI.Controllers
         public async Task<IActionResult> Index(int? id)
         {
             string godown = "All Godowns"; string search = ""; string sortBy = "date"; string sortDirection = "desc";
+            List<OtherIncomeViewModel> Model = new List<OtherIncomeViewModel>();
+            OtherIncomeModel otherIncomeModel = new OtherIncomeModel();
+            otherIncomeModel.Categories = new List<OtherIncomeCategory>();
             try
             {
+                var viewModel = await _billItemService.GetAllOtherIncomeCategories();           
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var QueryString = $" select income_category as IncomeCategory , incomecategoryid, entry_date as EntryDate , total, amount from public.income_entries" +
+                        $" left join income_entry_items on income_entry_items.entry_id = income_entries.id ";
 
+                    Model = Conn.QuerySql<OtherIncomeViewModel>(QueryString).ToList();
+                }
 
-                var viewModel = await GetBillItemsAsync();
+                foreach (var item in viewModel)
+                {
+                    OtherIncomeCategory otherIncome = new OtherIncomeCategory();
+                    otherIncome.Id = item.Id;
+                    otherIncome.Name = item.Name;
+                    otherIncome.Amount = Model.Where(x => x.IncomeCategoryId == item.Id).Sum(x => x.amount);
+                    otherIncomeModel.Categories.Add(otherIncome);
+                }
 
-                ItemViewModel itemViewModel = new ItemViewModel();
-                itemViewModel.ItemView = viewModel;
                 if (id > 0)
                 {
-                    itemViewModel.SelectedItem = new BillItem();
-                    itemViewModel.SelectedItem = viewModel.Where(x => x.Id == id).FirstOrDefault();
+                         Model = Model.Where(x => x.IncomeCategoryId == id).ToList();
+                        otherIncomeModel.SelectedItem = Model.FirstOrDefault();
+                        otherIncomeModel.otherIncomeEntries = Model;
                 }
                 else
                 {
 
-                    itemViewModel.SelectedItem = new BillItem();
-                    itemViewModel.SelectedItem = viewModel.FirstOrDefault();
+                    otherIncomeModel.SelectedItem = new OtherIncomeViewModel();
+                    otherIncomeModel.otherIncomeEntries = Model.ToList();
 
                 }
-                //MockInventoryService mock = new MockInventoryService();
-                //var viewModel = new InventoryViewModel
-                //{
-                //    Product = GetProductById("demo"),
-                //    Transactions = mock.GetTransactions("demo", search, sortBy, sortDirection),
-                //    Godowns = mock.GetGodowns(),
-                //    SelectedGodown = godown
-                //};
+                
 
-                ////if (Request.IsAjaxRequest())
-                ////{
-                ////    return PartialView("_TransactionsPartial", viewModel);
-                ////}
-
-                //if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                //{
-                //    return PartialView("_TransactionsPartial", viewModel);
-                //}
-
-                return View(itemViewModel);
+                return View(otherIncomeModel);
             }
             catch (Exception ex)
             {
@@ -187,22 +186,7 @@ namespace MUNEEMJI.Controllers
                 return View(new InventoryViewModel());
             }
         }
-        public List<OtherIncomeCategory> GetAllOtherIncomeCategories()
-        {
-            List<OtherIncomeCategory> returnobj = new List<OtherIncomeCategory>();
-            using (var conn = new NpgsqlConnection(_connectionString))
-            {
-                string query = @"
-                             SELECT 
-                                 id, 
-                                 name 
-                             FROM public.other_income_categorieses";
-
-
-                returnobj = conn.QuerySql<OtherIncomeCategory>(query).ToList();
-            }
-            return returnobj;
-        }
+       
 
         public async Task<List<BillItem>> GetBillItemsAsync()
         {

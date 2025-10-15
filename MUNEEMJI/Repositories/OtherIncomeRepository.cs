@@ -12,6 +12,7 @@ namespace MUNEEMJI.Repositories
         Task<List<string>> GetUnitsAsync();
         Task<List<string>> GetTaxRatesAsync();
         Task<List<BillItem>> GetItems();
+        Task<List<OtherIncomeCategory>> GetAllOtherIncomeCategories();
     }
     public class OtherIncomeRepository: IOtherIncomeRepository
     {
@@ -246,6 +247,30 @@ namespace MUNEEMJI.Repositories
             // ✅ Fetch bill items
             items = connection.QuerySql<BillItem>(billItemSql).ToList();
             return items;
+        }
+
+        public async Task<List<OtherIncomeCategory>> GetAllOtherIncomeCategories()
+        {
+            List<OtherIncomeCategory> returnobj = new List<OtherIncomeCategory>();
+            try
+            {
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    string query = @"
+                             SELECT 
+                                 id, 
+                                 name 
+                             FROM public.other_income_categorieses";
+
+
+                    returnobj = conn.QuerySql<OtherIncomeCategory>(query).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return returnobj;
         }
     }
 }

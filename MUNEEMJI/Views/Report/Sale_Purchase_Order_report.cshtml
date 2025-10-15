@@ -1,0 +1,499 @@
+﻿@model List<MUNEEMJI.Models.PurchaseBill>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sale Orders</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .top-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .date-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .date-label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .date-input {
+            padding: 6px 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+            background-color: white;
+        }
+
+        .date-input:focus {
+            outline: 2px solid #0078d4;
+            outline-offset: 1px;
+        }
+
+        .user-filter {
+            margin-left: 20px;
+        }
+
+        select {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            min-width: 150px;
+        }
+
+        select:focus {
+            outline: 2px solid #0078d4;
+            outline-offset: 1px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background-color: #17a2b8;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .icon-btn:hover {
+            background-color: #138496;
+        }
+
+        .icon-btn.print {
+            background-color: #6c757d;
+        }
+
+        .icon-btn.print:hover {
+            background-color: #5a6268;
+        }
+
+        .filters-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .party-filter {
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .party-filter input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .party-filter input:focus {
+            outline: 2px solid #0078d4;
+            outline-offset: 1px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        th .sort-icon {
+            margin-left: 5px;
+            color: #6c757d;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 13px;
+            color: #333;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .date-cell {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .calendar-icon {
+            color: #0078d4;
+            font-size: 16px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #fff3cd;
+            color: #856404;
+            display: inline-block;
+        }
+
+        .type-badge {
+            padding: 4px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #e7f3ff;
+            color: #004085;
+            display: inline-block;
+        }
+
+        .amount-cell {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .footer-section {
+            display: flex;
+            justify-content: flex-end;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+
+        .total-amount {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .total-amount span {
+            color: #17a2b8;
+            margin-left: 10px;
+        }
+
+        .watermark {
+            text-align: right;
+            color: #d3d3d3;
+            font-size: 18px;
+            margin-top: 50px;
+            font-weight: 300;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Header -->
+        <div class="top-header">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="date-filter-group">
+                    <span class="date-label">From</span>
+                    <input type="date" class="date-input" id="startDate" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")">
+                    <span class="date-label">To</span>
+                    <input type="date" class="date-input" id="endDate" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+
+                <div class="user-filter">
+                    <select id="userFilter">
+                        <option value="">ALL USERS</option>
+                        <option value="user1">User 1</option>
+                        <option value="user2">User 2</option>
+                        <option value="user3">User 3</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="icon-btn" onclick="exportData()" title="Export">
+                    📊
+                </button>
+                <button class="icon-btn print" onclick="printData()" title="Print">
+                    🖨️
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <span class="filter-label">FILTERS</span>
+
+            <div class="party-filter">
+                <input type="text" id="partyFilter" placeholder="Party filter">
+            </div>
+
+            <select id="saleOrderFilter">
+                <option value="">SALE ORDER</option>
+                <option value="purchase-order">Purchase Order</option>
+                <option value="sale-order">Sale Order</option>
+            </select>
+
+            <select id="orderStatusFilter">
+                <option value="">All Orders</option>
+                <option value="open">Order Open</option>
+                <option value="closed">Order Closed</option>
+                <option value="partial">Partial</option>
+            </select>
+
+            <select id="godownFilter">
+                <option value="">All Godown</option>
+                <option value="godown1">Godown 1</option>
+                <option value="godown2">Godown 2</option>
+                <option value="godown3">Godown 3</option>
+            </select>
+        </div>
+
+        <!-- Orders Table -->
+        <table id="ordersTable">
+            <thead>
+                <tr>
+                    <th>DATE <span class="sort-icon">▼</span></th>
+                    <th>Order No. <span class="sort-icon">▼</span></th>
+                    <th>NAME</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>TYPE</th>
+                    <th class="amount-cell">TOTAL</th>
+                    <th class="amount-cell">ADVANCE</th>
+                    <th class="amount-cell">BALANCE</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                                <tr class="data-row" 
+                                    data-party="@item.PartyName?.ToLower()" 
+                                    data-orderno="@item.InvoiceNumber" 
+                                    data-status="Order Open"
+                                    data-type="Sale Order">
+                                    <td>
+                                        <div class="date-cell">
+                                            <span class="calendar-icon">📅</span>
+                                            <span>@item.CreatedDate.ToString("dd/MM/yyyy, hh:mm tt")</span>
+                                        </div>
+                                    </td>
+                                    <td>@item.InvoiceNumber</td>
+                                    <td>@item.PartyName</td>
+                                    <td>@item.DueDate.ToString("dd/MM/yyyy")</td>
+                                    <td><span class="status-badge">Order Open</span></td>
+                                    <td><span class="type-badge">Sale Order</span></td>
+                                    <td class="amount-cell">₹ @item.Total.ToString("N2")</td>
+                                    <td class="amount-cell">₹ @item.paidReciveamount.ToString("N2")</td>
+                                    <td class="amount-cell">₹ @item.FinalAmount.ToString("N2")</td>
+                                </tr>
+                    }
+                }
+                else
+                {
+                        <tr>
+                            <td colspan="9" class="no-results">No orders found</td>
+                        </tr>
+                }
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer-section">
+            <div class="total-amount">
+                Total Amount: <span id="totalAmount">₹ @(Model?.Sum(x => x.Total).ToString("N2") ?? "0.00")</span>
+            </div>
+        </div>
+
+        <div class="watermark">
+            Activate Windows<br>
+            Go to Settings to activate Windows.
+        </div>
+    </div>
+
+    <script>
+        // Format currency
+        function formatCurrency(amount) {
+            return '₹ ' + parseFloat(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const partyFilter = document.getElementById('partyFilter').value.toLowerCase();
+            const saleOrderFilter = document.getElementById('saleOrderFilter').value.toLowerCase();
+            const statusFilter = document.getElementById('orderStatusFilter').value.toLowerCase();
+            const godownFilter = document.getElementById('godownFilter').value.toLowerCase();
+
+            const rows = document.querySelectorAll('.data-row');
+            let visibleCount = 0;
+            let totalAmount = 0;
+
+            rows.forEach(row => {
+                const party = row.getAttribute('data-party') || '';
+                const orderNo = row.getAttribute('data-orderno') || '';
+                const status = row.getAttribute('data-status')?.toLowerCase() || '';
+                const type = row.getAttribute('data-type')?.toLowerCase() || '';
+
+                const matchesParty = !partyFilter || 
+                    party.includes(partyFilter) || 
+                    orderNo.includes(partyFilter);
+
+                const matchesType = !saleOrderFilter || type.includes(saleOrderFilter);
+                const matchesStatus = !statusFilter || status.includes(statusFilter);
+
+                if (matchesParty && matchesType && matchesStatus) {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+
+                    // Get total from the row
+                    const totalCell = row.cells[6].textContent;
+                    const amount = parseFloat(totalCell.replace('₹', '').replace(/,/g, ''));
+                    totalAmount += amount;
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+
+            // Update total amount
+            document.getElementById('totalAmount').textContent = formatCurrency(totalAmount);
+
+            // Show no results message if needed
+            const tbody = document.getElementById('tableBody');
+            const noResultsRow = tbody.querySelector('.no-results');
+
+            if (visibleCount === 0 && rows.length > 0) {
+                if (!noResultsRow) {
+                    const tr = document.createElement('tr');
+                    tr.className = 'no-results-row';
+                    tr.innerHTML = '<td colspan="9" class="no-results">No orders found</td>';
+                    tbody.appendChild(tr);
+                }
+            } else {
+                const noResultsRowElement = tbody.querySelector('.no-results-row');
+                if (noResultsRowElement) {
+                    noResultsRowElement.remove();
+                }
+            }
+        }
+
+        // Event listeners
+        document.getElementById('partyFilter').addEventListener('input', applyFilters);
+        document.getElementById('saleOrderFilter').addEventListener('change', applyFilters);
+        document.getElementById('orderStatusFilter').addEventListener('change', applyFilters);
+        document.getElementById('godownFilter').addEventListener('change', applyFilters);
+
+        document.getElementById('userFilter').addEventListener('change', function(e) {
+            console.log('User filter changed:', e.target.value);
+            // Implement user filtering logic here if needed
+        });
+
+        document.getElementById('startDate').addEventListener('change', function(e) {
+            console.log('Start date changed:', e.target.value);
+            // Implement date filtering logic here if needed
+        });
+
+        document.getElementById('endDate').addEventListener('change', function(e) {
+            console.log('End date changed:', e.target.value);
+            // Implement date filtering logic here if needed
+        });
+
+        // Export and print functions
+        function exportData() {
+            // Implement export to Excel functionality
+            alert('Export functionality - Connect to your backend export endpoint');
+        }
+
+        function printData() {
+            window.print();
+        }
+
+        // Add hidden class style dynamically
+        const style = document.createElement('style');
+        style.textContent = '.hidden { display: none !important; }';
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

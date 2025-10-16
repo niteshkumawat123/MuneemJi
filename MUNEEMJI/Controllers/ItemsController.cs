@@ -1,5 +1,6 @@
 ﻿using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
@@ -18,13 +19,17 @@ namespace MUNEEMJI.Controllers
         string _connectionString = string.Empty;
         private readonly IBillItemService _billItemService;
         private readonly ICompanyTenancy _CompayTenancy;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ItemsController(IWebHostEnvironment webHostEnv, IBillItemService billItemService, ICompanyTenancy CompayTenancy)
+
+        public ItemsController(IWebHostEnvironment webHostEnv, IBillItemService billItemService, ICompanyTenancy CompayTenancy, IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnv = webHostEnv;
             _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
             _billItemService = billItemService;
             _CompayTenancy = CompayTenancy;
+            _webHostEnvironment = webHostEnvironment;
+
         }
 
         [HttpGet]
@@ -56,6 +61,7 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public async Task<IActionResult> Create(int id = 0)
         {
+
             try
             {
                 var companyId = _CompayTenancy.GetCurrentCompanyId();
@@ -92,7 +98,7 @@ namespace MUNEEMJI.Controllers
 
                         BillItem = new BillItem
                         {
-                            ItemType = "Product",
+                            ItemType = "service",
                             AsOfDate = DateTime.Today,
                             SalePriceTaxType = "Without Tax",
                             PurchasePriceTaxType = "Without Tax",
@@ -115,7 +121,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-               
+
                 return View("Error");
             }
         }
@@ -138,13 +144,18 @@ namespace MUNEEMJI.Controllers
                         model.ServiceHsn = model.ItemHsn;
                         model.ServiceCode = model.ItemCode;
                     }
+                    if (!string.IsNullOrEmpty(model.ImageBase64) && !string.IsNullOrEmpty(model.ImageFileName))
+                    {
+                        model.ImageUrl = await SaveImageToServer(model.ImageBase64, model.ImageFileName, "Item");
+                    }
 
                     bool result = await _billItemService.SaveBillItemAsync(model, companyId);
 
                     if (result)
                     {
                         //TempData["SuccessMessage"] = $"{model.ItemType} saved successfully!";
-                        return RedirectToAction("MainIndex");
+                        return RedirectToAction("GetServicePartialView", "Items");
+
                     }
                     else
                     {
@@ -163,7 +174,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-              
+
                 ModelState.AddModelError("", "An error occurred while saving the item.");
 
                 // Reload dropdown data
@@ -505,6 +516,44 @@ namespace MUNEEMJI.Controllers
 
             return items;
         }
+        private async Task<string> SaveImageToServer(string base64String, string fileName, string subfolder)
+        {
+            try
+            {
+                // Convert base64 to byte array
+                byte[] imageBytes = Convert.FromBase64String(base64String);
+
+                // Create unique filename to avoid conflicts
+                string fileExtension = Path.GetExtension(fileName);
+                string uniqueFileName = $"{Guid.NewGuid()}{fileExtension}";
+
+                // Create directory path
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", subfolder);
+
+                // Ensure directory exists
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // Full file path
+                string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                // Save file
+                await System.IO.File.WriteAllBytesAsync(filePath, imageBytes);
+
+                // Return relative path for storing in database
+                return $"/uploads/{subfolder}/{uniqueFileName}";
+            }
+            catch (Exception ex)
+            {
+                // Log error and return null or empty string
+                // You might want to use your logging framework here
+                Console.WriteLine($"Error saving image: {ex.Message}");
+                return null;
+            }
+        }
+
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Sale Purchase by Party Group";
 }
+@model List<MUNEEMJI.Models.ReportModel.PartyReportByItemModel>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -244,61 +245,52 @@
             }
 
         @@media (max-width: 1024px) {
-            .filter-section
+            .filter-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        {
-            flex-direction: column;
-            align-items: flex-start;
-        }
+            .action-buttons {
+                margin-left: 0;
+                width: 100%;
+            }
 
-        .action-buttons {
-            margin-left: 0;
-            width: 100%;
-        }
+            select {
+                min-width: 100%;
+            }
 
-        select {
-            min-width: 100%;
-        }
+            .header-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
 
-        .header-section {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .search-box {
-            width: 100%;
-        }
-
+            .search-box {
+                width: 100%;
+            }
         }
 
         @@media (max-width: 768px) {
-            .footer-section
+            .footer-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
 
-        {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .windows-message {
-            position: static;
-            margin-top: 20px;
-        }
-
+            .windows-message {
+                position: static;
+                margin-top: 20px;
+            }
         }
 
         @@media print {
-            .filter-section, .search-box, .action-buttons, .windows-message
+            .filter-section, .search-box, .action-buttons, .windows-message {
+                display: none;
+            }
 
-        {
-            display: none;
-        }
-
-        .container {
-            box-shadow: none;
-        }
-
+            .container {
+                box-shadow: none;
+            }
         }
     </style>
 </head>
@@ -371,11 +363,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td colspan="3" class="empty-state">
-                                No transactions to show
-                            </td>
-                        </tr>
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.PartyName
+                                    </td>
+                                    <td>
+                                        @item.SaleAmount
+                                    </td>
+                                    <td>
+                                        @item.PurchaseAmount
+
+                                    </td>
+                                </tr>
+                            }
+                        }
                     </tbody>
                 </table>
             </div>

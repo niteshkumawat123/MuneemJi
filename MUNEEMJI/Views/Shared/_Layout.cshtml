@@ -170,6 +170,12 @@
                     transform: translateX(3px);
                 }
 
+                .btn-toggle-nav .nav-link.active {
+                    background: linear-gradient(135deg, #4dabf7, #339af0);
+                    color: #fff;
+                    box-shadow: 0 4px 15px rgba(77, 171, 247, 0.3);
+                }
+
         /* Sidebar Footer Enhanced */
         .sidebar-footer {
             background: rgba(0, 0, 0, 0.3);
@@ -235,13 +241,13 @@
         .top-header {
             position: fixed;
             top: 0;
-            left: 280px; /* Same as sidebar width */
+            left: 280px;
             right: 0;
-            height: 60px; /* Set a fixed height */
+            height: 60px;
             background: #fff;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid #e9ecef;
-            z-index: 999; /* Below sidebar but above main content */
+            z-index: 999;
         }
 
             .top-header a {
@@ -253,15 +259,11 @@
                     color: #007bff;
                 }
 
-        media (max-width: 768px) {
+        @@media (max-width: 768px) {
             .top-header
-        {
-            left: 0; /* Full width on mobile */
-        }
 
-        #sidebar {
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
+        {
+            left: 0;
         }
 
         #sidebar {
@@ -275,11 +277,10 @@
 
         .main-content {
             margin-left: 0;
-            margin-top: 60px; /* Keep the top margin */
+            margin-top: 60px;
         }
 
         }
-        /* Responsive Design */
 
         .call-modal {
             position: fixed;
@@ -449,6 +450,64 @@
 
         }
 
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-toggle {
+            color: inherit !important;
+            text-decoration: none !important;
+            cursor: pointer;
+            position: relative;
+        }
+
+            .dropdown-toggle::after {
+                content: '';
+                display: inline-block;
+                width: 0;
+                height: 0;
+                margin-left: 0.5rem;
+                vertical-align: 0.2rem;
+                border-top: 0.3em solid;
+                border-right: 0.3em solid transparent;
+                border-bottom: 0;
+                border-left: 0.3em solid transparent;
+            }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+        }
+
+            .dropdown-menu.show {
+                display: block;
+            }
+
+        .dropdown-item {
+            display: block;
+            padding: 10px 15px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+            .dropdown-item:hover {
+                background-color: #f8f9fa;
+                color: #333;
+            }
+
+            .dropdown-item:last-child {
+                border-bottom: none;
+            }
     </style>
 </head>
 <body>
@@ -491,7 +550,6 @@
         </div>
     </div>
 
-
     <!-- Top Header -->
     <div class="top-header d-flex justify-content-between align-items-center px-3 py-2">
         <div class="d-flex align-items-center">
@@ -506,11 +564,8 @@
                     <li><a class="dropdown-item" href="/Web/BusinessProfile/Edit">Rename Company Name</a></li>
                 </ul>
             </div>
-@*             <a href="#" class="me-3 text-decoration-none">Company</a>
- *@            <a href="http://muneemjii.com/gst-billing-app.htm" class="me-3 text-decoration-none">Help</a>
-@*             <a href="#" class="me-3 text-decoration-none">Shortcuts</a>
- *@@*             <button class="btn btn-sm"><i class="bi bi-arrow-clockwise"></i></button>
- *@        </div>
+            <a href="http://muneemjii.com/gst-billing-app.htm" class="me-3 text-decoration-none">Help</a>
+        </div>
         <div class="d-flex align-items-center">
             <span class="me-2">Customer Support:</span>
             <a href="tel:+918690562456" class="me-3 text-decoration-none text-primary">
@@ -529,33 +584,30 @@
             <h4><i class="bi bi-speedometer2 me-2"></i>MuneemJi</h4>
         </div>
 
-        <!-- Search Input -->
-     @*    <div class="sidebar-search">
-            <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control" placeholder="Open Anything (Ctrl+F)" aria-label="Search" />
-                <button class="btn" type="button"><i class="bi bi-chevron-left"></i></button>
-            </div>
-        </div> *@
-
         <!-- Sidebar Navigation Menu -->
         <div class="sidebar-nav">
             <ul class="nav nav-pills flex-column">
                 <!-- Home -->
                 <li class="nav-item">
-                    <a class="nav-link active" href="/Web/Home/index">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
+                       href="/Web/Home/index">
                         <i class="bi bi-house-door"></i> Home
                     </a>
                 </li>
 
                 <!-- Parties -->
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#partiesMenu"
-                       role="button" aria-expanded="false" aria-controls="partiesMenu">
+                    @{
+                        var isPartiesActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "party";
+                    }
+                    <a class="nav-link @(isPartiesActive ? "active" : "")"
+                       data-bs-toggle="collapse" href="#partiesMenu"
+                       role="button" aria-expanded="@(isPartiesActive ? "true" : "false")"
+                       aria-controls="partiesMenu">
                         <i class="bi bi-people"></i> Parties
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse" id="partiesMenu">
+                    <div class="collapse @(isPartiesActive ? "show" : "")" id="partiesMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/Web/party/index" class="nav-link">All Parties</a></li>
                             <li><a href="/Web/party/add" class="nav-link">Add Party</a></li>
@@ -565,34 +617,48 @@
 
                 <!-- Items -->
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#ItemMenu"
-                       role="button" aria-expanded="false" aria-controls="ItemMenu">
+                    @{
+                        var isItemsActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "items"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "billitem"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "godown";
+                    }
+                    <a class="nav-link @(isItemsActive ? "active" : "")"
+                       data-bs-toggle="collapse" href="#ItemMenu"
+                       role="button" aria-expanded="@(isItemsActive ? "true" : "false")"
+                       aria-controls="ItemMenu">
                         <i class="bi bi-box-seam"></i> Items
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse" id="ItemMenu">
+                    <div class="collapse @(isItemsActive ? "show" : "")" id="ItemMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/Web/items/MainIndex" class="nav-link">All Items</a></li>
                             <li><a href="/Web/billitem/create" class="nav-link">Add Item</a></li>
                             <li><a href="/Web/godown/index" class="nav-link">Godown Management</a></li>
-@*                             <li><a href="/Web/items/create" class="nav-link">Smart Connect</a></li>
- *@                        </ul>
+                        </ul>
                     </div>
                 </li>
 
                 <!-- Sale -->
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#saleMenu"
-                       role="button" aria-expanded="false" aria-controls="saleMenu">
+                    @{
+                        var isSalesActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "Sales"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "Estimate_Quotations"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "PaymentIn"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "SalesOrder"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "DeliveryChallan"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "CreditNote"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "OtherIncome";
+                    }
+                    <a class="nav-link @(isSalesActive ? "active" : "")"
+                       data-bs-toggle="collapse" href="#saleMenu"
+                       role="button" aria-expanded="@(isSalesActive ? "true" : "false")"
+                       aria-controls="saleMenu">
                         <i class="bi bi-receipt"></i> Sale
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse" id="saleMenu">
+                    <div class="collapse @(isSalesActive ? "show" : "")" id="saleMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/Web/Sales/Create" class="nav-link">New Invoice</a></li>
-
-@*                             <li><a href="#" class="nav-link">View Reports</a></li>
- *@
                             <li><a href="/Web/Sales/index" class="nav-link">Sales Invoices</a></li>
                             <li><a href="/Web/Estimate_Quotations/index" class="nav-link">Estimate/Quotation</a></li>
                             <li><a href="/Web/PaymentIn/index" class="nav-link">Payment In</a></li>
@@ -600,129 +666,118 @@
                             <li><a href="/Web/DeliveryChallan/index" class="nav-link">Delivery Challan</a></li>
                             <li><a href="/Web/CreditNote/index" class="nav-link">Sale Return/Credit Note</a></li>
                             <li><a href="/Web/OtherIncome/index" class="nav-link">Other Income</a></li>
-                          @*   <li><a href="#" class="nav-link">Sale FA</a></li>
-                            <li><a href="#" class="nav-link">Muneem Ji POS</a></li> *@
                         </ul>
                     </div>
                 </li>
 
                 <!-- Purchase & Expense -->
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#purchaseMenu"
-                       role="button" aria-expanded="false" aria-controls="purchaseMenu">
+                    @{
+                        var isPurchaseActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "PurchaseBill"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "PaymentOut"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "Expense"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "PurchaseOrder"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "DebitNote";
+                    }
+                    <a class="nav-link @(isPurchaseActive ? "active" : "")"
+                       data-bs-toggle="collapse" href="#purchaseMenu"
+                       role="button" aria-expanded="@(isPurchaseActive ? "true" : "false")"
+                       aria-controls="purchaseMenu">
                         <i class="bi bi-cart3"></i> Purchase & Expense
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse" id="purchaseMenu">
+                    <div class="collapse @(isPurchaseActive ? "show" : "")" id="purchaseMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/Web/PurchaseBill/Create" class="nav-link">New Purchase</a></li>
-
-@*                             <li><a href="#" class="nav-link">Expense Report</a></li>
- *@
                             <li><a href="/Web/PurchaseBill/index" class="nav-link">Purchase Bill</a></li>
                             <li><a href="/Web/PaymentOut/index" class="nav-link">Payment Out</a></li>
                             <li><a href="/Web/Expense/Index" class="nav-link">Expense</a></li>
                             <li><a href="/Web/PurchaseOrder/index" class="nav-link">Purchase Order</a></li>
                             <li><a href="/Web/DebitNote/index" class="nav-link">Purchase Return/Dr. Note</a></li>
-@*                             <li><a href="#" class="nav-link">Purchase FA</a></li>
- *@                        </ul>
+                        </ul>
                     </div>
                 </li>
 
                 <!-- Grow Your Business -->
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#growMenu"
-                       role="button" aria-expanded="false" aria-controls="growMenu">
+                    @{
+                        var isGrowActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "WhatsAppMarketing";
+                    }
+                    <a class="nav-link @(isGrowActive ? "active" : "")"
+                       data-bs-toggle="collapse" href="#growMenu"
+                       role="button" aria-expanded="@(isGrowActive ? "true" : "false")"
+                       aria-controls="growMenu">
                         <i class="bi bi-graph-up-arrow"></i> Grow Your Business
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse" id="growMenu">
+                    <div class="collapse @(isGrowActive ? "show" : "")" id="growMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
-                     @*        <li><a href="#" class="nav-link">Business Plan</a></li>
-                            <li><a href="#" class="nav-link">Analytics</a></li> *@
-
                             <li><a href="/Web/WhatsAppMarketing/index" class="nav-link">WhatsApp Marketing</a></li>
-
-
-                          @*   <li><a href="#" class="nav-link">Online Store</a></li> *@
-
                         </ul>
                     </div>
                 </li>
 
                 <!-- Cash & Bank -->
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#cashMenu"
-                       role="button" aria-expanded="false" aria-controls="cashMenu">
+                    @{
+                        var isCashBankActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "bank"
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "Loan";
+                    }
+                    <a class="nav-link @(isCashBankActive ? "active" : "")"
+                       data-bs-toggle="collapse" href="#cashMenu"
+                       role="button" aria-expanded="@(isCashBankActive ? "true" : "false")"
+                       aria-controls="cashMenu">
                         <i class="bi bi-bank"></i> Cash & Bank
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse" id="cashMenu">
+                    <div class="collapse @(isCashBankActive ? "show" : "")" id="cashMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
-@*                             <li><a href="#" class="nav-link">Cash Ledger</a></li>
- *@                            <li><a href="/Web/bank/index" class="nav-link">Bank Accounts</a></li>
+                            <li><a href="/Web/bank/index" class="nav-link">Bank Accounts</a></li>
                             <li><a href="/Web/bank/CashinHand" class="nav-link">Cash In Hand</a></li>
-@*                             <li><a href="#" class="nav-link">Cheques</a></li>
- *@                            <li><a href="/Loan/Index" class="nav-link">Loan Account</a></li>
-@*                             <li><a href="#" class="nav-link">Fixed Asset</a></li>
- *@                        </ul>
+                            <li><a href="/Loan/Index" class="nav-link">Loan Account</a></li>
+                        </ul>
                     </div>
                 </li>
 
                 <!-- Reports -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/Web/Report/Index">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Report" ? "active" : "")"
+                       href="/Web/Report/Index">
                         <i class="bi bi-bar-chart"></i> Reports
                     </a>
                 </li>
 
                 <!-- Sync, Share & Backup -->
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#syncMenu"
-                       role="button" aria-expanded="false" aria-controls="syncMenu">
-                        <i class="bi bi-cloud-arrow-up"></i> Sync & Share 
+                    @{
+                        var isSyncActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "User";
+                    }
+                    <a class="nav-link @(isSyncActive ? "active" : "")"
+                       data-bs-toggle="collapse" href="#syncMenu"
+                       role="button" aria-expanded="@(isSyncActive ? "true" : "false")"
+                       aria-controls="syncMenu">
+                        <i class="bi bi-cloud-arrow-up"></i> Sync & Share
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
-                    <div class="collapse" id="syncMenu">
+                    <div class="collapse @(isSyncActive ? "show" : "")" id="syncMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li><a href="/Web/User/Index" class="nav-link">Sync & Share</a></li>
-                          @*   <li><a href="#" class="nav-link">Cloud Sync</a></li>
-                            <li><a href="#" class="nav-link">Backup Now</a></li>
-                            <li><a href="#" class="nav-link">Backup to Drive</a></li>
-                            <li><a href="#" class="nav-link">Backup to Computer</a></li>
-                            <li><a href="#" class="nav-link">Auto Backup</a></li> *@
                         </ul>
                     </div>
                 </li>
 
-                <!-- Utilities -->
-             @*    <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#utilsMenu"
-                       role="button" aria-expanded="false" aria-controls="utilsMenu">
-                        <i class="bi bi-tools"></i> Utilities
-                        <i class="bi bi-chevron-down float-end"></i>
-                    </a>
-                    <div class="collapse" id="utilsMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal">
-                            <li><a href="#" class="nav-link">Backup Tools</a></li>
-                            <li><a href="#" class="nav-link">Config Tools</a></li>
-                            <li><a href="#" class="nav-link">Import Items</a></li>
-                            <li><a href="#" class="nav-link">Set Up My Business</a></li>
-                            <li><a href="#" class="nav-link">Account Access</a></li>
-                        </ul>
-                    </div>
-                </li> *@
-
                 <!-- Settings -->
                 <li class="nav-item">
-                    <a class="nav-link" onclick="window.location.href='/Web/Settings/General/Index?returnUrl=' + encodeURIComponent(window.location.href)">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Settings" ? "active" : "")"
+                       onclick="window.location.href='/Web/Settings/General/Index?returnUrl=' + encodeURIComponent(window.location.href)">
                         <i class="bi bi-gear"></i> Settings
                     </a>
                 </li>
 
                 <!-- Plans & Pricing -->
                 <li class="nav-item">
-                    <a class="nav-link" href="/Web/PlansAndPricing/index">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PlansAndPricing" ? "active" : "")"
+                       href="/Web/PlansAndPricing/index">
                         <i class="bi bi-trophy"></i> Plans & Pricing
                     </a>
                 </li>
@@ -733,7 +788,7 @@
         <div class="sidebar-footer">
             <a href="/Web/BusinessProfile/Edit" class="mb-2">
                 <i class="bi bi-building me-2"></i>
-                
+
                 @{
                     var BusinessName = Context.Session.GetString("BusinessName");
                 }
@@ -798,71 +853,9 @@
                 }
             });
         });
-    </script>
-    <style>
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
 
-        .dropdown-toggle {
-            color: inherit !important;
-            text-decoration: none !important;
-            cursor: pointer;
-            position: relative;
-        }
-
-            .dropdown-toggle::after {
-                content: '';
-                display: inline-block;
-                width: 0;
-                height: 0;
-                margin-left: 0.5rem;
-                vertical-align: 0.2rem;
-                border-top: 0.3em solid;
-                border-right: 0.3em solid transparent;
-                border-bottom: 0;
-                border-left: 0.3em solid transparent;
-            }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            min-width: 200px;
-            z-index: 1000;
-            display: none;
-        }
-
-            .dropdown-menu.show {
-                display: block;
-            }
-
-        .dropdown-item {
-            display: block;
-            padding: 10px 15px;
-            color: #333;
-            text-decoration: none;
-            border-bottom: 1px solid #f5f5f5;
-        }
-
-            .dropdown-item:hover {
-                background-color: #f8f9fa;
-                color: #333;
-            }
-
-            .dropdown-item:last-child {
-                border-bottom: none;
-            }
-    </style>
-
-    <!-- JavaScript -->
-    <script>
-                document.addEventListener('DOMContentLoaded', function() {
+        // Call modal functions
+        document.addEventListener('DOMContentLoaded', function() {
             const phoneLink = document.querySelector('a[href="tel:+918690562456"]');
             if (phoneLink) {
                 phoneLink.addEventListener('click', function(e) {
@@ -874,16 +867,15 @@
 
         function showCallModal() {
             document.getElementById('callModal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            document.body.style.overflow = 'hidden';
         }
 
         function closeCallModal() {
             document.getElementById('callModal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Restore scrolling
+            document.body.style.overflow = 'auto';
         }
 
         function proceedCall() {
-            // Close modal and proceed with call
             closeCallModal();
             window.location.href = 'tel:+918690562456';
         }
@@ -896,6 +888,7 @@
             }
         });
 
+        // Dropdown functionality
         document.addEventListener('DOMContentLoaded', function() {
             const dropdownToggle = document.getElementById('companyDropdown');
             const dropdownMenu = dropdownToggle.nextElementSibling;

@@ -868,9 +868,46 @@
         });
     }
 
+    function deleteItem(itemId) {
+        // Close any open popovers
+        debugger;
+        const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+        popovers.forEach(popover => {
+            const bsPopover = bootstrap.Popover.getInstance(popover);
+            if (bsPopover) {
+                bsPopover.hide();
+            }
+        });
+
+        // Show confirmation dialog
+        
+            fetch(`/Web/Items/DeleteItem/${itemId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+               
+                    window.location.href  = `/Web/items/Mainindex`;
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Failed to delete item');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting item: ' + error.message);
+            });
+        
+    }
+
     // Action functions - called from popover content
     function viewItem(itemId) {
-         // Hide all popovers
+         debugger;
          document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(popoverEl) {
              const popover = bootstrap.Popover.getInstance(popoverEl);
              if (popover) {

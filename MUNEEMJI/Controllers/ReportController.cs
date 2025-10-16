@@ -258,8 +258,54 @@ namespace MUNEEMJI.Controllers
         // All Transactions Report - Returns Partial View
         public IActionResult AllTransactions()
         {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            List<PurchaseBill> Model = new List<PurchaseBill>();
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                string query = @"
+            SELECT 
+                td.id AS ""Id"",
+                td.bill_number AS ""BillNumber"",
+                td.bill_date AS ""BillDate"",
+                td.state_of_supply AS ""StateOfSupply"",
+                td.phone_no AS ""PhoneNo"",
+                td.po_no AS ""PONo"",
+                td.po_date AS ""PODate"",
+                td.eway_bill_no AS ""EWayBillNo"",
+                td.transport_name AS ""TransportName"",
+                td.delivery_location AS ""DeliveryLocation"",
+                td.vehicle_number AS ""VehicleNumber"",
+                td.delivery_date AS ""DeliveryDate"",
+                td.payment_type AS ""PaymentType"",
+                td.description AS ""Description"",
+                td.image_path AS ""ImagePath"",
+                td.round_off AS ""RoundOff"",
+                td.total AS ""Total"",
+                td.paidreciveamount AS ""paidReciveamount"",
+                td.partyid AS ""PartyId"",
+                pt.party_name as PartyName,
+                td.final_amount as ""FinalAmount"",
+                td.invoicenumber as ""InvoiceNumber"",
+                td.IsCredit as ""IsCredit""
+            FROM public.tradedocuments as td 
+            LEFT JOIN parties as pt ON td.partyid = pt.id  
+            WHERE  td.companyid = @p_companyid;
+        ";
 
-            return PartialView("AllTransactions_Report");
+                Model = connection.QuerySql<PurchaseBill>(query,
+                    new
+                    {
+                        p_companyid = companyId
+                    }).ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return PartialView("AllTransactions_Report", Model);
+
         }
 
         // Profit And Loss Report - Returns Partial View
@@ -273,9 +319,53 @@ namespace MUNEEMJI.Controllers
         // Bill Wise Profit Report - Returns Partial View
         public IActionResult BillWiseProfit()
         {
-            ViewBag.ReportTitle = "Bill Wise Profit";
-            ViewBag.ReportType = "billwiseprofit";
-            return PartialView("_ReportTemplate");
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            List<PurchaseBill> Model = new List<PurchaseBill>();
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                string query = @"
+            SELECT 
+                td.id AS ""Id"",
+                td.bill_number AS ""BillNumber"",
+                td.bill_date AS ""BillDate"",
+                td.state_of_supply AS ""StateOfSupply"",
+                td.phone_no AS ""PhoneNo"",
+                td.po_no AS ""PONo"",
+                td.po_date AS ""PODate"",
+                td.eway_bill_no AS ""EWayBillNo"",
+                td.transport_name AS ""TransportName"",
+                td.delivery_location AS ""DeliveryLocation"",
+                td.vehicle_number AS ""VehicleNumber"",
+                td.delivery_date AS ""DeliveryDate"",
+                td.payment_type AS ""PaymentType"",
+                td.description AS ""Description"",
+                td.image_path AS ""ImagePath"",
+                td.round_off AS ""RoundOff"",
+                td.total AS ""Total"",
+                td.paidreciveamount AS ""paidReciveamount"",
+                td.partyid AS ""PartyId"",
+                pt.party_name as PartyName,
+                td.final_amount as ""FinalAmount"",
+                td.invoicenumber as ""InvoiceNumber"",
+                td.IsCredit as ""IsCredit""
+            FROM public.tradedocuments as td 
+            LEFT JOIN parties as pt ON td.partyid = pt.id  
+            WHERE  td.companyid = @p_companyid;
+        ";
+
+                Model = connection.QuerySql<PurchaseBill>(query,
+                    new
+                    {
+                        p_companyid = companyId
+                    }).ToList();
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return PartialView("Bill_Wise_Profit", Model);
         }
 
         // Sale Aging Report - Returns Partial View
@@ -383,25 +473,100 @@ namespace MUNEEMJI.Controllers
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
-            return PartialView("Party_Report_by_Item",reportByItemModels);
+            return PartialView("Party_Report_by_Item", reportByItemModels);
         }
 
         // Sale Purchase By Party - Returns Partial View
-        public IActionResult SalePurchaseByParty()
+        public async Task<IActionResult> SalePurchaseByParty()
         {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            List<PartyReportByItemModel> reportByItemModels = new List<PartyReportByItemModel>();
+            var PartyList = await partyController.GetAllPartiesAsync(companyId);
+            List<TradeDocumentReportModel> Traderecord = new List<TradeDocumentReportModel>();
+            try
+            {
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var QueryString = " SELECT  td.partyid, td.tradedocumenttypesid,  SUM(td.final_amount) AS amount, SUM(tdi.total_quantity) AS quantity FROM tradedocuments td" +
+                        " LEFT JOIN ( SELECT   tradedocumentsid,  SUM(quantity) AS total_quantity   FROM tradedocumentitems " +
+                        " GROUP BY tradedocumentsid ) tdi ON td.id = tdi.tradedocumentsid WHERE td.tradedocumenttypesid IN (4,5) GROUP BY td.partyid, td.tradedocumenttypesid;";
 
-            return PartialView("Sale_Purchase_by_Party");
+
+                    Traderecord = Conn.QuerySql<TradeDocumentReportModel>(QueryString).ToList();
+                }
+
+                if (PartyList != null && PartyList.Count() > 0)
+                {
+                    foreach (var item in PartyList)
+                    {
+                        PartyReportByItemModel partyReportByItemModel = new PartyReportByItemModel()
+                        {
+                            PartyId = item.Id,
+                            PartyName = item.PartyName,
+                            PurchaseAmount = Traderecord.Where(x => x.partyid == item.Id && x.TradedocumentTypesId == 4).Select(x => x.amount).FirstOrDefault(),
+                            PurchaseQuantity = Traderecord.Where(x => x.partyid == item.Id && x.TradedocumentTypesId == 4).Select(x => x.quantity).FirstOrDefault(),
+                            SaleAmount = Traderecord.Where(x => x.partyid == item.Id && x.TradedocumentTypesId == 5).Select(x => x.amount).FirstOrDefault(),
+                            SaleQuantity = Traderecord.Where(x => x.partyid == item.Id && x.TradedocumentTypesId == 5).Select(x => x.quantity).FirstOrDefault(),
+                        };
+
+                        reportByItemModels.Add(partyReportByItemModel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return PartialView("Sale_Purchase_by_Party", reportByItemModels);
         }
 
         // Sale Purchase By Party Group - Returns Partial View
-        public IActionResult SalePurchaseByPartyGroup()
+        public async  Task<IActionResult> SalePurchaseByPartyGroup()
         {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            List<PartyReportByItemModel> reportByItemModels = new List<PartyReportByItemModel>();
+            var PartyList = await partyController.GetAllPartiesAsync(companyId);
+            List<TradeDocumentReportModel> Traderecord = new List<TradeDocumentReportModel>();
+            try
+            {
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var QueryString = " SELECT  td.partyid, td.tradedocumenttypesid,  SUM(td.final_amount) AS amount, SUM(tdi.total_quantity) AS quantity FROM tradedocuments td" +
+                        " LEFT JOIN ( SELECT   tradedocumentsid,  SUM(quantity) AS total_quantity   FROM tradedocumentitems " +
+                        " GROUP BY tradedocumentsid ) tdi ON td.id = tdi.tradedocumentsid WHERE td.tradedocumenttypesid IN (4,5) GROUP BY td.partyid, td.tradedocumenttypesid;";
 
-            return PartialView("_SalePurchaseByPartyGroup");
+
+                    Traderecord = Conn.QuerySql<TradeDocumentReportModel>(QueryString).ToList();
+                }
+
+                if (PartyList != null && PartyList.Count() > 0)
+                {
+                    foreach (var item in PartyList)
+                    {
+                        PartyReportByItemModel partyReportByItemModel = new PartyReportByItemModel()
+                        {
+                            PartyId = item.Id,
+                            PartyName = item.PartyName,
+                            PurchaseAmount = Traderecord.Where(x => x.partyid == item.Id && x.TradedocumentTypesId == 4).Select(x => x.amount).FirstOrDefault(),
+                            PurchaseQuantity = Traderecord.Where(x => x.partyid == item.Id && x.TradedocumentTypesId == 4).Select(x => x.quantity).FirstOrDefault(),
+                            SaleAmount = Traderecord.Where(x => x.partyid == item.Id && x.TradedocumentTypesId == 5).Select(x => x.amount).FirstOrDefault(),
+                            SaleQuantity = Traderecord.Where(x => x.partyid == item.Id && x.TradedocumentTypesId == 5).Select(x => x.quantity).FirstOrDefault(),
+                        };
+
+                        reportByItemModels.Add(partyReportByItemModel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return PartialView("_SalePurchaseByPartyGroup", reportByItemModels);
         }
 
         // GSTR 3 B Report - Returns Partial View
@@ -434,10 +599,10 @@ namespace MUNEEMJI.Controllers
                 }
                 var companyId = _CompayTenancy.GetCurrentCompanyId();
                 Model.OtherIncomeCategoryDropDown = await _otherIncome.GetAllOtherIncomeCategories();
-                
+
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -492,10 +657,10 @@ namespace MUNEEMJI.Controllers
 
         }
 
-        public async Task<IActionResult>Sale_Purchase_Order_report()
+        public async Task<IActionResult> Sale_Purchase_Order_report()
         {
             var companyId = _CompayTenancy.GetCurrentCompanyId();
-            List<PurchaseBill> Model = new List<PurchaseBill>(); 
+            List<PurchaseBill> Model = new List<PurchaseBill>();
             try
             {
                 using var connection = new NpgsqlConnection(_connectionString);
@@ -537,7 +702,7 @@ namespace MUNEEMJI.Controllers
                     }).ToList();
 
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }

@@ -29,7 +29,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 15 Oct 2025 01:47:57 GMT"
+          "Value": "Thu, 16 Oct 2025 04:15:23 GMT"
         }
       ],
       "EndpointProperties": [
@@ -66,7 +66,7 @@
         },
         {
           "Name": "Last-Modified",
-          "Value": "Wed, 15 Oct 2025 01:47:57 GMT"
+          "Value": "Thu, 16 Oct 2025 04:15:23 GMT"
         }
       ],
       "EndpointProperties": [
@@ -7711,6 +7711,88 @@
       ]
     },
     {
+      "Route": "uploads/logos/82f74bae-e068-4aa2-8907-84283c0d744d_image (14).06kj28d4sh.png",
+      "AssetFile": "uploads/logos/82f74bae-e068-4aa2-8907-84283c0d744d_image (14).png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "191183"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2B7TdsZtMW5mq7PVCVDhDpa2XpfuWmjUOgrC1wmQouY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 16 Oct 2025 01:00:06 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "06kj28d4sh"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-2B7TdsZtMW5mq7PVCVDhDpa2XpfuWmjUOgrC1wmQouY="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/logos/82f74bae-e068-4aa2-8907-84283c0d744d_image (14).png"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/logos/82f74bae-e068-4aa2-8907-84283c0d744d_image (14).png",
+      "AssetFile": "uploads/logos/82f74bae-e068-4aa2-8907-84283c0d744d_image (14).png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "191183"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"2B7TdsZtMW5mq7PVCVDhDpa2XpfuWmjUOgrC1wmQouY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 16 Oct 2025 01:00:06 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-2B7TdsZtMW5mq7PVCVDhDpa2XpfuWmjUOgrC1wmQouY="
+        }
+      ]
+    },
+    {
       "Route": "uploads/logos/88e8615e-b86a-49d8-b56b-3ed021ff2d48_whatsapp-template-20250914072937.n2t4r9xqcx.png",
       "AssetFile": "uploads/logos/88e8615e-b86a-49d8-b56b-3ed021ff2d48_whatsapp-template-20250914072937.png",
       "Selectors": [],
@@ -9019,6 +9101,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-o+KNvjTOro9Ki1saAbh/OmXKydbMLKMMz5PxN4WO7qQ="
+        }
+      ]
+    },
+    {
+      "Route": "uploads/signatures/e0ee130b-9435-4293-8f1d-cc915748c8de_whatsapp-template-20250914073947.484p26pg71.png",
+      "AssetFile": "uploads/signatures/e0ee130b-9435-4293-8f1d-cc915748c8de_whatsapp-template-20250914073947.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "416876"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"pIsssbu/9ctGNckX91t/wK5SgAjeRhrfv0TpafuzUxY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 16 Oct 2025 01:00:06 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "484p26pg71"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-pIsssbu/9ctGNckX91t/wK5SgAjeRhrfv0TpafuzUxY="
+        },
+        {
+          "Name": "label",
+          "Value": "uploads/signatures/e0ee130b-9435-4293-8f1d-cc915748c8de_whatsapp-template-20250914073947.png"
+        }
+      ]
+    },
+    {
+      "Route": "uploads/signatures/e0ee130b-9435-4293-8f1d-cc915748c8de_whatsapp-template-20250914073947.png",
+      "AssetFile": "uploads/signatures/e0ee130b-9435-4293-8f1d-cc915748c8de_whatsapp-template-20250914073947.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "416876"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"pIsssbu/9ctGNckX91t/wK5SgAjeRhrfv0TpafuzUxY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Thu, 16 Oct 2025 01:00:06 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-pIsssbu/9ctGNckX91t/wK5SgAjeRhrfv0TpafuzUxY="
         }
       ]
     },

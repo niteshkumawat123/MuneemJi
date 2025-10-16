@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Cash Book";
 }
+@model List<MUNEEMJI.Models.PurchaseBill>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -9,321 +10,321 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
         }
 
         .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        max-width: 1600px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
         }
 
         .filter-section {
-            padding: 25px 30px 20px;
-            background-color: white;
-            border-bottom: 1px solid #e0e0e0;
+        padding: 25px 30px 20px;
+        background-color: white;
+        border-bottom: 1px solid #e0e0e0;
         }
 
         .filter-row {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-            margin-bottom: 20px;
-          
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        margin-bottom: 20px;
+
         }
 
         .month-dropdown {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            color: #333;
-            cursor: pointer;
-            padding: 8px 12px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        cursor: pointer;
+        padding: 8px 12px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
         }
 
-            .month-dropdown:hover {
-                background-color: #f5f5f5;
-            }
+        .month-dropdown:hover {
+        background-color: #f5f5f5;
+        }
 
         .between-label {
-            padding: 9px 18px;
-            background-color: #9e9e9e;
-            color: white;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
+        padding: 9px 18px;
+        background-color: #9e9e9e;
+        color: white;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 500;
         }
 
         .date-input {
-            padding: 9px 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #333;
-            background-color: white;
+        padding: 9px 14px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #333;
+        background-color: white;
         }
 
         .to-label {
-            font-size: 14px;
-            color: #666;
-            font-weight: 500;
-            padding: 0 5px;
+        font-size: 14px;
+        color: #666;
+        font-weight: 500;
+        padding: 0 5px;
         }
 
         select {
-            padding: 9px 35px 9px 14px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            color: #333;
-            background-color: white;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            min-width: 160px;
+        padding: 9px 35px 9px 14px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        color: #333;
+        background-color: white;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        min-width: 160px;
         }
 
         .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-left: auto;
+        display: flex;
+        gap: 15px;
+        margin-left: auto;
         }
 
         .icon-btn {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            padding: 4px 14px;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 14px;
+        background-color: white;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
         }
 
-            .icon-btn:hover {
-                background-color: #f5f5f5;
-                border-color: #bbb;
-            }
+        .icon-btn:hover {
+        background-color: #f5f5f5;
+        border-color: #bbb;
+        }
 
-            .icon-btn span {
-                font-size: 11px;
-                color: #666;
-                font-weight: 500;
-            }
+        .icon-btn span {
+        font-size: 11px;
+        color: #666;
+        font-weight: 500;
+        }
 
         .opening-balance-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding-bottom: 5px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding-bottom: 5px;
         }
 
         .opening-balance {
-            font-size: 15px;
-            font-weight: 500;
-            color: #00897b;
+        font-size: 15px;
+        font-weight: 500;
+        color: #00897b;
         }
 
-            .opening-balance strong {
-                font-weight: 600;
-            }
+        .opening-balance strong {
+        font-weight: 600;
+        }
 
         .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
         }
 
-            .checkbox-wrapper input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
-                cursor: pointer;
-                border: 2px solid #ddd;
-                border-radius: 3px;
-            }
+        .checkbox-wrapper input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        border: 2px solid #ddd;
+        border-radius: 3px;
+        }
 
-            .checkbox-wrapper label {
-                font-size: 14px;
-                color: #666;
-                cursor: pointer;
-                user-select: none;
-            }
+        .checkbox-wrapper label {
+        font-size: 14px;
+        color: #666;
+        cursor: pointer;
+        user-select: none;
+        }
 
         .content-section {
-            padding: 25px 30px;
+        padding: 25px 30px;
         }
 
         .search-box {
-            width: 280px;
-            padding: 10px 15px 10px 40px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: 12px center;
-            background-size: 18px;
+        width: 280px;
+        padding: 10px 15px 10px 40px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 20px;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: 12px center;
+        background-size: 18px;
         }
 
         .table-container {
-            overflow-x: auto;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            min-height: 400px;
-            background-color: white;
+        overflow-x: auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        min-height: 400px;
+        background-color: white;
         }
 
         table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
+        width: 100%;
+        border-collapse: collapse;
+        background-color: white;
         }
 
         thead {
-            background-color: #f5f5f5;
-            position: sticky;
-            top: 0;
-            z-index: 10;
+        background-color: #f5f5f5;
+        position: sticky;
+        top: 0;
+        z-index: 10;
         }
 
         th {
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 12px;
-            font-weight: 600;
-            color: #666;
-            text-transform: uppercase;
-            border-bottom: 2px solid #e0e0e0;
-            white-space: nowrap;
-            letter-spacing: 0.3px;
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        text-transform: uppercase;
+        border-bottom: 2px solid #e0e0e0;
+        white-space: nowrap;
+        letter-spacing: 0.3px;
         }
 
-            th .filter-icon {
-                margin-left: 6px;
-                color: #999;
-                font-size: 11px;
-                cursor: pointer;
-            }
+        th .filter-icon {
+        margin-left: 6px;
+        color: #999;
+        font-size: 11px;
+        cursor: pointer;
+        }
 
         tbody {
-            background-color: white;
+        background-color: white;
         }
 
         td {
-            padding: 14px 16px;
-            font-size: 14px;
-            color: #333;
-            border-bottom: 1px solid #f0f0f0;
+        padding: 14px 16px;
+        font-size: 14px;
+        color: #333;
+        border-bottom: 1px solid #f0f0f0;
         }
 
         .empty-state {
-            text-align: center;
-            padding: 100px 20px;
-            color: #999;
-            font-size: 15px;
+        text-align: center;
+        padding: 100px 20px;
+        color: #999;
+        font-size: 15px;
         }
 
         .footer-summary {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 30px;
-            background-color: #fafafa;
-            border-top: 2px solid #e0e0e0;
-            flex-wrap: wrap;
-            gap: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 30px;
+        background-color: #fafafa;
+        border-top: 2px solid #e0e0e0;
+        flex-wrap: wrap;
+        gap: 20px;
         }
 
         .summary-item {
-            font-size: 15px;
-            font-weight: 500;
+        font-size: 15px;
+        font-weight: 500;
         }
 
-            .summary-item strong {
-                font-weight: 600;
-            }
+        .summary-item strong {
+        font-weight: 600;
+        }
 
-            .summary-item.cash-in {
-                color: #00897b;
-            }
+        .summary-item.cash-in {
+        color: #00897b;
+        }
 
-            .summary-item.cash-out {
-                color: #e53935;
-            }
+        .summary-item.cash-out {
+        color: #e53935;
+        }
 
-            .summary-item.closing {
-                color: #00897b;
-            }
+        .summary-item.closing {
+        color: #00897b;
+        }
 
         @@media (max-width: 1024px) {
-            .filter-row
+        .filter-row
 
         {
-            flex-direction: column;
-            align-items: flex-start;
+        flex-direction: column;
+        align-items: flex-start;
         }
 
         .action-buttons {
-            margin-left: 0;
-            width: 100%;
+        margin-left: 0;
+        width: 100%;
         }
 
         select {
-            min-width: 100%;
+        min-width: 100%;
         }
 
         }
 
         @@media (max-width: 768px) {
-            .search-box
+        .search-box
 
         {
-            width: 100%;
+        width: 100%;
         }
 
         .footer-summary {
-            flex-direction: column;
-            align-items: flex-start;
+        flex-direction: column;
+        align-items: flex-start;
         }
 
         .opening-balance-row {
-            flex-direction: column;
-            align-items: flex-start;
+        flex-direction: column;
+        align-items: flex-start;
         }
 
         }
 
         @@media print {
-            .filter-section, .search-box, .action-buttons
+        .filter-section, .search-box, .action-buttons
 
         {
-            display: none;
+        display: none;
         }
 
         .container {
-            box-shadow: none;
+        box-shadow: none;
         }
 
         }
@@ -374,6 +375,8 @@
                 <div class="opening-balance">
                     Opening Cash-in Hand: <strong>₹ 1,729.00</strong>
                 </div>
+
+
 
                 <div class="checkbox-wrapper">
                     <input type="checkbox" id="showZeroAmount">
@@ -427,11 +430,23 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <tr>
-                            <td colspan="9" class="empty-state">
-                                No transactions to show
-                            </td>
-                        </tr>
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>@item.CreatedDate.ToString("dd-MM-yyyy")</td>
+                                    <td>@item.InvoiceNumber</td>
+                                    <td>@item.CreatedDate.ToString("dd-MM-yyyy")</td>
+                                    <td>@item.CreatedDate.ToString("dd-MM-yyyy")</td>
+                                    <td>@item.CreatedDate.ToString("dd-MM-yyyy")</td>
+                                </tr>
+                                
+
+                            }
+                           
+                        }
                     </tbody>
                 </table>
             </div>

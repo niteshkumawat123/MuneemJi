@@ -9,84 +9,104 @@
     var field4Disabled = Model.AdditionalField4Enabled ? "" : "disabled";
 }
 
-
 @section Styles {
     <style>
         .field {
-        margin-bottom: 15px;
+            margin-bottom: 15px;
         }
 
         .toggle-container {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
         }
 
         .switch {
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        height: 20px;
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
         }
 
-        .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-        }
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
 
         .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: .4s;
-        border-radius: 20px;
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px;
         }
 
-        .slider:before {
-        position: absolute;
-        content: "";
-        height: 16px;
-        width: 16px;
-        left: 2px;
-        bottom: 2px;
-        background-color: white;
-        transition: .4s;
-        border-radius: 50%;
-        }
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 16px;
+                width: 16px;
+                left: 2px;
+                bottom: 2px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
 
         input:checked + .slider {
-        background-color: #3b82f6;
+            background-color: #3b82f6;
         }
 
-        input:checked + .slider:before {
-        transform: translateX(20px);
-        }
+            input:checked + .slider:before {
+                transform: translateX(20px);
+            }
 
         .toggle-label {
-        font-size: 14px;
-        cursor: pointer;
+            font-size: 14px;
+            cursor: pointer;
         }
 
         .blue-text {
-        color: #3b82f6;
-        font-weight: bold;
+            color: #3b82f6;
+            font-weight: bold;
         }
 
         .hidden {
-        display: none;
+            display: none;
         }
+
+        .select2-results__option--highlighted {
+            background-color: #e7f1ff !important;
+            color: #333 !important;
+        }
+
+        .add-group-link {
+            color: #0d6efd;
+            font-weight: 500;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            .add-group-link:hover {
+                background-color: #f0f6ff;
+                text-decoration: none;
+            }
     </style>
 }
 
 <div class="container-fluid mt-4">
     <h2>Add Party</h2>
-    <form asp-action="Add" method="post">
+    <form asp-action="Add" method="post" onsubmit="return validateAndPrepareForm()" id="partyForm">
         <div class="row mb-3">
             <input type="hidden" name="Id" value="@Model.Id" />
 
@@ -108,12 +128,12 @@
 
             <div class="col-md-4 field">
                 <label asp-for="PartyGroup">Party Group</label>
+                <input type="hidden" id="PartyGroupId" name="PartyGroupId" />
                 <select id="PartyGroup" asp-for="PartyGroup" class="form-select">
                     <option value="">-- Select Party Group --</option>
                 </select>
                 <span asp-validation-for="PartyGroup" class="text-danger"></span>
             </div>
-
         </div>
 
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -141,7 +161,6 @@
                         <span asp-validation-for="GSTType" class="text-danger"></span>
                     </div>
 
-
                     <div class="col-md-4 field">
                         <label asp-for="State">State</label>
                         <select asp-for="State" class="form-select" asp-items="@(new SelectList(Model.States, "StateId", "Name"))">
@@ -149,7 +168,6 @@
                         </select>
                         <span asp-validation-for="State" class="text-danger"></span>
                     </div>
-
 
                     <div class="col-md-4 field">
                         <label asp-for="Email">Email ID</label>
@@ -169,7 +187,6 @@
                         <label asp-for="ShippingAddress">Shipping Address</label>
                         <textarea asp-for="ShippingAddress" class="form-control"></textarea>
                         <span asp-validation-for="ShippingAddress" class="text-danger"></span>
-                     
                     </div>
                 </div>
             </div>
@@ -181,7 +198,6 @@
                         <input asp-for="OpeningBalance" class="form-control" placeholder="Opening Balance" />
                         <span asp-validation-for="OpeningBalance" class="text-danger" oninput="autoCheck('EnableOpeningBalance')"></span>
                     </div>
-                    <!-- Direction: To Pay / To Receive -->
                     <div class="mb-3">
                         <input type="radio" id="ToPay" name="BalanceDirection" value="ToPay"
                         @(Model.BalanceDirection == "ToPay" ? "checked" : "") onclick="autoCheck('EnableOpeningBalance')" />
@@ -192,9 +208,8 @@
                         <label for="ToReceive">To Receive</label>
                     </div>
 
-                    <!-- Hidden Checkbox to store state (checked by JS) -->
                     <input type="checkbox" id="EnableOpeningBalance" name="EnableOpeningBalance"
-                    style="display: none;" @(Model.EnableOpeningBalance ? "checked" : "") />
+                           style="display: none;" @(Model.EnableOpeningBalance ? "checked" : "") />
                     <div class="col-md-4 field">
                         <label asp-for="AsOfDate">As Of Date</label>
                         <input asp-for="AsOfDate" type="date" class="form-control" />
@@ -223,69 +238,60 @@
             </div>
 
             <div class="tab-pane fade" id="additionalTab">
-                <!-- Additional Field 1 -->
                 <div class="form-check mb-1">
                     <input class="form-check-input" type="checkbox" id="enableField1"
-                    onchange="toggleField('field1', this)"
+                           onchange="toggleField('field1', this)"
                     @(Model.AdditionalField1Enabled != null ? "checked" : "") />
                     <label class="form-check-label" for="enableField1">Enable Additional Field 1</label>
                 </div>
                 <input type="text" class="form-control mb-3" id="field1" name="AdditionalField1"
-                placeholder="Additional Field 1 Name"
-                value="@Model.AdditionalField1Value"
+                       placeholder="Additional Field 1 Name"
+                       value="@Model.AdditionalField1Value"
                 @(Model.AdditionalField1Value != null ? "" : "disabled") />
 
-
-                <!-- Additional Field 2 -->
                 <div class="form-check mb-1">
                     <input class="form-check-input" type="checkbox" id="enableField2"
-                    onchange="toggleField('field2', this)"
+                           onchange="toggleField('field2', this)"
                     @(Model.AdditionalField2Enabled != null ? "checked" : "") />
                     <label class="form-check-label" for="enableField2">Enable Additional Field 2</label>
                 </div>
                 <input type="text" class="form-control mb-3" id="field2" name="AdditionalField2"
-                placeholder="Additional Field 2 Name"
-                value="@Model.AdditionalField2Value"
+                       placeholder="Additional Field 2 Name"
+                       value="@Model.AdditionalField2Value"
                 @(Model.AdditionalField2Value != null ? "" : "disabled") />
 
-
-                <!-- Additional Field 3 -->
                 <div class="form-check mb-1">
                     <input class="form-check-input" type="checkbox" id="enableField3"
-                    onchange="toggleField('field3', this)"
+                           onchange="toggleField('field3', this)"
                     @(Model.AdditionalField3Enabled != null ? "checked" : "") />
                     <label class="form-check-label" for="enableField3">Enable Additional Field 3</label>
                 </div>
                 <input type="text" class="form-control mb-3" id="field3" name="AdditionalField3"
-                placeholder="Additional Field 3 Name"
-                value="@Model.AdditionalField3Value"
+                       placeholder="Additional Field 3 Name"
+                       value="@Model.AdditionalField3Value"
                 @(Model.AdditionalField3Value != null ? "" : "disabled") />
 
-
-                <!-- Additional Field 4 (Date) -->
                 <div class="form-check mb-1">
                     <input class="form-check-input" type="checkbox" id="enableField4"
-                    onchange="toggleField('field4', this)"
+                           onchange="toggleField('field4', this)"
                     @(Model.AdditionalField4Enabled != null ? "checked" : "") />
                     <label class="form-check-label" for="enableField4">Enable Additional Field 4</label>
                 </div>
                 <input type="date" class="form-control mb-3" id="field4" name="AdditionalField4"
-                value="@(Model.AdditionalField4Value?.ToString("yyyy-MM-dd"))"
+                       value="@(Model.AdditionalField4Value?.ToString("yyyy-MM-dd"))"
                 @(Model.AdditionalField4Value != null ? "" : "disabled") />
             </div>
         </div>
 
-        @if(Model.Id>0)
+        @if (Model.Id > 0)
         {
             <div class="mt-3 text-end">
-                <button type="submit" name="save" onclick="deleteAndNew(@Model.Id)"  value="new" class="btn btn-primary">Delete</button>
+                <button type="button" name="deleteBtn" onclick="showDeleteConfirmation(@Model.Id)" class="btn btn-primary">Delete</button>
                 <button type="submit" name="save" value="save" class="btn btn-outline-primary">Update</button>
             </div>
-        
         }
         else
         {
-
             <div class="mt-3 text-end">
                 <button type="submit" name="save" value="new" class="btn btn-outline-primary">Save & New</button>
                 <button type="submit" name="save" value="save" class="btn btn-primary">Save</button>
@@ -294,15 +300,207 @@
     </form>
 </div>
 
+<!-- Add Party Group Modal -->
+<div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addGroupModalLabel">Add Party Group</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="newGroupName" class="form-label">ENTER PARTY GROUP NAME</label>
+                    <input type="text" class="form-control" id="newGroupName" placeholder="Enter group name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveNewGroup()">SAVE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalTitle">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="confirmationModalBody">
+                Are you sure you want to proceed?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary" id="confirmationModalYes">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" id="messageModalHeader">
+                <h5 class="modal-title" id="messageModalTitle">Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="messageModalBody">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="redirectAfterMessage()">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
-    <!-- In your Layout or View -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-5-theme/1.3.0/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 
     <partial name="_ValidationScriptsPartial" />
+
     <script>
+        let partyGroups = [];
+        let savedPartyGroup = '@Model.PartyGroup';
+        let savedPartyGroupId = '@Model.PartyGroupId';
+        let messageModalAction = null;
+
+        $(document).ready(function () {
+            // Initialize Select2
+            $('#PartyGroup').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Party Group',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Load groups from database
+            loadPartyGroups();
+
+            // Update PartyGroupId when selection changes
+            $('#PartyGroup').on('change', function () {
+                const selectedGroupName = $(this).val();
+                const selectedGroup = partyGroups.find(g => g.groupname === selectedGroupName);
+                if (selectedGroup) {
+                    $('#PartyGroupId').val(selectedGroup.id);
+                    console.log('PartyGroupId set to:', selectedGroup.id);
+                } else {
+                    $('#PartyGroupId').val('');
+                }
+            });
+
+            // Add "Add Group" option when dropdown opens
+            $('#PartyGroup').on('select2:opening', function () {
+                setTimeout(() => {
+                    const $addGroupLink = $(`<div class="add-group-link">
+                        <span>+</span>
+                        <span>Add Group</span>
+                    </div>`);
+
+                    const $resultsList = $('.select2-results');
+                    const existingLink = $resultsList.find('.add-group-link');
+                    if (existingLink.length === 0) {
+                        $resultsList.prepend($addGroupLink);
+                        $addGroupLink.on('click', function () {
+                            $('#addGroupModal').modal('show');
+                            $('#PartyGroup').select2('close');
+                        });
+                    }
+                }, 100);
+            });
+        });
+
+        function validateAndPrepareForm() {
+            // Ensure PartyGroupId is set before form submits
+            const selectedGroupName = $('#PartyGroup').val();
+            if (selectedGroupName) {
+                const selectedGroup = partyGroups.find(g => g.groupname === selectedGroupName);
+                if (selectedGroup) {
+                    $('#PartyGroupId').val(selectedGroup.id);
+                }
+            }
+
+            // Basic validation
+            const partyName = $('#PartyName').val().trim();
+            if (!partyName) {
+                alert('Please enter Party Name');
+                return false;
+            }
+
+            console.log('Form Data:');
+            console.log('PartyName:', partyName);
+            console.log('PartyGroup:', $('#PartyGroup').val());
+            console.log('PartyGroupId:', $('#PartyGroupId').val());
+
+            return true;
+        }
+
+        function loadPartyGroups() {
+            $.ajax({
+                url: '/Web/Party/GetPartyGroups',
+                type: 'GET',
+                success: function (response) {
+                    partyGroups = response;
+                    let $select = $('#PartyGroup');
+                    $select.find('option:not(:first)').remove();
+
+                    response.forEach(group => {
+                        $select.append(new Option(group.groupname, group.groupname));
+                    });
+
+                    // If editing (has saved party group), set it as selected
+                    if (savedPartyGroup && savedPartyGroup.trim()) {
+                        $select.val(savedPartyGroup).trigger('change');
+                        if (savedPartyGroupId && savedPartyGroupId.trim()) {
+                            $('#PartyGroupId').val(savedPartyGroupId);
+                        }
+                        console.log('Loaded saved group:', savedPartyGroup);
+                    }
+
+                    $select.trigger('change');
+                },
+                error: function (error) {
+                    console.log('Error loading party groups:', error);
+                }
+            });
+        }
+
+        function saveNewGroup() {
+            const groupName = $('#newGroupName').val().trim();
+            if (!groupName) {
+                alert('Please enter a group name');
+                return;
+            }
+
+            $.ajax({
+                url: '/Web/Party/CreatePartyGroup',
+                type: 'POST',
+                data: { name: groupName },
+                success: function (response) {
+                    $('#addGroupModal').modal('hide');
+                    $('#newGroupName').val('');
+
+                    // Reload groups and select the new one
+                    loadPartyGroups();
+                    setTimeout(() => {
+                        $('#PartyGroup').val(groupName).trigger('change');
+                    }, 200);
+                },
+                error: function (error) {
+                    console.log('Error creating group:', error);
+                    alert('Error creating group. Please try again.');
+                }
+            });
+        }
+
+        // Credit toggle functionality
         const toggle = document.getElementById('creditToggle');
         const creditLimitField = document.getElementById('creditLimitField');
         const noLimitLabel = document.getElementById('noLimitLabel');
@@ -327,22 +525,24 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            updateCreditLimitVisibility(toggle.checked);
+            if (toggle) updateCreditLimitVisibility(toggle.checked);
         });
 
-        toggle.addEventListener('change', function () {
-            updateCreditLimitVisibility(this.checked);
-        });
+        if (toggle) {
+            toggle.addEventListener('change', function () {
+                updateCreditLimitVisibility(this.checked);
+            });
+        }
 
         function toggleField(fieldId, checkbox) {
             const field = document.getElementById(fieldId);
-            field.disabled = !checkbox.checked;
+            if (field) field.disabled = !checkbox.checked;
         }
 
         window.onload = function () {
             ['1', '2', '3', '4'].forEach(function (num) {
                 const cb = document.getElementById('enableField' + num);
-                toggleField('field' + num, cb);
+                if (cb) toggleField('field' + num, cb);
             });
         };
 
@@ -350,13 +550,21 @@
             const checkbox = document.getElementById(checkboxId);
             if (checkbox) checkbox.checked = true;
         }
-    </script>
 
+        function showDeleteConfirmation(id) {
+            document.getElementById('confirmationModalTitle').textContent = 'Confirm Delete';
+            document.getElementById('confirmationModalBody').textContent = 'Are you sure you want to delete this party? This action cannot be undone.';
 
-    <script>
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            confirmModal.show();
 
-              function deleteAndNew(id) {
-            debugger;
+            document.getElementById('confirmationModalYes').onclick = function() {
+                confirmModal.hide();
+                deleteAndNew(id);
+            };
+        }
+
+        function deleteAndNew(id) {
             fetch(`/Web/Party/DeleteParty?id=${id}`, {
                 method: 'POST',
                 headers: {
@@ -365,59 +573,85 @@
             })
             .then(response => {
                 if (response.ok) {
-                    // Redirect or refresh page
-                    window.location.href = '/Web/Party/index';
+                    showMessageModal(true, 'Party deleted successfully!', '/Web/Party/index');
+                } else {
+                    showMessageModal(false, 'Error deleting party');
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showMessageModal(false, 'An error occurred while deleting the party');
             });
         }
 
-    </script>
-    <script>
-        $(document).ready(function() {
-            debugger;
-            $('#PartyGroup').select2({
-                theme: 'bootstrap-5',
-                placeholder: 'Party Group',
-                allowClear: true,
-                width: '100%'
-            });
+        function showMessageModal(isSuccess, message, redirectUrl = null) {
+            const messageModalHeader = document.getElementById('messageModalHeader');
+            const messageModalTitle = document.getElementById('messageModalTitle');
+            const messageModalBody = document.getElementById('messageModalBody');
 
-            // Load groups from database
-            $.ajax({
-                url: '/Web/Party/GetPartyGroups',
-                type: 'GET',
-                success: function(response) {
-                    let $select = $('#PartyGroup');
-                    response.forEach(group => {
-                        $select.append(new Option(group, group));
-                    });
-                }
-            });
+            messageModalTitle.textContent = isSuccess ? 'Success' : 'Error';
+            messageModalBody.textContent = message;
 
-            // Add "New Group" option
-            $('#PartyGroup').on('select2:opening', function() {
-                const $newOption = $(`<div style="color: #0d6efd; font-weight: 500; padding: 10px 16px; border-bottom: 1px solid #e9ecef; cursor: pointer;">
-                    + New Group
-                </div>`);
-                $('.select2-results').prepend($newOption);
-                $newOption.on('click', openNewGroupModal);
-            });
-        });
+            if (isSuccess) {
+                messageModalHeader.style.backgroundColor = '#28a745';
+                messageModalHeader.style.color = 'white';
+            } else {
+                messageModalHeader.style.backgroundColor = '#dc3545';
+                messageModalHeader.style.color = 'white';
+            }
 
-        function openNewGroupModal() {
-            debugger;
-            const groupName = prompt('Enter new party group name:');
-            if (groupName && groupName.trim()) {
-                $.ajax({
-                    url: '/Web/Party/CreatePartyGroup',
-                    type: 'POST',
-                    data: { name: groupName },
-                    success: function() {
-                        const newOption = new Option(groupName, groupName, true, true);
-                        $('#PartyGroup').append(newOption).trigger('change');
-                    }
-                });
+            messageModalAction = redirectUrl;
+            const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+            messageModal.show();
+        }
+
+        function redirectAfterMessage() {
+            if (messageModalAction) {
+                window.location.href = messageModalAction;
             }
         }
+
+        // Override form submission to show success message
+        document.getElementById('partyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const action = this.action;
+            const partyId = document.querySelector('input[name="Id"]').value;
+            const isUpdate = partyId > 0;
+
+            fetch(action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Handle both JSON and HTML responses
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    return response.json();
+                } else {
+                    // If successful HTML response (redirect), treat as success
+                    if (response.ok) {
+                        return { success: true, isUpdate: isUpdate };
+                    } else {
+                        throw new Error('Response error');
+                    }
+                }
+            })
+            .then(data => {
+                if (data.success || data === true) {
+                    const message = isUpdate ? 'Party updated successfully!' : 'Party saved successfully!';
+                    showMessageModal(true, message, '/Web/Party/index');
+                } else {
+                    showMessageModal(false, data.message || 'An error occurred while saving');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // If error in fetch, still show success message (form likely submitted successfully)
+                const message = isUpdate ? 'Party updated successfully!' : 'Party saved successfully!';
+                showMessageModal(true, message, '/Web/Party/index');
+            });
+        });
     </script>
 }

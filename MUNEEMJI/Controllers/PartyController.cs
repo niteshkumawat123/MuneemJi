@@ -81,7 +81,9 @@ namespace MUNEEMJI.Controllers
                                     additional_field3_enabled = @additional_field3_enabled,
                                     additional_field3_value = @additional_field3_value,
                                     additional_field4_enabled = @additional_field4_enabled,
-                                    additional_field4_value = @additional_field4_value
+                                    additional_field4_value = @additional_field4_value,
+                                    PartyGroupId            = @p_PartyGroupId,
+                                    PartyGroup              = @p_PartyGroup
                                   WHERE id = @id;";
                     }
                     else
@@ -95,7 +97,9 @@ namespace MUNEEMJI.Controllers
                                     additional_field2_enabled, additional_field2_value,
                                     additional_field3_enabled, additional_field3_value,
                                     additional_field4_enabled, additional_field4_value,
-                                    companyid
+                                    companyid,
+                                    PartyGroupId,
+                                    PartyGroup
                                      ) VALUES (
                                     @party_name, @gstin, @phone_number, @gst_type, @state, @email, @billing_address, @shipping_address, @is_shipping_disabled,
                                     @opening_balance, @as_of_date, @has_custom_credit_limit, @credit_limit,
@@ -103,7 +107,9 @@ namespace MUNEEMJI.Controllers
                                     @additional_field2_enabled, @additional_field2_value,
                                     @additional_field3_enabled, @additional_field3_value,
                                     @additional_field4_enabled, @additional_field4_value,
-                                    @p_companyid
+                                    @p_companyid,
+                                    @p_PartyGroupId,
+                                    @p_PartyGroup
                                   );";
                     }
 
@@ -142,6 +148,8 @@ namespace MUNEEMJI.Controllers
                             ? (object)model.AdditionalField4Value.Value
                             : DBNull.Value);
                         cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.Parameters.AddWithValue("p_PartyGroupId", model.PartyGroupId);
+                        cmd.Parameters.AddWithValue("p_PartyGroup", model.PartyGroup);
 
                         if (model.Id > 0)
                         {
@@ -423,7 +431,9 @@ namespace MUNEEMJI.Controllers
                                 AdditionalField3Enabled = Convert.ToBoolean(reader["additional_field3_enabled"]),
                                 AdditionalField3Value = reader["additional_field3_value"]?.ToString(),
                                 AdditionalField4Enabled = Convert.ToBoolean(reader["additional_field4_enabled"]),
-                                AdditionalField4Value = reader["additional_field4_value"] != DBNull.Value ? Convert.ToDateTime(reader["additional_field4_value"]) : (DateTime?)null
+                                AdditionalField4Value = reader["additional_field4_value"] != DBNull.Value ? Convert.ToDateTime(reader["additional_field4_value"]) : (DateTime?)null,
+                                PartyGroup            = reader["partygroup"]!=DBNull.Value?Convert.ToString(reader["partygroup"]):string.Empty,
+                                PartyGroupId =          reader["partygroupid"]!=DBNull.Value?Convert.ToInt32(reader["partygroupid"]):0
                             };
                         }
                     }

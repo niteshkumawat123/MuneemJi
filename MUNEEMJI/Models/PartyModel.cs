@@ -15,6 +15,7 @@ namespace MUNEEMJI.Models
         public string GSTIN { get; set; }
         public string PhoneNumber { get; set; }
         public string PartyGroup { get; set; }
+        public int PartyGroupId { get; set; }
         public string GSTType { get; set; }
         public string State { get; set; }
         public string Email { get; set; }

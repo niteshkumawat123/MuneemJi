@@ -6,6 +6,8 @@ using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
+using Npgsql.Replication.PgOutput.Messages;
+using SkiaSharp;
 using System.Drawing;
 using System.IO;
 
@@ -41,90 +43,7 @@ namespace MUNEEMJI.Controllers
 
             return View(data);
         }
-
-        #region OldCode
-        //[HttpPost]
-        //public IActionResult Add(PartyModel model, string save)
-        //{
-
-        //        try
-        //        {
-        //            using (var conn = new NpgsqlConnection(_connectionString))
-        //            {
-        //                conn.Open();
-        //                string query = @"
-        //          INSERT INTO parties 
-        //            (party_name, gstin, phone_number, gst_type, state, email, billing_address, shipping_address, is_shipping_disabled,
-        //             opening_balance, as_of_date, has_custom_credit_limit, credit_limit,
-        //             additional_field1_enabled, additional_field1_value,
-        //             additional_field2_enabled, additional_field2_value,
-        //             additional_field3_enabled, additional_field3_value,
-        //             additional_field4_enabled, additional_field4_value)
-        //          VALUES 
-        //            (@party_name, @gstin, @phone_number, @gst_type, @state, @email, @billing_address, @shipping_address, @is_shipping_disabled,
-        //             @opening_balance, @as_of_date, @has_custom_credit_limit, @credit_limit,
-        //             @additional_field1_enabled, @additional_field1_value,
-        //             @additional_field2_enabled, @additional_field2_value,
-        //             @additional_field3_enabled, @additional_field3_value,
-        //             @additional_field4_enabled, @additional_field4_value);";
-        //                using (var cmd = new NpgsqlCommand(query, conn))
-        //                {
-        //                    cmd.Parameters.AddWithValue("party_name", model.PartyName ?? "");
-        //                    cmd.Parameters.AddWithValue("gstin", model.GSTIN ?? "");
-        //                    cmd.Parameters.AddWithValue("phone_number", model.PhoneNumber ?? "");
-        //                    cmd.Parameters.AddWithValue("gst_type", model.GSTType ?? "");
-        //                    cmd.Parameters.AddWithValue("state", model.State ?? "");
-        //                    cmd.Parameters.AddWithValue("email", model.Email ?? "");
-        //                    cmd.Parameters.AddWithValue("billing_address", model.BillingAddress ?? "");
-        //                    cmd.Parameters.AddWithValue("shipping_address", model.ShippingAddress ?? "");
-        //                    cmd.Parameters.AddWithValue("is_shipping_disabled", model.IsShippingDisabled);
-        //                    // Credit & Balance
-        //                    cmd.Parameters.AddWithValue("opening_balance", (object)model.OpeningBalance ?? DBNull.Value);
-        //                    cmd.Parameters.AddWithValue("as_of_date", (object)model.AsOfDate ?? DBNull.Value);
-        //                    cmd.Parameters.AddWithValue("has_custom_credit_limit", model.HasCustomCreditLimit);
-        //                    cmd.Parameters.AddWithValue("credit_limit", model.HasCustomCreditLimit && model.CreditLimit.HasValue
-        //                        ? (object)model.CreditLimit.Value
-        //                        : DBNull.Value);
-        //                    // Additional Fields
-        //                    cmd.Parameters.AddWithValue("additional_field1_enabled", model.AdditionalField1Enabled);
-        //                    cmd.Parameters.AddWithValue("additional_field1_value", model.AdditionalField1Enabled
-        //                        ? (object)(model.AdditionalField1Value ?? "")
-        //                        : DBNull.Value);
-        //                    cmd.Parameters.AddWithValue("additional_field2_enabled", model.AdditionalField2Enabled);
-        //                    cmd.Parameters.AddWithValue("additional_field2_value", model.AdditionalField2Enabled
-        //                        ? (object)(model.AdditionalField2Value ?? "")
-        //                        : DBNull.Value);
-        //                    cmd.Parameters.AddWithValue("additional_field3_enabled", model.AdditionalField3Enabled);
-        //                    cmd.Parameters.AddWithValue("additional_field3_value", model.AdditionalField3Enabled
-        //                        ? (object)(model.AdditionalField3Value ?? "")
-        //                        : DBNull.Value);
-        //                    cmd.Parameters.AddWithValue("additional_field4_enabled", model.AdditionalField4Enabled);
-        //                    cmd.Parameters.AddWithValue("additional_field4_value", model.AdditionalField4Enabled && model.AdditionalField4Value.HasValue
-        //                        ? (object)model.AdditionalField4Value.Value
-        //                        : DBNull.Value);
-
-        //                    cmd.ExecuteNonQuery();
-
-        //                }
-
-        //            }
-
-        //            if (save == "new")
-        //            {
-        //                TempData["Message"] = "Party saved. Ready to add new.";
-        //                return RedirectToAction("Index");
-        //            }
-        //            TempData["Message"] = "Party saved successfully.";
-        //            return RedirectToAction("Index");
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            ModelState.AddModelError("", "Database error: " + ex.Message);
-        //        }
-
-        //    return View(model);
-        //}
-        #endregion
+       
         [HttpPost]
         public IActionResult Add(PartyModel model, string save)
         {
@@ -539,6 +458,48 @@ namespace MUNEEMJI.Controllers
                 string query = "DELETE FROM parties WHERE id = @p_id";
                 conn.QuerySql(query, new { p_id = id });
             }
+        }
+
+        [HttpGet]
+        public async Task<List<PartyGroupModel>> GetPartyGroups()
+        {
+
+            List<PartyGroupModel> Model = new List<PartyGroupModel>();
+            try
+            {
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var QueryString = "select * from partygroup ";
+                    Model = Conn.QuerySql<PartyGroupModel>(QueryString).ToList();
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+
+            return Model;
+        }
+
+        [HttpPost]
+        public JsonResult CreatePartyGroup(string name)
+        {
+            try
+            {
+
+
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var SaveQuery = " insert into partygroup(groupname)VALUES(@p_partygroup) ";
+
+                    Conn.ExecuteSql(SaveQuery, new { p_partygroup = name });
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return Json(new { success = true });
         }
 
     }

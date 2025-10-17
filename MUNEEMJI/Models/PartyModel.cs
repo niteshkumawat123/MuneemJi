@@ -53,5 +53,11 @@ namespace MUNEEMJI.Models
 
 
     }
+    public class PartyGroupModel
+    {
+        public int Id { get; set; }
+        public string groupname { get; set; }
+
+    }
 
 }

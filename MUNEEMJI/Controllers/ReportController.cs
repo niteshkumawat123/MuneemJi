@@ -8,6 +8,7 @@ using MUNEEMJI.Services;
 using Npgsql;
 using NuGet.Packaging.Signing;
 using System.ComponentModel.Design;
+using System.Composition;
 
 namespace MUNEEMJI.Controllers
 {
@@ -248,11 +249,53 @@ namespace MUNEEMJI.Controllers
             }
         }
 
-        // Day Book Report - Returns Partial View
-        public IActionResult DayBook()
+        
+        public async Task<IActionResult> DayBook()
         {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            List<DayBookReportModel> reportByItemModels = new List<DayBookReportModel>();
+            var PartyList = await partyController.GetAllPartiesAsync(companyId);
+            List<DayBookReportModel> Traderecord = new List<DayBookReportModel>();
+            try
+            {
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var QueryString = " SELECT  td.partyid, td.tradedocumenttypesid,  td.final_amount as FinalAmount , td.total , td.invoicenumber FROM tradedocuments td " + 
+                                      " WHERE td.tradedocumenttypesid IN(4,5) ";
 
-            return PartialView("Daybook_report");
+
+                    Traderecord = Conn.QuerySql<DayBookReportModel>(QueryString).ToList();
+                }
+
+                if (PartyList != null && PartyList.Count() > 0)
+                {
+                    foreach (var item in PartyList)
+                    {
+                        var TradeDocumentTypeId = Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.tradedocumenttypesid).FirstOrDefault();
+                        var TradeDocumentType = TradeDocumentTypeId == 4 ? "Purchase" : "Sales";
+                        DayBookReportModel partyReportByItemModel = new DayBookReportModel()
+                        {
+                            PartyId = item.Id,
+                            PartyName = item.PartyName,
+                            FinalAmount = Traderecord.Where(x => x.PartyId == item.Id ).Select(x => x.FinalAmount).FirstOrDefault(),
+                            Total = Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.Total).FirstOrDefault(),
+                            tradedocumenttypesid = TradeDocumentTypeId,
+                            TradeDocumentType = TradeDocumentType,
+                            MoneyIn = TradeDocumentTypeId==5? Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.FinalAmount).FirstOrDefault():0,
+                            MoneyOut = TradeDocumentTypeId == 4 ? Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.FinalAmount).FirstOrDefault() : 0,
+                            invoicenumber= Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.invoicenumber).FirstOrDefault(),
+                        };
+
+                        reportByItemModels.Add(partyReportByItemModel);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return PartialView("Daybook_report", reportByItemModels);
         }
 
         // All Transactions Report - Returns Partial View
@@ -419,6 +462,11 @@ namespace MUNEEMJI.Controllers
             ViewBag.ReportTitle = "Party Wise Profit & Loss";
             ViewBag.ReportType = "partywiseprofitloss";
             return PartialView("_ReportTemplate");
+        }
+
+        public async Task<IActionResult> Item_Report_By_Party()
+        {
+            return PartialView();
         }
 
         // All Parties Report - Returns Partial View

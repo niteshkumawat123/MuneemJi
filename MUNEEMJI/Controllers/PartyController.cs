@@ -7,9 +7,11 @@ using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
 using Npgsql.Replication.PgOutput.Messages;
+using NuGet.Protocol.Plugins;
 using SkiaSharp;
 using System.Drawing;
 using System.IO;
+using System.Reflection;
 
 namespace MUNEEMJI.Controllers
 {
@@ -28,28 +30,28 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public IActionResult Add(int id=0)
+        public IActionResult Add(int id = 0)
         {
             StateController stateObj = new StateController();
-            
-            var data = new  PartyModel();
+
+            var data = new PartyModel();
             data.States = stateObj.StateDropDown();
             if (id > 0)
             {
-                 data = PartGetById(id);
+                data = PartGetById(id);
                 data.States = stateObj.StateDropDown();
             }
-           
+
 
             return View(data);
         }
-       
+
         [HttpPost]
         public IActionResult Add(PartyModel model, string save)
         {
             try
             {
-                var companyId = _CompayTenancy.GetCurrentCompanyId(); 
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
 
                 using (var conn = new NpgsqlConnection(_connectionString))
                 {
@@ -331,7 +333,7 @@ namespace MUNEEMJI.Controllers
             var model = new PartyViewModel();
             model.Parties = new List<PartyModel>();
             var companyId = _CompayTenancy.GetCurrentCompanyId();
-
+            List<PurchaseBill> TransectionList = new List<PurchaseBill>();
 
             using (var conn = new NpgsqlConnection(_connectionString))
             {
@@ -339,7 +341,8 @@ namespace MUNEEMJI.Controllers
                               // 1) Query all parties
                 string sql = "SELECT id, party_name,opening_balance FROM parties where companyid = @p_companyid ORDER BY party_name";
                 using (var cmd = new NpgsqlCommand(sql, conn))
-                {     cmd.Parameters.AddWithValue("p_companyid", companyId);
+                {
+                    cmd.Parameters.AddWithValue("p_companyid", companyId);
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -349,8 +352,8 @@ namespace MUNEEMJI.Controllers
                             {
                                 Id = reader.GetInt32(0),
                                 PartyName = reader.GetString(1),
-                                Balance =   reader.IsDBNull(2)?(decimal?)null: reader.GetDecimal(2),
-                                OpeningBalance = reader.IsDBNull(2)?(decimal?)null:reader.GetDecimal(2),
+                                Balance = reader.IsDBNull(2) ? (decimal?)null : reader.GetDecimal(2),
+                                OpeningBalance = reader.IsDBNull(2) ? (decimal?)null : reader.GetDecimal(2),
                             });
                         }
                     }
@@ -379,14 +382,54 @@ namespace MUNEEMJI.Controllers
                                     GSTIN = reader2.GetString(2),
                                     BillingAddress = reader2.GetString(3),
                                     PartyName = reader2.GetString(4),
-                                    OpeningBalance= reader2.IsDBNull(5)?(decimal?)null:reader2.GetDecimal(5)
+                                    OpeningBalance = reader2.IsDBNull(5) ? (decimal?)null : reader2.GetDecimal(5)
 
                                 };
                             }
                         }
                     }
+
+                    string query = @"
+                                     SELECT 
+                                         td.id AS ""Id"",
+                                         td.bill_number AS ""BillNumber"",
+                                         td.bill_date AS ""BillDate"",
+                                         td.state_of_supply AS ""StateOfSupply"",
+                                         td.phone_no AS ""PhoneNo"",
+                                         td.po_no AS ""PONo"",
+                                         td.po_date AS ""PODate"",
+                                         td.eway_bill_no AS ""EWayBillNo"",
+                                         td.transport_name AS ""TransportName"",
+                                         td.delivery_location AS ""DeliveryLocation"",
+                                         td.vehicle_number AS ""VehicleNumber"",
+                                         td.delivery_date AS ""DeliveryDate"",
+                                         td.payment_type AS ""PaymentType"",
+                                         td.description AS ""Description"",
+                                         td.image_path AS ""ImagePath"",
+                                         td.round_off AS ""RoundOff"",
+                                         td.total AS ""Total"",
+                                         td.paidreciveamount AS ""paidReciveamount"",
+                                         td.partyid AS ""PartyId"",
+                                         pt.party_name as PartyName,
+                                         td.final_amount as ""FinalAmount"",
+                                         td.invoicenumber as ""InvoiceNumber"",
+                                         td.IsCredit as ""IsCredit"",
+                                         td.tradedocumenttypesid
+                                     FROM public.tradedocuments as td 
+                                     LEFT JOIN parties as pt ON td.partyid = pt.id  
+                                     WHERE  td.companyid = @p_companyid and td.partyid = @p_partyid;";
+                    TransectionList = conn.QuerySql<PurchaseBill>(query,
+                        new
+                        {
+                            p_companyid = companyId,
+                            p_partyid =  id
+                        }).ToList();
+
+                    model.PartyTransection = TransectionList;
+
                 }
             }
+
             return View(model);
         }
 
@@ -432,8 +475,8 @@ namespace MUNEEMJI.Controllers
                                 AdditionalField3Value = reader["additional_field3_value"]?.ToString(),
                                 AdditionalField4Enabled = Convert.ToBoolean(reader["additional_field4_enabled"]),
                                 AdditionalField4Value = reader["additional_field4_value"] != DBNull.Value ? Convert.ToDateTime(reader["additional_field4_value"]) : (DateTime?)null,
-                                PartyGroup            = reader["partygroup"]!=DBNull.Value?Convert.ToString(reader["partygroup"]):string.Empty,
-                                PartyGroupId =          reader["partygroupid"]!=DBNull.Value?Convert.ToInt32(reader["partygroupid"]):0
+                                PartyGroup = reader["partygroup"] != DBNull.Value ? Convert.ToString(reader["partygroup"]) : string.Empty,
+                                PartyGroupId = reader["partygroupid"] != DBNull.Value ? Convert.ToInt32(reader["partygroupid"]) : 0
                             };
                         }
                     }
@@ -445,18 +488,18 @@ namespace MUNEEMJI.Controllers
 
 
         public async Task<IActionResult> GetPartyDropDownAsync()
-        {          
+        {
             var companyId = _CompayTenancy.GetCurrentCompanyId();
             try
             {
                 var Record = await _party.GetPartyDropDownAsync(companyId);
                 return Ok(Record);
-                
+
             }
             catch (Exception ex)
             {
                 throw;
-            }           
+            }
         }
 
 
@@ -483,7 +526,7 @@ namespace MUNEEMJI.Controllers
                     Model = Conn.QuerySql<PartyGroupModel>(QueryString).ToList();
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -505,7 +548,7 @@ namespace MUNEEMJI.Controllers
                     Conn.ExecuteSql(SaveQuery, new { p_partygroup = name });
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }

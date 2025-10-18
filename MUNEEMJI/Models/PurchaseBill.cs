@@ -36,6 +36,7 @@ namespace MUNEEMJI.Models
         public string ChallanNo { get; set; }
         public DateTime Challandate { get; set; } = DateTime.Now;
         public int PaymentTermId { get; set; }
+        public int tradedocumenttypesid { get; set; }
         public List<PurchaseBillItem> BillItems { get; set; } = new List<PurchaseBillItem>();
         public TransactionSettingsViewModel transactionSettings { get; set; }
         public ItemSettingsViewModel itemSettings { get; set; }
@@ -110,6 +111,7 @@ namespace MUNEEMJI.Models
         public decimal? FreeQuantity { get; set; } = 0;
         public decimal? AddCessAmount { get; set; } = 0;
         public decimal? TotalAmount { get; set; } = 0;
+       
         public PurchaseBill Bill { get; set; } = new PurchaseBill();
 
         // New properties based on table schema

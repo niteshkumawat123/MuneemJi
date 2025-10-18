@@ -20,12 +20,14 @@
 
     <div class="row g-0">
         <!-- Left Sidebar: Party Search and List -->
-        <div class="col-md-4 border-end" style="height: calc(100vh - 120px); overflow-y: auto;">
-            <!-- Search Box -->
+        <div class="col-md-4 border-end" style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
+            <!-- Search Box with Dropdown -->
             <div class="p-3 border-bottom">
                 <div class="position-relative">
                     <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
-                    <input type="text" class="form-control ps-4" placeholder="Search Party Name" />
+                    <input type="text" id="searchInput" class="form-control ps-4" placeholder="Search Party Name" autocomplete="off" />
+                    <div id="searchDropdown" class="position-absolute w-100 bg-white border rounded mt-1" style="display: none; max-height: 300px; overflow-y: auto; z-index: 1000; left: 0; top: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    </div>
                 </div>
             </div>
 
@@ -41,13 +43,13 @@
                 </div>
             </div>
 
-            <!-- Party List -->
-            <div class="list-group list-group-flush">
+            <!-- Party List with scrollbar -->
+            <div class="list-group list-group-flush" id="partyList" style="flex: 1; overflow-y: scroll; overflow-x: hidden;">
                 @foreach (var party in Model.Parties)
                 {
-                    <a class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center py-3 @(party.Id == Model.SelectedParty?.Id ? "bg-primary text-white" : "")"
-                       asp-action="Index" asp-route-id="@party.Id">
-                        <span>@party.PartyName</span>
+                    <a class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center py-3 party-item @(party.Id == Model.SelectedParty?.Id ? "bg-primary text-white" : "")"
+                       href="#" data-party-id="@party.Id" data-party-name="@party.PartyName" onclick="selectParty('@party.Id'); return false;">
+                        <span class="party-name">@party.PartyName</span>
                         <span class="fw-bold">
                             ₹ @((party?.OpeningBalance ?? 0) > 0
                               ? party?.OpeningBalance?.ToString("0.00") ?? "0.00"
@@ -55,6 +57,17 @@
                         </span>
                     </a>
                 }
+            </div>
+
+            <!-- Slider Control -->
+            <div class="p-3 border-top bg-light d-flex align-items-center justify-content-between">
+                <button class="btn btn-sm btn-outline-secondary" onclick="scrollUp()" title="Scroll Up">
+                    <i class="bi bi-chevron-up"></i>
+                </button>
+                <span id="scrollIndicator" class="small text-muted">1/10</span>
+                <button class="btn btn-sm btn-outline-secondary" onclick="scrollDown()" title="Scroll Down">
+                    <i class="bi bi-chevron-down"></i>
+                </button>
             </div>
         </div>
 
@@ -67,15 +80,10 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h5 class="mb-0 d-flex align-items-center">
                             @Model.SelectedParty.PartyName
-                                <a asp-action="Add" asp-route-id="@Model.SelectedParty.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                            <a asp-action="Add" asp-route-id="@Model.SelectedParty.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
                                 <i class="bi bi-pencil"></i>
                             </a>
                         </h5>
-                      @*   <div class="d-flex gap-2">
-
-                            <i class="bi bi-whatsapp text-success" style="font-size: 1.2rem;"></i>
-                            <i class="bi bi-bell text-muted" style="font-size: 1.2rem;"></i>
-                        </div> *@
                     </div>
 
                     <!-- Party Information Grid -->
@@ -110,17 +118,11 @@
                             <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
                                 <i class="bi bi-printer"></i>
                             </button>
-
-                           @*  <button class="btn btn-sm btn-success">
-                                <i class="bi bi-file-earmark-excel"></i>
-                            </button> *@
-
                             <a href="/Web/PaymentIn/ExcelReport" download>
                                 <button type="button" class="btn btn-success btn-sm" title="Download Excel" style="height: 38px;">
                                     <i class="bi bi-file-earmark-excel"></i>
                                 </button>
                             </a>
-
                         </div>
                     </div>
 
@@ -163,38 +165,32 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (Model.SelectedParty != null )
+                                @if (Model.PartyTransection != null && Model.PartyTransection.Count() > 0)
                                 {
+                                    foreach (var item in Model.PartyTransection)
+                                    {
                                         <tr>
-                                        <td>@(Model.SelectedParty?.PartyName != null ? Model.SelectedParty.PartyName : "Opening Balance")</td>
-                                        <td> -</td>
-                                            <td>@(Model.SelectedParty?.AsOfDate?.ToString("dd/MM/yyyy") ?? "")</td>
-                                            <td>₹ @(Model.SelectedParty?.OpeningBalance?.ToString("0.00") ?? "0.00")</td>
-                                        <td>
-                                            ₹ @((Model.SelectedParty?.OpeningBalance ?? 0) > 0
-                                              ? (Model.SelectedParty?.OpeningBalance.Value.ToString("0.00") ?? "0.00")
-                                              : "0.00")
-                                        </td>
-
+                                            <td style="color: #3e4245;">
+                                                @Enum.GetName(typeof(TradeDocumentTypes), item.tradedocumenttypesid)
+                                            </td>
+                                            <td style="color: #3e4245;">@(item?.InvoiceNumber)</td>
+                                            <td style="color: #3e4245;">@(item?.CreatedDate != null ? item.CreatedDate.ToString("dd-MM-yyyy") : "-")</td>
+                                            <td style="color: #3e4245;"> @(item?.Total != null ? item.Total.ToString("0.00") : "0.00")</td>
+                                            <td style="color: #3e4245;"> @(item?.FinalAmount != null ? item.FinalAmount.ToString("0.00") : "0.00")</td>
                                         </tr>
-                                    
+
+                                    }
                                 }
                                 else
                                 {
-                                    <!-- Opening Balance Row (if any) -->
                                     @if (Model.SelectedParty.Balance != 0)
                                     {
                                         <tr class="bg-light">
-                                            <td>Receivable Opening Balance</td>
+                                            <td>-</td>
                                             <td></td>
-                                            <td>02/07/2025</td>
-                                            <td>₹ @Model.SelectedParty.Balance.Value.ToString("0.00")</td>
-                                            <td>₹ @Model.SelectedParty.Balance.Value.ToString("0.00")</td>
-                                          @*   <td>
-                                                <button class="btn btn-sm btn-outline-secondary">
-                                                    <i class="bi bi-three-dots"></i>
-                                                </button>
-                                            </td> *@
+                                            <td>-</td>
+                                            <td>-</td>
+                                            <td>-</td>
                                         </tr>
                                     }
                                 }
@@ -217,9 +213,8 @@
     </div>
 </div>
 
-
-
 <style>
+   
     .list-group-item.active {
         background-color: #0d6efd !important;
         border-color: #0d6efd !important;
@@ -234,4 +229,124 @@
     .bg-light {
         background-color: #f8f9fa !important;
     }
+
+    .party-item {
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+        .party-item:not(.bg-primary):hover {
+            background-color: #f0f0f0;
+        }
+
+    #partyList {
+        scrollbar-width: thin;
+        scrollbar-color: #ccc #f5f5f5;
+    }
+
+        #partyList::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #partyList::-webkit-scrollbar-track {
+            background: #f5f5f5;
+        }
+
+        #partyList::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 4px;
+        }
+
+            #partyList::-webkit-scrollbar-thumb:hover {
+                background: #999;
+            }
 </style>
+
+<script>
+    let allParties = [];
+    let currentScroll = 0;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const searchDropdown = document.getElementById('searchDropdown');
+        const partyList = document.getElementById('partyList');
+
+        // Collect all parties
+        allParties = Array.from(document.querySelectorAll('.party-item')).map(item => ({
+            id: item.getAttribute('data-party-id'),
+            name: item.getAttribute('data-party-name'),
+            element: item
+        }));
+
+        // Search input event
+        searchInput.addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase().trim();
+
+            if (searchValue === '') {
+                searchDropdown.style.display = 'none';
+                return;
+            }
+
+            const filtered = allParties.filter(party =>
+                party.name.toLowerCase().includes(searchValue)
+            );
+
+            if (filtered.length > 0) {
+                searchDropdown.innerHTML = filtered.map(party =>
+                    `<div class="p-2 border-bottom" style="cursor: pointer;" onclick="selectPartyFromSearch('${party.id}')">
+                        <small>${party.name}</small>
+                    </div>`
+                ).join('');
+                searchDropdown.style.display = 'block';
+            } else {
+                searchDropdown.innerHTML = '<div class="p-2 text-muted"><small>No parties found</small></div>';
+                searchDropdown.style.display = 'block';
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.position-relative')) {
+                searchDropdown.style.display = 'none';
+            }
+        });
+
+        updateScrollIndicator();
+    });
+
+    function selectPartyFromSearch(partyId) {
+        selectParty(partyId);
+    }
+
+    function selectParty(partyId) {
+        window.location.href = '/Web/Party/Index?id=' + partyId;
+    }
+
+    function scrollUp() {
+        const partyList = document.getElementById('partyList');
+        partyList.scrollBy({
+            top: -150,
+            behavior: 'smooth'
+        });
+        setTimeout(updateScrollIndicator, 300);
+    }
+
+    function scrollDown() {
+        const partyList = document.getElementById('partyList');
+        partyList.scrollBy({
+            top: 150,
+            behavior: 'smooth'
+        });
+        setTimeout(updateScrollIndicator, 300);
+    }
+
+    function updateScrollIndicator() {
+        const partyList = document.getElementById('partyList');
+        const items = partyList.querySelectorAll('.party-item');
+        const itemHeight = 48; // approximate height of each item
+        const scrollTop = partyList.scrollTop;
+        const visibleIndex = Math.floor(scrollTop / itemHeight) + 1;
+
+        document.getElementById('scrollIndicator').textContent = visibleIndex + '/' + items.length;
+    }
+</script>

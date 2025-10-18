@@ -44,6 +44,7 @@ namespace MUNEEMJI.Models
     {
         public List<PartyModel> Parties { get; set; }
         public PartyModel SelectedParty { get; set; }
+        public List<PurchaseBill> PartyTransection { get; set; }
     }
     public class PartyDropDownModel
     {

@@ -112,9 +112,10 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="mb-0">Transactions</h6>
                         <div class="d-flex gap-2">
-                            <button class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-search"></i>
-                            </button>
+                            <div class="position-relative">
+                                <input type="text" id="transactionSearchInput" class="form-control form-control-sm" placeholder="Search transactions..." style="width: 200px; height: 39px; padding-left: 30px;" />
+                                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
+                            </div>
                             <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
                                 <i class="bi bi-printer"></i>
                             </button>
@@ -124,6 +125,11 @@
                                 </button>
                             </a>
                         </div>
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div id="noResultsMessage" class="alert alert-info" style="display: none;">
+                        <i class="bi bi-info-circle me-2"></i>No transactions found matching your search.
                     </div>
 
                     <!-- Transactions Table -->
@@ -164,28 +170,27 @@
                                     <th class="border-0"></th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="transactionTableBody">
                                 @if (Model.PartyTransection != null && Model.PartyTransection.Count() > 0)
                                 {
                                     foreach (var item in Model.PartyTransection)
                                     {
-                                        <tr>
-                                            <td style="color: #3e4245;">
+                                        <tr class="transaction-row">
+                                            <td style="color: #3e4245;" data-type="@Enum.GetName(typeof(TradeDocumentTypes), item.tradedocumenttypesid)">
                                                 @Enum.GetName(typeof(TradeDocumentTypes), item.tradedocumenttypesid)
                                             </td>
-                                            <td style="color: #3e4245;">@(item?.InvoiceNumber)</td>
-                                            <td style="color: #3e4245;">@(item?.CreatedDate != null ? item.CreatedDate.ToString("dd-MM-yyyy") : "-")</td>
-                                            <td style="color: #3e4245;"> @(item?.Total != null ? item.Total.ToString("0.00") : "0.00")</td>
-                                            <td style="color: #3e4245;"> @(item?.FinalAmount != null ? item.FinalAmount.ToString("0.00") : "0.00")</td>
+                                            <td style="color: #3e4245;" data-invoice="@(item?.InvoiceNumber)">@(item?.InvoiceNumber)</td>
+                                            <td style="color: #3e4245;" data-date="@(item?.CreatedDate != null ? item.CreatedDate.ToString("dd-MM-yyyy") : "-")">@(item?.CreatedDate != null ? item.CreatedDate.ToString("dd-MM-yyyy") : "-")</td>
+                                            <td style="color: #3e4245;" data-total="@(item?.Total != null ? item.Total.ToString("0.00") : "0.00")"> @(item?.Total != null ? item.Total.ToString("0.00") : "0.00")</td>
+                                            <td style="color: #3e4245;" data-balance="@(item?.FinalAmount != null ? item.FinalAmount.ToString("0.00") : "0.00")"> @(item?.FinalAmount != null ? item.FinalAmount.ToString("0.00") : "0.00")</td>
                                         </tr>
-
                                     }
                                 }
                                 else
                                 {
                                     @if (Model.SelectedParty.Balance != 0)
                                     {
-                                        <tr class="bg-light">
+                                        <tr class="bg-light transaction-row">
                                             <td>-</td>
                                             <td></td>
                                             <td>-</td>
@@ -214,7 +219,6 @@
 </div>
 
 <style>
-   
     .list-group-item.active {
         background-color: #0d6efd !important;
         border-color: #0d6efd !important;
@@ -260,6 +264,14 @@
             #partyList::-webkit-scrollbar-thumb:hover {
                 background: #999;
             }
+
+    .transaction-row {
+        transition: background-color 0.2s;
+    }
+
+        .transaction-row.highlight {
+            background-color: #fff3cd !important;
+        }
 </style>
 
 <script>
@@ -270,15 +282,16 @@
         const searchInput = document.getElementById('searchInput');
         const searchDropdown = document.getElementById('searchDropdown');
         const partyList = document.getElementById('partyList');
+        const transactionSearchInput = document.getElementById('transactionSearchInput');
 
-        // Collect all parties
+        
         allParties = Array.from(document.querySelectorAll('.party-item')).map(item => ({
             id: item.getAttribute('data-party-id'),
             name: item.getAttribute('data-party-name'),
             element: item
         }));
 
-        // Search input event
+       
         searchInput.addEventListener('input', function() {
             const searchValue = this.value.toLowerCase().trim();
 
@@ -303,6 +316,51 @@
                 searchDropdown.style.display = 'block';
             }
         });
+
+        // Transaction search functionality
+        if (transactionSearchInput) {
+            transactionSearchInput.addEventListener('input', function() {
+                const searchValue = this.value.toLowerCase().trim();
+                const rows = document.querySelectorAll('.transaction-row');
+                const noResultsMessage = document.getElementById('noResultsMessage');
+                let visibleCount = 0;
+
+                rows.forEach(row => {
+                    
+                    const type = (row.querySelector('[data-type]')?.getAttribute('data-type') || '').toLowerCase();
+                    const invoice = (row.querySelector('[data-invoice]')?.getAttribute('data-invoice') || '').toLowerCase();
+                    const date = (row.querySelector('[data-date]')?.getAttribute('data-date') || '').toLowerCase();
+                    const total = (row.querySelector('[data-total]')?.getAttribute('data-total') || '').toLowerCase();
+                    const balance = (row.querySelector('[data-balance]')?.getAttribute('data-balance') || '').toLowerCase();
+
+                   
+                    const rowText = `${type} ${invoice} ${date} ${total} ${balance}`;
+
+                    
+                    if (searchValue === '' || rowText.includes(searchValue)) {
+                        row.style.display = '';
+                        visibleCount++;
+
+                        // Add highlight effect if searching
+                        if (searchValue !== '') {
+                            row.classList.add('highlight');
+                        } else {
+                            row.classList.remove('highlight');
+                        }
+                    } else {
+                        row.style.display = 'none';
+                        row.classList.remove('highlight');
+                    }
+                });
+
+                // Show/hide no results message
+                if (visibleCount === 0 && searchValue !== '') {
+                    noResultsMessage.style.display = 'block';
+                } else {
+                    noResultsMessage.style.display = 'none';
+                }
+            });
+        }
 
         // Close dropdown when clicking outside
         document.addEventListener('click', function(e) {
@@ -343,7 +401,7 @@
     function updateScrollIndicator() {
         const partyList = document.getElementById('partyList');
         const items = partyList.querySelectorAll('.party-item');
-        const itemHeight = 48; // approximate height of each item
+        const itemHeight = 48;
         const scrollTop = partyList.scrollTop;
         const visibleIndex = Math.floor(scrollTop / itemHeight) + 1;
 

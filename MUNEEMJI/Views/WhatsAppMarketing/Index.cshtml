@@ -649,7 +649,7 @@
         function loadTemplatesByFilter(tabId, categoryId) {
             debugger;
             // You can call your controller here to fetch filtered data
-            fetch(`/WhatsAppMarketing/GetTemplates?tabId=${tabId}&categoryId=${categoryId}`)
+            fetch(`/Web/WhatsAppMarketing/GetTemplates?tabId=${tabId}&categoryId=${categoryId}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Filtered templates:', data);

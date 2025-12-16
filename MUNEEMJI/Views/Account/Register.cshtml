@@ -1,0 +1,594 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MuneemJi - Registration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @@keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(229, 62, 62, 0.3);
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #e53e3e;
+            font-size: 24px;
+        }
+
+        .logo-text {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: #4299e1;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .flag {
+            display: inline-block;
+            font-size: 16px;
+            margin-left: 5px;
+        }
+
+        .form-title {
+            color: #2d3748;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #e53e3e;
+            background-color: white;
+            box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-top: 3px;
+            accent-color: #e53e3e;
+            width: 18px;
+            height: 18px;
+        }
+
+        .checkbox-group label {
+            font-size: 13px;
+            color: #718096;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+        .checkbox-group a {
+            color: #e53e3e;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .checkbox-group a:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn, .register-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+        }
+
+        .login-btn:hover, .register-btn:hover {
+            background: linear-gradient(135deg, #c53030 0%, #9c2020 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
+        }
+
+        .login-btn:active, .register-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .switch-form {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #718096;
+        }
+
+        .switch-form a {
+            color: #e53e3e;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .switch-form a:hover {
+            text-decoration: underline;
+        }
+
+        .text-danger {
+            color: #e53e3e;
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background-color: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        .alert-success {
+            background-color: #c6f6d5;
+            color: #2f855a;
+            border: 1px solid #9ae6b4;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .otp-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .otp-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+
+        .otp-input:focus {
+            border-color: #e53e3e;
+            background: white;
+            outline: none;
+        }
+
+        .resend-link {
+            color: #e53e3e;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+        }
+
+        @@media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+
+            .form-title {
+                font-size: 24px;
+            }
+
+            .logo-text {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <div class="logo">
+                <div class="logo-icon">M</div>
+            </div>
+            <div class="logo-text">MuneemJi</div>
+            <div class="tagline">Har Business Banega Digital 🇮🇳</div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm" class="hidden">
+            <h1 class="form-title">WELCOME BACK</h1>
+            
+            <form id="loginFormSubmit">
+                <div class="form-group">
+                    <label for="loginPhone">Phone Number</label>
+                    <input name="Phone" id="loginPhone" class="form-control" type="tel" placeholder="Enter your phone number" required />
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="rememberMe" />
+                    <label for="rememberMe">Remember me</label>
+                </div>
+
+                <button type="submit" class="login-btn">LOGIN</button>
+            </form>
+
+            <div class="switch-form">
+                New to MuneemJi? <a onclick="switchToRegister()">Register here</a>
+            </div>
+        </div>
+
+        <!-- Registration Form -->
+        <div id="registerForm">
+            <h1 class="form-title">ADD BUSINESS</h1>
+
+            <div id="errorAlert" class="alert alert-danger hidden"></div>
+            <div id="successAlert" class="alert alert-success hidden"></div>
+
+            <form id="registerFormSubmit">
+                <div class="form-group">
+                    <label for="BusinessName">Business Name</label>
+                    <input name="BusinessName" id="BusinessName" class="form-control" type="text" placeholder="Enter your business name" required />
+                    <span class="text-danger" id="businessNameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Phone">Phone Number</label>
+                    <input name="Phone" id="Phone" class="form-control" type="tel" placeholder="Enter your phone number" required />
+                    <span class="text-danger" id="phoneError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <input name="Email" id="Email" class="form-control" type="email" placeholder="Enter your email address" required />
+                    <span class="text-danger" id="emailError"></span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="acceptTerms" required />
+                    <label for="acceptTerms">
+                        By clicking on the Register button I accept the <a href="http://muneemjii.com/Termsandcondition.html" target="_blank">terms and conditions</a>
+                    </label>
+                </div>
+                <span class="text-danger" id="termsError"></span>
+
+                <button type="submit" class="register-btn">REGISTER</button>
+            </form>
+
+            <div class="switch-form">
+                Already have an account? <a onclick="switchToLogin()">Login here</a>
+            </div>
+        </div>
+
+        <!-- OTP Verification Form -->
+        <div id="otpForm" class="hidden">
+            <h1 class="form-title">VERIFY OTP</h1>
+            
+            <p style="color: #718096; margin-bottom: 20px; font-size: 14px;">
+                Please enter the OTP sent to your phone number
+            </p>
+
+            <form id="otpFormSubmit">
+                <div class="otp-input-group">
+                    <input type="text" class="otp-input" maxlength="1" />
+                    <input type="text" class="otp-input" maxlength="1" />
+                    <input type="text" class="otp-input" maxlength="1" />
+                    <input type="text" class="otp-input" maxlength="1" />
+                    <input type="text" class="otp-input" maxlength="1" />
+                    <input type="text" class="otp-input" maxlength="1" />
+                </div>
+
+                <button type="submit" class="login-btn">VERIFY OTP</button>
+            </form>
+
+            <div class="switch-form">
+                Didn't receive OTP? <a class="resend-link">Resend OTP</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form switching functions
+        function switchToLogin() {
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            clearErrors();
+        }
+
+        function switchToRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+            clearErrors();
+        }
+
+        function switchToOtpForm() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+            document.getElementById('otpForm').classList.remove('hidden');
+            clearErrors();
+        }
+
+        // Clear error messages
+        function clearErrors() {
+            document.querySelectorAll('.text-danger').forEach(span => span.textContent = '');
+            document.getElementById('errorAlert').classList.add('hidden');
+            document.getElementById('successAlert').classList.add('hidden');
+        }
+
+        // Show alert messages
+        function showAlert(message, type = 'error') {
+            const alertElement = type === 'error' ? 
+                document.getElementById('errorAlert') : 
+                document.getElementById('successAlert');
+            
+            alertElement.textContent = message;
+            alertElement.classList.remove('hidden');
+            
+            // Hide the other alert
+            const otherAlert = type === 'error' ? 
+                document.getElementById('successAlert') : 
+                document.getElementById('errorAlert');
+            otherAlert.classList.add('hidden');
+        }
+
+        // Validate form
+        function validateRegistrationForm() {
+            clearErrors();
+            let isValid = true;
+
+            const businessName = document.getElementById('BusinessName').value.trim();
+            const phone = document.getElementById('Phone').value.trim();
+            const email = document.getElementById('Email').value.trim();
+            const acceptTerms = document.getElementById('acceptTerms').checked;
+
+            if (!businessName) {
+                document.getElementById('businessNameError').textContent = 'Business name is required';
+                isValid = false;
+            }
+
+            if (!phone) {
+                document.getElementById('phoneError').textContent = 'Phone number is required';
+                isValid = false;
+            } else if (!/^[0-9]{10}$/.test(phone)) {
+                document.getElementById('phoneError').textContent = 'Please enter a valid 10-digit phone number';
+                isValid = false;
+            }
+
+            if (!email) {
+                document.getElementById('emailError').textContent = 'Email is required';
+                isValid = false;
+            } 
+
+            if (!acceptTerms) {
+                document.getElementById('termsError').textContent = 'Please accept the terms and conditions';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Handle registration form submission
+        document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (validateRegistrationForm()) {
+                // Simulate registration process
+                const businessName = document.getElementById('BusinessName').value.trim();
+                const phone = document.getElementById('Phone').value.trim();
+                const email = document.getElementById('Email').value.trim();
+
+                // Store registration data (in real app, this would be sent to server)
+                const registrationData = {
+                    businessName: businessName,
+                    phone: phone,
+                    email: email,
+                    timestamp: new Date().toISOString()
+                };
+
+                console.log('Registration Data:', registrationData);
+                
+                showAlert('Registration successful! Please verify your phone number.', 'success');
+                
+                // Switch to OTP form after 2 seconds
+                setTimeout(() => {
+                    switchToOtpForm();
+                }, 2000);
+            }
+        });
+
+        // Handle login form submission
+        document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const phone = document.getElementById('loginPhone').value.trim();
+            
+            if (!phone) {
+                showAlert('Please enter your phone number');
+                return;
+            }
+            
+            if (!/^[0-9]{10}$/.test(phone)) {
+                showAlert('Please enter a valid 10-digit phone number');
+                return;
+            }
+
+            // Simulate sending OTP
+            showAlert('OTP sent to your phone number', 'success');
+            setTimeout(() => {
+                switchToOtpForm();
+            }, 1500);
+        });
+
+        // Handle OTP input
+        const otpInputs = document.querySelectorAll('.otp-input');
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('keyup', function(e) {
+                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                
+                if (e.key === 'Backspace' && index > 0 && e.target.value.length === 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Handle OTP form submission
+        document.getElementById('otpFormSubmit').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const otpValues = Array.from(otpInputs).map(input => input.value);
+            const otp = otpValues.join('');
+            
+            if (otp.length !== 6) {
+                showAlert('Please enter complete OTP');
+                return;
+            }
+            
+            // Simulate OTP verification
+            if (otp === '123456') {
+                showAlert('OTP verified successfully! Welcome to MuneemJi!', 'success');
+                setTimeout(() => {
+                    alert('Registration completed successfully!');
+                }, 1500);
+            } else {
+                showAlert('Invalid OTP. Please try again.');
+            }
+        });
+
+        // Handle URL parameters for form switching
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            if (urlParams.get('form') === 'login') {
+                switchToLogin();
+            } else if (urlParams.get('form') === 'otp') {
+                switchToOtpForm();
+            }
+        });
+
+        // Auto-focus first input on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const firstInput = document.querySelector('#registerForm .form-control');
+                if (firstInput) {
+                    firstInput.focus();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>

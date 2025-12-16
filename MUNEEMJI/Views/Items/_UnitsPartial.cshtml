@@ -1,0 +1,475 @@
+﻿@model ItemViewModel
+
+<div class="main-content-unit">
+    <div class="sidebar">
+        <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search units..." id="unit-search" oninput="searchUnits(this.value)">
+        </div>
+
+        <button class="add-item-btn" onclick="openAddUnitModal()">
+            <i class="bi bi-plus-circle"></i> Add Unit
+        </button>
+
+        <div class="item-list">
+            <div class="item-list-header">
+                <div class="item-name">FULLNAME</div>
+                <div class="item-quantity">SHORTNAME</div>
+            </div>
+
+            @if (Model?.Units != null && Model.Units.Any())
+            {
+                foreach (var unit in Model.Units)
+                {
+                    <div class="item-row unit-row" data-unit-id="@unit.Id">
+                        <div class="item-name">@unit.FullName</div>
+                        <div class="item-quantity">@unit.ShortName</div>
+                        <button type="button"
+                                class="btn btn-link p-0 ms-2"
+                                data-bs-toggle="popover"
+                                data-bs-html="true"
+                                data-bs-content="<div class='popover-action' onclick='editUnit(@unit.Id)'>Edit</div><div class='popover-action' onclick='deleteUnit(@unit.Id)'>Delete</div>">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="no-transactions">
+                    <i class="bi bi-inbox" style="font-size: 48px; margin-bottom: 15px; display: block;"></i>
+                    <p>No units found</p>
+                    <button class="btn btn-primary btn-sm" onclick="openAddUnitModal()">Add Your First Unit</button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="content-area">
+        <div class="product-header">
+            <div class="product-title">
+                <i class="bi bi-rulers"></i>
+                Units Management
+            </div>
+        </div>
+
+        <div class="product-info">
+            <div class="info-card">
+                <div class="info-label">Total Units</div>
+                <div class="info-value">@(Model?.Units?.Count ?? 0)</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Most Used</div>
+                <div class="info-value">Kilograms (Kg)</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Recently Added</div>
+                <div class="info-value">@(Model?.Units?.FirstOrDefault()?.FullName ?? "N/A")</div>
+            </div>
+        </div>
+
+        <div class="transactions-section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="bi bi-list-ul"></i> All Units
+                </div>
+            </div>
+
+            <div class="transactions-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>FULL NAME</th>
+                            <th>SHORT NAME</th>
+                            <th style="width: 120px;">ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="units-table-body">
+                        @if (Model?.Units != null && Model.Units.Any())
+                        {
+                            int index = 1;
+                            foreach (var unit in Model.Units)
+                            {
+                                <tr data-unit-id="@unit.Id">
+                                    <td>@index</td>
+                                    <td>@unit.FullName</td>
+                                    <td><span class="status-badge status-complete">@unit.ShortName</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary me-1" onclick="editUnit(@unit.Id)" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteUnit(@unit.Id)" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                index++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No units available</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Unit Modal -->
+<div class="modal fade" id="unitModal" tabindex="-1" aria-labelledby="unitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="unitModalLabel">New Unit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="unitForm">
+                    <input type="hidden" id="unitId" name="unitId">
+
+                    <div class="mb-3">
+                        <label for="unitFullName" class="form-label">
+                            UNIT NAME <span class="text-danger">*</span>
+                        </label>
+                        <input type="text"
+                               class="form-control"
+                               id="unitFullName"
+                               name="fullName"
+                               placeholder="e.g., Kilograms, Liters, Pieces"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="unitShortName" class="form-label">
+                            SHORT NAME <span class="text-danger">*</span>
+                        </label>
+                        <input type="text"
+                               class="form-control"
+                               id="unitShortName"
+                               name="shortName"
+                               placeholder="e.g., Kg, L, Pcs"
+                               maxlength="10"
+                               required>
+                        <small class="text-muted">Maximum 10 characters</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveUnit()">
+                    <i class="bi bi-check-circle"></i> Save
+                </button>
+                <button type="button" class="btn btn-success" onclick="saveAndNewUnit()" id="saveNewBtn">
+                    <i class="bi bi-plus-circle"></i> Save & New
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .unit-row {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+    }
+
+        .unit-row:hover {
+            background: #ffe69c;
+        }
+
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+        background: linear-gradient(45deg, #ff9500, #ffb347);
+        color: white;
+        border-radius: 12px 12px 0 0;
+        border-bottom: none;
+    }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control:focus {
+        border-color: #ff9500;
+        box-shadow: 0 0 0 0.2rem rgba(255, 149, 0, 0.25);
+    }
+</style>
+
+<script>
+    let unitModal;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize modal
+        const modalElement = document.getElementById('unitModal');
+        if (modalElement) {
+            unitModal = new bootstrap.Modal(modalElement);
+        }
+
+        // Reinitialize popovers for units tab
+        setTimeout(function() {
+            if (typeof initializeGlobalPopovers === 'function') {
+                initializeGlobalPopovers();
+            }
+        }, 200);
+    });
+
+    function openAddUnitModal() {
+        document.getElementById('unitModalLabel').textContent = 'New Unit';
+        document.getElementById('unitForm').reset();
+        document.getElementById('unitId').value = '';
+        document.getElementById('saveNewBtn').style.display = 'inline-block';
+
+        if (unitModal) {
+            unitModal.show();
+        }
+    }
+
+    function editUnit(unitId) {
+        // Hide popovers
+        if (typeof hideAllPopovers === 'function') {
+            hideAllPopovers();
+        }
+
+        // Fetch unit data
+        fetch(`/Web/Items/GetUnit/${unitId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('unitModalLabel').textContent = 'Edit Unit';
+                document.getElementById('unitId').value = data.id;
+                document.getElementById('unitFullName').value = data.fullName;
+                document.getElementById('unitShortName').value = data.shortName;
+                document.getElementById('saveNewBtn').style.display = 'none';
+
+                if (unitModal) {
+                    unitModal.show();
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching unit:', error);
+                alert('Error loading unit data');
+            });
+    }
+
+    function saveUnit() {
+        const form = document.getElementById('unitForm');
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const unitData = {
+            id: document.getElementById('unitId').value || 0,
+            fullName: document.getElementById('unitFullName').value.trim(),
+            shortName: document.getElementById('unitShortName').value.trim()
+        };
+
+        const url = unitData.id > 0 ? '/Web/Items/UpdateUnit' : '/Web/Items/CreateUnit';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify(unitData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (unitModal) {
+                    unitModal.hide();
+                }
+                // Reload units tab
+                loadUnitsContent();
+            } else {
+                alert('Error: ' + (data.message || 'Failed to save unit'));
+            }
+        })
+        .catch(error => {
+            console.error('Error saving unit:', error);
+            alert('Error saving unit: ' + error.message);
+        });
+    }
+
+    function saveAndNewUnit() {
+        const form = document.getElementById('unitForm');
+
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const unitData = {
+            fullName: document.getElementById('unitFullName').value.trim(),
+            shortName: document.getElementById('unitShortName').value.trim()
+        };
+
+        fetch('/Web/Items/CreateUnit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify(unitData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Clear form for new entry
+                document.getElementById('unitForm').reset();
+                // Reload units in background
+                loadUnitsContent();
+                // Keep modal open for next entry
+                document.getElementById('unitFullName').focus();
+            } else {
+                alert('Error: ' + (data.message || 'Failed to save unit'));
+            }
+        })
+        .catch(error => {
+            console.error('Error saving unit:', error);
+            alert('Error saving unit: ' + error.message);
+        });
+    }
+
+    function deleteUnit(unitId) {
+        // Hide popovers
+        if (typeof hideAllPopovers === 'function') {
+            hideAllPopovers();
+        }
+
+        if (!confirm('Are you sure you want to delete this unit?')) {
+            return;
+        }
+
+        fetch(`/Web/Items/DeleteUnit/${unitId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadUnitsContent();
+            } else {
+                alert('Error: ' + (data.message || 'Failed to delete unit'));
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting unit:', error);
+            alert('Error deleting unit: ' + error.message);
+        });
+    }
+
+    function searchUnits(searchTerm) {
+        const rows = document.querySelectorAll('.unit-row');
+        const tableRows = document.querySelectorAll('#units-table-body tr');
+
+        const lowerSearch = searchTerm.toLowerCase();
+
+        rows.forEach(row => {
+            const fullName = row.querySelector('.item-name')?.textContent.toLowerCase() || '';
+            const shortName = row.querySelector('.item-quantity')?.textContent.toLowerCase() || '';
+
+            if (fullName.includes(lowerSearch) || shortName.includes(lowerSearch) || searchTerm === '') {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        tableRows.forEach(row => {
+            const fullName = row.cells[1]?.textContent.toLowerCase() || '';
+            const shortName = row.cells[2]?.textContent.toLowerCase() || '';
+
+            if (fullName.includes(lowerSearch) || shortName.includes(lowerSearch) || searchTerm === '') {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function loadUnitsContent() {
+        const unitsPartialContent = document.getElementById('units-partial-content');
+
+        if (!unitsPartialContent) {
+            console.error('Units partial content container not found');
+            return;
+        }
+
+        unitsPartialContent.innerHTML = `
+            <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                <div style="text-align: center; color: #6c757d;">
+                    <i class="bi bi-arrow-repeat" style="font-size: 32px; margin-bottom: 15px; animation: spin 1s linear infinite;"></i>
+                    <p>Loading units...</p>
+                </div>
+            </div>`;
+
+        fetch('/Web/Items/GetUnitsPartialView', {
+            method: 'GET'
+        })
+        .then(async response => {
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server Error: ${errorText}`);
+            }
+            return response.text();
+        })
+        .then(html => {
+            unitsPartialContent.innerHTML = html;
+            // Reinitialize popovers
+            setTimeout(function() {
+                if (typeof initializeGlobalPopovers === 'function') {
+                    initializeGlobalPopovers();
+                }
+            }, 200);
+        })
+        .catch(error => {
+            console.error('Error loading units:', error);
+            unitsPartialContent.innerHTML = `
+                <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                    <div style="text-align: center; color: #dc3545;">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
+                        <p>Error: ${error.message}</p>
+                        <button class="btn btn-primary btn-sm" onclick="loadUnitsContent()">Retry</button>
+                    </div>
+                </div>`;
+        });
+    }
+</script>
+
+<style>
+    @@keyframes spin {
+        0%
+
+    {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+
+    }
+</style>

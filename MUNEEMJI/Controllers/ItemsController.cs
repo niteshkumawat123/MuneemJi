@@ -6,6 +6,7 @@ using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
+using SkiaSharp;
 using System.Globalization;
 using static MUNEEMJI.Models.ItemModel;
 using Category = MUNEEMJI.Models.Category;
@@ -37,7 +38,7 @@ namespace MUNEEMJI.Controllers
         {
             var companyId = _CompayTenancy.GetCurrentCompanyId();
 
-            var viewModel =  GetItemsAsync(companyId);
+            var viewModel = GetItemsAsync(companyId);
 
             ItemViewModel itemViewModel = new ItemViewModel();
             itemViewModel.ItemView = viewModel;
@@ -185,9 +186,9 @@ namespace MUNEEMJI.Controllers
                 return View(viewModel);
             }
         }
-        public  List<BillItem> GetItemsAsync(int CompanyId)
+        public List<BillItem> GetItemsAsync(int CompanyId)
         {
-          var  _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
 
             List<BillItem> items = new List<BillItem>();
 
@@ -233,7 +234,7 @@ namespace MUNEEMJI.Controllers
                                     ";
 
                 // ✅ Fetch bill items
-                var billItems = connection.QuerySql<BillItem>(billItemSql,new { p_itemtype= "product" , p_companyid  = CompanyId }).ToList();
+                var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtype = "product", p_companyid = CompanyId }).ToList();
 
                 if (billItems != null && billItems.Count > 0)
                 {
@@ -346,7 +347,7 @@ namespace MUNEEMJI.Controllers
                 model.IsView = true;
                 if (id > 0)
                 {
-                    var data =  GetItemsAsync(companyId);
+                    var data = GetItemsAsync(companyId);
                     if (data != null && data.Count() > 0)
                     {
                         billItem = data.Where(x => x.Id == id).FirstOrDefault();
@@ -509,7 +510,7 @@ namespace MUNEEMJI.Controllers
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
 
             }
@@ -553,7 +554,28 @@ namespace MUNEEMJI.Controllers
                 return null;
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetUnitsPartialView()
+        {
+            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            ItemViewModel model = new ItemViewModel();
+            try
+            {
+                await Task.Delay(1);
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
+                    model.Units = new List<UnitViewModel>();
+                    model.Units = connection.QuerySql<UnitViewModel>("select id , fullname , shortname from units").ToList();
 
+                }
+                
+            }
+
+            catch (Exception ex)
+            {
+            }
+            return PartialView("_UnitsPartial", model);
+        }
     }
 }
 

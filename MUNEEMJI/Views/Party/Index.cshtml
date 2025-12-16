@@ -317,7 +317,6 @@
             }
         });
 
-        // Transaction search functionality
         if (transactionSearchInput) {
             transactionSearchInput.addEventListener('input', function() {
                 const searchValue = this.value.toLowerCase().trim();
@@ -353,7 +352,7 @@
                     }
                 });
 
-                // Show/hide no results message
+                
                 if (visibleCount === 0 && searchValue !== '') {
                     noResultsMessage.style.display = 'block';
                 } else {
@@ -362,7 +361,7 @@
             });
         }
 
-        // Close dropdown when clicking outside
+       
         document.addEventListener('click', function(e) {
             if (!e.target.closest('.position-relative')) {
                 searchDropdown.style.display = 'none';

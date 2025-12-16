@@ -11,6 +11,8 @@ namespace MUNEEMJI.Models
         public string Type { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
         public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public int TabId { get; set; }
+        public int CategoryId { get; set; }
     }
 
     public class TemplateEditorViewModel

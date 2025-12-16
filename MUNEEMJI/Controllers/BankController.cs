@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Insight.Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MUNEEMJI.Models.BankAccount;
@@ -12,9 +13,44 @@ namespace MUNEEMJI.Controllers
         private readonly string _connStr = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
 
         [HttpGet]
-        public IActionResult AddBankAccount()
+        public IActionResult AddBankAccount(int id = 0, int typeid = 0)
         {
-            return View(new BankAccountModel());
+            BankAccountModel model = new BankAccountModel();
+
+            if (id > 0)
+            {
+                using (var conn = new NpgsqlConnection(_connStr))
+                {
+                    string query = @"
+                SELECT  
+                    id                      AS ""Id"",
+                    account_display_name    AS ""AccountDisplayName"",
+                    opening_balance         AS ""OpeningBalance"",
+                    as_of_date              AS ""AsOfDate"",
+                    print_upi_qr             AS ""PrintUPIQrCode"",
+                    print_bank_details      AS ""PrintBankDetails"",
+                    account_number          AS ""AccountNumber"",
+                    ifsc_code               AS ""IFSCCode"",
+                    upi_id                  AS ""UPIID"",
+                    bank_name               AS ""BankName"",
+                    account_holder_name     AS ""AccountHolderName""
+                FROM public.extended_bank_accounts
+                WHERE id = @p_id;
+            ";
+
+                    model = conn
+                        .QuerySql<BankAccountModel>(query, new { p_id = id })
+                        .FirstOrDefault() ?? new BankAccountModel();
+
+                    model.RequestTypeId = typeid;
+                }
+            }
+            else
+            {
+                model.RequestTypeId = typeid;
+            }
+
+            return View(model);
         }
 
         [HttpPost]
@@ -131,6 +167,17 @@ namespace MUNEEMJI.Controllers
         public IActionResult CashInhand()
         {
             return View();
+        }
+
+        [HttpGet]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            using (var conn = new NpgsqlConnection(_connStr))
+            {
+                var QueryString = " delete from extended_bank_accounts where id = @p_id ";
+                conn.ExecuteSql(QueryString, new { p_id = id });
+            }
+                return RedirectToAction("Index");
         }
 
     }

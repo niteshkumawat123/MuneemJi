@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Insight.Database;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
@@ -26,7 +27,7 @@ namespace MUNEEMJI.Controllers
             // ---------------- Query 1: Businesses shared with me (by email) ----------------
             var query = @"SELECT id, business_name, phone, email, created_at, updated_at, status, roleid, isactive, companyid, username 
                   FROM businesses 
-                  WHERE email = @Email and isowner = false";
+                  WHERE email = @Email and isowner = false and isactive = true";
 
             using (var command = new NpgsqlCommand(query, connection))
             {
@@ -55,7 +56,7 @@ namespace MUNEEMJI.Controllers
             // ---------------- Query 2: My company businesses (by companyid) ----------------
             var query1 = @"SELECT id, business_name, phone, email, created_at, updated_at, status, roleid, isactive, companyid, username 
                    FROM businesses 
-                    WHERE email = @Email and isowner = true";
+                    WHERE email = @Email and isowner = true  and isactive = true";
 
             var businessIdString = HttpContext.Session.GetString("BusinessId");
             if (!string.IsNullOrEmpty(businessIdString) && int.TryParse(businessIdString, out int companyId))
@@ -86,6 +87,31 @@ namespace MUNEEMJI.Controllers
             return View(businesses);
         }
 
+        [HttpPost]
+        public IActionResult DeleteCompany(int Id)
+        {
+            try
+            {
+                var connection = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+                using (var conn = new NpgsqlConnection(connection))
+                {
+                    if (Id > 0)
+                    {
+                        conn.ExecuteSql("update businesses set isactive = false where id = @p_id", new { p_id = Id });
+                        return Ok(new { success = true });
+                    }
+                    return BadRequest(new { success = false, message = "Invalid company ID" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Message });
+            }
+        }
 
+        public class DeleteCompanyRequest
+        {
+            public int Id { get; set; }
+        }
     }
 }

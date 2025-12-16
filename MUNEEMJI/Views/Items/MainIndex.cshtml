@@ -88,6 +88,18 @@
         padding-left: 0px;
     }
 
+    .main-content-unit {
+/*         margin-left: 142px;
+ */        min-height: 100vh;
+        background: #f8f9fa;
+/*         padding-right: 0 !important;
+ */        padding-top: 17px;
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+/*         padding-left: 0px;
+ */    }
+
     .sidebar {
         width: 322px;
         background: #f8f9fa;
@@ -604,10 +616,12 @@
 
     <!-- Units Tab Content -->
     <div class="tab-content" id="units-content">
-        <div class="loading-content">
-            <div>
-                <i class="fas fa-ruler fa-spin"></i>
-                <p>Units functionality coming soon...</p>
+        <div id="units-partial-content">
+            <div class="loading-content">
+                <div style="text-align: center; color: #6c757d;">
+                    <i class="bi bi-rulers" style="font-size: 48px;"></i>
+                    <p>Click to load units...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -633,7 +647,7 @@
         const tabContents = document.querySelectorAll('.tab-content');
 
         tabs.forEach(tab => {
-            tab.addEventListener('click', function(e) {
+            tab.addEventListener('click', function (e) {
                 e.preventDefault();
 
                 // Close any open popovers when switching tabs
@@ -652,16 +666,19 @@
                 }
 
                 // Reinitialize popovers after tab switch
-                setTimeout(function() {
+                setTimeout(function () {
                     initializeGlobalPopovers();
                 }, 150);
 
+                // Load dynamic content for specific tabs
                 if (targetTab === 'category') {
                     loadCategoryContent();
                 }
-                if(targetTab === 'services')
-                {
+                if (targetTab === 'services') {
                     loadServiceContent();
+                }
+                if (targetTab === 'units') {
+                    loadUnitsContent();
                 }
             });
         });
@@ -1018,4 +1035,51 @@
             hideAllPopovers();
         }
     });
+
+    function loadUnitsContent() {
+        const unitsPartialContent = document.getElementById('units-partial-content');
+
+        debugger;
+        if (!unitsPartialContent) {
+            console.error('Units content container not found');
+            return;
+        }
+
+        unitsPartialContent.innerHTML = `
+        <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+            <div style="text-align: center; color: #6c757d;">
+                <i class="bi bi-arrow-repeat" style="font-size: 32px; margin-bottom: 15px; animation: spin 1s linear infinite;"></i>
+                <p>Loading units...</p>
+            </div>
+        </div>`;
+
+        fetch('/Web/Items/GetUnitsPartialView', {
+            method: 'GET'
+        })
+            .then(async response => {
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server Error: ${errorText}`);
+                }
+                return response.text();
+            })
+            .then(html => {
+                unitsPartialContent.innerHTML = html;
+                // Reinitialize popovers after loading units content
+                setTimeout(function () {
+                    initializeGlobalPopovers();
+                }, 200);
+            })
+            .catch(error => {
+                console.error('Error loading units:', error);
+                unitsPartialContent.innerHTML = `
+            <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                <div style="text-align: center; color: #dc3545;">
+                    <i class="bi bi-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
+                    <p>Error: ${error.message}</p>
+                    <button class="btn btn-primary btn-sm" onclick="loadUnitsContent()">Retry</button>
+                </div>
+            </div>`;
+            });
+    }
 </script>

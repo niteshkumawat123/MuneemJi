@@ -21,10 +21,19 @@ namespace MUNEEMJI.Models
         {
         public List<BillItem> ItemView { get; set; }
         public BillItem SelectedItem { get; set; }
-
         public List<Category> Categories { get; set; }
+        public List<UnitViewModel> Units { get; set; }
+    }
 
 
+    public class UnitViewModel
+    {
+        public int Id { get; set; }       
+        public string FullName { get; set; }       
+        public string ShortName { get; set; }  
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+      
     }
 
     public class ProductInfo

@@ -58,6 +58,7 @@
                 padding: 15px 0;
                 margin-right: 40px;
                 position: relative;
+                cursor: pointer;
             }
 
                 .nav-tabs .nav-link.active {
@@ -89,6 +90,7 @@
             margin-right: 10px;
             margin-bottom: 10px;
             font-size: 14px;
+            cursor: pointer;
         }
 
             .category-pill.active {
@@ -112,6 +114,8 @@
             transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
             height: 300px;
+            display: flex;
+            flex-direction: column;
         }
 
             .template-card:hover {
@@ -119,11 +123,20 @@
                 box-shadow: 0 8px 25px rgba(0,0,0,0.15);
             }
 
+        .template-image-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            flex: 1;
+        }
+
         .template-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            position: relative;
+            display: block;
+            background: #f0f0f0;
         }
 
         .template-overlay {
@@ -156,7 +169,6 @@
             color: white;
         }
 
-        /* Modal Styles */
         .modal-xl {
             max-width: 1200px;
         }
@@ -177,7 +189,6 @@
 
         .editor-container {
             display: flex;
-            
         }
 
         .editor-left {
@@ -221,10 +232,9 @@
 
         .preview-image {
             max-width: 100%;
-          /*   max-height: 500px; */
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            min-width:500px
+            min-width: 500px;
         }
 
         .action-buttons {
@@ -252,80 +262,8 @@
             font-weight: 500;
         }
 
-        .template-image-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            flex: 1;
-        }
-
-        .template-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            background: #f0f0f0;
-        }
-
-            .template-image.loading {
-                background: #f0f0f0 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="20" fill="%23ddd"/></svg>') center/50px no-repeat;
-            }
-
-        .loading-spinner {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            animation: spin 2s linear infinite;
-            z-index: 1;
-        }
-
-        @@keyframes spin {
-            0%
-
-        {
-            transform: translate(-50%, -50%) rotate(0deg);
-        }
-
-        100% {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
-
-        }
-
-        .template-image-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            flex: 1;
-        }
-
-        .template-card {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            position: relative;
-            height: 300px;
-            display: flex; /* Add this */
-            flex-direction: column; /* Add this */
-        }
-
-        .template-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            /* Remove position: relative if it exists */
+        .modal-content.min-500 {
+            max-width: 100%;
         }
     </style>
 </head>
@@ -335,17 +273,11 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <input type="text" class="search-box" placeholder="Search Transactions" />
                 <div>
-                    <button class="btn btn-add-sale me-2">
+                    <button class="btn btn-add-sale me-2" onclick="window.location.href='/Web/Sales/Create'">
                         <i class="fas fa-plus me-1"></i> Add Sale
                     </button>
-                    <button class="btn btn-add-purchase me-2">
+                    <button class="btn btn-add-purchase me-2" onclick="window.location.href='/Web/PurchaseBill/Create'">
                         <i class="fas fa-plus me-1"></i> Add Purchase
-                    </button>
-                    <button class="btn btn-outline-secondary">
-                        <i class="fas fa-plus"></i>
-                    </button>
-                    <button class="btn btn-outline-secondary ms-2">
-                        <i class="fas fa-ellipsis-v"></i>
                     </button>
                 </div>
             </div>
@@ -356,28 +288,36 @@
     <div class="container mt-4">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link active" href="#"><i class="fas fa-heart text-danger me-2"></i>Greetings</a>
+                <a class="nav-link active" data-tab-id="1" onclick="filterByTab(1)">
+                    <i class="fas fa-heart text-danger me-2"></i>Greetings
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-chart-line me-2"></i>Trending</a>
+                <a class="nav-link" data-tab-id="2" onclick="filterByTab(2)">
+                    <i class="fas fa-chart-line me-2"></i>Trending
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-briefcase me-2"></i>Business</a>
+                <a class="nav-link" data-tab-id="3" onclick="filterByTab(3)">
+                    <i class="fas fa-briefcase me-2"></i>Business
+                </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-tags me-2"></i>Offers</a>
+                <a class="nav-link" data-tab-id="4" onclick="filterByTab(4)">
+                    <i class="fas fa-tags me-2"></i>Offers
+                </a>
             </li>
         </ul>
 
         <div class="category-pills">
-            <button class="btn category-pill active">All</button>
-            <button class="btn category-pill">Latest Update</button>
-            <button class="btn category-pill">Gupt Navratri</button>
-            <button class="btn category-pill">Kamakhya Ambubachi Mela</button>
-            <button class="btn category-pill">Good Morning</button>
-            <button class="btn category-pill">Good Thoughts (Suvichar)</button>
-            <button class="btn category-pill">Good Night</button>
-            <button class="btn category-pill">Motivation</button>
+            <button class="btn category-pill active" data-category-id="0" onclick="filterByCategory(0)">All</button>
+            <button class="btn category-pill" data-category-id="1" onclick="filterByCategory(1)">Latest Update</button>
+            <button class="btn category-pill" data-category-id="2" onclick="filterByCategory(2)">Gupt Navratri</button>
+            <button class="btn category-pill" data-category-id="3" onclick="filterByCategory(3)">Kamakhya Ambubachi Mela</button>
+            <button class="btn category-pill" data-category-id="4" onclick="filterByCategory(4)">Good Morning</button>
+            <button class="btn category-pill" data-category-id="5" onclick="filterByCategory(5)">Good Thoughts (Suvichar)</button>
+            <button class="btn category-pill" data-category-id="6" onclick="filterByCategory(6)">Good Night</button>
+            <button class="btn category-pill" data-category-id="7" onclick="filterByCategory(7)">Motivation</button>
         </div>
 
         <div class="template-grid">
@@ -388,7 +328,9 @@
                     <div class="template-card"
                          data-template-id="@template.Id"
                          data-image-url="@template.ImageUrl"
-                         data-title="@template.Title">
+                         data-title="@template.Title"
+                         data-tab-id="@template.TabId"
+                         data-category-id="@template.CategoryId">
                         <div class="template-image-container">
                             <img src="@template.ImageUrl" alt="@template.Title" class="template-image" />
                         </div>
@@ -403,163 +345,119 @@
             }
             else
             {
-                <!-- Default templates with local images -->
-                <div class="template-card"
-                     data-template-id="1"
-                     data-image-url="~/images/templates/1.jpg"
-                     data-title="हार मत मानो">
+                <!-- Default templates with tab and category IDs -->
+                <div class="template-card" data-template-id="1" data-image-url="~/images/templates/1.jpg"
+                     data-title="हार मत मानो" data-tab-id="1" data-category-id="7">
                     <div class="template-image-container">
                         <img src="~/images/templates/1.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">हार मत मानो</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="2"
-                     data-image-url="~/images/templates/2.jpg"
-                     data-title="जिंदगी सिर्फ सोनात से बदलती है">
+                <div class="template-card" data-template-id="2" data-image-url="~/images/templates/2.jpg"
+                     data-title="जिंदगी सिर्फ सोनात से बदलती है" data-tab-id="1" data-category-id="7">
                     <div class="template-image-container">
                         <img src="~/images/templates/2.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">जिंदगी सिर्फ सोनात से बदलती है</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="3"
-                     data-image-url="~/images/templates/3.jpg"
-                     data-title="उड़ने का शौक रखो">
+                <div class="template-card" data-template-id="3" data-image-url="~/images/templates/3.jpg"
+                     data-title="उड़ने का शौक रखो" data-tab-id="2" data-category-id="7">
                     <div class="template-image-container">
                         <img src="~/images/templates/3.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">उड़ने का शौक रखो</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="4"
-                     data-image-url="~/images/templates/4.jpg"
-                     data-title="याद रखना कल कभी नहीं आता है">
+                <div class="template-card" data-template-id="4" data-image-url="~/images/templates/4.jpg"
+                     data-title="याद रखना कल कभी नहीं आता है" data-tab-id="1" data-category-id="7">
                     <div class="template-image-container">
                         <img src="~/images/templates/4.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">याद रखना कल कभी नहीं आता है</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="5"
-                     data-image-url="~/images/templates/5.jpg"
-                     data-title="Good Night">
+                <div class="template-card" data-template-id="5" data-image-url="~/images/templates/5.jpg"
+                     data-title="Good Night" data-tab-id="1" data-category-id="6">
                     <div class="template-image-container">
                         <img src="~/images/templates/5.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">Good Night</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="6"
-                     data-image-url="~/images/templates/6.jpg"
-                     data-title="ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE">
+                <div class="template-card" data-template-id="6" data-image-url="~/images/templates/6.jpg"
+                     data-title="ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE" data-tab-id="1" data-category-id="5">
                     <div class="template-image-container">
                         <img src="~/images/templates/6.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="7"
-                     data-image-url="~/images/templates/7.jpg"
-                     data-title="Hard work beats TALENT">
+                <div class="template-card" data-template-id="7" data-image-url="~/images/templates/7.jpg"
+                     data-title="Hard work beats TALENT" data-tab-id="3" data-category-id="7">
                     <div class="template-image-container">
                         <img src="~/images/templates/7.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">Hard work beats TALENT</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="8"
-                     data-image-url="~/images/templates/8.jpg"
-                     data-title="YOU DON'T HAVE TO BE GREAT TO START">
+                <div class="template-card" data-template-id="8" data-image-url="~/images/templates/8.jpg"
+                     data-title="YOU DON'T HAVE TO BE GREAT TO START" data-tab-id="2" data-category-id="7">
                     <div class="template-image-container">
                         <img src="~/images/templates/8.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">YOU DON'T HAVE TO BE GREAT TO START</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="9"
-                     data-image-url="~/images/templates/9.jpg"
-                     data-title="Good Morning">
+                <div class="template-card" data-template-id="9" data-image-url="~/images/templates/9.jpg"
+                     data-title="Good Morning" data-tab-id="1" data-category-id="4">
                     <div class="template-image-container">
                         <img src="~/images/templates/9.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">Good Morning</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
 
-                <div class="template-card"
-                     data-template-id="10"
-                     data-image-url="~/images/templates/10.jpg"
-                     data-title="Good Morning Quote">
+                <div class="template-card" data-template-id="10" data-image-url="~/images/templates/10.jpg"
+                     data-title="Good Morning Quote" data-tab-id="4" data-category-id="4">
                     <div class="template-image-container">
                         <img src="~/images/templates/10.jpg" alt="Template" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">Good Morning</div>
-                        <div class="template-arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
+                        <div class="template-arrow"><i class="fas fa-arrow-right"></i></div>
                     </div>
                 </div>
             }
         </div>
     </div>
-
-    <style>
-        .modal-content.min-500{max-width:100%;}
-    </style>
 
     <!-- Editor Modal -->
     <div class="modal fade" id="editorModal" tabindex="-1">
@@ -616,14 +514,14 @@
                                     <div style="position: absolute; top: -46px; right: -31px; background: rgba(255,255,255,0.9); padding: 10px; border-radius: 8px; min-width: 100px;">
                                         <div style="text-align: center; font-weight: bold; color: #000;" id="companyLogoText">MuneemJi</div>
                                     </div>
-                                    <div style=" bottom: -55px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px;">
+                                    <div style="bottom: -55px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px;">
                                         <div id="additionalTextPreview">🎉 Flat 10% discount on Sundays</div>
                                     </div>
-                                    <div style=" bottom: -102px; left: 20px; right: 20px; background: #fff; color: #212529; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between;">
+                                    <div style="bottom: -102px; left: 20px; right: 20px; background: #fff; color: #212529; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between;">
                                         <span id="contactPersonPreview">👤 mahendra</span>
                                         <span id="contactNumberPreview">📞 9000000000</span>
                                     </div>
-                                    <div style=" background: #dbebdb; color: #2e7d32; padding: 5px 15px; border-radius: 8px; font-size: 14px;">
+                                    <div style="background: #dbebdb; color: #2e7d32; padding: 5px 15px; border-radius: 8px; font-size: 14px;">
                                         <span id="categoryPreview">Motivation</span>
                                     </div>
                                 </div>
@@ -642,12 +540,14 @@
             </div>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script>
         let currentTemplateId = 0;
         let editorModal;
+        let currentTabId = 1;
+        let currentCategoryId = 0;
 
         document.addEventListener('DOMContentLoaded', function() {
             editorModal = new bootstrap.Modal(document.getElementById('editorModal'));
@@ -657,96 +557,8 @@
             document.getElementById('contactPerson').addEventListener('input', updatePreview);
             document.getElementById('contactNumber').addEventListener('input', updatePreview);
             document.getElementById('additionalText').addEventListener('input', updatePreview);
-        });
 
-        function openEditor(templateId, imageUrl, title) {
-            currentTemplateId = templateId;
-            document.getElementById('previewImage').src = imageUrl;
-            editorModal.show();
-            updatePreview();
-        }
-
-        function updatePreview() {
-            const businessName = document.getElementById('businessName').value || 'xyz';
-            const contactPerson = document.getElementById('contactPerson').value || 'mahendra';
-            const contactNumber = document.getElementById('contactNumber').value || '9887964016';
-            const additionalText = document.getElementById('additionalText').value || '🎉 Flat 10% discount on Sundays';
-
-            document.getElementById('companyLogoText').textContent = businessName;
-            document.getElementById('contactPersonPreview').textContent = '👤 ' + contactPerson;
-            document.getElementById('contactNumberPreview').textContent = '📞 ' + contactNumber;
-            document.getElementById('additionalTextPreview').textContent = additionalText;
-        }
-
-        function downloadImage() {
-            // Create form data
-const div = document.querySelector('.editor-right');
-html2canvas(div).then(canvas => {
-    const link = document.createElement("a");
-
-    // Generate datetime in yyyyMMddHHmmss format
-    const now = new Date();
-    const formattedDate =
-        now.getFullYear().toString() +
-        ("0" + (now.getMonth() + 1)).slice(-2) +
-        ("0" + now.getDate()).slice(-2) +
-        ("0" + now.getHours()).slice(-2) +
-        ("0" + now.getMinutes()).slice(-2) +
-        ("0" + now.getSeconds()).slice(-2);
-
-    link.download = `whatsapp-template-${formattedDate}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-});
-
-            debugger;
-            const formData = {
-                templateId: currentTemplateId,
-                businessName: document.getElementById('businessName').value,
-                contactPerson: document.getElementById('contactPerson').value,
-                contactNumber: document.getElementById('contactNumber').value,
-                additionalText: document.getElementById('additionalText').value,
-                whatsappText: document.getElementById('whatsappText').value
-            };
-
-            // Send to controller for processing
-            fetch('/WhatsAppMarketing/GenerateImage', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.blob())
-            .then(blob => {
-                // const url = window.URL.createObjectURL(blob);
-                // const a = document.createElement('a');
-                // a.href = url;
-                // a.download = 'whatsapp-template.png';
-                // document.body.appendChild(a);
-                // a.click();
-                // document.body.removeChild(a);
-                // window.URL.revokeObjectURL(url);
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        function shareOnWhatsApp() {
-            const whatsappText = document.getElementById('whatsappText').value;
-            const message = encodeURIComponent(whatsappText || 'Check out this amazing template!');
-            window.open(`https://wa.me/?text=${message}`, '_blank');
-        }
-
-                document.addEventListener('DOMContentLoaded', function() {
-            editorModal = new bootstrap.Modal(document.getElementById('editorModal'));
-
-            // Add event listeners for form inputs
-            document.getElementById('businessName').addEventListener('input', updatePreview);
-            document.getElementById('contactPerson').addEventListener('input', updatePreview);
-            document.getElementById('contactNumber').addEventListener('input', updatePreview);
-            document.getElementById('additionalText').addEventListener('input', updatePreview);
-
-            // Add template card click handlers
+            // Setup template card handlers
             setupTemplateCardHandlers();
         });
 
@@ -761,18 +573,174 @@ html2canvas(div).then(canvas => {
             });
         }
 
-       
-function downloadDivAsImage() {
-    const div = document.querySelector('.editor-right');
-    html2canvas(div).then(canvas => {
-        const link = document.createElement("a");
-        link.download = "preview.png";
-        link.href = canvas.toDataURL("image/png");
-        link.click();
-    });
-}
+        function openEditor(templateId, imageUrl, title) {
+            currentTemplateId = templateId;
+            document.getElementById('previewImage').src = imageUrl;
+            editorModal.show();
+            updatePreview();
+        }
 
-</script>
+        function updatePreview() {
+            const businessName = document.getElementById('businessName').value || 'MuneemJi';
+            const contactPerson = document.getElementById('contactPerson').value || 'mahendra';
+            const contactNumber = document.getElementById('contactNumber').value || '9000000000';
+            const additionalText = document.getElementById('additionalText').value || '🎉 Flat 10% discount on Sundays';
 
+            document.getElementById('companyLogoText').textContent = businessName;
+            document.getElementById('contactPersonPreview').textContent = '👤 ' + contactPerson;
+            document.getElementById('contactNumberPreview').textContent = '📞 ' + contactNumber;
+            document.getElementById('additionalTextPreview').textContent = additionalText;
+        }
+
+        // Tab filtering function
+        function filterByTab(tabId) {
+            debugger;
+            currentTabId = tabId;
+
+            // Update active tab
+            document.querySelectorAll('.nav-tabs .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`.nav-tabs .nav-link[data-tab-id="${tabId}"]`).classList.add('active');
+
+            // Filter templates
+            applyFilters();
+
+            // Call controller to load filtered data
+            loadTemplatesByFilter(tabId, currentCategoryId);
+        }
+
+        // Category filtering function
+        function filterByCategory(categoryId) {
+            currentCategoryId = categoryId;
+
+            // Update active category
+            document.querySelectorAll('.category-pill').forEach(pill => {
+                pill.classList.remove('active');
+            });
+            document.querySelector(`.category-pill[data-category-id="${categoryId}"]`).classList.add('active');
+
+            // Filter templates
+            applyFilters();
+
+            // Call controller to load filtered data
+            loadTemplatesByFilter(currentTabId, categoryId);
+        }
+
+        // Apply filters to visible templates
+        function applyFilters() {
+            debugger;
+            document.querySelectorAll('.template-card').forEach(card => {
+                const cardTabId = parseInt(card.dataset.tabId);
+                const cardCategoryId = parseInt(card.dataset.categoryId);
+
+                const tabMatch = currentTabId === 1 || cardTabId === currentTabId;
+                const categoryMatch = currentCategoryId === 0 || cardCategoryId === currentCategoryId;
+
+                if (tabMatch && categoryMatch) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Load templates from server
+        function loadTemplatesByFilter(tabId, categoryId) {
+            debugger;
+            // You can call your controller here to fetch filtered data
+            fetch(`/WhatsAppMarketing/GetTemplates?tabId=${tabId}&categoryId=${categoryId}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Filtered templates:', data);
+                    // Update template grid if needed
+                    updateTemplateGrid(data);
+
+                })
+                .catch(error => console.error('Error loading templates:', error));
+        }
+        function updateTemplateGrid(templates) {
+            const templateGrid = document.querySelector('.template-grid');
+
+            // Clear existing templates
+            templateGrid.innerHTML = '';
+
+            // Add new templates
+            templates.forEach(template => {
+                const templateCard = document.createElement('div');
+                templateCard.className = 'template-card';
+                templateCard.dataset.templateId = template.id;
+                templateCard.dataset.imageUrl = template.imageUrl;
+                templateCard.dataset.title = template.title;
+                templateCard.dataset.tabId = template.tabId;
+                templateCard.dataset.categoryId = template.categoryId;
+
+                templateCard.innerHTML = `
+                    <div class="template-image-container">
+                        <img src="${template.imageUrl}" alt="${template.title}" class="template-image" />
+                    </div>
+                    <div class="template-overlay">
+                        <div class="template-text">${template.title}</div>
+                        <div class="template-arrow">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </div>
+                `;
+
+                // Add click event listener
+                templateCard.addEventListener('click', function() {
+                    openEditor(template.id, template.imageUrl, template.title);
+                });
+
+                templateGrid.appendChild(templateCard);
+            });
+        }
+
+        function downloadImage() {
+            const div = document.querySelector('.editor-right');
+            html2canvas(div).then(canvas => {
+                const link = document.createElement("a");
+
+                // Generate datetime in yyyyMMddHHmmss format
+                const now = new Date();
+                const formattedDate =
+                    now.getFullYear().toString() +
+                    ("0" + (now.getMonth() + 1)).slice(-2) +
+                    ("0" + now.getDate()).slice(-2) +
+                    ("0" + now.getHours()).slice(-2) +
+                    ("0" + now.getMinutes()).slice(-2) +
+                    ("0" + now.getSeconds()).slice(-2);
+
+                link.download = `whatsapp-template-${formattedDate}.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+            });
+
+            // Optional: Send data to server
+            const formData = {
+                templateId: currentTemplateId,
+                businessName: document.getElementById('businessName').value,
+                contactPerson: document.getElementById('contactPerson').value,
+                contactNumber: document.getElementById('contactNumber').value,
+                additionalText: document.getElementById('additionalText').value,
+                whatsappText: document.getElementById('whatsappText').value
+            };
+
+            fetch('/WhatsAppMarketing/GenerateImage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function shareOnWhatsApp() {
+            const whatsappText = document.getElementById('whatsappText').value;
+            const message = encodeURIComponent(whatsappText || 'Check out this amazing template!');
+            window.open(`https://wa.me/?text=${message}`, '_blank');
+        }
+    </script>
 </body>
 </html>

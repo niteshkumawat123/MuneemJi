@@ -361,10 +361,12 @@
     <div class="container">
         <div class="current-user">
             <div class="current-user-info">
-                Currently logged in with the following number:
-                <span class="phone-number">9610562456</span>
-                <span style="color: #25d366; font-size: 16px;">💬</span>
-                <button class="three-dots">⋮</button>
+                @{
+                    var LoginMode = !string.IsNullOrEmpty(Context.Session.GetString("Phone")) ? Context.Session.GetString("Phone") : Context.Session.GetString("Email");
+                }
+                Currently logged in with the following Detail:
+                <span class="phone-number">@LoginMode</span>
+              
             </div>
         </div>
 

@@ -164,6 +164,7 @@ namespace MUNEEMJI.Controllers
 
                 if (save == "new")
                 {
+                    model.IsSaveAgain = true;
                     TempData["Message"] = model.Id > 0 ? "Party updated. Ready to add new." : "Party saved. Ready to add new.";
                     return RedirectToAction("Add");
                 }

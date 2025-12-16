@@ -40,9 +40,9 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetTemplates(string category = "Greetings", string filter = "All", string search = "")
+        public async Task<IActionResult> GetTemplates(int tabid = 0 , int categoryid =  0)
         {
-            var templates = await GetTemplatesAsync(category, filter, search);
+            var templates = await GetTemplatesAsyncForFilter(tabid, categoryid);
             return Json(templates);
         }
 
@@ -161,6 +161,65 @@ namespace MUNEEMJI.Controllers
                     queryBuilder.Append(" AND (title ILIKE @search OR category ILIKE @search)");
                     parameters.Add(new NpgsqlParameter("@search", $"%{search}%"));
                 }
+
+                queryBuilder.Append(" ORDER BY created_date DESC, view_count DESC");
+
+                using var command = new NpgsqlCommand(queryBuilder.ToString(), connection);
+                command.Parameters.AddRange(parameters.ToArray());
+
+                using var reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    templates.Add(new TemplateViewModel
+                    {
+                        Id = reader.GetInt32("id"),
+                        Title = reader.GetString("title"),
+                        ImageUrl = reader.GetString("image_url"),
+                        Category = reader.GetString("category"),
+                        Type = reader.GetString("type"),
+                        IsActive = reader.GetBoolean("is_active"),
+                        CreatedDate = reader.GetDateTime("created_date")
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log error and return sample data for development
+                Console.WriteLine($"Database error: {ex.Message}");
+                return GetSampleTemplates();
+            }
+
+            return templates.Any() ? templates : GetSampleTemplates();
+        }
+        private async Task<List<TemplateViewModel>> GetTemplatesAsyncForFilter(int tabid = 0, int categoryid = 0)
+        {
+            var templates = new List<TemplateViewModel>();
+
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var queryBuilder = new StringBuilder(@"
+                    SELECT id, title, image_url, category, type, is_active, created_date, view_count, download_count
+                    FROM templates 
+                    WHERE is_active = true");
+
+                var parameters = new List<NpgsqlParameter>();
+
+                if (tabid>0)
+                {
+                    queryBuilder.Append(" AND tabid = @tabid");
+                    parameters.Add(new NpgsqlParameter("@tabid", tabid));
+                }
+
+                if (categoryid>0)
+                {
+                    queryBuilder.Append(" AND categoryid = @categoryid");
+                    parameters.Add(new NpgsqlParameter("@categoryid", categoryid));
+                }
+
+               
 
                 queryBuilder.Append(" ORDER BY created_date DESC, view_count DESC");
 

@@ -569,16 +569,16 @@
                     <div class="form-row" style="margin-bottom: 30px;">
                         <div style="display: flex; gap: 20px; align-items: center;">
                             <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                <input type="radio" name="tracking" value="batch" style="margin: 0;">
+                                <input type="radio" name="tracking" value="batch" id="batchTracking" style="margin: 0;">
                                 Batch Tracking
                                 <span class="info-icon">ℹ</span>
                             </label>
                             <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                                <input type="radio" name="tracking" value="serial" style="margin: 0;">
+                                <input type="radio" name="tracking" value="serial" id="serialTracking" style="margin: 0;">
                                 Serial No. Tracking
                                 <span class="info-icon">ℹ</span>
                             </label>
-                            <button type="button" class="btn-link" style="padding: 0;">Clear Tracking</button>
+                            <button type="button" class="btn-link" style="padding: 0;" onclick="clearTracking()">Clear Tracking</button>
                         </div>
                     </div>
 
@@ -1070,6 +1070,18 @@
 
     <script>
                // Add this updated JavaScript section to replace the existing script in your HTML
+
+                       function clearTracking() {
+            // Uncheck both radio buttons
+            document.getElementById('batchTracking').checked = false;
+            document.getElementById('serialTracking').checked = false;
+
+            // Also clear the value if you're storing it somewhere
+            const trackingInputs = document.querySelectorAll('input[name="tracking"]');
+            trackingInputs.forEach(input => {
+                input.checked = false;
+            });
+        }
 
         async   function serializeFormToJSON() {
             debugger;

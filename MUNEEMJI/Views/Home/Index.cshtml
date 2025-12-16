@@ -22,7 +22,7 @@
             margin: 0 auto;
             padding-left: 20px;
             padding-right: 20px;
-            padding-top:0px;
+            padding-top: 0px;
         }
 
         /* Header */
@@ -35,30 +35,6 @@
             padding: 15px 20px;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-
-        .search-container {
-            display: flex;
-            align-items: center;
-            position: relative;
-            flex: 1;
-            max-width: 400px;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            color: #999;
-            font-size: 16px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 10px 12px 10px 40px;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 14px;
-            outline: none;
         }
 
         .header-actions {
@@ -95,49 +71,6 @@
         .btn-primary {
             background-color: #e74c3c;
             color: white;
-        }
-
-        .btn-outline {
-            background-color: transparent;
-            color: #e74c3c;
-            border: 1px solid #e74c3c;
-        }
-
-        .menu-btn {
-            background: none;
-            border: none;
-            font-size: 18px;
-            color: #666;
-            cursor: pointer;
-        }
-
-        /* Alert Banner */
-        .alert {
-            background-color: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 8px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .alert-content {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #dc2626;
-            font-size: 14px;
-        }
-
-        .alert-icon {
-            color: #dc2626;
-        }
-
-        .alert-actions {
-            display: flex;
-            gap: 12px;
         }
 
         /* Stats Cards */
@@ -204,20 +137,20 @@
         .chart-section {
             background: white;
             border-radius: 8px;
-            padding: 20px;
+            padding: 25px;
             margin-bottom: 20px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .chart-header {
+        .chart-header-row {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
 
         .chart-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: #333;
         }
@@ -229,37 +162,74 @@
             font-size: 14px;
             background: white;
             cursor: pointer;
+            color: #666;
         }
 
-        .chart-container {
-            height: 300px;
+        .graph-container {
             position: relative;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            padding: 20px 0;
-            border-bottom: 1px solid #e0e0e0;
+            width: 100%;
+            height: 380px;
+            background: white;
         }
 
-        .chart-axis {
-            position: absolute;
-            left: 0;
-            top: 0;
+        svg {
+            width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #888;
-            padding-right: 10px;
         }
 
-        .chart-x-axis {
-            display: flex;
-            justify-content: space-between;
-            padding-top: 10px;
+        .grid-line {
+            stroke: #e5e7eb;
+            stroke-width: 1;
+        }
+
+        .axis-label {
             font-size: 12px;
-            color: #888;
+            fill: #9ca3af;
+            font-weight: 400;
+        }
+
+        .area-path {
+            fill: url(#areaGradient);
+            stroke: none;
+        }
+
+        .line-path {
+            fill: none;
+            stroke: #3b82f6;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .hover-line {
+            stroke: #e5e7eb;
+            stroke-width: 1;
+            stroke-dasharray: 4;
+            pointer-events: none;
+            display: none;
+        }
+
+        .tooltip-box {
+            display: none;
+            pointer-events: none;
+        }
+
+        .tooltip-rect {
+            fill: #059669;
+            rx: 4;
+        }
+
+        .tooltip-text {
+            fill: white;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .hover-dot {
+            fill: white;
+            stroke: #3b82f6;
+            stroke-width: 2;
+            display: none;
         }
 
         /* Content Grid */
@@ -374,34 +344,20 @@
             line-height: 1.4;
         }
 
-        .widget-section {
+        .ShortCutmodal-content {
             background: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            text-align: center;
-            cursor: pointer;
-            border: 2px dashed #e0e0e0;
-            transition: all 0.2s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
-            .widget-section:hover {
-                border-color: #1976d2;
-                background-color: #f8f9ff;
-            }
-
-        .widget-title {
-            font-size: 14px;
-            color: #666;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+        .h5, h5 {
+            font-size: 1.25rem;
+            text-align: left;
         }
 
-        .plus-icon {
-            font-size: 18px;
-            color: #1976d2;
+        .list-unstyled {
+            padding-left: 0;
+            text-align: left;
+            list-style: none;
         }
 
         @@media (max-width: 768px) {
@@ -424,198 +380,11 @@
             gap: 15px;
         }
 
-        .search-container {
-            max-width: none;
-        }
-
-        }
-
-        .ShortCutmodal-content {
-            background: white;
-/*             border-radius: 10px;
- */          /*   width: 90%;
-            max-width: 500px; */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .h5, h5 {
-            font-size: 1.25rem;
-            text-align:left;
-        }
-
-        .list-unstyled {
-            padding-left: 0;
-            text-align: left;
-            list-style: none;
-        }
-    </style>
-    <style>
-        .chart-legend {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 2px;
-        }
-
-            .legend-dot.profit {
-                background-color: #ff9500;
-            }
-
-            .legend-dot.sales {
-                background-color: #4a90e2;
-            }
-
-        .sales-profit-chart {
-            position: relative;
-            height: 350px;
-            padding: 20px 40px 40px 60px;
-            border-bottom: 2px solid #e0e0e0;
-            border-left: 2px solid #e0e0e0;
-        }
-
-        .y-axis-left {
-            position: absolute;
-            left: 10px;
-            top: 20px;
-            height: 280px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #ff9500;
-            font-weight: 500;
-        }
-
-        .y-axis-right {
-            position: absolute;
-            right: 10px;
-            top: 20px;
-            height: 280px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #4a90e2;
-            font-weight: 500;
-        }
-
-        .chart-area {
-            position: relative;
-            height: 280px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: space-between;
-            padding: 0 20px;
-        }
-
-        .product-group {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 60px;
-        }
-
-        .sales-bar {
-            width: 40px;
-            background: linear-gradient(to top, #2c5aa0, #4a90e2);
-            border-radius: 4px 4px 0 0;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(74, 144, 226, 0.2);
-        }
-
-            .sales-bar:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
-            }
-
-                .sales-bar:hover::after {
-                    content: attr(data-value);
-                    position: absolute;
-                    top: -30px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background: #333;
-                    color: white;
-                    padding: 4px 8px;
-                    border-radius: 4px;
-                    font-size: 11px;
-                    white-space: nowrap;
-                    z-index: 10;
-                }
-
-        .profit-point {
-            position: absolute;
-            background: #ff9500;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 500;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 5;
-            min-width: 30px;
-            text-align: center;
-        }
-
-        .product-label {
-            margin-top: 10px;
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-        }
-
-        .profit-line {
-            position: absolute;
-            top: 0;
-            left: 20px;
-            right: 20px;
-            height: 280px;
-            pointer-events: none;
-        }
-
-        /* Responsive adjustments */
-        @@media (max-width: 768px) {
-            .sales-profit-chart
-
-        {
-            padding: 15px 25px 30px 45px;
-        }
-
-        .product-group {
-            width: 45px;
-        }
-
-        .sales-bar {
-            width: 30px;
-        }
-
-        .chart-legend {
-            flex-direction: column;
-            gap: 10px;
-        }
-
         }
     </style>
 </head>
 <body>
     <div class="container-fluid">
-
         <div id="quickActionPopup" class="modal" tabindex="-1" role="dialog" style="display:none;">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="ShortCutmodal-content" style="border-radius: 8px;">
@@ -659,35 +428,14 @@
             </div>
         </div>
 
-
-
-
-
         <!-- Header -->
         <div class="header">
-          @*   <div class="search-container">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-input" placeholder="Search Transactions">
-            </div> *@
             <div class="header-actions">
                 <button class="btn btn-sale" onclick="window.location.href='/Web/Sales/Create'">+ Add Sale</button>
                 <button class="btn btn-purchase" onclick="window.location.href='/Web/PurchaseBill/Create'">+ Add Purchase</button>
                 <button class="btn btn-primary" id="plusButton">+</button>
-@*                 <button class="menu-btn">⋮</button>
- *@            </div>
+            </div>
         </div>
-
-        <!-- Alert Banner -->
-        @* <div class="alert">
-            <div class="alert-content">
-                <span class="alert-icon">⚠</span>
-                <span>Your Free Plan has expired. To continue using Vyapar, upgrade to our Premium Plan.</span>
-            </div>
-            <div class="alert-actions">
-                <button class="btn btn-primary">Buy Now</button>
-                <button class="btn btn-outline">Get Free Demo</button>
-            </div>
-        </div> *@
 
         <!-- Stats Cards -->
         <div class="stats-row">
@@ -696,7 +444,7 @@
                     <span class="stat-title">Total Receivable</span>
                     <div class="stat-icon green">↓</div>
                 </div>
-                <div class="stat-value">₹@ViewBag.TotalReceivable</div>
+                <div class="stat-value">₹0</div>
                 <div class="stat-description">You don't have any receivables as of now.</div>
             </div>
             <div class="stat-card">
@@ -704,108 +452,32 @@
                     <span class="stat-title">Total Payable</span>
                     <div class="stat-icon red">↑</div>
                 </div>
-                <div class="stat-value">₹@ViewBag.TotalPayable</div>
+                <div class="stat-value">₹0</div>
                 <div class="stat-description">You don't have any payables as of now.</div>
             </div>
         </div>
 
-        <!-- Chart Section -->
+        <!-- Chart Section - Area Chart -->
         <div class="chart-section">
-            <div class="chart-header">
-                <span class="chart-title">Sales VS Profit by Products</span>
-                <select class="chart-filter">
-                    <option>Last Month</option>
-                    <option>This Week</option>
-                    <option>This Quarter</option>
-                    <option>Half Year</option>
-                    <option>This Year</option>
+            <div class="chart-header-row">
+                <div class="chart-title">Cash Flow</div>
+                <select class="chart-filter" id="timeFilter">
+                    <option value="week">This Week</option>
+                    <option value="month" selected>This Month</option>
+                    <option value="quarter">This Quarter</option>
+                    <option value="year">This Year</option>
                 </select>
             </div>
 
-            <!-- Legend -->
-            <div class="chart-legend">
-                <div class="legend-item">
-                    <div class="legend-dot profit"></div>
-                    <span>20% Profit</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot sales"></div>
-                    <span>$2.03k Sales</span>
-                </div>
-            </div>
-
-            <!-- Chart Container -->
-            <div class="sales-profit-chart">
-                <!-- Left Y-axis (Profit %) -->
-                <div class="y-axis-left">
-                    <span>28%</span>
-                    <span>21%</span>
-                    <span>14%</span>
-                    <span>7%</span>
-                    <span>0%</span>
-                </div>
-
-                <!-- Right Y-axis (Sales $) -->
-                <div class="y-axis-right">
-                    <span>$700</span>
-                    <span>$525</span>
-                    <span>$350</span>
-                    <span>$175</span>
-                    <span>$0</span>
-                </div>
-
-                <!-- Chart Area -->
-                <div class="chart-area">
-                    <!-- Sales Bars -->
-                    <div class="product-group">
-                        <div class="sales-bar" style="height: 21%;" data-value="$150"></div>
-                        <div class="profit-point" style="bottom: 57%;" data-value="16%">16%</div>
-@*                         <div class="product-label">Product1</div>
- *@                    </div>
-
-                    <div class="product-group">
-                        <div class="sales-bar" style="height: 25%;" data-value="$175"></div>
-                        <div class="profit-point" style="bottom: 60%;" data-value="17%">17%</div>
-@*                         <div class="product-label">Product2</div>
- *@                    </div>
-
-                    <div class="product-group">
-                        <div class="sales-bar" style="height: 29%;" data-value="$200"></div>
-                        <div class="profit-point" style="bottom: 68%;" data-value="19%">19%</div>
-@*                         <div class="product-label">Product3</div>
- *@                    </div>
-
-                    <div class="product-group">
-                        <div class="sales-bar" style="height: 43%;" data-value="$300"></div>
-                        <div class="profit-point" style="bottom: 75%;" data-value="21%">21%</div>
-@*                         <div class="product-label">Product4</div>
- *@                    </div>
-
-                    <div class="product-group">
-                        <div class="sales-bar" style="height: 71%;" data-value="$500"></div>
-                        <div class="profit-point" style="bottom: 82%;" data-value="23%">23%</div>
-@*                         <div class="product-label">Product5</div>
- *@                    </div>
-
-                    <div class="product-group">
-                        <div class="sales-bar" style="height: 100%;" data-value="$700"></div>
-                        <div class="profit-point" style="bottom: 100%;" data-value="28%">28%</div>
-@*                         <div class="product-label">Product6</div>
- *@                    </div>
-
-                    <!-- Profit Line -->
-                    <svg class="profit-line" viewBox="0 0 100 100">
-                        <polyline points="8.33,43 25,40 41.67,32 58.33,25 75,18 91.67,0"
-                                  fill="none" stroke="#4a90e2" stroke-width="2" stroke-linecap="round" />
-                        <!-- Line points (dots) -->
-                        <circle cx="8.33" cy="43" r="3" fill="#ff9500" />
-                        <circle cx="25" cy="40" r="3" fill="#ff9500" />
-                        <circle cx="41.67" cy="32" r="3" fill="#ff9500" />
-                        <circle cx="58.33" cy="25" r="3" fill="#ff9500" />
-                        <circle cx="75" cy="18" r="3" fill="#ff9500" />
-                        <circle cx="91.67" cy="0" r="3" fill="#ff9500" />
-                    </svg>
-                </div>
+            <div class="graph-container">
+                <svg id="areaChart" viewBox="0 0 1000 350">
+                    <defs>
+                        <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#bfdbfe;stop-opacity:0.6" />
+                            <stop offset="100%" style="stop-color:#dbeafe;stop-opacity:0.1" />
+                        </linearGradient>
+                    </defs>
+                </svg>
             </div>
         </div>
 
@@ -818,23 +490,14 @@
                     <a href="#" class="view-all">View All</a>
                 </div>
                 <div class="reports-grid">
-
                     <div class="report-item" onclick="window.location.href='/Web/Report/Index'">
-                         <span class="report-name">Sale Report</span>
-                         <span class="report-arrow">›</span>
+                        <span class="report-name">Sale Report</span>
+                        <span class="report-arrow">›</span>
                     </div>
-
-                    @* <div class="report-item">
+                    <div class="report-item" onclick="window.location.href='/Web/Report/Index'">
                         <span class="report-name">All Transactions</span>
                         <span class="report-arrow">›</span>
-                    </div> *@
-
-                    <div class="report-item" onclick="window.location.href='/Web/Report/Index'">
-                            <span class="report-name">All Transactions</span>
-                            <span class="report-arrow">›</span>
                     </div>
-
-
                     <div class="report-item" onclick="window.location.href='/Web/Report/Index'">
                         <span class="report-name">Daybook Report</span>
                         <span class="report-arrow">›</span>
@@ -853,33 +516,237 @@
                     <div class="empty-title">It Looks So Empty in Here!</div>
                     <div class="empty-description">Add one of our widgets to get started and view your business operations</div>
                 </div>
-               @*  <div class="widget-section">
-                    <div class="widget-title">
-                        <span class="plus-icon">+</span>
-                        Add Widget of Your Choice
-                    </div>
-                </div> *@
             </div>
         </div>
     </div>
+
+    <!-- Area Chart Script -->
+    <script>
+        // Data for the area chart (similar to your screenshot)
+        const chartData = {
+            month: [
+                { label: 'Jul', value: 0 },
+                { label: 'Aug', value: -250000 },
+                { label: 'Sep', value: 0 },
+                { label: 'Oct', value: 0 },
+                { label: 'Nov', value: 0 },
+                { label: 'Dec', value: 0 }
+            ]
+        };
+
+        const svg = document.getElementById('areaChart');
+        const width = 1000;
+        const height = 350;
+        const padding = { top: 40, right: 60, bottom: 50, left: 80 };
+        const chartWidth = width - padding.left - padding.right;
+        const chartHeight = height - padding.top - padding.bottom;
+
+        // Calculate min and max values
+        const values = chartData.month.map(d => d.value);
+        const minValue = Math.min(...values, 0);
+        const maxValue = Math.max(...values, 100000);
+        const valueRange = maxValue - minValue;
+
+        // Helper function to scale y values
+        function scaleY(value) {
+            return padding.top + chartHeight - ((value - minValue) / valueRange) * chartHeight;
+        }
+
+        // Helper function to scale x values
+        function scaleX(index, total) {
+            return padding.left + (index / (total - 1)) * chartWidth;
+        }
+
+        // Clear SVG
+        while (svg.lastChild && svg.lastChild.tagName !== 'defs') {
+            svg.removeChild(svg.lastChild);
+        }
+
+        // Draw horizontal grid lines
+        const gridLines = 5;
+        for (let i = 0; i <= gridLines; i++) {
+            const value = minValue + (valueRange / gridLines) * i;
+            const y = scaleY(value);
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', padding.left);
+            line.setAttribute('y1', y);
+            line.setAttribute('x2', width - padding.right);
+            line.setAttribute('y2', y);
+            line.setAttribute('class', 'grid-line');
+            svg.appendChild(line);
+
+            // Y-axis labels
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', padding.left - 15);
+            label.setAttribute('y', y + 4);
+            label.setAttribute('text-anchor', 'end');
+            label.setAttribute('class', 'axis-label');
+
+            if (value >= 1000 || value <= -1000) {
+                label.textContent = (value / 1000).toFixed(0) + 'k';
+            } else {
+                label.textContent = value.toFixed(0);
+            }
+            svg.appendChild(label);
+        }
+
+        // Calculate points for the chart
+        const points = chartData.month.map((item, index) => ({
+            x: scaleX(index, chartData.month.length),
+            y: scaleY(item.value),
+            value: item.value,
+            label: item.label
+        }));
+
+        // Create smooth curve path using bezier curves
+        function createSmoothPath(points, close = false) {
+            if (points.length < 2) return '';
+
+            let path = `M ${points[0].x} ${points[0].y}`;
+
+            for (let i = 0; i < points.length - 1; i++) {
+                const current = points[i];
+                const next = points[i + 1];
+                const controlPointX1 = current.x + (next.x - current.x) / 3;
+                const controlPointX2 = current.x + 2 * (next.x - current.x) / 3;
+
+                path += ` C ${controlPointX1} ${current.y}, ${controlPointX2} ${next.y}, ${next.x} ${next.y}`;
+            }
+
+            if (close) {
+                const lastPoint = points[points.length - 1];
+                const firstPoint = points[0];
+                const zeroY = scaleY(0);
+                path += ` L ${lastPoint.x} ${zeroY}`;
+                path += ` L ${firstPoint.x} ${zeroY}`;
+                path += ' Z';
+            }
+
+            return path;
+        }
+
+        // Draw area
+        const areaPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        areaPath.setAttribute('class', 'area-path');
+        areaPath.setAttribute('d', createSmoothPath(points, true));
+        svg.appendChild(areaPath);
+
+        // Draw line
+        const linePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        linePath.setAttribute('class', 'line-path');
+        linePath.setAttribute('d', createSmoothPath(points, false));
+        svg.appendChild(linePath);
+
+        // Draw x-axis labels
+        points.forEach((point, index) => {
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', point.x);
+            label.setAttribute('y', height - padding.bottom + 25);
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('class', 'axis-label');
+            label.textContent = chartData.month[index].label;
+            svg.appendChild(label);
+        });
+
+        // Add hover tooltip elements
+        const hoverLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        hoverLine.setAttribute('class', 'hover-line');
+        hoverLine.setAttribute('y1', padding.top);
+        hoverLine.setAttribute('y2', height - padding.bottom);
+        svg.appendChild(hoverLine);
+
+        const hoverDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        hoverDot.setAttribute('class', 'hover-dot');
+        hoverDot.setAttribute('r', 5);
+        svg.appendChild(hoverDot);
+
+        const tooltipGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        tooltipGroup.setAttribute('class', 'tooltip-box');
+
+        const tooltipRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        tooltipRect.setAttribute('class', 'tooltip-rect');
+        tooltipRect.setAttribute('width', 60);
+        tooltipRect.setAttribute('height', 24);
+        tooltipGroup.appendChild(tooltipRect);
+
+        const tooltipText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        tooltipText.setAttribute('class', 'tooltip-text');
+        tooltipText.setAttribute('text-anchor', 'middle');
+        tooltipGroup.appendChild(tooltipText);
+
+        svg.appendChild(tooltipGroup);
+
+        // Add interactive overlay
+        const overlay = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        overlay.setAttribute('x', padding.left);
+        overlay.setAttribute('y', padding.top);
+        overlay.setAttribute('width', chartWidth);
+        overlay.setAttribute('height', chartHeight);
+        overlay.setAttribute('fill', 'transparent');
+        overlay.style.cursor = 'crosshair';
+        svg.appendChild(overlay);
+
+        overlay.addEventListener('mousemove', (e) => {
+            const rect = svg.getBoundingClientRect();
+            const mouseX = ((e.clientX - rect.left) / rect.width) * width;
+
+            // Find nearest point
+            let nearestPoint = points[0];
+            let minDistance = Math.abs(mouseX - points[0].x);
+
+            points.forEach(point => {
+                const distance = Math.abs(mouseX - point.x);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearestPoint = point;
+                }
+            });
+
+            // Show hover elements
+            hoverLine.style.display = 'block';
+            hoverLine.setAttribute('x1', nearestPoint.x);
+            hoverLine.setAttribute('x2', nearestPoint.x);
+
+            hoverDot.style.display = 'block';
+            hoverDot.setAttribute('cx', nearestPoint.x);
+            hoverDot.setAttribute('cy', nearestPoint.y);
+
+            tooltipGroup.style.display = 'block';
+            const tooltipX = nearestPoint.x;
+            const tooltipY = nearestPoint.y - 35;
+
+            tooltipText.textContent = '₹' + (nearestPoint.value / 1000).toFixed(0) + 'k';
+            tooltipText.setAttribute('x', tooltipX);
+            tooltipText.setAttribute('y', tooltipY + 16);
+
+            tooltipRect.setAttribute('x', tooltipX - 30);
+            tooltipRect.setAttribute('y', tooltipY);
+        });
+
+        overlay.addEventListener('mouseleave', () => {
+            hoverLine.style.display = 'none';
+            hoverDot.style.display = 'none';
+            tooltipGroup.style.display = 'none';
+        });
+    </script>
+
+    <!-- Plus Button and Popup Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const plusButton = document.getElementById('plusButton');
             const popup = document.getElementById('quickActionPopup');
 
-            // Plus button click
             plusButton.addEventListener('click', function () {
                 popup.style.display = 'block';
             });
 
-            // Click outside to close
             popup.addEventListener('click', function (e) {
                 if (e.target === popup) {
                     popup.style.display = 'none';
                 }
             });
 
-            // Shortcut Ctrl + Enter to open popup
             document.addEventListener('keydown', function (e) {
                 if (e.ctrlKey && e.key === 'Enter') {
                     popup.style.display = popup.style.display === 'block' ? 'none' : 'block';
@@ -887,65 +754,36 @@
             });
         });
     </script>
+
+    <!-- Keyboard Shortcuts Script -->
     <script>
         document.addEventListener("keydown", function (e) {
-            // Make sure ALT is pressed (and no other modifiers like Ctrl/Shift)
             if (e.altKey && !e.ctrlKey && !e.shiftKey) {
                 const key = e.key.toLowerCase();
 
                 switch (key) {
                     // SALE
-                    case "s":
-                        window.location.href = "/Web/Sales/Create";
-                        break;
-                    case "i":
-                        window.location.href = "/Web/PaymentIn/Create";
-                        break;
-                    case "r":
-                        window.location.href = "/Web/CreditNote/Create";
-                        break;
-                    case "f":
-                        window.location.href = "/Web/SalesOrder/Create";
-                        break;
-                    case "m":
-                        window.location.href = "/Web/Estimate_Quotations/Create";
-                        break;
-                    case "k":
-                        window.location.href = "/Web/Sales/Proforma";
-                        break;
-                    case "d":
-                        window.location.href = "/Web/DeliveryChallan/Create";
-                        break;
+                    case "s": window.location.href = "/Web/Sales/Create"; break;
+                    case "i": window.location.href = "/Web/PaymentIn/Create"; break;
+                    case "r": window.location.href = "/Web/CreditNote/Create"; break;
+                    case "f": window.location.href = "/Web/SalesOrder/Create"; break;
+                    case "m": window.location.href = "/Web/Estimate_Quotations/Create"; break;
+                    case "k": window.location.href = "/Web/Sales/Proforma"; break;
+                    case "d": window.location.href = "/Web/DeliveryChallan/Create"; break;
 
                     // PURCHASE
-                    case "p":
-                        window.location.href = "/Web/Purchase/Bill";
-                        break;
-                    case "o":
-                        window.location.href = "/Web/PaymentOut/Create";
-                        break;
-                    case "l":
-                        window.location.href = "/Web/DebitNote/Create";
-                        break;
-                    case "g":
-                        window.location.href = "/Web/PurchaseOrder/Create";
-                        break;
+                    case "p": window.location.href = "/Web/Purchase/Bill"; break;
+                    case "o": window.location.href = "/Web/PaymentOut/Create"; break;
+                    case "l": window.location.href = "/Web/DebitNote/Create"; break;
+                    case "g": window.location.href = "/Web/PurchaseOrder/Create"; break;
 
                     // OTHERS
-                    case "e":
-                        window.location.href = "/Expenses";
-                        break;
-                    case "q":
-                        window.location.href = "/Web/OtherIncome/Create";
-                        break;
-                    case "j":
-                        window.location.href = "/Web/Party/Add";
-                        break;
+                    case "e": window.location.href = "/Expenses"; break;
+                    case "q": window.location.href = "/Web/OtherIncome/Create"; break;
+                    case "j": window.location.href = "/Web/Party/Add"; break;
                 }
             }
         });
     </script>
-
 </body>
-
 </html>

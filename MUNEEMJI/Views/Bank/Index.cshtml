@@ -11,7 +11,7 @@
         box-sizing: border-box;
     }
 
-   
+
     .container {
         max-width: 400px;
         margin: 0 auto;
@@ -20,7 +20,7 @@
     .dropdown-container {
         position: absolute;
         display: inline-block;
-        right:27px;
+        right: 27px;
     }
 
     .dropdown-btn {
@@ -239,6 +239,118 @@
         display: table;
         clear: both;
     }
+
+    /* Three Dots Dropdown Styles */
+    .action-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .three-dots-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .three-dots-btn:hover {
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+
+    .action-dropdown-menu {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        min-width: 120px;
+        z-index: 1000;
+        display: none;
+    }
+
+        .action-dropdown-menu.show {
+            display: block;
+        }
+
+    .action-dropdown-item {
+        padding: 8px 16px;
+        cursor: pointer;
+        color: #333;
+        text-decoration: none;
+        display: block;
+        transition: background-color 0.2s ease;
+        font-size: 14px;
+    }
+
+        .action-dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .action-dropdown-item.delete:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+    /* Delete Confirmation Modal */
+    .delete-modal {
+        background: white;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 400px;
+        padding: 0;
+    }
+
+    .delete-modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .delete-modal-body {
+        padding: 20px;
+    }
+
+    .delete-modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+
+    .btn-cancel {
+        background-color: #6c757d;
+        color: white;
+        padding: 8px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+
+    .btn-delete {
+        background-color: #dc3545;
+        color: white;
+        padding: 8px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
 </style>
 <div class="container-fluid mt-4">
     <div class="row">
@@ -251,9 +363,7 @@
             </div>
             <!-- Add Bank button -->
             <button class="btn btn-warning w-100 mb-3">
-                @* <i class="bi bi-plus" href="/Bank/AddBankAccount"></i> Add Bank *@
-
-                <a href="Web/Bank/AddBankAccount" class="text-decoration-none">
+                <a href="/Web/Bank/AddBankAccount" class="text-decoration-none text-dark">
                     <i class="bi bi-plus"></i> Add Bank
                 </a>
             </button>
@@ -269,7 +379,6 @@
                 <tbody>
                     @foreach (var acc in Model)
                     {
-                        // Highlight the selected account (first in list) using Bootstrap's 'table-active' class
                         var isSelected = (acc.Id == Model[0].Id);
                         <tr class="@(isSelected ? "table-active" : "")">
                             <td>
@@ -280,20 +389,16 @@
                             </td>
                             <td>₹@acc.OpeningBalance.Value.ToString("N2")</td>
                             <td>
-                                <button class="btn border-0 me-2" type="button" data-bs-toggle="dropdown" title="More Options">
-                                    <img src="~/images/ThreeDots.png" alt="Share" style="width: 16px; height: 16px;">
-
-                                    <!-- Option 1: FontAwesome Icon -->
-                                    @*  <i class="fas fa-ellipsis-v" style="color: #6c757d; font-size: 16px;"></i> *@
-                                    <!-- Option 2: Custom Image Icon -->
-                                    <!-- <img src="~/images/icons/more-icon.png" alt="More" style="width: 16px; height: 16px;"> -->
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="/Web/DeliveryChallan/GetById?id=@(acc.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
-                                    <li><a class="dropdown-item" href="/Web/DeliveryChallan/GetById?id=@(acc.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
-                                    <li><a class="dropdown-item" href="/Web/DeliveryChallan/DeleteConfirmed?id=@(acc.Id)">Delete</a></li>
-                                </ul>
-                                                               
+                                <div class="action-dropdown">
+                                    <button class="three-dots-btn" onclick="toggleActionDropdown(event, @acc.Id)">
+                                        <img src="~/images/ThreeDots.png" alt="More" style="width: 16px; height: 16px;">
+                                    </button>
+                                    <div class="action-dropdown-menu" id="actionMenu-@acc.Id">
+                                        <a class="action-dropdown-item" href="/Web/Bank/AddBankAccount?id=@acc.Id&typeid=1">View</a>
+                                        <a class="action-dropdown-item" href="/Web/Bank/AddBankAccount?id=@acc.Id&typeid=2">Edit</a>
+                                        <a class="action-dropdown-item delete" href="javascript:void(0)" onclick="confirmDelete(@acc.Id, '@acc.AccountDisplayName')">Delete</a>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -359,6 +464,24 @@
             </table>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteConfirmModal">
+        <div class="delete-modal">
+            <div class="delete-modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+            </div>
+            <div class="delete-modal-body">
+                <p>Are you sure you want to delete <strong id="deleteAccountName"></strong>?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            <div class="delete-modal-footer">
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <button class="btn-delete" onclick="deleteAccount()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Bank to Cash Transfer Modal -->
     <div class="modal-overlay" id="bankToCashModal">
         <div class="modal">
@@ -528,6 +651,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     let isDropdownOpen = false;
+    let currentDeleteId = null;
 
     function toggleDropdown() {
         const menu = document.getElementById('dropdownMenu');
@@ -572,11 +696,58 @@
         document.getElementById(modalId).classList.remove('show');
     }
 
+    // Three dots dropdown functionality
+    function toggleActionDropdown(event, accountId) {
+        event.stopPropagation();
+
+        // Close all other dropdowns
+        document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
+            if (menu.id !== `actionMenu-${accountId}`) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // Toggle current dropdown
+        const menu = document.getElementById(`actionMenu-${accountId}`);
+        menu.classList.toggle('show');
+    }
+
+    // Delete confirmation functions
+    function confirmDelete(accountId, accountName) {
+        currentDeleteId = accountId;
+        document.getElementById('deleteAccountName').textContent = accountName;
+        document.getElementById('deleteConfirmModal').classList.add('show');
+
+        // Close the action dropdown
+        document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
+            menu.classList.remove('show');
+        });
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteConfirmModal').classList.remove('show');
+        currentDeleteId = null;
+    }
+
+    function deleteAccount() {
+        if (currentDeleteId) {
+            // Redirect to delete action
+            window.location.href = `/Web/Bank/DeleteConfirmed?id=${currentDeleteId}`;
+        }
+    }
+
     // Close dropdown when clicking outside
     document.addEventListener('click', function (event) {
         const dropdown = document.querySelector('.dropdown-container');
-        if (!dropdown.contains(event.target) && isDropdownOpen) {
+        if (dropdown && !dropdown.contains(event.target) && isDropdownOpen) {
             toggleDropdown();
+        }
+
+        // Close action dropdowns when clicking outside
+        if (!event.target.closest('.action-dropdown')) {
+            document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
         }
     });
 

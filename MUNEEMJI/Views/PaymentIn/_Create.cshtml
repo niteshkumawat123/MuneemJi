@@ -144,27 +144,50 @@
         box-sizing: border-box;
     }
 
-    .image-upload {
-        margin-top: 12px;
-        color: #666;
-        font-size: 20px;
+    /* Image Upload Styles - Complete from First Code */
+    .upload-area-imgshow {
+        border: 2px solid lightgray;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+        background: #f8f9fb;
         cursor: pointer;
-        display: inline-flex;
+        transition: all 0.3s ease;
+        position: relative;
+        min-height: 120px;
+        display: flex;
         align-items: center;
         justify-content: center;
-        padding: 12px 15px;
-        border: 2px dashed #ddd;
-        border-radius: 6px;
-        background-color: #fafafa;
-        transition: all 0.2s ease;
-        width: 50px;
-        height: 50px;
+        flex-direction: column;
     }
 
-        .image-upload:hover {
-            background-color: #f0f0f0;
-            border-color: #bbb;
+        .upload-area-imgshow:hover {
+            border-color: #0056b3;
+            background: #f0f4ff;
         }
+
+    .upload-label-imgshow {
+        position: absolute;
+        top: -10px;
+        left: 20px;
+        background: white;
+        padding: 0 8px;
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .upload-content-imgshow {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-preview-imgshow {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+    }
 
     .modal-footer {
         display: flex;
@@ -333,6 +356,11 @@
     }
 </style>
 
+<!-- Bootstrap Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+
+
 <div class="modal-header">
     <h3 class="modal-title">Payment-In</h3>
     <button type="button" class="modal-close" onclick="closeModal()">×</button>
@@ -340,12 +368,14 @@
 
 <form asp-action="Create" method="post" enctype="multipart/form-data" id="paymentInEditForm">
     <div class="modal-body">
+        <input type="hidden" id="deleteLogoFlag" name="IsDeleteImage" value="false" />
+
         <!-- Main row with Party selection and Receipt info -->
         <div class="form-row main-row">
             <div class="form-group search-field">
                 <label for="PartyId" class="required">Search by Name/Phone *</label>
                 <select name="PartyId" id="PartyId" class="form-control" required>
-                    <option value="">fasdfae</option>
+                    <option value="">Select Party</option>
                     @foreach (var party in ViewBag.Parties)
                     {
                         <option value="@party.Value">@party.Text</option>
@@ -376,7 +406,7 @@
             <div class="left-section">
                 <!-- Payment Type section -->
                 <div class="form-group" style="margin-bottom: 20px;">
-                    <label for="PaymentType" style="margin-left:-373px;">Payment Type </label>
+                    <label for="PaymentType">Payment Type</label>
                     <select name="PaymentType" id="PaymentType" class="form-control">
                         <option value="Cash" selected>Cash</option>
                         <option value="Bank">Bank</option>
@@ -385,22 +415,45 @@
                     </select>
                 </div>
 
-              
-
                 <!-- Add Description input -->
                 <div style="margin-bottom: 20px;">
                     <div class="form-group">
-                        <label for="Description" style="margin-left: -337px;"> ADD DESCRIPTION</label>
+                        <label for="Description">ADD DESCRIPTION</label>
                         <input type="text" name="Description" id="Description" class="form-control" placeholder="Enter description here...">
                     </div>
                 </div>
 
-                <!-- Image upload icon -->
-                <div style="margin-bottom: 25px; margin-left: -417px;">
-                    <div class="image-upload" onclick="document.getElementById('imageInput').click()" title="Upload Image">
-                        📷
+                <!-- Enhanced Image upload area - EXACT CODE FROM FIRST FILE -->
+                <div style="margin-bottom: 25px;">
+                    <div class="upload-area-imgshow"
+                         style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;"
+                         onclick="document.querySelector('input[name=\'imageFile\']').click()">
+
+                        <span class="upload-label-imgshow"
+                              style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">
+                            Add Image
+                        </span>
+
+                        <input type="file" name="imageFile" class="floating-input" accept="image/*"
+                               onchange="previewImage(this)" style="display: none;" />
+
+                        <div class="upload-content-imgshow">
+                            <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
+                            <div style="color: #007bff; font-weight: 500;">Upload</div>
+                            <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">Click to browse files</div>
+                        </div>
+
+                        <div class="image-preview-imgshow" style="display: none;">
+                            <img id="preview-img-imgshow" src="" alt="Preview"
+                                 style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
+                            <div id="image-name-imgshow" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
+                            <div style="margin-top: 8px;">
+                                <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                    Delete
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
                 </div>
             </div>
 
@@ -428,11 +481,6 @@
         <input type="hidden" name="Type" id="Type" value="">
         <input type="hidden" name="PrintShare" id="PrintShare" value="">
         <input type="hidden" name="Balance" id="Balance" value="0">
-
-        <!-- Description container - now hidden since we have input above -->
-        <div id="descriptionContainer" class="description-container hidden">
-            <textarea name="DescriptionExtra" id="DescriptionExtra" class="description-textarea" placeholder="Enter additional description here..."></textarea>
-        </div>
     </div>
 
     <div class="modal-footer">
@@ -442,16 +490,46 @@
 </form>
 
 <script>
-    function toggleDescription() {
-        const container = document.getElementById('descriptionContainer');
-        container.classList.toggle('hidden');
+    // COMPLETE IMAGE UPLOAD JAVASCRIPT FROM FIRST CODE
+    function previewImage(input) {
+        debugger;
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('.upload-content-imgshow').style.display = 'none';
+                document.querySelector('.image-preview-imgshow').style.display = 'block';
+                document.getElementById('preview-img-imgshow').src = e.target.result;
+                document.getElementById('image-name-imgshow').textContent = file.name;
+                document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
+                document.getElementById('deleteLogoFlag').value = 'false';
+            };
+            reader.readAsDataURL(file);
+        }
     }
 
-    function togglePaymentType() {
-        // Add functionality for additional payment types if needed
-        alert('Add Payment Type functionality would go here');
+    function setLogoFromData(imageUrl, imageName) {
+        document.querySelector('.upload-content-imgshow').style.display = 'none';
+        document.querySelector('.image-preview-imgshow').style.display = 'block';
+        document.getElementById('preview-img-imgshow').src = imageUrl;
+        document.getElementById('image-name-imgshow').textContent = imageName || 'Loaded Image';
+        document.querySelector('.upload-area-imgshow').style.borderColor = '#28a745';
+        document.getElementById('deleteLogoFlag').value = 'false';
     }
 
+    function removeImage(event) {
+        debugger;
+        event.stopPropagation();
+        document.querySelector('input[name="imageFile"]').value = '';
+        document.querySelector('.upload-content-imgshow').style.display = 'block';
+        document.querySelector('.image-preview-imgshow').style.display = 'none';
+        document.getElementById('preview-img-imgshow').src = '';
+        document.getElementById('image-name-imgshow').textContent = '';
+        document.querySelector('.upload-area-imgshow').style.borderColor = 'lightgray';
+        document.getElementById('deleteLogoFlag').value = 'true';
+    }
+
+    // Balance Calculation
     function calculateBalance() {
         const total = parseFloat(document.getElementById('Total').value) || 0;
         const received = parseFloat(document.getElementById('ReceivedPaid').value) || 0;
@@ -461,17 +539,25 @@
     }
 
     function closeModal() {
-        // Add close modal functionality
         console.log('Close modal');
+        // Add your modal close logic here
     }
 
     function sharePayment() {
-        // Add share functionality
         alert('Share functionality would go here');
     }
 
-    // Initialize balance calculation on page load
+    // Initialize on page load - EXACT FROM FIRST CODE
     document.addEventListener('DOMContentLoaded', function() {
+        var logoPath = '@Html.Raw(Model?.ImagePath ?? "")';
+
+        // If logo exists, display it
+        if (logoPath && logoPath !== '') {
+            var logoUrl = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
+            var logoFileName = logoPath.split('/').pop();
+            setLogoFromData(logoUrl, logoFileName);
+        }
+
         calculateBalance();
     });
 </script>

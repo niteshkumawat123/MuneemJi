@@ -102,15 +102,16 @@
         </div>
 
         <div class="menu-section">
-            <a href="/Web/Settings/General/Index" class="menu-item">GENERAL</a>
-            <a href="/Web/Settings/Transaction/Index" class="menu-item">TRANSACTION</a>
-        @*     <a href="#" class="menu-item">PRINT</a>
-            <a href="#" class="menu-item">TAXES & GST</a>
-            <a href="#" class="menu-item">TRANSACTION MESSAGE</a> *@
-            <a href="/Web/Settings/Party/Index" class="menu-item">PARTY</a>
-            <a href="/Web/Settings/ItemSettings/Index" class="menu-item">ITEM</a>
-         @*    <a href="#" class="menu-item">SERVICE REMINDERS</a>
-            <a href="#" class="menu-item">ACCOUNTING</a> *@
+          @*   <a href="/Web/Settings/General/Index?returnUrl=' + encodeURIComponent(window.location.href)" class="menu-item">GENERAL</a>
+            <a href="/Web/Settings/Transaction/Index?returnUrl=' + encodeURIComponent(window.location.href) " class="menu-item">TRANSACTION</a>       
+            <a href="/Web/Settings/Party/Index?returnUrl=' + encodeURIComponent(window.location.href)" class="menu-item">PARTY</a>
+            <a href="/Web/Settings/ItemSettings/Index?returnUrl=' + encodeURIComponent(window.location.href)" class="menu-item">ITEM</a> *@
+     
+            <a href="/Web/Settings/General/Index" class="menu-item" onclick="navigateWithReturn(this.href); return false;">GENERAL</a>
+            <a href="/Web/Settings/Transaction/Index" class="menu-item" onclick="navigateWithReturn(this.href); return false;">TRANSACTION</a>
+            <a href="/Web/Settings/Party/Index" class="menu-item" onclick="navigateWithReturn(this.href); return false;">PARTY</a>
+            <a href="/Web/Settings/ItemSettings/Index" class="menu-item" onclick="navigateWithReturn(this.href); return false;">ITEM</a>
+
         </div>
     </div>
 
@@ -133,6 +134,12 @@
                 }
             });
         });
+    </script>
+    <script>
+        function navigateWithReturn(url) {
+            const returnUrl = encodeURIComponent(window.location.href);
+            window.location.href = url + '?returnUrl=' + returnUrl;
+        }
     </script>
 </body>
 </html>

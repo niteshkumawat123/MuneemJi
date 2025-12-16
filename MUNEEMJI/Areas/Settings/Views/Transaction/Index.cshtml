@@ -470,11 +470,13 @@
                 </div>
 
                 <h3 class="section-title mt-4">Transaction Prefixes</h3>
-
+                @{
+                    var BusinessName = Context.Session.GetString("BusinessName");
+                }
                 <div class="mb-3">
                     <label class="form-label">Firm</label>
                     <select name="FirmId" class="form-select firm-select" id="firmSelect">
-                        <option value="1" @(Model?.FirmId == 1 ? "selected" : "")>ORASOFT UNIQUE PVT. LTD.</option>
+                        <option value="1" @(Model?.FirmId == 1 ? "selected" : "")>@BusinessName</option>
                         <!-- Add more firms as options -->
                     </select>
                 </div>

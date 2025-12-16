@@ -611,9 +611,9 @@
             }
         }
 
-        // Override form submission to show success message
         document.getElementById('partyForm').addEventListener('submit', function(e) {
             e.preventDefault();
+             debugger;
 
             const formData = new FormData(this);
             const action = this.action;
@@ -625,33 +625,53 @@
                 body: formData
             })
             .then(response => {
-                // Handle both JSON and HTML responses
-                const contentType = response.headers.get('content-type');
-                if (contentType && contentType.includes('application/json')) {
-                    return response.json();
-                } else {
-                    // If successful HTML response (redirect), treat as success
-                    if (response.ok) {
-                        return { success: true, isUpdate: isUpdate };
-                    } else {
-                        throw new Error('Response error');
-                    }
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
+
+                // Expect JSON always
+                return response.json();
             })
             .then(data => {
-                if (data.success || data === true) {
-                    const message = isUpdate ? 'Party updated successfully!' : 'Party saved successfully!';
-                    showMessageModal(true, message, '/Web/Party/index');
-                } else {
+                debugger;
+                console.log("Received JSON:", data);
+
+                // ✅ Example: do some work with the data before showing the message
+                if (data.success) {
+                    // Suppose your API returns data like { success: true, id: 123, name: "Nitesh", message: "Saved!" }
+
+                    // Example: show some data in console or DOM
+                    console.log("New Party ID:", data.id);
+                    console.log("Party Name:", data.name);
+
+                    // Example: do something custom with the data
+                    // updatePartyList(data);
+
+                    // Then show success message
+                    const message = isUpdate
+                        ? 'Party updated successfully!'
+                        : 'Party saved successfully!';
+                   if(data.IsSaveAgain==true)
+                   {
+                    showMessageModal(true, message, '/Web/Party/Add');
+
+                   }
+                   else
+                   {
+                     showMessageModal(true, message, '/Web/Party/index');
+
+                   }
+                }
+                else 
+                {
                     showMessageModal(false, data.message || 'An error occurred while saving');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                // If error in fetch, still show success message (form likely submitted successfully)
-                const message = isUpdate ? 'Party updated successfully!' : 'Party saved successfully!';
-                showMessageModal(true, message, '/Web/Party/index');
+                showMessageModal(false, 'Error while saving data');
             });
         });
+
     </script>
 }

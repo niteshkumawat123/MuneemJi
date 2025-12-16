@@ -36,7 +36,7 @@ namespace MUNEEMJI.Models
         public string AdditionalField3Value { get; set; }
         public bool AdditionalField4Enabled { get; set; } = false;
         public DateTime? AdditionalField4Value { get; set; }
-
+        public  bool IsSaveAgain { get; set; }
         public List<StateModel> States { get; set; }
     }
 

@@ -12,316 +12,316 @@
     <title>Company List - Help</title>
     <style>
         * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
         }
 
         /* Header */
         .header {
-        background-color: white;
-        padding: 10px 20px;
-        border-bottom: 1px solid #e0e0e0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+            background-color: white;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header-left {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .vyapar-logo {
-        width: 20px;
-        height: 20px;
-        background: linear-gradient(135deg, #ff4444, #cc3333);
-        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #ff4444, #cc3333);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
         }
 
         .help-title {
-        font-size: 16px;
-        color: #333;
+            font-size: 16px;
+            color: #333;
         }
 
         .header-right {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        font-size: 14px;
-        color: #666;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #666;
         }
 
         .customer-support {
-        display: flex;
-        align-items: center;
-        gap: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .phone-number {
-        color: #007bff;
-        text-decoration: none;
+            color: #007bff;
+            text-decoration: none;
         }
 
         .instant-support {
-        color: #007bff;
-        text-decoration: none;
+            color: #007bff;
+            text-decoration: none;
         }
 
         /* Main Container */
         .main-container {
             background-color: #23272b;
-        min-height: calc(100vh - 60px);
-        padding: 0;
+            min-height: calc(100vh - 60px);
+            padding: 0;
         }
 
         /* Company List Header */
         .company-header {
-        padding: 20px;
-        color: white;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+            padding: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .company-title {
-        font-size: 24px;
-        font-weight: 500;
+            font-size: 24px;
+            font-weight: 500;
         }
 
         .search-box {
-        position: relative;
+            position: relative;
         }
 
         .search-input {
-        background-color: #4a5058;
-        border: none;
-        border-radius: 20px;
-        padding: 8px 40px 8px 16px;
-        color: white;
-        width: 300px;
-        font-size: 14px;
+            background-color: #4a5058;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 40px 8px 16px;
+            color: white;
+            width: 300px;
+            font-size: 14px;
         }
 
-        .search-input::placeholder {
-        color: #9ca3af;
-        }
+            .search-input::placeholder {
+                color: #9ca3af;
+            }
 
         .search-icon {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9ca3af;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
         }
 
         /* Tabs */
         .tabs {
-        display: flex;
+            display: flex;
             background-color: #23272b7a;
-        padding: 0 20px;
+            padding: 0 20px;
         }
 
         .tab {
-        padding: 12px 20px;
-        color: #9ca3af;
-        cursor: pointer;
-        border-bottom: 3px solid transparent;
-        font-size: 14px;
-        font-weight: 500;
+            padding: 12px 20px;
+            color: #9ca3af;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-size: 14px;
+            font-weight: 500;
         }
 
-        .tab.active {
-        color: white;
-        border-bottom-color: #007bff;
-        }
+            .tab.active {
+                color: white;
+                border-bottom-color: #007bff;
+            }
 
-        .tab:hover {
-        color: white;
-        }
+            .tab:hover {
+                color: white;
+            }
 
         /* Content Area */
         .content-area {
-        background-color: white;
-        margin: 0;
-        min-height: 500px;
-        padding: 20px;
+            background-color: white;
+            margin: 0;
+            min-height: 500px;
+            padding: 20px;
         }
 
         .content-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
         }
 
         .content-title {
-        color: #666;
-        font-size: 14px;
+            color: #666;
+            font-size: 14px;
         }
 
         .browse-files {
-        color: #007bff;
-        text-decoration: none;
-        font-size: 14px;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
         }
 
         .refresh-btn {
-        background: none;
-        border: none;
-        color: #007bff;
-        cursor: pointer;
-        font-size: 18px;
-        margin-left: 10px;
+            background: none;
+            border: none;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 18px;
+            margin-left: 10px;
         }
 
         /* Company Items */
         .company-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #e0e0e0;
         }
 
         .company-info {
-        display: flex;
-        flex-direction: column;
+            display: flex;
+            flex-direction: column;
         }
 
         .company-name {
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
-        margin-bottom: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
         }
 
         .current-company-badge {
-        background-color: #ffa500;
-        color: white;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 12px;
-        display: inline-block;
-        margin-right: 10px;
+            background-color: #ffa500;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+            margin-right: 10px;
         }
 
         .company-details {
-        font-size: 12px;
-        color: #666;
+            font-size: 12px;
+            color: #666;
         }
 
         .company-actions {
-        display: flex;
-        align-items: center;
-        gap: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .sync-status {
-        display: flex;
-        align-items: center;
-        gap: 33px;
-        font-size: 22px;
-        color: #666;
+            display: flex;
+            align-items: center;
+            gap: 33px;
+            font-size: 22px;
+            color: #666;
         }
 
         .sync-icon {
-        width: 16px;
-        height: 16px;
+            width: 16px;
+            height: 16px;
         }
 
 
 
         .open-btn {
-        background-color: white;
-        color: #007bff;
-        padding: 8px 39px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-        border: 1px solid #ccc;
+            background-color: white;
+            color: #007bff;
+            padding: 8px 39px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: 1px solid #ccc;
         }
 
         .more-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-        font-size: 18px;
-        color: #666;
-        position: relative;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            position: relative;
         }
 
         /* Dropdown Menu */
         .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        min-width: 150px;
-        z-index: 1000;
-        display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            min-width: 150px;
+            z-index: 1000;
+            display: none;
         }
 
-        .dropdown-menu.show {
-        display: block;
-        }
+            .dropdown-menu.show {
+                display: block;
+            }
 
         .dropdown-item {
-        padding: 12px 16px;
-        cursor: pointer;
-        font-size: 14px;
-        color: #333;
-        border-bottom: 1px solid #f0f0f0;
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .dropdown-item:hover {
-        background-color: #f8f9fa;
-        }
+            .dropdown-item:hover {
+                background-color: #f8f9fa;
+            }
 
-        .dropdown-item:last-child {
-        border-bottom: none;
-        }
+            .dropdown-item:last-child {
+                border-bottom: none;
+            }
 
         /* Bottom Actions */
         .bottom-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 40px;
-        padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 20px;
         }
 
         .restore-btn {
-        background: white;
-        color: #007bff;
-        border: 1px solid #007bff;
-        padding: 10px 20px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
+            background: white;
+            color: #007bff;
+            border: 1px solid #007bff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         .new-company-btn {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
         }
 
         .logout-section {
-        text-align: right;
+            text-align: right;
         }
 
         .logout-link {
@@ -334,146 +334,301 @@
             background: #007bff;
             border: none;
             border-radius: 3px;
-            cursor: pointer ;
+            cursor: pointer;
         }
 
         .logout-text {
-        font-size: 12px;
-        color: #666;
+            font-size: 12px;
+            color: #666;
         }
 
         /* Video Section */
         .video-section {
-        text-align: center;
-        padding: 40px 20px;
+            text-align: center;
+            padding: 40px 20px;
         }
 
         .video-title {
-        font-size: 18px;
-        color: #333;
-        margin-bottom: 30px;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 30px;
         }
 
         .video-container {
-        position: relative;
-        display: inline-block;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            display: inline-block;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
 
         .video-thumbnail {
-        width: 400px;
-        height: 225px;
-        background: linear-gradient(135deg, #ff4444, #cc3333);
-        position: relative;
-        cursor: pointer;
+            width: 400px;
+            height: 225px;
+            background: linear-gradient(135deg, #ff4444, #cc3333);
+            position: relative;
+            cursor: pointer;
         }
 
         .video-content {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px;
-        color: white;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            color: white;
         }
 
         .video-left {
-        display: flex;
-        align-items: center;
-        gap: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
         .vyapar-video-logo {
-        width: 50px;
-        height: 50px;
-        background: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .vyapar-video-logo::after {
-        content: '';
-        width: 20px;
-        height: 20px;
-        background: linear-gradient(135deg, #ff4444, #cc3333);
-        clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-        }
+            .vyapar-video-logo::after {
+                content: '';
+                width: 20px;
+                height: 20px;
+                background: linear-gradient(135deg, #ff4444, #cc3333);
+                clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            }
 
         .video-text {
-        text-align: left;
+            text-align: left;
         }
 
         .video-title-text {
-        font-size: 16px;
-        font-weight: bold;
-        margin-bottom: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
         }
 
         .video-subtitle {
-        font-size: 14px;
-        opacity: 0.9;
+            font-size: 14px;
+            opacity: 0.9;
         }
 
         .play-button {
-        width: 60px;
-        height: 60px;
-        background: rgba(255,255,255,0.9);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
 
-        .play-button::after {
-        content: '';
-        width: 0;
-        height: 0;
-        border-left: 15px solid #ff4444;
-        border-top: 10px solid transparent;
-        border-bottom: 10px solid transparent;
-        margin-left: 3px;
-        }
+            .play-button::after {
+                content: '';
+                width: 0;
+                height: 0;
+                border-left: 15px solid #ff4444;
+                border-top: 10px solid transparent;
+                border-bottom: 10px solid transparent;
+                margin-left: 3px;
+            }
 
         .laptop-image {
-        position: absolute;
-        bottom: -10px;
-        right: 20px;
-        width: 120px;
-        height: 80px;
+            position: absolute;
+            bottom: -10px;
+            right: 20px;
+            width: 120px;
+            height: 80px;
         }
 
         /* Empty state for shared companies */
         .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #666;
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
         }
 
         .empty-text {
-        font-size: 14px;
-        margin-bottom: 20px;
+            font-size: 14px;
+            margin-bottom: 20px;
         }
 
         /* Responsive */
         @@media (max-width: 768px) {
-        .search-input
+            .search-input {
+                width: 200px;
+            }
 
-        {
-        width: 200px;
+            .video-thumbnail {
+                width: 300px;
+                height: 169px;
+            }
+        }
+    </style>
+    <style>
+        /* Confirmation Modal Styles */
+        .confirmation-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
         }
 
-        .video-thumbnail {
-        width: 300px;
-        height: 169px;
+            .confirmation-modal.show {
+                display: flex;
+            }
+
+        .confirmation-content {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .confirmation-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .warning-icon-delete {
+            width: 50px;
+            height: 50px;
+            background-color: #fff3cd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #856404;
+        }
+
+        .confirmation-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .confirmation-message {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .confirmation-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background-color: #f0f0f0;
+            color: #333;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+            .btn-cancel:hover {
+                background-color: #e0e0e0;
+            }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+            .btn-delete:hover {
+                background-color: #c82333;
+            }
+
+        /* Success Message Styles */
+        .success-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 3000;
+            animation: slideIn 0.3s ease-out;
+        }
+
+            .success-toast.show {
+                display: flex;
+            }
+
+        .success-icon {
+            font-size: 20px;
+        }
+
+        .success-message {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        @@keyframes slideIn {
+            from
+
+        {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        }
+
+        @@keyframes slideOut {
+            from
+
+        {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        to {
+            transform: translateX(400px);
+            opacity: 0;
         }
 
         }
@@ -555,11 +710,10 @@
             <div id="myCompaniesContent">
                 <div class="content-header">
                     <span class="content-title">Below are the company that are created by you</span>
-                  
+
                 </div>
 
                 <!-- Company List -->
-
                 @foreach (var item in Model.MyCompany)
                 {
 
@@ -573,7 +727,7 @@
                             <div class="company-details">My Account,@item.Email</div>
                         </div>
                         <div class="company-actions">
-                           @*  <div class="sync-status">
+                            @*  <div class="sync-status">
                                 <span class="sync-icon">
                                     <img src="/images/pcmobile.png" alt="Mobile Icon" class="icon-img">
                                 </span>
@@ -585,14 +739,14 @@
                                 <div class="dropdown-menu">
                                     <div class="dropdown-item" onclick="renameCompany()">Rename Company</div>
                                     <div class="dropdown-item" onclick="openCompany()">Open</div>
-                                    <div class="dropdown-item" onclick="deleteCompany()">Delete</div>
+                                    <div class="dropdown-item" onclick="deleteCompany(@item.Id)">Delete</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 }
 
-                
+
 
                 <div class="bottom-actions">
                     <div>
@@ -610,7 +764,7 @@
             <div id="sharedCompaniesContent" style="display: none;">
                 <div class="content-header">
                     <span class="content-title">Below are the company that are shared with you</span>
-                   @*  <div>
+                    @*  <div>
                         <a href="#" class="browse-files">Browse Files (.vyp)</a>
                         <button class="refresh-btn">🔄</button>
                     </div> *@
@@ -627,7 +781,7 @@
                             <div class="company-details">My Account,@item.Email</div>
                         </div>
                         <div class="company-actions">
-                        @*     <div class="sync-status">
+                            @*     <div class="sync-status">
                                 <span class="sync-icon">
                                     <img src="/images/pcmobile.png" alt="Mobile Icon" class="icon-img">
                                 </span>
@@ -639,7 +793,7 @@
                                 <div class="dropdown-menu">
                                     <div class="dropdown-item" onclick="renameCompany()">Open</div>
                                     <div class="dropdown-item" onclick="openCompany()">Leave</div>
-                                    <div class="dropdown-item" onclick="deleteCompany()">Delete</div>
+                                    <div class="dropdown-item" onclick="deleteCompany(@item.Id)">Delete</div>
                                 </div>
                             </div>
                         </div>
@@ -651,7 +805,7 @@
                         <button class="new-company-btn" onclick="window.location.href='/Account/Register'">New Company</button>
                     </div>
                     <div class="logout-section">
-                        <button class="logout-link" onclick="logout()">Logout</button>  
+                        <button class="logout-link" onclick="logout()">Logout</button>
                         <div class="logout-text">Logging out will stop syncing data</div>
                     </div>
                 </div>
@@ -661,6 +815,27 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <div id="confirmationModal" class="confirmation-modal">
+        <div class="confirmation-content">
+            <div class="confirmation-header">
+                <div class="warning-icon-delete">⚠️</div>
+                <div class="confirmation-title">Delete Company</div>
+            </div>
+            <div class="confirmation-message">
+                Are you sure you want to delete this company? This action cannot be undone.
+            </div>
+            <div class="confirmation-buttons">
+                <button class="btn-cancel" onclick="closeConfirmationModal()">Cancel</button>
+                <button class="btn-delete" onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="successToast" class="success-toast">
+        <span class="success-icon">✓</span>
+        <span class="success-message">Company has been deleted successfully!</span>
     </div>
 
     <script>
@@ -733,16 +908,14 @@
 
         // Dropdown menu actions
         function renameCompany() {
-            alert('Rename Company functionality');
+            window.location.href='/Web/BusinessProfile/Edit';
         }
 
         function openCompany() {
-            alert('Open Company functionality');
+            window.location.href='/Web/Home/Index';
         }
 
-        function deleteCompany() {
-            alert('Delete Company functionality');
-        }
+       
 
         // Video play functionality
         function playVideo() {
@@ -786,6 +959,84 @@
             const modal = document.getElementById('callModal');
             if (e.target === modal || e.target.classList.contains('modal-overlay')) {
                 closeCallModal();
+            }
+        });
+    </script>
+    <script>
+        let companyIdToDelete = null;
+
+        function deleteCompany(companyId) {
+            debugger;
+            // Store the company ID to delete
+            companyIdToDelete = companyId;
+
+            // Show confirmation modal
+            document.getElementById('confirmationModal').classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeConfirmationModal() {
+            debugger;
+            document.getElementById('confirmationModal').classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        function confirmDelete() {
+            if (companyIdToDelete === null) {
+                return;
+            }
+
+            // Close the confirmation modal
+            closeConfirmationModal();
+            debugger;
+            // Call the server to delete the company
+            fetch('/Web/Company/DeleteCompany?id='+companyIdToDelete, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                // body: JSON.stringify({ id: companyIdToDelete })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Show success message
+                    showSuccessToast();
+
+                    // Remove the company item from the list after a short delay
+                    setTimeout(() => {
+                        // Reload the page to reflect changes
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    alert('Failed to delete company. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the company.');
+            });
+        }
+
+        function showSuccessToast() {
+            const toast = document.getElementById('successToast');
+            toast.classList.add('show');
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    toast.style.animation = '';
+                }, 300);
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('confirmationModal');
+            if (e.target === modal) {
+                closeConfirmationModal();
             }
         });
     </script>

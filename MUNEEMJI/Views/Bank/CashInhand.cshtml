@@ -1,5 +1,577 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .cash-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .cash-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cash-amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2e7d32;
+        }
+
+        .adjust-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+        }
+
+            .adjust-btn:hover {
+                background-color: #c82333;
+            }
+
+        .transactions-section {
+            padding: 20px 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 16px 12px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .row-highlight {
+            background-color: #e3f2fd;
+        }
+
+        .amount-positive {
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .amount-negative {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            pointer-events: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.3s;
+            line-height: 1;
+        }
+
+            .close-btn:hover {
+                color: #333;
+            }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+            .radio-option input[type="radio"] {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+
+            .radio-option label {
+                font-size: 15px;
+                color: #333;
+                cursor: pointer;
+            }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+            .form-input:focus {
+                outline: none;
+                border-color: #4285f4;
+            }
+
+        .updated-cash {
+            font-size: 13px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+
+        .btn-cancel {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+
+            .btn-cancel:hover {
+                background-color: #e0e0e0;
+            }
+
+        .btn-save {
+            background-color: #dc3545;
+            color: white;
+        }
+
+            .btn-save:hover {
+                background-color: #c82333;
+            }
+
+            .btn-save:disabled {
+                background-color: #ccc;
+                cursor: not-allowed;
+            }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4caf50;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="cash-info">
+                <span class="cash-label">Cash In Hand</span>
+                <span class="cash-amount" id="cashAmount">₹ 11,64,51,153</span>
+            </div>
+            <button class="adjust-btn" onclick="showModal()">
+                <span>💰</span>
+                Adjust Cash
+            </button>
+        </div>
+
+        <div class="transactions-section">
+            <h2 class="section-title">Transactions</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cash Increase</td>
+                        <td>fDF</td>
+                        <td>15/12/2025</td>
+                        <td class="amount-positive">₹ 12,343</td>
+                    </tr>
+                    <tr>
+                        <td>Cash Increase</td>
+                        <td>testing fromnitesh</td>
+                        <td>15/12/2025</td>
+                        <td class="amount-positive">₹ 11,11,11,111</td>
+                    </tr>
+                    <tr class="row-highlight">
+                        <td>Sale</td>
+                        <td>xyz</td>
+                        <td>17/10/2025, 03:28 AM</td>
+                        <td class="amount-positive">₹ 43</td>
+                    </tr>
+                    <tr>
+                        <td>Sale</td>
+                        <td>Cash Sale</td>
+                        <td>17/10/2025, 03:24 AM</td>
+                        <td class="amount-positive">₹ 135</td>
+                    </tr>
+                    <tr>
+                        <td>Purchase</td>
+                        <td>mjoj</td>
+                        <td>16/10/2025, 07:08 AM</td>
+                        <td class="amount-negative">₹ 23</td>
+                    </tr>
+                    <tr>
+                        <td>Sale Order</td>
+                        <td>mjoj</td>
+                        <td>15/10/2025, 05:54 AM</td>
+                        <td class="amount-positive">₹ 54</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modalBackdrop" class="modal-backdrop" style="display: none;" onclick="hideModal()"></div>
+    <div id="modalContainer" class="modal-container" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Adjust Cash</h3>
+                <button class="close-btn" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="adjustCashForm">
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" id="addCash" name="adjustType" value="add" checked onchange="updateCalculatedCash()">
+                            <label for="addCash">Add Cash</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" id="reduceCash" name="adjustType" value="reduce" onchange="updateCalculatedCash()">
+                            <label for="reduceCash">Reduce Cash</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Enter Amount<span class="required">*</span></label>
+                        <input type="number" class="form-input" id="amountInput" placeholder="₹ 0" min="0" required oninput="updateCalculatedCash()">
+                        <div class="updated-cash">Updated Cash: <strong id="updatedCash">₹ 11,64,51,153</strong></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Adjustment Date<span class="required">*</span></label>
+                        <input type="date" class="form-input" id="adjustmentDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-input" id="description" rows="3" placeholder="Enter Description"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="hideModal()">Cancel</button>
+                <button class="btn btn-save" id="saveBtn" onclick="saveCashAdjustment()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentCash = 116451153;
+
+        // Initialize on page load
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('adjustmentDate').value = today;
+            updateCalculatedCash();
+            console.log('Page loaded successfully');
+        };
+
+        // Format number to Indian currency
+        function formatCurrency(amount) {
+            return '₹ ' + Math.round(amount).toLocaleString('en-IN');
+        }
+
+        // Show modal
+        function showModal() {
+            console.log('Showing modal...');
+            document.getElementById('modalBackdrop').style.display = 'block';
+            document.getElementById('modalContainer').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            console.log('Modal displayed');
+        }
+
+        // Hide modal
+        function hideModal() {
+            console.log('Hiding modal...');
+            document.getElementById('modalBackdrop').style.display = 'none';
+            document.getElementById('modalContainer').style.display = 'none';
+            document.body.style.overflow = 'auto';
+
+            // Reset form
+            document.getElementById('adjustCashForm').reset();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('adjustmentDate').value = today;
+            updateCalculatedCash();
+            console.log('Modal hidden');
+        }
+
+        // Update calculated cash
+        function updateCalculatedCash() {
+            const amountInput = document.getElementById('amountInput');
+            const addCashRadio = document.getElementById('addCash');
+            const updatedCashElement = document.getElementById('updatedCash');
+
+            const amount = parseFloat(amountInput.value) || 0;
+            const isAdd = addCashRadio.checked;
+            const newCash = isAdd ? currentCash + amount : currentCash - amount;
+
+            updatedCashElement.textContent = formatCurrency(newCash);
+        }
+
+        // Save cash adjustment
+        async function saveCashAdjustment() {
+            const amountInput = document.getElementById('amountInput');
+            const adjustmentDate = document.getElementById('adjustmentDate');
+            const description = document.getElementById('description');
+            const addCashRadio = document.getElementById('addCash');
+            const saveBtn = document.getElementById('saveBtn');
+
+            // Validate form
+            if (!amountInput.value || parseFloat(amountInput.value) <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            if (!adjustmentDate.value) {
+                alert('Please select an adjustment date');
+                return;
+            }
+
+            // Prepare data
+            const formData = {
+                adjustType: addCashRadio.checked ? 'add' : 'reduce',
+                amount: parseFloat(amountInput.value),
+                adjustmentDate: adjustmentDate.value,
+                description: description.value
+            };
+
+            console.log('Saving data:', formData);
+
+            // Disable save button
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            try {
+                // Send data to your backend endpoint
+                const response = await fetch('/Cash/AdjustCash', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    // Update current cash
+                    if (formData.adjustType === 'add') {
+                        currentCash += formData.amount;
+                    } else {
+                        currentCash -= formData.amount;
+                    }
+
+                    // Update display
+                    document.getElementById('cashAmount').textContent = formatCurrency(currentCash);
+
+                    // Show success message
+                    showToast('Cash adjusted successfully!');
+
+                    // Close modal
+                    hideModal();
+
+                    // Optional: Reload to show new transactions
+                    // setTimeout(() => location.reload(), 2000);
+                } else {
+                    throw new Error('Server error');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error saving cash adjustment. Please try again.');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Handle ESC key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const modalContainer = document.getElementById('modalContainer');
+                if (modalContainer.style.display === 'flex') {
+                    hideModal();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

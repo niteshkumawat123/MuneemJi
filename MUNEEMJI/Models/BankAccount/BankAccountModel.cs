@@ -1,4 +1,6 @@
-﻿namespace MUNEEMJI.Models.BankAccount
+﻿using Microsoft.Data.SqlClient.DataClassification;
+
+namespace MUNEEMJI.Models.BankAccount
 {
     public class BankAccountModel
     {
@@ -13,6 +15,7 @@
         public string UPIID { get; set; }
         public string BankName { get; set; }
         public string AccountHolderName { get; set; }
+        public int RequestTypeId { get; set; } 
     }
     public class BankAccount
     {

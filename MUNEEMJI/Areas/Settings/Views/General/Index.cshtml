@@ -248,11 +248,11 @@
             <div class="settings-section">
                 <h3 class="section-title">Application</h3>
 
-                <div class="checkbox-group">
+               @*  <div class="checkbox-group">
                     <input type="checkbox" id="enablePasscode">
                     <label for="enablePasscode">Enable Passcode</label>
                     <span class="info-icon">i</span>
-                </div>
+                </div> *@
 
                 <div class="form-group">
                     <label>Business Currency</label>
@@ -362,10 +362,13 @@
                     <input type="checkbox" id="multiFirm" style="margin-right: 8px;">
                     <label for="multiFirm" style="font-size: 16px; font-weight: 600; min-width: auto;">Multi Firm</label>
                 </div>
+                @{
+                    var BusinessName = Context.Session.GetString("BusinessName");
+                }
 
                 <div class="radio-group">
                     <input type="radio" id="orasoftUnique" name="firmType" checked>
-                    <label for="orasoftUnique">ORASOFT UNIQUE PVT. LTD.</label>
+                    <label for="orasoftUnique">@BusinessName</label>
                     <span class="default-badge">DEFAULT</span>
                     <span class="edit-icon">✏</span>
                 </div>

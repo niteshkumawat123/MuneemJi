@@ -74,4 +74,23 @@ namespace MUNEEMJI.Models
         public LoanAccountViewModel Account { get; set; } = new LoanAccountViewModel();
         public List<string> PaymentFromOptions { get; set; } = new List<string> { "Cash", "Bank", "Other" };
     }
+    public class LoanAccountModel
+    {
+        public int Id { get; set; }
+
+        public string? AccountName { get; set; }
+        public string? LenderBank { get; set; }
+        public string? AccountNumber { get; set; }
+        public string? Description { get; set; }
+
+        public decimal? CurrentBalance { get; set; }
+        public DateTime? BalanceAsOf { get; set; }
+
+        public string? LoanReceivedIn { get; set; }
+
+        public decimal? InterestRate { get; set; }
+        public int? TermDuration { get; set; }
+        public decimal? ProcessingFee { get; set; }
+        public string? ProcessingFeePaidFrom { get; set; }
+    }
 }

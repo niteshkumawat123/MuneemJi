@@ -151,7 +151,7 @@ namespace MUNEEMJI.Controllers
                             : DBNull.Value);
                         cmd.Parameters.AddWithValue("p_companyid", companyId);
                         cmd.Parameters.AddWithValue("p_PartyGroupId", model.PartyGroupId);
-                        cmd.Parameters.AddWithValue("p_PartyGroup", model.PartyGroup);
+                        cmd.Parameters.AddWithValue("p_PartyGroup", model.PartyGroup!=null ? model.PartyGroup:"");
 
                         if (model.Id > 0)
                         {
@@ -164,20 +164,35 @@ namespace MUNEEMJI.Controllers
 
                 if (save == "new")
                 {
-                    model.IsSaveAgain = true;
-                    TempData["Message"] = model.Id > 0 ? "Party updated. Ready to add new." : "Party saved. Ready to add new.";
-                    return RedirectToAction("Add");
+                    return Json(new
+                    {
+                        success = true,
+                        IsSaveAgain = true,
+                        message = model.Id > 0 ? "Party updated. Ready to add new." : "Party saved. Ready to add new.",
+                        id = model.Id,
+                        name = model.PartyName
+                    });
                 }
 
-                TempData["Message"] = model.Id > 0 ? "Party updated successfully." : "Party saved successfully.";
-                return RedirectToAction("Index");
+                return Json(new
+                {
+                    success = true,
+                    IsSaveAgain = false,
+                    message = model.Id > 0 ? "Party updated successfully." : "Party saved successfully.",
+                    id = model.Id,
+                    name = model.PartyName
+                });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Database error: " + ex.Message);
+                // ✅ RETURN JSON ERROR
+                return Json(new
+                {
+                    success = false,
+                    message = "Database error: " + ex.Message
+                });
             }
 
-            return View(model);
         }
 
 

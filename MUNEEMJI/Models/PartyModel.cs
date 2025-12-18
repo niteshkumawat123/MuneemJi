@@ -38,6 +38,7 @@ namespace MUNEEMJI.Models
         public DateTime? AdditionalField4Value { get; set; }
         public  bool IsSaveAgain { get; set; }
         public List<StateModel> States { get; set; }
+        public string save { get; set; }
     }
 
     public class PartyViewModel

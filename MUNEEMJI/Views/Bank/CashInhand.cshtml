@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using MUNEEMJI.Models.BankAccount
+@model List<BankCash>
+
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -123,6 +128,74 @@
             color: #dc3545;
             font-weight: 600;
         }
+
+        /* Action Menu Styles */
+        .action-cell {
+            position: relative;
+        }
+
+        .three-dot-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+            .three-dot-btn:hover {
+                color: #333;
+                background-color: #f0f0f0;
+                border-radius: 4px;
+            }
+
+        .action-menu {
+            position: absolute;
+            right: 10px;
+            top: 100%;
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            min-width: 140px;
+            display: none;
+        }
+
+            .action-menu.show {
+                display: block;
+            }
+
+        .action-menu-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+            .action-menu-item:first-child {
+                border-top-left-radius: 6px;
+                border-top-right-radius: 6px;
+            }
+
+            .action-menu-item:last-child {
+                border-bottom-left-radius: 6px;
+                border-bottom-right-radius: 6px;
+            }
+
+            .action-menu-item:hover {
+                background-color: #f5f5f5;
+            }
+
+            .action-menu-item.delete:hover {
+                background-color: #ffeaea;
+                color: #dc3545;
+            }
 
         /* Modal Styles */
         .modal-backdrop {
@@ -298,6 +371,64 @@
                 cursor: not-allowed;
             }
 
+        /* Delete Confirmation Modal */
+        .delete-modal-body {
+            padding: 24px;
+            text-align: center;
+        }
+
+        .delete-icon {
+            font-size: 48px;
+            color: #dc3545;
+            margin-bottom: 16px;
+        }
+
+        .delete-message {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .delete-warning {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+            .btn-delete:hover {
+                background-color: #c82333;
+            }
+
+        /* View Modal */
+        .view-details {
+            padding: 16px 0;
+        }
+
+        .view-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+            .view-row:last-child {
+                border-bottom: none;
+            }
+
+        .view-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .view-value {
+            color: #333;
+            text-align: right;
+        }
+
         .toast {
             position: fixed;
             top: 20px;
@@ -308,6 +439,26 @@
             border-radius: 4px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @@keyframes slideIn {
+            from
+
+        {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        }
+
+        .toast.error {
+            background-color: #dc3545;
         }
     </style>
 </head>
@@ -316,7 +467,10 @@
         <div class="header">
             <div class="cash-info">
                 <span class="cash-label">Cash In Hand</span>
-                <span class="cash-amount" id="cashAmount">₹ 11,64,51,153</span>
+                @{
+                    var totalAdd = Model?.FirstOrDefault()?.TotalCash ?? 0;
+                }
+                <span class="cash-amount" id="cashAmount">₹@totalAdd</span>
             </div>
             <button class="adjust-btn" onclick="showModal()">
                 <span>💰</span>
@@ -333,67 +487,62 @@
                         <th>Name</th>
                         <th>Date</th>
                         <th>Amount</th>
+                        <th style="width: 80px; text-align: center;">Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Cash Increase</td>
-                        <td>fDF</td>
-                        <td>15/12/2025</td>
-                        <td class="amount-positive">₹ 12,343</td>
-                    </tr>
-                    <tr>
-                        <td>Cash Increase</td>
-                        <td>testing fromnitesh</td>
-                        <td>15/12/2025</td>
-                        <td class="amount-positive">₹ 11,11,11,111</td>
-                    </tr>
-                    <tr class="row-highlight">
-                        <td>Sale</td>
-                        <td>xyz</td>
-                        <td>17/10/2025, 03:28 AM</td>
-                        <td class="amount-positive">₹ 43</td>
-                    </tr>
-                    <tr>
-                        <td>Sale</td>
-                        <td>Cash Sale</td>
-                        <td>17/10/2025, 03:24 AM</td>
-                        <td class="amount-positive">₹ 135</td>
-                    </tr>
-                    <tr>
-                        <td>Purchase</td>
-                        <td>mjoj</td>
-                        <td>16/10/2025, 07:08 AM</td>
-                        <td class="amount-negative">₹ 23</td>
-                    </tr>
-                    <tr>
-                        <td>Sale Order</td>
-                        <td>mjoj</td>
-                        <td>15/10/2025, 05:54 AM</td>
-                        <td class="amount-positive">₹ 54</td>
-                    </tr>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@(item.AdjustTypeId == 1 ? "Cash Increase" : "Cash Reduce")</td>
+                                <td>@item.Description</td>
+                                <td>@(item.AdjustmentDate?.ToString("dd-MM-yyyy") ?? "-")</td>
+                                <td class="@(item.AdjustTypeId == 1 ? "amount-positive" : "amount-negative")">₹ @(item.Amount)</td>
+                                <td class="action-cell" style="text-align: center;">
+                                    <button class="three-dot-btn" onclick="toggleActionMenu(event, @item.Id)">⋮</button>
+                                    <div class="action-menu" id="menu-@item.Id">
+                                        <div class="action-menu-item" onclick="viewTransaction(@item.Id)">
+                                            <span>👁️</span> View
+                                        </div>
+                                        <div class="action-menu-item" onclick="editTransaction(@item.Id)">
+                                            <span>✏️</span> Edit
+                                        </div>
+                                        <div class="action-menu-item delete" onclick="confirmDelete(@item.Id)">
+                                            <span>🗑️</span> Delete
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                    }
+
+
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Add/Edit Modal -->
     <div id="modalBackdrop" class="modal-backdrop" style="display: none;" onclick="hideModal()"></div>
     <div id="modalContainer" class="modal-container" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Adjust Cash</h3>
+                <h3 class="modal-title" id="modalTitle">Adjust Cash</h3>
                 <button class="close-btn" onclick="hideModal()">&times;</button>
             </div>
             <div class="modal-body">
                 <form id="adjustCashForm">
+                    <input type="hidden" id="transactionId" value="">
                     <div class="radio-group">
                         <div class="radio-option">
-                            <input type="radio" id="addCash" name="adjustType" value="add" checked onchange="updateCalculatedCash()">
+                            <input type="radio" id="addCash" name="AdjustTypeId" value="1" checked onchange="updateCalculatedCash()">
                             <label for="addCash">Add Cash</label>
                         </div>
                         <div class="radio-option">
-                            <input type="radio" id="reduceCash" name="adjustType" value="reduce" onchange="updateCalculatedCash()">
+                            <input type="radio" id="reduceCash" name="AdjustTypeId" value="2" onchange="updateCalculatedCash()">
                             <label for="reduceCash">Reduce Cash</label>
                         </div>
                     </div>
@@ -422,9 +571,49 @@
         </div>
     </div>
 
+    <!-- View Modal -->
+    <div id="viewModalBackdrop" class="modal-backdrop" style="display: none;" onclick="hideViewModal()"></div>
+    <div id="viewModalContainer" class="modal-container" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Transaction Details</h3>
+                <button class="close-btn" onclick="hideViewModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="view-details" id="viewDetails">
+                    <!-- Details will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="hideViewModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModalBackdrop" class="modal-backdrop" style="display: none;" onclick="hideDeleteModal()"></div>
+    <div id="deleteModalContainer" class="modal-container" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Confirm Delete</h3>
+                <button class="close-btn" onclick="hideDeleteModal()">&times;</button>
+            </div>
+            <div class="delete-modal-body">
+                <div class="delete-icon">⚠️</div>
+                <div class="delete-message">Are you sure you want to delete this transaction?</div>
+                <div class="delete-warning">This action cannot be undone.</div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" onclick="hideDeleteModal()">Cancel</button>
+                <button class="btn btn-delete" id="deleteBtn" onclick="deleteTransaction()">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Global variables
-        let currentCash = 116451153;
+        let currentCash = @totalAdd;
+        let deleteTransactionId = null;
 
         // Initialize on page load
         window.onload = function() {
@@ -439,13 +628,159 @@
             return '₹ ' + Math.round(amount).toLocaleString('en-IN');
         }
 
+        // Close all action menus
+        function closeAllMenus() {
+            document.querySelectorAll('.action-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+
+        // Toggle action menu
+        function toggleActionMenu(event, id) {
+            event.stopPropagation();
+            const menu = document.getElementById('menu-' + id);
+            const isCurrentlyOpen = menu.classList.contains('show');
+
+            closeAllMenus();
+
+            if (!isCurrentlyOpen) {
+                menu.classList.add('show');
+            }
+        }
+
+        // Close menus when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.action-cell')) {
+                closeAllMenus();
+            }
+        });
+
+        // View transaction
+        async function viewTransaction(id) {
+            closeAllMenus();
+            try {
+                const response = await fetch(`/Bank/GetCashTransactionById?id=${id}`);
+                if (response.ok) {
+                    const transaction = await response.json();
+
+                    const adjustmentDate = transaction.adjustmentDate ?
+                        new Date(transaction.adjustmentDate).toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                        }) : '-';
+
+                    document.getElementById('viewDetails').innerHTML = `
+                        <div class="view-row">
+                            <span class="view-label">Type:</span>
+                            <span class="view-value">${transaction.adjustTypeId === 1 ? 'Cash Increase' : 'Cash Reduce'}</span>
+                        </div>
+                        <div class="view-row">
+                            <span class="view-label">Amount:</span>
+                            <span class="view-value" style="color: ${transaction.adjustTypeId === 1 ? '#2e7d32' : '#dc3545'}; font-weight: 600;">₹ ${transaction.amount}</span>
+                        </div>
+                        <div class="view-row">
+                            <span class="view-label">Date:</span>
+                            <span class="view-value">${adjustmentDate}</span>
+                        </div>
+                        <div class="view-row">
+                            <span class="view-label">Description:</span>
+                            <span class="view-value">${transaction.description || '-'}</span>
+                        </div>
+                    `;
+
+                    showViewModal();
+                } else {
+                    showToast('Error loading transaction details', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error loading transaction details', 'error');
+            }
+        }
+
+        // Edit transaction
+        async function editTransaction(id) {
+            closeAllMenus();
+            try {
+                const response = await fetch(`/Bank/GetCashTransactionById?id=${id}`);
+                if (response.ok) {
+                    const transaction = await response.json();
+
+                    document.getElementById('modalTitle').textContent = 'Edit Transaction';
+                    document.getElementById('transactionId').value = transaction.id;
+
+                    if (transaction.adjustTypeId === 1) {
+                        document.getElementById('addCash').checked = true;
+                    } else {
+                        document.getElementById('reduceCash').checked = true;
+                    }
+
+                    document.getElementById('amountInput').value = transaction.amount;
+
+                    if (transaction.adjustmentDate) {
+                        const date = new Date(transaction.adjustmentDate);
+                        document.getElementById('adjustmentDate').value = date.toISOString().split('T')[0];
+                    }
+
+                    document.getElementById('description').value = transaction.description || '';
+
+                    updateCalculatedCash();
+                    showModal();
+                } else {
+                    showToast('Error loading transaction', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error loading transaction', 'error');
+            }
+        }
+
+        // Confirm delete
+        function confirmDelete(id) {
+            closeAllMenus();
+            deleteTransactionId = id;
+            showDeleteModal();
+        }
+
+        // Delete transaction
+        async function deleteTransaction() {
+            if (!deleteTransactionId) return;
+
+            const deleteBtn = document.getElementById('deleteBtn');
+            deleteBtn.disabled = true;
+            deleteBtn.textContent = 'Deleting...';
+
+            try {
+                const response = await fetch(`/Bank/DeleteCashConfirmed?id=${deleteTransactionId}`, {
+                    method: 'GET'
+                });
+
+                if (response.ok) {
+                    showToast('Transaction deleted successfully!');
+                    hideDeleteModal();
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error('Delete failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Error deleting transaction', 'error');
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtn.textContent = 'Delete';
+            }
+        }
+
         // Show modal
         function showModal() {
             console.log('Showing modal...');
             document.getElementById('modalBackdrop').style.display = 'block';
             document.getElementById('modalContainer').style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            console.log('Modal displayed');
         }
 
         // Hide modal
@@ -457,10 +792,40 @@
 
             // Reset form
             document.getElementById('adjustCashForm').reset();
+            document.getElementById('transactionId').value = '';
+            document.getElementById('modalTitle').textContent = 'Adjust Cash';
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('adjustmentDate').value = today;
             updateCalculatedCash();
-            console.log('Modal hidden');
+        }
+
+        // Show view modal
+        function showViewModal() {
+            document.getElementById('viewModalBackdrop').style.display = 'block';
+            document.getElementById('viewModalContainer').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Hide view modal
+        function hideViewModal() {
+            document.getElementById('viewModalBackdrop').style.display = 'none';
+            document.getElementById('viewModalContainer').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Show delete modal
+        function showDeleteModal() {
+            document.getElementById('deleteModalBackdrop').style.display = 'block';
+            document.getElementById('deleteModalContainer').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Hide delete modal
+        function hideDeleteModal() {
+            document.getElementById('deleteModalBackdrop').style.display = 'none';
+            document.getElementById('deleteModalContainer').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            deleteTransactionId = null;
         }
 
         // Update calculated cash
@@ -481,8 +846,9 @@
             const amountInput = document.getElementById('amountInput');
             const adjustmentDate = document.getElementById('adjustmentDate');
             const description = document.getElementById('description');
-            const addCashRadio = document.getElementById('addCash');
+            const transactionId = document.getElementById('transactionId').value;
             const saveBtn = document.getElementById('saveBtn');
+            const selectedAdjustType = document.querySelector('input[name="AdjustTypeId"]:checked');
 
             // Validate form
             if (!amountInput.value || parseFloat(amountInput.value) <= 0) {
@@ -497,21 +863,25 @@
 
             // Prepare data
             const formData = {
-                adjustType: addCashRadio.checked ? 'add' : 'reduce',
+                adjustTypeId: parseInt(selectedAdjustType.value),
                 amount: parseFloat(amountInput.value),
                 adjustmentDate: adjustmentDate.value,
                 description: description.value
             };
 
+            if (transactionId) {
+                formData.id = parseInt(transactionId);
+            }
+
             console.log('Saving data:', formData);
 
             // Disable save button
             saveBtn.disabled = true;
-            saveBtn.textContent = 'Saving...';
+            saveBtn.textContent = transactionId ? 'Updating...' : 'Saving...';
 
             try {
                 // Send data to your backend endpoint
-                const response = await fetch('/Cash/AdjustCash', {
+                const response = await fetch('/Bank/AdjustCash', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -520,31 +890,21 @@
                 });
 
                 if (response.ok) {
-                    // Update current cash
-                    if (formData.adjustType === 'add') {
-                        currentCash += formData.amount;
-                    } else {
-                        currentCash -= formData.amount;
-                    }
-
-                    // Update display
-                    document.getElementById('cashAmount').textContent = formatCurrency(currentCash);
-
                     // Show success message
-                    showToast('Cash adjusted successfully!');
+                    showToast(transactionId ? 'Transaction updated successfully!' : 'Cash adjusted successfully!');
 
                     // Close modal
                     hideModal();
 
-                    // Optional: Reload to show new transactions
-                    // setTimeout(() => location.reload(), 2000);
+                    // Reload to show updated transactions
+                    setTimeout(() => location.reload(), 1500);
                 } else {
                     throw new Error('Server error');
                 }
 
             } catch (error) {
                 console.error('Error:', error);
-                alert('Error saving cash adjustment. Please try again.');
+                showToast('Error saving transaction. Please try again.', 'error');
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.textContent = 'Save';
@@ -552,9 +912,9 @@
         }
 
         // Show toast notification
-        function showToast(message) {
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = 'toast';
+            toast.className = 'toast' + (type === 'error' ? ' error' : '');
             toast.textContent = message;
             document.body.appendChild(toast);
 
@@ -563,13 +923,19 @@
             }, 3000);
         }
 
-        // Handle ESC key to close modal
+        // Handle ESC key to close modals
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                const modalContainer = document.getElementById('modalContainer');
-                if (modalContainer.style.display === 'flex') {
+                if (document.getElementById('modalContainer').style.display === 'flex') {
                     hideModal();
                 }
+                if (document.getElementById('viewModalContainer').style.display === 'flex') {
+                    hideViewModal();
+                }
+                if (document.getElementById('deleteModalContainer').style.display === 'flex') {
+                    hideDeleteModal();
+                }
+                closeAllMenus();
             }
         });
     </script>

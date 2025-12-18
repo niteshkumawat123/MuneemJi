@@ -1,4 +1,4 @@
-﻿@model LoanDashboardViewModel
+﻿@model List<LoanAccountModel>
 @{
     ViewData["Title"] = "Loan Accounts";
 }
@@ -407,19 +407,33 @@
             </div>
 
             <div class="account-section">
-                <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">ACCOUNT</div>
+                <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">Account Name</div>
+                <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">Amount</div>
                 <div class="account-item">
-                    <div>
-                        <div class="account-name">@Model.Account.AccountName.ToLower()</div>
-                    </div>
-                    <div class="account-amount">Rs @Model.Account.BalanceAmount.ToString("N2")</div>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        foreach (var item in Model)
+                        {
+                            <div>
+                                <div class="account-name">AcountName</div>
+                            </div>
+                            <div class="account-amount">Rs Balance</div>
+                        }
+                    }
+
                 </div>
             </div>
+          @*   @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    <div style="padding: 0 20px; margin-top: 30px;">
+                        <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">@item.AccountName</div>
+                        <div class="account-amount" style="font-size: 16px;">Rs @item.CurrentBalance</div>
+                    </div>
+                }
+            } *@
 
-            <div style="padding: 0 20px; margin-top: 30px;">
-                <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">AMOUNT</div>
-                <div class="account-amount" style="font-size: 16px;">Rs @Model.Account.BalanceAmount.ToString("N2")</div>
-            </div>
         </div>
 
         <!-- Main Content -->
@@ -427,11 +441,11 @@
             <!-- Header Section -->
             <div class="header-section">
                 <div class="account-info">
-                    <h4>@Model.Account.AccountName</h4>
-                    <div class="account-details">
-                        @Model.Account.LendingBank / @Model.Account.Agency<br>
+                    @*                     <h4>@Model.Account.AccountName</h4>
+ *@                    <div class="account-details">
+                        @*  @Model.Account.LendingBank / @Model.Account.Agency<br>
                         Account Number: @Model.Account.AccountNumber<br>
-                        <span class="balance-amount">Balance Amount: Rs @Model.Account.BalanceAmount.ToString("N2")</span>
+                        <span class="balance-amount">Balance Amount: Rs @Model.Account.BalanceAmount.ToString("N2")</span> *@
                     </div>
                 </div>
                 <div class="header-actions">
@@ -475,32 +489,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var transaction in Model.Account.Transactions)
+                        @*                         @if (Model != null && Model.Count() > 0)
                         {
-                            <tr>
-                                <td>@transaction.Type</td>
-                                <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
-                                <td class="amount-cell">Rs @transaction.Principal.ToString("N2")</td>
-                                <td class="amount-cell">Rs @transaction.InterestAndOtherCharges.ToString("N2")</td>
-                                <td class="amount-cell">Rs @transaction.TotalAmount.ToString("N2")</td>
-                                <td class="actions-cell">
-                                    <div class="dropdown">
-                                        <button class="actions-btn dropdown-toggle"
-                                                type="button"
-                                                data-bs-toggle="dropdown"
-                                                aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li><a class="dropdown-item" href="#">View Details</a></li>
-                                            <li><a class="dropdown-item" href="#">Download Receipt</a></li>
-                                            <li><a class="dropdown-item" href="#">Print</a></li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                            @foreach (var transaction in Model)
+                            {
+                                <tr>
+                                    <td>@transaction.Type</td>
+                                    <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
+                                    <td class="amount-cell">Rs @transaction.Principal.ToString("N2")</td>
+                                    <td class="amount-cell">Rs @transaction.InterestAndOtherCharges.ToString("N2")</td>
+                                    <td class="amount-cell">Rs @transaction.TotalAmount.ToString("N2")</td>
+                                    <td class="actions-cell">
+                                        <div class="dropdown">
+                                            <button class="actions-btn dropdown-toggle"
+                                                    type="button"
+                                                    data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#">View Details</a></li>
+                                                <li><a class="dropdown-item" href="#">Download Receipt</a></li>
+                                                <li><a class="dropdown-item" href="#">Print</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
                         }
-                    </tbody>
+ *@                    </tbody>
                 </table>
             </div>
         </div>
@@ -513,11 +530,7 @@
         </div>
     </div>
 
-    <!-- Activate Windows Watermark -->
-    <div class="activate-windows">
-        <div>Activate Windows</div>
-        <div>Go to Settings to activate Windows.</div>
-    </div>
+
 
     <!-- Add Loan Account Modal -->
     <div class="modal fade" id="addLoanModal" tabindex="-1" aria-labelledby="addLoanModalLabel" aria-hidden="true">
@@ -675,7 +688,7 @@
 
             // Send to server
             $.ajax({
-                url: '@Url.Action("AddLoanAccount")',
+                url: '@Url.Action("SaveLoanAccount")',
                 type: 'POST',
                 data: JSON.stringify(formData),
                 contentType: 'application/json',
@@ -688,7 +701,7 @@
                     modal.hide();
 
                     // Show success message
-                    alert('Loan account added successfully!');
+                    // alert('Loan account added successfully!');
 
                     // Reload page or update UI
                     location.reload();

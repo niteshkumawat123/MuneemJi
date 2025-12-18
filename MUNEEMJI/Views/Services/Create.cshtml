@@ -1067,8 +1067,74 @@
         </div>
     </div>
 
+    <!-- Success/Error Message Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" style="display: none;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 8px; overflow: hidden;">
+                <div class="modal-header" id="messageModalHeader" style="border: none; padding: 20px 25px;">
+                    <h5 class="modal-title" id="messageModalTitle" style="font-weight: 600;">Message</h5>
+                    <button type="button" class="btn-close" onclick="closeMessageModal()" aria-label="Close" style="background: none; border: none; font-size: 24px; color: white; cursor: pointer;">&times;</button>
+                </div>
+                <div class="modal-body" id="messageModalBody" style="padding: 20px 25px; font-size: 15px;">
+                </div>
+                <div class="modal-footer" style="border: none; padding: 15px 25px;">
+                    <button type="button" class="btn-primary" onclick="closeMessageModal()">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade" id="messageModalBackdrop" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1040;"></div>
+
 
     <script>
+
+                let messageModalAction = null;
+
+        function showMessageModal(isSuccess, message, redirectUrl = null) {
+            const modal = document.getElementById('messageModal');
+            const backdrop = document.getElementById('messageModalBackdrop');
+            const messageModalHeader = document.getElementById('messageModalHeader');
+            const messageModalTitle = document.getElementById('messageModalTitle');
+            const messageModalBody = document.getElementById('messageModalBody');
+
+            messageModalTitle.textContent = isSuccess ? 'Success' : 'Error';
+            messageModalBody.textContent = message;
+
+            if (isSuccess) {
+                messageModalHeader.style.backgroundColor = '#28a745';
+                messageModalHeader.style.color = 'white';
+            } else {
+                messageModalHeader.style.backgroundColor = '#dc3545';
+                messageModalHeader.style.color = 'white';
+            }
+
+            messageModalAction = redirectUrl;
+
+            modal.style.display = 'block';
+            backdrop.style.display = 'block';
+
+            setTimeout(() => {
+                modal.classList.add('show');
+                backdrop.classList.add('show');
+            }, 10);
+        }
+
+        function closeMessageModal() {
+            const modal = document.getElementById('messageModal');
+            const backdrop = document.getElementById('messageModalBackdrop');
+
+            modal.classList.remove('show');
+            backdrop.classList.remove('show');
+
+            setTimeout(() => {
+                modal.style.display = 'none';
+                backdrop.style.display = 'none';
+
+                if (messageModalAction) {
+                    window.location.href = messageModalAction;
+                }
+            }, 300);
+        }
                // Add this updated JavaScript section to replace the existing script in your HTML
 
         async   function serializeFormToJSON() {
@@ -1190,18 +1256,25 @@
                                  });
 
                 if (response.ok) {
-                    // const result = await response.json();
-                    // console.log('Success:', result);
-                    // Handle success (redirect, show message, etc.)
-                    window.location.href = '/Web/Items/mainindex'; // Redirect to list page
-                } else {
-                    const error = await response.text();
-                    console.error('Error:', error);
-                    alert('Error submitting form: ' + error);
-                }
+            const result = await response.json();
+            console.log('Success:', result);
+
+            // Determine message based on operation
+            const isUpdate = jsonData.Id > 0;
+            const message = result.message || (isUpdate
+                ? 'Service updated successfully!'
+                : 'Service has been saved successfully!');
+
+            // Redirect to partial view page after success
+            showMessageModal(true, message, '/Web/items/MainIndex#services');
+        } else {
+            const error = await response.text();
+            console.error('Error:', error);
+            showMessageModal(false, 'Error submitting form: ' + error);
+        }
             } catch (error) {
                 console.error('Network error:', error);
-                alert('Network error: ' + error.message);
+                 showMessageModal(false, 'Network error: ' + error.message);
             }
         }
 

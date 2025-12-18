@@ -60,12 +60,13 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Create(int id = 0)
+        public async Task<IActionResult> Create(int id = 0, bool isview = false)
         {
 
             try
             {
                 var companyId = _CompayTenancy.GetCurrentCompanyId();
+
 
                 BillItem billItem = new BillItem();
                 var model = new BillItemViewModel();
@@ -117,7 +118,7 @@ namespace MUNEEMJI.Controllers
                         AdditionalCosts = new List<AdditionalCost>()
                     };
                 }
-
+                model.IsView = isview;
                 return View(model);
             }
             catch (Exception ex)
@@ -155,12 +156,21 @@ namespace MUNEEMJI.Controllers
                     if (result)
                     {
                         //TempData["SuccessMessage"] = $"{model.ItemType} saved successfully!";
-                        return RedirectToAction("GetServicePartialView", "Items");
-
+                        return Json(new
+                        {
+                            success = true,
+                            message = model.Id > 0 ? "Item updated successfully!" : "Item has been saved successfully!",
+                            id = model.Id
+                        });
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Failed to save the item. Please try again.");
+                        return Json(new
+                        {
+                            success = false,
+                            message = model.Id > 0 ? "Item updated successfully!" : "Item has been saved successfully!",
+                            id = model.Id
+                        });
                     }
                 }
 
@@ -183,7 +193,13 @@ namespace MUNEEMJI.Controllers
                 viewModel.Units = await _billItemService.GetUnitsAsync();
                 viewModel.TaxRates = await _billItemService.GetTaxRatesAsync();
 
-                return View(viewModel);
+                //return View(viewModel);
+                return Json(new
+                {
+                    success = true,
+                    message = ex.Message,
+                    id = model.Id
+                });
             }
         }
         public List<BillItem> GetItemsAsync(int CompanyId)

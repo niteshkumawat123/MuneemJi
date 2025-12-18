@@ -65,17 +65,55 @@ namespace MUNEEMJI.Controllers
             {
                 conn.Open();
 
-                string sql = @"
-            INSERT INTO extended_bank_accounts 
-            (account_display_name, opening_balance, as_of_date, print_upi_qr, 
-             print_bank_details, account_number, ifsc_code, upi_id, bank_name, account_holder_name)
-            VALUES 
-            (@account_display_name, @opening_balance, @as_of_date, @print_upi_qr_code,
-             @print_bank_details, @account_number, @ifsc_code, @upi_id, @bank_name, @account_holder_name);
-        ";
+                string sql;
+
+                if (model.Id > 0)
+                {
+                    // UPDATE
+                    sql = @"
+                                UPDATE extended_bank_accounts
+                                SET
+                                    account_display_name = @account_display_name,
+                                    opening_balance = @opening_balance,
+                                    as_of_date = @as_of_date,
+                                    print_upi_qr = @print_upi_qr_code,
+                                    print_bank_details = @print_bank_details,
+                                    account_number = @account_number,
+                                    ifsc_code = @ifsc_code,
+                                    upi_id = @upi_id,
+                                    bank_name = @bank_name,
+                                    account_holder_name = @account_holder_name
+                                WHERE id = @id;
+                            ";
+                }
+                else
+                {
+                    // INSERT
+                    sql = @"
+                             INSERT INTO extended_bank_accounts
+                             (
+                                 account_display_name, opening_balance, as_of_date,
+                                 print_upi_qr, print_bank_details,
+                                 account_number, ifsc_code, upi_id,
+                                 bank_name, account_holder_name
+                             )
+                             VALUES
+                             (
+                                 @account_display_name, @opening_balance, @as_of_date,
+                                 @print_upi_qr_code, @print_bank_details,
+                                 @account_number, @ifsc_code, @upi_id,
+                                 @bank_name, @account_holder_name
+                             );
+                         ";
+                 }
 
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
+                    if (model.Id > 0)
+                    {
+                        cmd.Parameters.AddWithValue("@id", model.Id);
+                    }
+
                     cmd.Parameters.AddWithValue("@account_display_name", (object?)model.AccountDisplayName ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@opening_balance", (object?)model.OpeningBalance ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@as_of_date", (object?)model.AsOfDate ?? DBNull.Value);
@@ -89,6 +127,7 @@ namespace MUNEEMJI.Controllers
 
                     cmd.ExecuteNonQuery();
                 }
+
 
                 conn.Close();
             }
@@ -118,8 +157,8 @@ namespace MUNEEMJI.Controllers
                 accounts.Add(new BankAccountModel
                 {
                     Id = reader.GetInt32(0),
-                    AccountDisplayName = reader.GetString(1),
-                    OpeningBalance = reader.GetDecimal(2)
+                    AccountDisplayName = reader.IsDBNull(1) ? null : reader.GetString(1),
+                    OpeningBalance = reader.IsDBNull(2) ? 0 : reader.GetDecimal(2)
                 });
             }
             reader.Close();
@@ -164,9 +203,46 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public IActionResult CashInhand()
+        public IActionResult CashInhand( )
         {
-            return View();
+            using (var conn = new NpgsqlConnection(_connStr))
+            {
+                string query = @"
+                    SELECT 
+                        id AS ""Id"",
+                        adjusttypeid AS ""AdjustTypeId"",
+                        amount AS ""Amount"",
+                        adjustmentdate AS ""AdjustmentDate"",
+                        description AS ""Description""
+                    FROM bank_cash
+                    ORDER BY adjustmentdate DESC";
+
+                var transactions = conn.QuerySql<BankCash>(query).ToList();
+                if(transactions!=null && transactions.Count()>0)
+                {
+                    var addcash = transactions?
+                        .Where(x => x.AdjustTypeId == 1)
+                        .Sum(x => x.Amount) ?? 0;
+
+                    var reducecash = transactions?
+                        .Where(x => x.AdjustTypeId == 2)
+                        .Sum(x => x.Amount) ?? 0;
+
+                    var totalcashInHand = addcash - reducecash;
+
+                    if (transactions != null)
+                    {
+                        foreach (var item in transactions)
+                        {
+                            item.TotalCash = totalcashInHand;
+                        }
+                    }
+
+                }
+
+
+                return View(transactions);
+            }
         }
 
         [HttpGet]
@@ -180,5 +256,181 @@ namespace MUNEEMJI.Controllers
                 return RedirectToAction("Index");
         }
 
+
+        [HttpGet]
+        public ActionResult DeleteCashConfirmed(int id)
+        {
+            using (var conn = new NpgsqlConnection(_connStr))
+            {
+                var QueryString = " delete from bank_cash where id = @p_id ";
+                conn.ExecuteSql(QueryString, new { p_id = id });
+            }
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> AdjustCash([FromBody] AdjustCashRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                using (var connection = new NpgsqlConnection(_connStr))
+                {
+                    await connection.OpenAsync();
+
+                    // Check if this is an update or insert operation
+                    if (request.Id>0)
+                    {
+                        // UPDATE existing record
+                        string updateQuery = @"
+                    UPDATE bank_cash 
+                    SET adjusttypeid = @adjustTypeId, 
+                        amount = @amount, 
+                        adjustmentdate = @adjustmentDate, 
+                        description = @description
+                    WHERE id = @id
+                    RETURNING id";
+
+                        using (var command = new NpgsqlCommand(updateQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@id", request.Id);
+                            command.Parameters.AddWithValue("@adjustTypeId", request.AdjustTypeId);
+                            command.Parameters.AddWithValue("@amount", request.Amount);
+                            command.Parameters.AddWithValue("@adjustmentDate", request.AdjustmentDate);
+                            command.Parameters.AddWithValue("@description",
+                                string.IsNullOrEmpty(request.Description) ? DBNull.Value : (object)request.Description);
+
+                            var updatedId = await command.ExecuteScalarAsync();
+
+                            if (updatedId == null)
+                            {
+                                return NotFound(new
+                                {
+                                    success = false,
+                                    message = "Transaction not found"
+                                });
+                            }
+
+                            return Ok(new
+                            {
+                                success = true,
+                                message = "Transaction updated successfully",
+                                id = updatedId
+                            });
+                        }
+                    }
+                    else
+                    {
+                        // INSERT new record
+                        string insertQuery = @"
+                    INSERT INTO bank_cash (adjusttypeid, amount, adjustmentdate, description) 
+                    VALUES (@adjustTypeId, @amount, @adjustmentDate, @description)
+                    RETURNING id";
+
+                        using (var command = new NpgsqlCommand(insertQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@adjustTypeId", request.AdjustTypeId);
+                            command.Parameters.AddWithValue("@amount", request.Amount);
+                            command.Parameters.AddWithValue("@adjustmentDate", request.AdjustmentDate);
+                            command.Parameters.AddWithValue("@description",
+                                string.IsNullOrEmpty(request.Description) ? DBNull.Value : (object)request.Description);
+
+                            var insertedId = await command.ExecuteScalarAsync();
+
+                            return Ok(new
+                            {
+                                success = true,
+                                message = "Cash adjusted successfully",
+                                id = insertedId
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (use your logging framework)
+                Console.WriteLine($"Error: {ex.Message}");
+
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "An error occurred while saving data",
+                    error = ex.Message
+                });
+            }
+        }
+        // Optional: Get all transactions
+        [HttpGet]
+        public IActionResult GetCashTransactionById(int id)
+        {
+            using (var conn = new NpgsqlConnection(_connStr))
+            {
+                string query = @"
+                    SELECT 
+                        id AS ""Id"",
+                        adjusttypeid AS ""AdjustTypeId"",
+                        amount AS ""Amount"",
+                        adjustmentdate AS ""AdjustmentDate"",
+                        description AS ""Description""
+                    FROM bank_cash
+                    WHERE id = @p_id";
+
+                var transaction = conn.QuerySql<BankCash>(query, new { p_id = id }).FirstOrDefault();
+
+                if (transaction == null)
+                {
+                    return NotFound(new { message = "Transaction not found" });
+                }
+
+                return Ok(transaction);
+            }
+        }
+
+        // Optional: Get current cash balance
+        [HttpGet("GetCashBalance")]
+        public async Task<IActionResult> GetCashBalance()
+        {
+            try
+            {
+                string query = @"
+                    SELECT 
+                        COALESCE(SUM(CASE WHEN adjusttypeid = 1 THEN amount ELSE -amount END), 0) as balance
+                    FROM bank_cash";
+
+                using (var connection = new NpgsqlConnection(_connStr))
+                {
+                    await connection.OpenAsync();
+
+                    using (var command = new NpgsqlCommand(query, connection))
+                    {
+                        var balance = await command.ExecuteScalarAsync();
+
+                        return Ok(new
+                        {
+                            balance = Convert.ToDecimal(balance)
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "An error occurred while calculating balance",
+                    error = ex.Message
+                });
+            }
+        }
     }
 }
+
+

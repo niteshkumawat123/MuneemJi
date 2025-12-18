@@ -933,7 +933,8 @@
          });
 
          // Redirect to the ViewItem page
-         window.location.href = `/Web/items/ViewItem/${itemId}`;
+         // window.location.href = `/Web/items/ViewItem/${itemId}`;
+           window.location.href = `/Web/items/Create?id=${itemId}&isview=true`;
      }
 
      function viewService(itemId) {

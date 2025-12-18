@@ -123,13 +123,26 @@ namespace MUNEEMJI.Controllers
                     if (result)
                     {
                         //TempData["SuccessMessage"] = $"{model.ItemType} saved successfully!";
-                        return RedirectToAction("GetServicePartialView", "Items");
-
+                        return Json(new
+                        {
+                            success = true,
+                            message = model.Id > 0
+                                       ? "Service updated successfully!"
+                                       : "Service has been saved successfully!",
+                            id = model.Id,
+                            itemName = model.ItemName
+                        });
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Failed to save the item. Please try again.");
+                        return Json(new
+                        {
+                            success = false,
+                            message = model.Id > 0 ? "Item updated successfully!" : "Item has been saved successfully!",
+                            id = model.Id
+                        });
                     }
+                    
                 }
 
 
@@ -140,6 +153,7 @@ namespace MUNEEMJI.Controllers
                 viewModel.TaxRates = await _billItemService.GetTaxRatesAsync();
 
                 return View(viewModel);
+
             }
             catch (Exception ex)
             {
@@ -151,7 +165,11 @@ namespace MUNEEMJI.Controllers
                 viewModel.Units = await _billItemService.GetUnitsAsync();
                 viewModel.TaxRates = await _billItemService.GetTaxRatesAsync();
 
-                return View(viewModel);
+                return Json(new
+                {
+                    success = true,
+                    message = ex.Message
+                });
             }
         }
         public List<BillItem> GetItemsAsync(int CompanyId)

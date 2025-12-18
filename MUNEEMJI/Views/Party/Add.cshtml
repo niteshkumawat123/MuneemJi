@@ -611,11 +611,28 @@
             }
         }
 
+                let clickedButton = null;
+
+        // Capture which button was clicked
+        document.querySelectorAll('button[type="submit"]').forEach(button => {
+            button.addEventListener('click', function(e) {
+                clickedButton = this.value; // 'new' or 'save'
+                console.log('Button clicked:', clickedButton);
+            });
+        });
+
         document.getElementById('partyForm').addEventListener('submit', function(e) {
             e.preventDefault();
              debugger;
 
             const formData = new FormData(this);
+
+                 if (clickedButton) {
+            formData.append('save', clickedButton);
+            console.log('Save parameter added:', clickedButton);
+        }
+
+
             const action = this.action;
             const partyId = document.querySelector('input[name="Id"]').value;
             const isUpdate = partyId > 0;
@@ -651,7 +668,8 @@
                     const message = isUpdate
                         ? 'Party updated successfully!'
                         : 'Party saved successfully!';
-                   if(data.IsSaveAgain==true)
+                        debugger;
+                   if(data.isSaveAgain)
                    {
                     showMessageModal(true, message, '/Web/Party/Add');
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient.DataClassification;
+using System.ComponentModel.DataAnnotations;
 
 namespace MUNEEMJI.Models.BankAccount
 {
@@ -33,5 +34,32 @@ namespace MUNEEMJI.Models.BankAccount
     {
         public List<BankAccount> Accounts { get; set; }
         public BankAccount SelectedAccount { get; set; }
+    }
+
+    public class BankCash
+    {
+        public int Id { get; set; }
+
+      
+        public int AdjustTypeId { get; set; }
+
+        public decimal Amount { get; set; }
+
+        public DateTime? AdjustmentDate { get; set; }
+
+        public string Description { get; set; }
+        public decimal TotalCash { get; set; }
+    }
+
+
+    public class AdjustCashRequest
+    {
+        public int Id { get; set; }
+        public int AdjustTypeId { get; set; } 
+        public decimal Amount { get; set; }
+
+        public DateTime AdjustmentDate { get; set; }
+
+        public string Description { get; set; }
     }
 }

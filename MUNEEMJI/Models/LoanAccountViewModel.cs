@@ -93,4 +93,35 @@ namespace MUNEEMJI.Models
         public decimal? ProcessingFee { get; set; }
         public string? ProcessingFeePaidFrom { get; set; }
     }
+
+    public class MakePaymentModel
+    {
+        public int Id { get; set; }
+        public int LoanAccountId { get; set; }
+        public decimal PrincipalAmount { get; set; }
+        public decimal InterestAmount { get; set; }
+        public decimal TotalAmount { get; set; }
+        public DateTime Date { get; set; }
+        public string PaidFrom { get; set; }
+    }
+
+    public class TakeMoreLoanModel
+    {
+        public int Id { get; set; }
+        public int LoanAccountId { get; set; }
+        public decimal LoanAmount { get; set; }
+        public DateTime Date { get; set; }
+        public string LoanReceivedIn { get; set; }
+        public decimal InterestRate { get; set; }
+        public int TermDuration { get; set; }
+    }
+    public class ChargesOnLoanModel
+    {
+        public int Id { get; set; }
+        public int LoanAccountId { get; set; }
+        public string TransactionTypeName { get; set; }
+        public DateTime Date { get; set; }
+        public decimal Amount { get; set; }
+        public string LoanReceivedIn { get; set; }
+    }
 }

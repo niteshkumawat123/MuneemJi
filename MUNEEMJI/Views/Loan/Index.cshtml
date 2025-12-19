@@ -50,11 +50,42 @@
                 padding: 0 20px;
             }
 
+            .sidebar .account-header {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+
+            .sidebar .account-header-label {
+                font-size: 12px;
+                color: #666;
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+
             .sidebar .account-item {
                 background-color: #b3d9ff;
                 padding: 12px 15px;
                 border-radius: 4px;
                 margin-bottom: 10px;
+                cursor: pointer;
+                transition: background-color 0.2s;
+            }
+
+                .sidebar .account-item:hover {
+                    background-color: #99ccff;
+                }
+
+                .sidebar .account-item.active {
+                    background-color: #2196f3;
+                }
+
+                    .sidebar .account-item.active .account-name,
+                    .sidebar .account-item.active .account-amount {
+                        color: white;
+                    }
+
+            .sidebar .account-item-content {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
@@ -118,6 +149,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
         }
 
             .make-payment-btn:hover {
@@ -128,11 +160,8 @@
             .make-payment-btn:focus {
                 box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
                 color: white;
+                outline: none;
             }
-
-        .dropdown-toggle::after {
-            margin-left: 8px;
-        }
 
         .view-statement-link {
             color: #2196f3;
@@ -144,6 +173,53 @@
             .view-statement-link:hover {
                 text-decoration: underline;
                 color: #1976d2;
+            }
+
+        /* Custom Dropdown Styles */
+        .custom-dropdown-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .custom-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            left: auto;
+            z-index: 1050;
+            min-width: 180px;
+            padding: 0.5rem 0;
+            margin: 0.125rem 0 0;
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+            .custom-dropdown-menu.show {
+                display: block;
+            }
+
+        .custom-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            clear: both;
+            font-size: 14px;
+            color: #333;
+            text-align: left;
+            text-decoration: none;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
+            cursor: pointer;
+        }
+
+            .custom-dropdown-item:hover {
+                background-color: #f8f9fa;
+                color: #333;
+                text-decoration: none;
             }
 
         .transactions-section {
@@ -233,7 +309,6 @@
         .dropdown-menu {
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             border: 1px solid #e0e0e0;
-            z-index: 1050;
             min-width: 160px;
         }
 
@@ -241,6 +316,7 @@
             padding: 10px 16px;
             font-size: 14px;
             color: #333;
+            cursor: pointer;
         }
 
             .dropdown-item:hover,
@@ -262,24 +338,6 @@
             color: #333;
         }
 
-        .activate-windows {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            color: #ccc;
-            font-size: 12px;
-            text-align: right;
-        }
-
-        .transactions-table th i {
-            margin-left: 5px;
-            opacity: 0.5;
-        }
-
-        .transactions-table th:hover i {
-            opacity: 1;
-        }
-
         .loading-spinner {
             display: none;
             position: fixed;
@@ -287,11 +345,6 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 9999;
-        }
-
-        /* Add Loan Account Modal Styles */
-        .modal-body {
-            padding: 24px;
         }
 
         .form-row {
@@ -397,7 +450,7 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div class="search-box">
-                <input type="text" placeholder="Search..." class="form-control" />
+                <input type="text" placeholder="Search by Account/Amount" class="form-control" id="sidebarSearch" />
             </div>
 
             <div class="add-loan-btn">
@@ -407,33 +460,32 @@
             </div>
 
             <div class="account-section">
-                <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">Account Name</div>
-                <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">Amount</div>
-                <div class="account-item">
-                    @if (Model != null && Model.Count() > 0)
-                    {
-                        foreach (var item in Model)
-                        {
-                            <div>
-                                <div class="account-name">AcountName</div>
-                            </div>
-                            <div class="account-amount">Rs Balance</div>
-                        }
-                    }
-
+                <div class="account-header">
+                    <div class="account-header-label">Account Name</div>
+                    <div class="account-header-label">Amount</div>
                 </div>
-            </div>
-          @*   @if (Model != null && Model.Count() > 0)
-            {
-                foreach (var item in Model)
+
+                @if (Model != null && Model.Count() > 0)
                 {
-                    <div style="padding: 0 20px; margin-top: 30px;">
-                        <div style="font-size: 12px; color: #666; margin-bottom: 10px; text-transform: uppercase; font-weight: 600;">@item.AccountName</div>
-                        <div class="account-amount" style="font-size: 16px;">Rs @item.CurrentBalance</div>
+                    foreach (var item in Model)
+                    {
+                        <div class="account-item @(item == Model.First() ? "active" : "")"
+                             data-account-id="@item.Id"
+                             onclick="selectAccount(@item.Id)">
+                            <div class="account-item-content">
+                                <div class="account-name">@item.AccountName</div>
+                                <div class="account-amount">₹ @item.CurrentBalance.Value.ToString("N2")</div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div style="text-align: center; color: #999; padding: 20px; font-size: 14px;">
+                        No loan accounts found
                     </div>
                 }
-            } *@
-
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -441,28 +493,51 @@
             <!-- Header Section -->
             <div class="header-section">
                 <div class="account-info">
-                    @*                     <h4>@Model.Account.AccountName</h4>
- *@                    <div class="account-details">
-                        @*  @Model.Account.LendingBank / @Model.Account.Agency<br>
-                        Account Number: @Model.Account.AccountNumber<br>
-                        <span class="balance-amount">Balance Amount: Rs @Model.Account.BalanceAmount.ToString("N2")</span> *@
+                    <h4 id="selectedAccountName">
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            @Model.FirstOrDefault()?.AccountName
+                        }
+                        else
+                        {
+                            @:Select an account
+                        }
+                    </h4>
+                    <div class="account-details" id="selectedAccountDetails">
+                        @if (Model != null && Model.Count() > 0)
+                        {
+                            var firstAccount = Model.FirstOrDefault();
+                            @if (!string.IsNullOrEmpty(firstAccount.LenderBank))
+                            {
+                                @:Lending Bank / Agency: @firstAccount.LenderBank <br>
+                                @:Account Number: @firstAccount.AccountNumber<br>
+                                <span class="balance-amount">Balance Amount: ₹ @firstAccount.CurrentBalance.Value.ToString("N2")</span>
+                            }
+                        }
                     </div>
                 </div>
+
+                <!-- Custom Dropdown -->
                 <div class="header-actions">
-                    <div class="dropdown">
-                        <button class="btn make-payment-btn dropdown-toggle"
+                    <div class="custom-dropdown-wrapper">
+                        <button class="btn make-payment-btn"
                                 type="button"
-                                id="paymentDropdown"
-                                data-bs-toggle="dropdown"
-                                data-bs-auto-close="true"
-                                aria-expanded="false">
+                                id="paymentDropdownBtn"
+                                onclick="toggleCustomDropdown(event)">
                             <i class="fas fa-credit-card"></i> Make Payment
+                            <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 10px;"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="paymentDropdown">
-                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="openMakePaymentModal()">Make Payment</a></li>
-                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="openTakeMoreLoanModal()">Take more loan</a></li>
-                            <li><a class="dropdown-item" href="javascript:void(0);" onclick="openChargesOnLoanModal()">Charges on Loan</a></li>
-                        </ul>
+                        <div class="custom-dropdown-menu" id="paymentCustomDropdown">
+                            <a class="custom-dropdown-item" href="#" onclick="event.preventDefault(); hideCustomDropdown(); openMakePaymentModal();">
+                                Make Payment
+                            </a>
+                            <a class="custom-dropdown-item" href="#" onclick="event.preventDefault(); hideCustomDropdown(); openTakeMoreLoanModal();">
+                                Take more loan
+                            </a>
+                            <a class="custom-dropdown-item" href="#" onclick="event.preventDefault(); hideCustomDropdown(); openChargesOnLoanModal();">
+                                Charges on Loan
+                            </a>
+                        </div>
                     </div>
                     <div style="margin-top: 10px;">
                         <a href="@Url.Action("ViewLoanStatement")" class="view-statement-link">View Loan Statement</a>
@@ -488,36 +563,13 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @*                         @if (Model != null && Model.Count() > 0)
-                        {
-                            @foreach (var transaction in Model)
-                            {
-                                <tr>
-                                    <td>@transaction.Type</td>
-                                    <td>@transaction.Date.ToString("dd/MM/yyyy")</td>
-                                    <td class="amount-cell">Rs @transaction.Principal.ToString("N2")</td>
-                                    <td class="amount-cell">Rs @transaction.InterestAndOtherCharges.ToString("N2")</td>
-                                    <td class="amount-cell">Rs @transaction.TotalAmount.ToString("N2")</td>
-                                    <td class="actions-cell">
-                                        <div class="dropdown">
-                                            <button class="actions-btn dropdown-toggle"
-                                                    type="button"
-                                                    data-bs-toggle="dropdown"
-                                                    aria-expanded="false">
-                                                <i class="fas fa-ellipsis-v"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#">View Details</a></li>
-                                                <li><a class="dropdown-item" href="#">Download Receipt</a></li>
-                                                <li><a class="dropdown-item" href="#">Print</a></li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        }
- *@                    </tbody>
+                    <tbody id="transactionsTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #999; padding: 40px;">
+                                Loading transactions...
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -529,8 +581,6 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-
-
 
     <!-- Add Loan Account Modal -->
     <div class="modal fade" id="addLoanModal" tabindex="-1" aria-labelledby="addLoanModalLabel" aria-hidden="true">
@@ -573,7 +623,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Balance as of</label>
-                                <input type="date" class="form-control-custom" value="15/12/2025" />
+                                <input type="date" class="form-control-custom" />
                             </div>
                         </div>
 
@@ -632,16 +682,47 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 
     <script>
+        var currentAccountId = @(Model != null && Model.Count() > 0 ? Model.First().Id : 0);
+
+        // Custom dropdown functionality
+        function toggleCustomDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('paymentCustomDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        function hideCustomDropdown() {
+            const dropdown = document.getElementById('paymentCustomDropdown');
+            dropdown.classList.remove('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('paymentCustomDropdown');
+            const button = document.getElementById('paymentDropdownBtn');
+
+            if (dropdown && !dropdown.contains(event.target) && !button.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        // Close dropdown on ESC key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideCustomDropdown();
+            }
+        });
+
         // Initialize Bootstrap components
         document.addEventListener('DOMContentLoaded', function () {
-            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
-            dropdownElementList.forEach(function (dropdownToggleEl) {
-                new bootstrap.Dropdown(dropdownToggleEl);
-            });
-
             // Set today's date in the date input
             const today = new Date().toISOString().split('T')[0];
             $('#addLoanModal input[type="date"]').val(today);
+
+            // Load transactions for the first account
+            if (currentAccountId > 0) {
+                loadAccountDetails(currentAccountId);
+            }
         });
 
         function showLoading() {
@@ -651,6 +732,161 @@
         function hideLoading() {
             $('.loading-spinner').hide();
         }
+
+        // Select account from sidebar
+        function selectAccount(accountId) {
+            console.log('Selected account ID:', accountId);
+            currentAccountId = accountId;
+
+            // Update active state in sidebar
+            $('.account-item').removeClass('active');
+            $('.account-item[data-account-id="' + accountId + '"]').addClass('active');
+
+            // Load account details and transactions
+            loadAccountDetails(accountId);
+        }
+
+        // Load account details via AJAX
+        function loadAccountDetails(accountId) {
+            showLoading();
+
+            $.ajax({
+                url: '@Url.Action("GetLoanAccountDetails")',
+                type: 'GET',
+                data: { id: accountId },
+                success: function(response) {
+                    console.log('Account details loaded:', response);
+
+                    // Update header section
+                    $('#selectedAccountName').text(response.accountName);
+
+                    var detailsHtml = '';
+                    if (response.lenderBank) {
+                        detailsHtml += 'Lending Bank / Agency: ' + response.lenderBank + '<br>';
+                    }
+                    if (response.accountNumber) {
+                        detailsHtml += 'Account Number: ' + response.accountNumber + '<br>';
+                    }
+                    if (response.currentBalance) {
+                        detailsHtml += '<span class="balance-amount">Balance Amount: ₹ ' + parseFloat(response.currentBalance).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</span>';
+                    }
+
+                    $('#selectedAccountDetails').html(detailsHtml);
+
+                    // Load transactions
+                    loadTransactions(accountId);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading account details:', error);
+                    hideLoading();
+                    alert('Error loading account details: ' + error);
+                }
+            });
+        }
+
+        // Load transactions for selected account
+        function loadTransactions(accountId) {
+            $.ajax({
+                url: '@Url.Action("GetLoanTransactions")',
+                type: 'GET',
+                data: { accountId: accountId },
+                success: function(transactions) {
+                    console.log('Transactions loaded:', transactions);
+
+                    var tbody = $('#transactionsTableBody');
+                    tbody.empty();
+
+                    if (transactions && transactions.length > 0) {
+
+                        transactions.forEach(function(transaction) {
+                            // Determine transaction type display
+                            var typeDisplay = transaction.transactionType;
+                            var typeClass = '';
+
+                            debugger;
+
+                            switch(transaction.transactionType) {
+                                case 'EMI Paid':
+                                    typeClass = 'text-success';
+                                    break;
+                                case 'Loan Adjustment':                                 
+                                    typeClass = 'text-primary';
+                                    break;                               
+                                default:
+                                    typeClass = 'text-danger';
+                            }
+
+                            var row = '<tr>' +
+                                '<td><span class="' + typeClass + '">' + typeDisplay + '</span></td>' +
+                                '<td>' + formatDate(transaction.transactionDate) + '</td>' +
+                                '<td class="amount-cell">₹ ' + parseFloat(transaction.principalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                                '<td class="amount-cell">₹ ' + parseFloat(transaction.interestAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                                '<td class="amount-cell amount-' + (transaction.transactionType === 'Payment' ? 'negative' : 'positive') + '">₹ ' + parseFloat(transaction.totalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
+                                '<td class="actions-cell">' +
+                                    '<div class="dropdown">' +
+                                        '<button class="actions-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' +
+                                            '<i class="fas fa-ellipsis-v"></i>' +
+                                        '</button>' +
+                                        '<ul class="dropdown-menu dropdown-menu-end">' +
+                                            '<li><a class="dropdown-item" href="javascript:void(0);" onclick="viewTransactionDetails(' + transaction.id + ')">View Details</a></li>' +
+                                            '<li><a class="dropdown-item" href="javascript:void(0);" onclick="downloadReceipt(' + transaction.id + ')">Download Receipt</a></li>' +
+                                            '<li><a class="dropdown-item" href="javascript:void(0);" onclick="printTransaction(' + transaction.id + ')">Print</a></li>' +
+                                        '</ul>' +
+                                    '</div>' +
+                                '</td>' +
+                            '</tr>';
+                            tbody.append(row);
+                        });
+                    } else {
+                        tbody.html('<tr><td colspan="6" style="text-align: center; color: #999; padding: 40px;">No transactions found</td></tr>');
+                    }
+
+                    hideLoading();
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error loading transactions:', error);
+                    $('#transactionsTableBody').html('<tr><td colspan="6" style="text-align: center; color: #999; padding: 40px;">Error loading transactions</td></tr>');
+                    hideLoading();
+                }
+            });
+        }
+
+        function viewTransactionDetails(transactionId) {
+            console.log('View transaction details:', transactionId);
+            alert('View details for transaction ID: ' + transactionId);
+        }
+
+        function downloadReceipt(transactionId) {
+            console.log('Download receipt:', transactionId);
+            alert('Download receipt for transaction ID: ' + transactionId);
+        }
+
+        function printTransaction(transactionId) {
+            console.log('Print transaction:', transactionId);
+            alert('Print transaction ID: ' + transactionId);
+        }
+
+        function formatDate(dateString) {
+            var date = new Date(dateString);
+            var day = String(date.getDate()).padStart(2, '0');
+            var month = String(date.getMonth() + 1).padStart(2, '0');
+            var year = date.getFullYear();
+            return day + '/' + month + '/' + year;
+        }
+
+        // Sidebar search functionality
+        $('#sidebarSearch').on('input', function() {
+            var searchTerm = $(this).val().toLowerCase();
+            $('.account-item').each(function() {
+                var accountName = $(this).find('.account-name').text().toLowerCase();
+                var accountAmount = $(this).find('.account-amount').text().toLowerCase();
+                if (accountName.indexOf(searchTerm) > -1 || accountAmount.indexOf(searchTerm) > -1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
 
         // Open Add Loan Account Modal
         function openAddLoanModal() {
@@ -663,7 +899,6 @@
         function saveLoanAccount() {
             console.log('Saving loan account');
 
-            // Get form data
             var formData = {
                 AccountName: $('#addLoanForm input').eq(0).val(),
                 LenderBank: $('#addLoanForm input').eq(1).val(),
@@ -678,7 +913,6 @@
                 ProcessingFeePaidFrom: $('#addLoanForm select').eq(1).val()
             };
 
-            // Validate required fields
             if (!formData.AccountName || !formData.CurrentBalance) {
                 alert('Please fill in all required fields');
                 return;
@@ -686,7 +920,6 @@
 
             showLoading();
 
-            // Send to server
             $.ajax({
                 url: '@Url.Action("SaveLoanAccount")',
                 type: 'POST',
@@ -696,14 +929,9 @@
                     console.log('Loan account saved successfully');
                     hideLoading();
 
-                    // Close modal
                     var modal = bootstrap.Modal.getInstance(document.getElementById('addLoanModal'));
                     modal.hide();
 
-                    // Show success message
-                    // alert('Loan account added successfully!');
-
-                    // Reload page or update UI
                     location.reload();
                 },
                 error: function(xhr, status, error) {
@@ -717,6 +945,7 @@
         function openMakePaymentModal() {
             console.log('Make Payment clicked');
             showLoading();
+             debugger;
 
             $.get('@Url.Action("MakePayment")')
                 .done(function(data) {
@@ -724,6 +953,7 @@
                     $('#modalContainer').html(data);
                     var modalElement = $('#modalContainer').find('.modal').first();
                     if (modalElement.length) {
+                        debugger;
                         var modal = new bootstrap.Modal(modalElement[0]);
                         modal.show();
                     } else {

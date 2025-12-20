@@ -527,7 +527,7 @@
                 document.getElementById(`roleDropdown${userId}`).classList.remove('show');
 
                 // API call to update role
-                const response = await fetch('/User/UpdateRole', {
+                const response = await fetch('/Web/User/UpdateRole', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -639,7 +639,7 @@
         // Edit user
         window.editUser = function(userId) {
             debugger;
-            window.location.href = `/User/EditUser/${userId}`;
+            window.location.href = `/Web/User/EditUser/${userId}`;
         }
 
         // Show toast notification

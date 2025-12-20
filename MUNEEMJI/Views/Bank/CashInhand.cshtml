@@ -659,7 +659,7 @@
         async function viewTransaction(id) {
             closeAllMenus();
             try {
-                const response = await fetch(`/Bank/GetCashTransactionById?id=${id}`);
+                const response = await fetch(`/Web/Bank/GetCashTransactionById?id=${id}`);
                 if (response.ok) {
                     const transaction = await response.json();
 
@@ -703,7 +703,7 @@
         async function editTransaction(id) {
             closeAllMenus();
             try {
-                const response = await fetch(`/Bank/GetCashTransactionById?id=${id}`);
+                const response = await fetch(`/Web/Bank/GetCashTransactionById?id=${id}`);
                 if (response.ok) {
                     const transaction = await response.json();
 
@@ -752,7 +752,7 @@
             deleteBtn.textContent = 'Deleting...';
 
             try {
-                const response = await fetch(`/Bank/DeleteCashConfirmed?id=${deleteTransactionId}`, {
+                const response = await fetch(`/web/Bank/DeleteCashConfirmed?id=${deleteTransactionId}`, {
                     method: 'GET'
                 });
 
@@ -881,7 +881,7 @@
 
             try {
                 // Send data to your backend endpoint
-                const response = await fetch('/Bank/AdjustCash', {
+                const response = await fetch('/Web/Bank/AdjustCash', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -430,7 +430,7 @@
             // Basic validation
             const partyName = $('#PartyName').val().trim();
             if (!partyName) {
-                alert('Please enter Party Name');
+                // alert('Please enter Party Name');
                 return false;
             }
 
@@ -623,6 +623,11 @@
 
         document.getElementById('partyForm').addEventListener('submit', function(e) {
             e.preventDefault();
+
+                if (!validateAndPrepareForm()) {
+            console.log('Validation failed, form not submitted');
+            return; // Stop submission if validation fails
+        }
              debugger;
 
             const formData = new FormData(this);

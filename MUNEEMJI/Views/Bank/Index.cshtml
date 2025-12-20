@@ -377,91 +377,113 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var acc in Model)
+
+                    @if (Model != null && Model.Any())
                     {
-                        var isSelected = (acc.Id == Model[0].Id);
-                        <tr class="@(isSelected ? "table-active" : "")">
-                            <td>
-                                <i class="bi bi-bank"></i>
-                                <a href="/Web/Bank/Index?id=@acc.Id">
-                                    @acc.AccountDisplayName
-                                </a>
-                            </td>
-                            <td>₹@acc.OpeningBalance.Value.ToString("N2")</td>
-                            <td>
-                                <div class="action-dropdown">
-                                    <button class="three-dots-btn" onclick="toggleActionDropdown(event, @acc.Id)">
-                                        <img src="~/images/ThreeDots.png" alt="More" style="width: 16px; height: 16px;">
-                                    </button>
-                                    <div class="action-dropdown-menu" id="actionMenu-@acc.Id">
-                                        <a class="action-dropdown-item" href="/Web/Bank/AddBankAccount?id=@acc.Id&typeid=1">View</a>
-                                        <a class="action-dropdown-item" href="/Web/Bank/AddBankAccount?id=@acc.Id&typeid=2">Edit</a>
-                                        <a class="action-dropdown-item delete" href="javascript:void(0)" onclick="confirmDelete(@acc.Id, '@acc.AccountDisplayName')">Delete</a>
+                        foreach (var acc in Model)
+                        {
+                            var isSelected = (acc.Id == Model[0].Id);
+                            <tr class="@(isSelected ? "table-active" : "")">
+                                <td>
+                                    <i class="bi bi-bank"></i>
+                                    <a href="/Web/Bank/Index?id=@acc.Id">
+                                        @(acc.AccountDisplayName ?? "N/A")
+                                    </a>
+                                </td>
+                                <td>₹@((acc.OpeningBalance?.ToString("N2")) ?? "0.00")</td>
+                                <td>
+                                    <div class="action-dropdown">
+                                        <button class="three-dots-btn" onclick="toggleActionDropdown(event, @acc.Id)">
+                                            <img src="~/images/ThreeDots.png" alt="More" style="width: 16px; height: 16px;">
+                                        </button>
+                                        <div class="action-dropdown-menu" id="actionMenu-@acc.Id">
+                                            <a class="action-dropdown-item" href="/Web/Bank/AddBankAccount?id=@acc.Id&typeid=1">View</a>
+                                            <a class="action-dropdown-item" href="/Web/Bank/AddBankAccount?id=@acc.Id&typeid=2">Edit</a>
+                                            <a class="action-dropdown-item delete" href="javascript:void(0)" onclick="confirmDelete(@acc.Id, '@(acc.AccountDisplayName ?? "Account")')">Delete</a>
+                                        </div>
                                     </div>
-                                </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">
+                                No bank accounts found
                             </td>
                         </tr>
                     }
+
                 </tbody>
             </table>
         </div>
 
         <!-- Right column: Selected account details and transactions -->
         <div class="col-md-9 p-3">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <div>
-                    <h5>
-                        Bank Name: @Model[0].AccountDisplayName
-                        <i class="bi bi-box-arrow-up-right"></i>
-                    </h5>
-                    <p><strong>Account Number:</strong> @Model[0].AccountNumber</p>
-                    <p><strong>IFSC Code:</strong> @Model[0].IFSCCode</p>
-                    <p><strong>UPI ID:</strong> @Model[0].UPIID</p>
-                </div>
-                <div class="container">
-                    <div class="dropdown-container">
-                        <button class="dropdown-btn" onclick="toggleDropdown()">
-                            Deposit / Withdraw
-                            <span class="dropdown-arrow" id="dropdownArrow">▼</span>
-                        </button>
-                        <div class="dropdown-menu" id="dropdownMenu">
-                            <div class="dropdown-item" onclick="openModal('bankToCash')">Bank to Cash Transfer</div>
-                            <div class="dropdown-item" onclick="openModal('cashToBank')">Cash to Bank Transfer</div>
-                            <div class="dropdown-item" onclick="openModal('bankToBank')">Bank to Bank Transfer</div>
-                            <div class="dropdown-item" onclick="openModal('adjustment')">Adjust Bank Balance</div>
+            @if (Model != null && Model.Any())
+            {
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5>
+                            Bank Name: @(Model[0].AccountDisplayName ?? "N/A")
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </h5>
+                        <p><strong>Account Number:</strong> @(Model[0].AccountNumber ?? "N/A")</p>
+                        <p><strong>IFSC Code:</strong> @(Model[0].IFSCCode ?? "N/A")</p>
+                        <p><strong>UPI ID:</strong> @(Model[0].UPIID ?? "N/A")</p>
+                    </div>
+                    <div class="container">
+                        <div class="dropdown-container">
+                            <button class="dropdown-btn" onclick="toggleDropdown()">
+                                Deposit / Withdraw
+                                <span class="dropdown-arrow" id="dropdownArrow">▼</span>
+                            </button>
+                            <div class="dropdown-menu" id="dropdownMenu">
+                                <div class="dropdown-item" onclick="openModal('bankToCash')">Bank to Cash Transfer</div>
+                                <div class="dropdown-item" onclick="openModal('cashToBank')">Cash to Bank Transfer</div>
+                                <div class="dropdown-item" onclick="openModal('bankToBank')">Bank to Bank Transfer</div>
+                                <div class="dropdown-item" onclick="openModal('adjustment')">Adjust Bank Balance</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Transactions header and search -->
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="mb-0">TRANSACTIONS</h6>
-                <div class="input-group" style="max-width: 300px;">
-                    <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" class="form-control" placeholder="Search transactions..." />
+                <!-- Transactions header and search -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="mb-0">TRANSACTIONS</h6>
+                    <div class="input-group" style="max-width: 300px;">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Search transactions..." />
+                    </div>
                 </div>
-            </div>
 
-            <!-- Transactions table -->
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>TYPE</th>
-                        <th>NAME</th>
-                        <th>DATE</th>
-                        <th>AMOUNT</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Opening Balance</td>
-                        <td>Opening Balance</td>
-                        <td>@Model[0].AsOfDate.Value.ToString("dd/MM/yyyy")</td>
-                        <td>₹@Model[0].OpeningBalance.Value.ToString("N2")</td>
-                    </tr>
-                </tbody>
-            </table>
+                <!-- Transactions table -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>TYPE</th>
+                            <th>NAME</th>
+                            <th>DATE</th>
+                            <th>AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Opening Balance</td>
+                            <td>Opening Balance</td>
+                            <td>@(Model[0].AsOfDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                            <td>₹@((Model[0].OpeningBalance?.ToString("N2")) ?? "0.00")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="text-center text-muted p-5">
+                    <p>No bank account selected</p>
+                </div>
+            }
         </div>
     </div>
 

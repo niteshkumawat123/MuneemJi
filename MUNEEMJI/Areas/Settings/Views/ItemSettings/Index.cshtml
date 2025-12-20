@@ -157,21 +157,6 @@
         </button>
     </div>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
 
     <form id="itemSettingsForm">
         @Html.AntiForgeryToken()
@@ -352,22 +337,25 @@
                 </div>
             </div>
 
-            <!-- Item Custom Fields Column -->
-            <div class="settings-section">
-                <div class="section-header">
-                    Item Custom Fields <span class="help-icon">ⓘ</span>
-                </div>
-
-                <div class="custom-fields-section">
-                    <a href="#" class="add-custom-fields">Add Custom Fields ></a>
-                </div>
-            </div>
+          
         </div>
 
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
             <button type="submit" class="btn btn-save">Save Settings</button>
         </div>
     </form>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i>
+                   Item Settings saved successfully!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -419,12 +407,16 @@
             body: JSON.stringify(data)
         })
         .then(response => {
+            debugger;
             if (response.ok) {
-                return response.json();
+                    var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                        successToast.show() ;
+                   return response.json();
             }
             throw new Error('Network response was not ok');
         })
         .then(result => {
+            debugger;
             if (result.success) {
                 showSuccessMessage(result.message || 'Settings saved successfully!');
 
@@ -433,7 +425,7 @@
                 if (result.redirectUrl) {
                     setTimeout(() => {
                         window.location.href = '/Web/Settings/ItemSettings/Index';
-                    }, 1500);
+                    }, 150);
                 }
             } else {
                 showErrorMessage(result.message || 'Failed to save settings');

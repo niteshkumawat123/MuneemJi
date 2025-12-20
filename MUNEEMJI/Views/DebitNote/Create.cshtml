@@ -2073,7 +2073,7 @@
 
             const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-            fetch('/Settings/ItemSettings/SaveOrUpdateColumnSettings', {
+            fetch('/Web/Settings/ItemSettings/SaveOrUpdateColumnSettings', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -2090,7 +2090,7 @@
             .then(data => {
                 if (data.success) {
                     if (data.redirectUrl) {
-                        window.location.href = '/Sales/Create';
+                        window.location.href = '/Web/Sales/Create';
                     } else {
                         alert('Settings saved successfully!');
                     }
@@ -2132,7 +2132,7 @@
 
             const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-            fetch('/Settings/ItemSettings/SaveOrUpdateColumnSettings', {
+            fetch('/Web/Settings/ItemSettings/SaveOrUpdateColumnSettings', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -2149,7 +2149,7 @@
             .then(data => {
                 if (data.success) {
                     if (data.redirectUrl) {
-                        window.location.href = '/Sales/Create';
+                        window.location.href = '/Web/Sales/Create';
                     } else {
                         // Hide the settings container after successful save
                         document.getElementById('columnSettingsContainer').style.display = 'none';

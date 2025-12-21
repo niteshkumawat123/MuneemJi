@@ -228,9 +228,27 @@
         margin-left: 5px;
         font-size: 14px;
     }
+
+    .btn-save {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: white;
+        padding: 8px 20px;
+        border-radius: 4px;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-save:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
 </style>
 
 <div class="settings-container">
+    <input type="hidden" id="settingsId" value="@Model.Id" />
+
     <div style="display: flex; justify-content: flex-end;">
         <button type="button" class="btn-close btn-close-custom"
                 style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
@@ -241,18 +259,24 @@
         </button>
     </div>
 
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="fas fa-check-circle me-2"></i>
+                    General Settings saved successfully!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <div class="settings-row">
         <!-- Left Column -->
         <div class="settings-column">
             <!-- Application Section -->
             <div class="settings-section">
                 <h3 class="section-title">Application</h3>
-
-               @*  <div class="checkbox-group">
-                    <input type="checkbox" id="enablePasscode">
-                    <label for="enablePasscode">Enable Passcode</label>
-                    <span class="info-icon">i</span>
-                </div> *@
 
                 <div class="form-group">
                     <label>Business Currency</label>
@@ -274,25 +298,25 @@
                 <div style="font-size: 11px; color: #666; margin-left: 130px;">(upto Decimal Places)</div>
 
                 <div class="checkbox-group" style="margin-top: 15px;">
-                    <input type="checkbox" id="gstinNumber" checked>
+                    <input type="checkbox" id="gstinNumber" @(Model.GstinNumber ? "checked" : "")>
                     <label for="gstinNumber">GSTIN Number</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="stopSale">
+                    <input type="checkbox" id="stopSale" @(Model.StopSaleOnNegativeStock ? "checked" : "")>
                     <label for="stopSale">Stop Sale on Negative Stock</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="blockNewItems">
+                    <input type="checkbox" id="blockNewItems" @(Model.BlockNewItemsFromTxn ? "checked" : "")>
                     <label for="blockNewItems">Block New Items from Txn Form</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="blockNewParties">
+                    <input type="checkbox" id="blockNewParties" @(Model.BlockNewPartiesFromTxn ? "checked" : "")>
                     <label for="blockNewParties">Block New Parties from Txn Form</label>
                     <span class="info-icon">i</span>
                 </div>
@@ -303,50 +327,50 @@
                 <h3 class="section-title">More Transactions</h3>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="estimate" checked>
+                    <input type="checkbox" id="estimate" @(Model.EstimateQuotation ? "checked" : "")>
                     <label for="estimate">Estimate/Quotation</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="proforma" checked>
+                    <input type="checkbox" id="proforma" @(Model.ProformaInvoice ? "checked" : "")>
                     <label for="proforma">Proforma Invoice</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="saleOrder" checked>
+                    <input type="checkbox" id="saleOrder" @(Model.SalePurchaseOrder ? "checked" : "")>
                     <label for="saleOrder">Sale/Purchase Order</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="otherIncome">
+                    <input type="checkbox" id="otherIncome" @(Model.OtherIncome ? "checked" : "")>
                     <label for="otherIncome">Other Income</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="fixedAssets">
+                    <input type="checkbox" id="fixedAssets" @(Model.FixedAssets ? "checked" : "")>
                     <label for="fixedAssets">Fixed Assets (FA)</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="deliveryChallan" checked>
+                    <input type="checkbox" id="deliveryChallan" @(Model.DeliveryChallan ? "checked" : "")>
                     <label for="deliveryChallan">Delivery Challan</label>
                     <span class="info-icon">i</span>
                 </div>
 
                 <div class="nested-checkbox">
                     <div class="checkbox-group">
-                        <input type="checkbox" id="goodsReturn" checked>
+                        <input type="checkbox" id="goodsReturn" @(Model.GoodsReturnOnDeliveryChallan ? "checked" : "")>
                         <label for="goodsReturn">Goods return on <strong>Delivery Challan</strong></label>
                         <span class="info-icon">i</span>
                     </div>
 
                     <div class="checkbox-group">
-                        <input type="checkbox" id="printAmount" checked>
+                        <input type="checkbox" id="printAmount" @(Model.PrintAmountInDeliveryChallan ? "checked" : "")>
                         <label for="printAmount">Print amount in <strong>Delivery Challan</strong></label>
                         <span class="info-icon">i</span>
                     </div>
@@ -359,7 +383,7 @@
             <!-- Multi Firm Section -->
             <div class="settings-section">
                 <div class="form-group" style="margin-bottom: 20px;">
-                    <input type="checkbox" id="multiFirm" style="margin-right: 8px;">
+                    <input type="checkbox" id="multiFirm" style="margin-right: 8px;" @(Model.MultiFirm ? "checked" : "")>
                     <label for="multiFirm" style="font-size: 16px; font-weight: 600; min-width: auto;">Multi Firm</label>
                 </div>
                 @{
@@ -370,7 +394,6 @@
                     <input type="radio" id="orasoftUnique" name="firmType" checked>
                     <label for="orasoftUnique">@BusinessName</label>
                     <span class="default-badge">DEFAULT</span>
-                    <span class="edit-icon">✏</span>
                 </div>
             </div>
 
@@ -383,74 +406,163 @@
                 </div>
 
                 <div class="checkbox-group">
-                    <input type="checkbox" id="godownManagement" checked>
+                    <input type="checkbox" id="godownManagement" @(Model.GodownManagement ? "checked" : "")>
                     <label for="godownManagement">Godown management & Stock transfer</label>
-                    <span class="info-icon">i</span>
-                    <span class="danger-icon">🔍</span>
                 </div>
             </div>
-        </div>
-
-        <!-- Right Column -->
-        <div class="settings-column">
-            <!-- Backup & History Section -->
-            <div class="settings-section">
-                <h3 class="section-title">Backup & History</h3>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="autoBackup">
-                    <label for="autoBackup">Auto Backup</label>
-                    <span class="info-icon">i</span>
-                </div>
-
-                <div style="font-size: 14px; color: #555; margin: 15px 0;">
-                    <strong>Last Backup</strong> 29/12/2024 | 01:12 AM
-                    <span class="info-icon">i</span>
-                </div>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="auditTrail" checked>
-                    <label for="auditTrail">Audit Trail</label>
-                    <span class="info-icon">i</span>
-                </div>
-            </div>
-
-           
         </div>
     </div>
 
-
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+        <button type="submit" id="saveSettingsBtn" class="btn btn-save">Save Settings</button>
+    </div>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Handle nested checkboxes for Delivery Challan
+        // Delivery Challan nested checkboxes logic
         const deliveryCheckbox = document.getElementById('deliveryChallan');
         const nestedCheckboxes = document.querySelectorAll('.nested-checkbox input[type="checkbox"]');
 
-        deliveryCheckbox.addEventListener('change', function() {
+        if (deliveryCheckbox) {
+            // Initial state
             nestedCheckboxes.forEach(checkbox => {
-                checkbox.disabled = !this.checked;
-                if (!this.checked) {
-                    checkbox.checked = false;
-                }
+                checkbox.disabled = !deliveryCheckbox.checked;
             });
-        });
 
-        // Handle zoom slider
-        const zoomSlider = document.querySelector('.zoom-slider');
-        const applyBtn = document.querySelector('.apply-btn');
+            deliveryCheckbox.addEventListener('change', function() {
+                nestedCheckboxes.forEach(checkbox => {
+                    checkbox.disabled = !this.checked;
+                    if (!this.checked) {
+                        checkbox.checked = false;
+                    }
+                });
+            });
+        }
 
-        applyBtn.addEventListener('click', function() {
-            const zoomValue = zoomSlider.value;
-            // Apply zoom logic here
-            alert(`Applied zoom: ${zoomValue}%`);
-        });
-
-        // Close button functionality
-        document.querySelector('.close-btn').addEventListener('click', function() {
-            // Close modal or navigate back
-            window.history.back();
-        });
+        // Save button click handler
+        const saveBtn = document.getElementById('saveSettingsBtn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                saveSettings();
+            });
+        }
     });
+
+    function saveSettings() {
+        // Get Id from hidden field
+        const id = parseInt(document.getElementById('settingsId')?.value) || 0;
+
+        // Collect all settings data
+        const data = {
+            Id: id,
+
+            // Application Section
+            StopSaleOnNegativeStock: document.getElementById('stopSale')?.checked || false,
+            BlockNewItemsFromTxn: document.getElementById('blockNewItems')?.checked || false,
+            BlockNewPartiesFromTxn: document.getElementById('blockNewParties')?.checked || false,
+            GstinNumber: document.getElementById('gstinNumber')?.checked || false,
+
+            // More Transactions Section
+            EstimateQuotation: document.getElementById('estimate')?.checked || false,
+            ProformaInvoice: document.getElementById('proforma')?.checked || false,
+            SalePurchaseOrder: document.getElementById('saleOrder')?.checked || false,
+            OtherIncome: document.getElementById('otherIncome')?.checked || false,
+            FixedAssets: document.getElementById('fixedAssets')?.checked || false,
+            DeliveryChallan: document.getElementById('deliveryChallan')?.checked || false,
+            GoodsReturnOnDeliveryChallan: document.getElementById('goodsReturn')?.checked || false,
+            PrintAmountInDeliveryChallan: document.getElementById('printAmount')?.checked || false,
+
+            // Multi Firm Section
+            MultiFirm: document.getElementById('multiFirm')?.checked || false,
+
+            // Stock Transfer Section
+            GodownManagement: document.getElementById('godownManagement')?.checked || false
+        };
+
+        // Get anti-forgery token
+        const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+        const token = tokenInput ? tokenInput.value : '';
+
+        // Send JSON data to your controller
+        fetch('/Web/Settings/General/SaveSettings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': token
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                successToast.show();
+                return response.json();
+            }
+            throw new Error('Network response was not ok');
+        })
+        .then(result => {
+            if (result.success) {
+                showSuccessMessage(result.message || 'Settings saved successfully!');
+
+                // Optional: redirect after save
+                if (result.redirectUrl) {
+                    setTimeout(() => {
+                        window.location.href = '/Web/Settings/General/Index';
+                    }, 1500);
+                }
+            } else {
+                showErrorMessage(result.message || 'Failed to save settings');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorMessage('An error occurred while saving settings');
+        });
+    }
+
+    function showSuccessMessage(message) {
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+        alertDiv.style.marginTop = '20px';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        const container = document.querySelector('.settings-container');
+        container.insertBefore(alertDiv, container.firstChild);
+
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 3000);
+    }
+
+    function showErrorMessage(message) {
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.style.marginTop = '20px';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        const container = document.querySelector('.settings-container');
+        container.insertBefore(alertDiv, container.firstChild);
+
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
 </script>

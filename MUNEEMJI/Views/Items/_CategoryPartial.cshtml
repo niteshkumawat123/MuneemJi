@@ -7,7 +7,7 @@
             <input type="text" placeholder="Search categories..." onkeyup="searchCategories(this.value)">
         </div>
 
-        <button class="add-category-btn" onclick="addCategory();">
+        <button class="add-category-btn" onclick="openAddCategoryModal();">
             <i class="fas fa-plus"></i> Add Category
         </button>
 
@@ -20,22 +20,16 @@
             <!-- Items not in any category -->
             <div class="category-row">
                 <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center active"
-                   href="#" onclick="selectCategory('uncategorized')" style="text-decoration: none; color: inherit; width: 100%; display: flex;">
+                   href="#" onclick="selectCategory('uncategorized')" style="text-decoration: none; color: inherit; flex: 1; display: flex;">
                     <div class="category-name">Items not in any Category</div>
                     <div class="category-count">@((Model.ItemView?.Count() ?? 0))</div>
-                    <i class="fas fa-ellipsis-v" style="color: #6c757d;"></i>
                 </a>
 
-                <button type="button"
-                        class="btn btn-link p-1"
-                        data-bs-toggle="popover"
-                        data-bs-placement="left"
-                        data-bs-trigger="click"
-                        data-bs-html="true"
-                        data-bs-content='<a href="#" class="popover-action" onclick="editCategory(0); return false;">Edit</a>'
-                        style="border: none; background: none; outline: none; cursor: pointer;">
-                    <span style="font-size: 16px; color: #6c757d;">⋮</span>
-                </button>
+                <div class="category-actions">
+                    <button class="action-btn edit-btn" onclick="editCategory(0)" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
             </div>
 
             <!-- Dynamic Categories from Database -->
@@ -45,22 +39,19 @@
                 {
                     <div class="category-row">
                         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-                           href="#" onclick="selectCategory('@category.Id')" style="text-decoration: none; color: inherit; width: 100%; display: flex;">
+                           href="#" onclick="selectCategory('@category.Id')" style="text-decoration: none; color: inherit; flex: 1; display: flex;">
                             <div class="category-name">@category.Name</div>
                             <div class="category-count">@category.itemCount</div>
-                            <i class="fas fa-ellipsis-v" style="color: #6c757d;"></i>
                         </a>
 
-                        <button type="button"
-                                class="btn btn-link p-1"
-                                data-bs-toggle="popover"
-                                data-bs-placement="left"
-                                data-bs-trigger="click"
-                                data-bs-html="true"
-                                data-bs-content='<a href="#" class="popover-action" onclick="editCategory(@category.Id); return false;">Edit</a><a href="#" class="popover-action" onclick="deleteCategory(@category.Id); return false;">Delete</a>'
-                                style="border: none; background: none; outline: none; cursor: pointer;">
-                            <span style="font-size: 16px; color: #6c757d;">⋮</span>
-                        </button>
+                        <div class="category-actions">
+                            <button class="action-btn edit-btn" onclick="editCategory(@category.Id)" title="Edit">
+                                ✏️
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteCategory(@category.Id)" title="Delete">
+                                🗑️
+                            </button>
+                        </div>
                     </div>
                 }
             }
@@ -127,3 +118,247 @@
     </div>
 </div>
 
+<!-- Add Category Modal -->
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; border: none;">
+            <div class="modal-header" style="border-bottom: none; padding: 20px 24px 10px;">
+                <h5 class="modal-title" id="addCategoryModalLabel" style="font-weight: 600; color: #2c3e50;">Add Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 10px 24px 20px;">
+                <div class="mb-3">
+                    <label for="categoryNameInput" class="form-label" style="font-size: 14px; color: #6c757d; margin-bottom: 8px;">Enter Category Name</label>
+                    <input type="text"
+                           class="form-control"
+                           id="categoryNameInput"
+                           placeholder="e.g., Grocery"
+                           style="border-radius: 8px; padding: 12px; border: 1px solid #dee2e6;"
+                           maxlength="100">
+                    <div class="invalid-feedback" id="categoryNameError" style="display: none;">
+                        Please enter a category name
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: none; padding: 10px 24px 20px;">
+                <button type="button"
+                        class="btn w-100"
+                        id="createCategoryBtn"
+                        onclick="createCategory();"
+                        style="background-color: #dc3545; color: white; border: none; border-radius: 8px; padding: 12px; font-weight: 500;">
+                    Create
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success/Error Toast Message -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="categoryToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage" style="font-weight: 500;">
+                Category created successfully!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Category Row Styles */
+    .category-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+        border-bottom: 1px solid #e9ecef;
+        gap: 8px;
+    }
+
+        .category-row a {
+            flex: 1;
+        }
+
+    /* Action Buttons */
+    .category-actions {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    .action-btn {
+        background: none;
+        border: 1px solid #dee2e6;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        transition: all 0.2s;
+        font-size: 14px; /* Changed from 12px */
+        color: #6c757d;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 28px;
+        line-height: 1; /* Added */
+    }
+
+        .action-btn:hover {
+            background-color: #f8f9fa;
+            border-color: #adb5bd;
+        }
+
+    .edit-btn:hover {
+        color: #0d6efd;
+        border-color: #0d6efd;
+        background-color: #e7f1ff;
+    }
+
+    .delete-btn:hover {
+        color: #dc3545;
+        border-color: #dc3545;
+        background-color: #f8d7da;
+    }
+
+   
+
+    .toast.bg-success {
+        background-color: #28a745 !important;
+        color: white !important;
+    }
+
+    .toast.bg-danger {
+        background-color: #dc3545 !important;
+        color: white !important;
+    }
+
+    .btn-close-white {
+        filter: brightness(0) invert(1);
+    }
+</style>
+
+<script>
+    console.log('Category partial loaded');
+
+    // Open Add Category Modal
+    function openAddCategoryModal() {
+        const modal = new bootstrap.Modal(document.getElementById('addCategoryModal'));
+        document.getElementById('categoryNameInput').value = '';
+        document.getElementById('categoryNameError').style.display = 'none';
+        document.getElementById('categoryNameInput').classList.remove('is-invalid');
+        modal.show();
+    }
+
+    // Create Category via AJAX
+    function createCategory() {
+        const categoryName = document.getElementById('categoryNameInput').value.trim();
+        const errorDiv = document.getElementById('categoryNameError');
+        const inputField = document.getElementById('categoryNameInput');
+        const createBtn = document.getElementById('createCategoryBtn');
+
+        // Validation
+        if (!categoryName) {
+            inputField.classList.add('is-invalid');
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = 'Please enter a category name';
+            return;
+        }
+
+        // Disable button and show loading
+        createBtn.disabled = true;
+        createBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Creating...';
+
+        // AJAX call
+        fetch('/Web/Items/CategoryCreate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                Name: categoryName
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to create category');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Category created:', data);
+
+            // Close modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
+            modal.hide();
+
+            // Show success message
+            showToast('Category created successfully!', 'success');
+
+            // Reload page or update UI
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Failed to create category. Please try again.', 'danger');
+        })
+        .finally(() => {
+            // Re-enable button
+            createBtn.disabled = false;
+            createBtn.innerHTML = 'Create';
+        });
+    }
+
+    // Show Toast Message
+    function showToast(message, type) {
+        const toastElement = document.getElementById('categoryToast');
+        const toastBody = document.getElementById('toastMessage');
+
+        toastBody.textContent = message;
+        toastElement.className = `toast align-items-center border-0 bg-${type}`;
+
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+    }
+
+    // Enter key to submit
+    document.addEventListener('DOMContentLoaded', function() {
+        const categoryInput = document.getElementById('categoryNameInput');
+        if (categoryInput) {
+            categoryInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    createCategory();
+                }
+            });
+        }
+    });
+
+    // Global functions
+    window.openAddCategoryModal = openAddCategoryModal;
+    window.createCategory = createCategory;
+
+    window.editCategory = function(id) {
+        console.log('Edit category:', id);
+        // Add your edit logic here
+    };
+
+    window.deleteCategory = function(id) {
+        if (confirm('Are you sure you want to delete this category?')) {
+            console.log('Delete category:', id);
+            // Add your delete logic here
+        }
+    };
+
+    window.selectCategory = function(id) {
+        console.log('Select category:', id);
+        // Add your select category logic here
+    };
+
+    window.searchCategories = function(value) {
+        console.log('Search:', value);
+        // Add your search logic here
+    };
+</script>

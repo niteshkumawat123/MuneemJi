@@ -1280,7 +1280,7 @@
                 ? 'Item updated successfully!'
                 : 'Item has been saved successfully!';
 
-            showMessageModal(true, message, '/Web/Items/mainindex');
+            showMessageModal(true, message, '/Web/Items/Products');
         } else {
             const error = await response.text();
             console.error('Error:', error);
@@ -1451,7 +1451,7 @@
             uploadContent.style.display = 'block';
         }
          function closeView() {
-                       window.location.href = '/Web/items/mainindex'; // Or your desired controller/action
+                       window.location.href = '/Web/items/Products'; // Or your desired controller/action
                }
 
 

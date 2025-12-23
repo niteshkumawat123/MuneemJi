@@ -81,14 +81,14 @@
             flex-direction: column;
         }
 
-    .main-content {
+    .main-content-product {
         display: flex;
         flex: 1;
         overflow: hidden;
         padding-left: 0px;
     }
 
-    .main-content-unit {
+    .main-content-product-unit {
 /*         margin-left: 142px;
  */        min-height: 100vh;
         background: #f8f9fa;
@@ -551,7 +551,7 @@
         }
 
     @@media (max-width: 768px) {
-        .main-content {
+        .main-content-product {
             flex-direction: column;
         }
 
@@ -977,11 +977,7 @@
         
     }
 
-    function addCategory() {
-        hideAllPopovers();
-        alert('Add Category - Replace with your actual implementation');
-        // Example: window.location.href = '/Web/Categories/Create';
-    }
+  
 
     function editCategory(categoryId) {
         console.log('Edit category:', categoryId);

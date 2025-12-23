@@ -1,0 +1,115 @@
+﻿<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i>
+                Loan Transection Creadited succssfully!
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="chargesOnLoanModal" tabindex="-1" aria-labelledby="chargesOnLoanModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chargesOnLoanModalLabel">Charges On Loan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="chargesOnLoanForm">
+                    <input type="hidden" id="chargesLoanAccountId" />
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Transaction Type Name<span class="required-asterisk">*</span></label>
+                        <input type="text" id="transactionTypeName" class="form-control-custom" placeholder="Example: Penalty on Missing EMI" required />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" id="chargesDate" class="form-control-custom" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Amount</label>
+                        <input type="number" id="chargesAmount" class="form-control-custom" placeholder="0" step="0.01" />
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Loan Received In</label>
+                        <select id="chargesLoanReceivedIn" class="form-control-custom">
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn-save" onclick="saveChargesOnLoan()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Set current date
+        const today = new Date().toISOString().split('T')[0];
+        $('#chargesDate').val(today);
+
+        // Set current account ID
+        $('#chargesLoanAccountId').val(currentAccountId);
+    });
+
+    function saveChargesOnLoan() {
+        const formData = {
+            LoanAccountId: $('#chargesLoanAccountId').val(),
+            TransactionTypeName: $('#transactionTypeName').val(),
+            Date: $('#chargesDate').val(),
+            Amount: $('#chargesAmount').val(),
+            LoanReceivedIn: $('#chargesLoanReceivedIn').val()
+        };
+
+        if (!formData.TransactionTypeName) {
+            alert('Please enter transaction type name');
+            return;
+        }
+
+        if (!formData.Amount) {
+            alert('Please enter amount');
+            return;
+        }
+
+        showLoading();
+
+        $.ajax({
+            url: '@Url.Action("SaveChargesOnLoan")',
+            type: 'POST',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function(response) {
+                hideLoading();
+                if (response.success) {
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('chargesOnLoanModal'));
+                    modal.hide();
+                          var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                          successToast.show() ;
+                          loadAccountDetails(currentAccountId);
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                hideLoading();
+                alert('Error saving charges: ' + error);
+            }
+        });
+    }
+</script>

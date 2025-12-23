@@ -4,7 +4,7 @@
     <div class="sidebar">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search items...">
+            <input type="text" id="product-search" placeholder="Search items...">
         </div>
 
         <button class="add-item-btn" onclick="window.location.href='/Web/Items/create';">
@@ -26,14 +26,15 @@
             @foreach (var item in Model.ItemView)
             {
                 <div class="item-row">
-                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
-                       asp-action="MainIndex" asp-route-id="@item.Id" style="text-decoration: none; color: inherit; width: 100%; display: flex;">
+                    <a href="#"
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center product-item-link @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
+                       data-item-id="@item.Id"
+                       style="text-decoration: none; color: inherit; width: 100%; display: flex;">
                         <div class="item-name">@item.ItemName</div>
                         <div class="item-quantity">@item.OpeningQuantity</div>
-                        <i class="fas fa-ellipsis-v" style=" color: #6c757d;"></i>
+                        <i class="fas fa-ellipsis-v" style="color: #6c757d;"></i>
                     </a>
 
-                    <!-- Updated button with Bootstrap popover -->
                     <button type="button"
                             class="btn btn-link p-1"
                             data-bs-toggle="popover"
@@ -49,7 +50,7 @@
         </div>
     </div>
 
-    <div class="content-area">
+    <div class="content-area" id="product-detail-area">
         @if (Model.SelectedItem != null)
         {
             <div class="product-header">
@@ -59,9 +60,6 @@
                         <i class="bi bi-pencil"></i>
                     </a>
                 </div>
-              @*   <button class="adjust-btn">
-                    <i class="fas fa-sliders-h"></i> ADJUST ITEM
-                </button> *@
             </div>
 
             <div class="product-info">
@@ -150,46 +148,251 @@
     </div>
 </div>
 
-@* <script>
-  
+<script>
+        // Products Partial View JavaScript - JSON Version
+    (function() {
+        console.log('Products partial view loaded');
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Only handle non-popover functionality
-        const searchInputs = document.querySelectorAll('input[type="text"]');
-        searchInputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.style.transform = 'scale(1.02)';
-            });
-            input.addEventListener('blur', function() {
-                this.style.transform = 'scale(1)';
-            });
-        });
+        // Handle product item click
+        function initProductItemHandlers() {
+            const productLinks = document.querySelectorAll('.product-item-link');
 
-        const infoCards = document.querySelectorAll('.info-card');
-        infoCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-            });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
+            productLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
 
-        const sortHeaders = document.querySelectorAll('th');
-        sortHeaders.forEach(header => {
-            header.addEventListener('click', function() {
-                sortHeaders.forEach(h => {
-                    const icon = h.querySelector('.sort-icon');
-                    if (icon) {
-                        icon.className = 'fas fa-sort sort-icon';
-                    }
+                    const itemId = this.getAttribute('data-item-id');
+
+                    // Remove active class from all items
+                    productLinks.forEach(l => l.classList.remove('active'));
+
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Load product details via AJAX
+                    loadProductDetails(itemId);
                 });
-
-                const icon = this.querySelector('.sort-icon');
-                if (icon) {
-                    icon.className = 'fas fa-sort-down sort-icon';
-                }
             });
-        });
-    });
-</script> *@
+        }
+
+        // Load product details and render JSON response
+        function loadProductDetails(itemId) {
+            const detailArea = document.getElementById('product-detail-area');
+
+            if (!detailArea) {
+                console.error('Product detail area not found');
+                return;
+            }
+
+            // Show loading state
+            detailArea.innerHTML = `
+                <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                    <div style="text-align: center; color: #6c757d;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
+                        <p>Loading product details...</p>
+                    </div>
+                </div>`;
+
+            // Make AJAX call to get product details as JSON
+            fetch(`/Web/Items/ViewItemForPartial?id=${itemId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load product details');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Render the product details from JSON
+                renderProductDetails(data);
+            })
+            .catch(error => {
+                console.error('Error loading product details:', error);
+                detailArea.innerHTML = `
+                    <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                        <div style="text-align: center; color: #dc3545;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
+                            <p>Error loading product details</p>
+                            <button class="btn btn-primary btn-sm" onclick="loadProductDetails(${itemId})">Retry</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        // Render product details from JSON data
+        function renderProductDetails(item) {
+            const detailArea = document.getElementById('product-detail-area');
+
+            if (!item) {
+                detailArea.innerHTML = `
+                    <div class="loading-content">
+                        <div>
+                            <i class="fas fa-box"></i>
+                            <p>Select an item to view details</p>
+                        </div>
+                    </div>`;
+                return;
+            }
+
+            const salePrice = (item.salePrice || 0).toFixed(2);
+            const purchasePrice = (item.purchasePrice || 0).toFixed(2);
+            const openingQuantity = item.openingQuantity || 0;
+            const stockValue = (item.onlineStorePrice || 0).toFixed(2);
+
+            // Render transactions rows
+            let transactionsHTML = '';
+            if (item.transactions && item.transactions.length > 0) {
+                debugger;
+                transactionsHTML = item.transactions.map(transaction => `
+                    <tr>
+                        <td>
+                            <span class="transaction-indicator indicator-${transaction.type?.toLowerCase()}"></span>
+                            ${transaction.type || 'N/A'} (${transaction.location || 'N/A'})
+                        </td>
+                        <td>${transaction.invoiceRef || '-'}</td>
+                        <td>${transaction.name || '-'}</td>
+                        <td>${transaction.date || '-'}</td>
+                        <td>${transaction.quantity || '-'}</td>
+                        <td>₹ ${(transaction.pricePerUnit || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                        <td>
+                            <span class="status-badge status-${transaction.status?.toLowerCase()}">${transaction.status || 'N/A'}</span>
+                        </td>
+                        <td>
+                            <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
+                        </td>
+                    </tr>
+                `).join('');
+            } else if (openingQuantity > 0) {
+                // Default transaction if no transactions array but has quantity
+                transactionsHTML = `
+                    <tr>
+                        <td>
+                            <span class="transaction-indicator indicator-purchase"></span>
+                            Purchase (Main ...)
+                        </td>
+                        <td>-</td>
+                        <td>test</td>
+                        <td>14/06/2025</td>
+                        <td>1 Btl</td>
+                        <td>₹ 1,233.00</td>
+                        <td>
+                            <span class="status-badge status-partial">Partial</span>
+                        </td>
+                        <td>
+                            <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                transactionsHTML = `
+                    <tr>
+                        <td colspan="8" class="no-transactions">No transactions to show</td>
+                    </tr>
+                `;
+            }
+
+            const html = `
+                <div class="product-header">
+                    <div class="product-title">
+                        <span>${item.itemName || 'Unknown Item'}</span>
+                        <a href="/Web/Items/Create?id=${item.id}" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="product-info">
+                    <div class="info-card">
+                        <div class="info-label">Sale Price</div>
+                        <div class="info-value">₹ ${salePrice} (excl)</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Purchase Price</div>
+                        <div class="info-value">₹ ${purchasePrice} (excl)</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label stock-warning">Stock Quantity</div>
+                        <div class="info-value stock-warning">${openingQuantity}</div>
+                    </div>
+                    <div class="info-card">
+                        <div class="info-label">Stock Value</div>
+                        <div class="info-value stock-value">₹ ${stockValue}</div>
+                    </div>
+                </div>
+
+                <div class="transactions-section">
+                    <div class="section-header">
+                        <h3 class="section-title">TRANSACTIONS</h3>
+                        <div class="search-transactions">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search transactions...">
+                        </div>
+                    </div>
+
+                    <div class="transactions-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>TYPE <i class="fas fa-sort sort-icon"></i></th>
+                                    <th>INVOICE/REF. <i class="fas fa-sort sort-icon"></i></th>
+                                    <th>NAME <i class="fas fa-sort sort-icon"></i></th>
+                                    <th>DATE <i class="fas fa-sort-down sort-icon"></i></th>
+                                    <th>QUANTITY <i class="fas fa-sort sort-icon"></i></th>
+                                    <th>PRICE/UNIT <i class="fas fa-sort sort-icon"></i></th>
+                                    <th>STATUS <i class="fas fa-sort sort-icon"></i></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${transactionsHTML}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            detailArea.innerHTML = html;
+        }
+
+        // Search functionality
+        function initProductSearch() {
+            const searchInput = document.getElementById('product-search');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const itemRows = document.querySelectorAll('.item-row');
+
+                    itemRows.forEach(row => {
+                        const itemName = row.querySelector('.item-name')?.textContent.toLowerCase();
+                        if (itemName && (itemName.includes(searchTerm) || searchTerm === '')) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                initProductItemHandlers();
+                initProductSearch();
+            });
+        } else {
+            initProductItemHandlers();
+            initProductSearch();
+        }
+
+        // Make functions available globally
+        window.loadProductDetails = loadProductDetails;
+        window.renderProductDetails = renderProductDetails;
+    })();
+</script>

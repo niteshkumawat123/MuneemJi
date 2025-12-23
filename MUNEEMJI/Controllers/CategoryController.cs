@@ -1,28 +1,20 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Insight.Database;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.Services;
 using Npgsql;
+using System.Security.AccessControl;
+using System.Xml.Linq;
 
 namespace MUNEEMJI.Controllers
 {
     [Authorize]
     public class CategoryController : Controller
     {
-        [HttpPost]
-        public IActionResult Add(string name)
-        {
-            CategoryDataAccess.Add(name);
-            return Ok();
-        }
 
-        [HttpPost]
-        public IActionResult MoveProduct(int productId, int categoryId)
-        {
-            int? newCatId = (categoryId == 0 ? (int?)null : categoryId);
-            ProductDataAccess.UpdateCategory(productId, newCatId);
-            return Ok();
-        }
+       
 
         public List<CategoryDropdownModel> GetCategoriesDropdown()
         {
@@ -52,7 +44,32 @@ namespace MUNEEMJI.Controllers
             return categories;
         }
 
-       
+        public async Task<IActionResult> DeleteCategory(int id )
+        {
+            try
+            {
+                await Task.Delay(1);
+                using (var conn = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+                {
+
+                    string query = " delete from categorieses where  id =@p_id ";
+
+                    conn.ExecuteSql(query, new { p_id = id });
+
+
+                }
+                return Json(new { success = true, message = "Category has been deleted successfully!" });
+
+            }
+            catch(Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message});
+
+            }
+
+        }
+
+
 
     }
 }

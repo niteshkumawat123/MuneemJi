@@ -1,0 +1,1035 @@
+﻿@model ItemViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Products";
+}
+
+<header>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</header>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: white;
+        min-height: 100vh;
+        padding: 0;
+        margin: 0;
+    }
+
+    .products-main-wrapper {
+        /*    width: 100vw;
+            height: 100vh; */
+        margin: 0 auto;
+        background: white;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+    }
+
+    .products-header-navigation {
+        background: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        padding: 0;
+        flex-shrink: 0;
+        overflow-x: auto;
+    }
+
+    .products-nav-tab {
+        padding: 15px 30px;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        color: #6c757d;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+        white-space: nowrap;
+    }
+
+        .products-nav-tab.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            background: white;
+        }
+
+        .products-nav-tab:hover {
+            background: #e9ecef;
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+    .products-content-wrapper {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        padding-left: 0px;
+    }
+
+    .products-sidebar-panel {
+        width: 322px;
+        background: #f8f9fa;
+        border-right: 1px solid #e9ecef;
+        padding: 20px;
+        flex-shrink: 0;
+        overflow-y: auto;
+        overflow-x: visible;
+        height: calc(100vh - 60px);
+    }
+
+    .products-search-container {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+        .products-search-container input {
+            width: 100%;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+            .products-search-container input:focus {
+                outline: none;
+                border-color: #007bff;
+                box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+            }
+
+        .products-search-container i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+    .products-add-button {
+        background: linear-gradient(45deg, #ff9500, #ffb347);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255,149,0,0.3);
+    }
+
+        .products-add-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,149,0,0.4);
+        }
+
+    .products-godown-dropdown {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background: white;
+    }
+
+    .products-items-container {
+        background: white;
+        border-radius: 8px;
+        overflow: visible;
+    }
+
+    .products-list-header {
+        display: flex;
+        background: #f8f9fa;
+        padding: 10px;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .products-item-name-col {
+        flex: 1;
+    }
+
+    .products-item-qty-col {
+        width: 80px;
+        text-align: center;
+    }
+
+    .products-item-entry {
+        display: flex;
+        padding: 12px;
+        align-items: center;
+        background: #e3f2fd;
+        border-left: 4px solid #2196f3;
+        margin: 1px 0;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .products-item-entry:hover {
+            background: #bbdefb;
+            transform: translateX(5px);
+        }
+
+        .products-item-entry a {
+            flex: 1;
+            display: flex;
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .products-item-entry a.active {
+                font-weight: 600;
+                color: #007bff;
+            }
+
+    .products-detail-section {
+        padding: 0;
+        overflow-y: auto;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .products-detail-header {
+        background: #f8f9fa;
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .products-detail-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .products-info-grid {
+        display: flex;
+        background: white;
+        padding: 20px;
+        border-bottom: 1px solid #e9ecef;
+        gap: 40px;
+        flex-shrink: 0;
+    }
+
+    .products-info-item {
+        flex: 1;
+    }
+
+    .products-info-label {
+        font-size: 12px;
+        color: #6c757d;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .products-info-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .products-stock-warning {
+        color: #dc3545;
+    }
+
+    .products-stock-success {
+        color: #28a745;
+    }
+
+    .products-transactions-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        overflow-y: auto;
+    }
+
+    .products-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .products-section-heading {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+        text-transform: uppercase;
+    }
+
+    .products-transaction-search {
+        position: relative;
+        width: 300px;
+        max-width: 100%;
+    }
+
+        .products-transaction-search input {
+            width: 100%;
+            padding: 8px 15px 8px 35px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .products-transaction-search i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+    .products-table-wrapper {
+        background: white;
+        border-radius: 8px;
+        overflow-x: auto;
+        border: 1px solid #e9ecef;
+        flex: 1;
+    }
+
+        .products-table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .products-table-wrapper th {
+            background: #f8f9fa;
+            color: #495057;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .products-table-wrapper td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f4;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .products-table-wrapper tr:hover {
+            background: #f8f9ff;
+        }
+
+    .products-status-label {
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .products-status-partial {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .products-status-complete {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .products-status-pending {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .products-transaction-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    .products-dot-purchase {
+        background: #28a745;
+    }
+
+    .products-dot-sale {
+        background: #dc3545;
+    }
+
+    .products-sort-arrow {
+        margin-left: 5px;
+        opacity: 0.7;
+        font-size: 10px;
+    }
+
+    .products-no-data {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .products-loading-state {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 400px;
+        color: #6c757d;
+    }
+
+    .popover {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        min-width: 120px;
+    }
+
+    .popover-body {
+        padding: 0;
+    }
+
+    .popover-action {
+        display: block;
+        padding: 12px 16px;
+        text-decoration: none;
+        color: #333;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s ease;
+    }
+
+        .popover-action:last-child {
+            border-bottom: none;
+        }
+
+        .popover-action:hover {
+            background-color: #f8f9fa;
+            color: #333;
+            text-decoration: none;
+        }
+
+    /* Responsive Design */
+    @@media (max-width: 1200px) {
+        .products-sidebar-panel {
+            width: 280px;
+        }
+
+        .products-info-grid {
+            gap: 20px;
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .products-sidebar-panel {
+            width: 250px;
+        }
+
+        .products-nav-tab {
+            padding: 12px 20px;
+            font-size: 14px;
+        }
+
+        .products-info-grid {
+            flex-wrap: wrap;
+        }
+
+        .products-info-item {
+            flex: 0 0 calc(50% - 10px);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .products-main-wrapper {
+            height: auto;
+            min-height: 100vh;
+        }
+
+        .products-content-wrapper {
+            flex-direction: column;
+            height: auto;
+        }
+
+        .products-sidebar-panel {
+            width: 100%;
+            max-height: none;
+            height: auto;
+            border-right: none;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .products-detail-section {
+            height: auto;
+            min-height: 500px;
+        }
+
+        .products-nav-tab {
+            padding: 12px 15px;
+            font-size: 13px;
+        }
+
+        .products-info-grid {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .products-info-item {
+            flex: 1;
+        }
+
+        .products-transaction-search {
+            width: 100%;
+        }
+
+        .products-section-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .products-detail-header {
+            flex-wrap: wrap;
+        }
+
+        .products-detail-title {
+            font-size: 16px;
+        }
+
+        .products-transactions-area {
+            padding: 15px;
+        }
+
+        .products-table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .products-nav-tab {
+            padding: 10px 12px;
+            font-size: 12px;
+        }
+
+        .products-detail-header {
+            padding: 12px 15px;
+        }
+
+        .products-info-grid {
+            padding: 15px;
+        }
+
+        .products-add-button {
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+
+        .products-search-container input {
+            font-size: 13px;
+            padding: 8px 12px 8px 35px;
+        }
+
+        .products-item-entry {
+            padding: 10px;
+        }
+
+        .products-table-wrapper th,
+        .products-table-wrapper td {
+            padding: 10px 8px;
+            font-size: 12px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .products-sidebar-panel {
+            padding: 15px;
+        }
+
+        .products-godown-dropdown {
+            font-size: 13px;
+            padding: 8px;
+        }
+
+        .products-list-header {
+            padding: 8px;
+            font-size: 11px;
+        }
+
+        .products-item-qty-col {
+            width: 60px;
+        }
+
+        .products-section-heading {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<div class="products-main-wrapper">
+    <!-- Navigation Tabs -->
+    <div class="products-header-navigation">
+        <a href="/Web/Items/Products" class="products-nav-tab">
+            PRODUCTS
+        </a>
+        <a href="/Web/Services/Services" class="products-nav-tab">
+            SERVICES
+        </a>
+        <a href="/Web/Items/Category" class="products-nav-tab active">
+            CATEGORY
+        </a>
+        <a href="/Web/Units/Unit" class="products-nav-tab">
+            UNITS
+        </a>
+    </div>
+
+    <!-- Products Content -->
+    <div class="products-content-wrapper">
+        <div class="products-sidebar-panel">
+            <div class="products-search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="product-search" placeholder="Search items...">
+            </div>
+
+            <button class="products-add-button" onclick="window.location.href='/Web/Services/create';">
+                <i class="fas fa-plus"></i> Add Service
+            </button>
+
+            <select class="products-godown-dropdown">
+                <option>Godown: All Godowns</option>
+                <option>Main Warehouse</option>
+                <option>Secondary Storage</option>
+                <option>Retail Store</option>
+            </select>
+
+            <div class="products-items-container">
+                <div class="products-list-header">
+                    <div class="products-item-name-col">ITEM <i class="fas fa-filter"></i></div>
+@*                     <div class="products-item-qty-col">QUANTITY</div>
+ *@                </div>
+                @foreach (var item in Model.ItemView)
+                {
+                    <div class="products-item-entry">
+                        <a href="#"
+                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center product-item-link @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
+                           data-item-id="@item.Id"
+                           style="text-decoration: none; color: inherit; width: 100%; display: flex;">
+                            <div class="products-item-name-col">@item.ItemName</div>
+@*                             <div class="products-item-qty-col">@item.OpeningQuantity</div>
+ *@                        </a>
+
+                        <button type="button"
+                                class="btn btn-link p-1"
+                                data-bs-toggle="popover"
+                                data-bs-placement="left"
+                                data-bs-trigger="click"
+                                data-bs-html="true"
+                                data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'
+                                style="border: none; background: none; outline: none; cursor: pointer;">
+                            <span style="font-size: 16px; color: #6c757d;">⋮</span>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="products-detail-section" id="product-detail-area">
+            @if (Model.SelectedItem != null)
+            {
+                <div class="products-detail-header">
+                    <div class="products-detail-title">
+                        <span>@Model.SelectedItem.ItemName</span>
+                        <a asp-action="Create" asp-route-id="@Model.SelectedItem.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="products-info-grid">
+                    <div class="products-info-item">
+                        <div class="products-info-label">Sale Price</div>
+                        <div class="products-info-value">₹ @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
+                    </div>
+                 @*    <div class="products-info-item">
+                        <div class="products-info-label">Purchase Price</div>
+                        <div class="products-info-value">₹ @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
+                    </div>
+                    <div class="products-info-item">
+                        <div class="products-info-label products-stock-warning">Stock Quantity</div>
+                        <div class="products-info-value products-stock-warning">@(Model.SelectedItem?.OpeningQuantity ?? 0)</div>
+                    </div>
+                    <div class="products-info-item">
+                        <div class="products-info-label">Stock Value</div>
+                        <div class="products-info-value products-stock-success">₹ @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
+                    </div> *@
+                </div>
+
+                <div class="products-transactions-area">
+                    <div class="products-section-header">
+                        <h3 class="products-section-heading">TRANSACTIONS</h3>
+                        <div class="products-transaction-search">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Search transactions...">
+                        </div>
+                    </div>
+
+                    <div class="products-table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>TYPE <i class="fas fa-sort products-sort-arrow"></i></th>
+                                    <th>INVOICE/REF. <i class="fas fa-sort products-sort-arrow"></i></th>
+                                    <th>NAME <i class="fas fa-sort products-sort-arrow"></i></th>
+                                    <th>DATE <i class="fas fa-sort-down products-sort-arrow"></i></th>
+                                    <th>QUANTITY <i class="fas fa-sort products-sort-arrow"></i></th>
+                                    <th>PRICE/UNIT <i class="fas fa-sort products-sort-arrow"></i></th>
+                                    <th>STATUS <i class="fas fa-sort products-sort-arrow"></i></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.SelectedItem.OpeningQuantity > 0)
+                                {
+                                    <tr>
+                                        <td>
+                                            <span class="products-transaction-dot products-dot-purchase"></span>
+                                            Purchase (Main ...)
+                                        </td>
+                                        <td>-</td>
+                                        <td>test</td>
+                                        <td>14/06/2025</td>
+                                        <td>1 Btl</td>
+                                        <td>₹ 1,233.00</td>
+                                        <td>
+                                            <span class="products-status-label products-status-partial">Partial</span>
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="8" class="products-no-data">No transactions to show</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="products-loading-state">
+                    <div>
+                        <i class="fas fa-box" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <p>Select an item to view details</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize popovers
+    document.addEventListener('DOMContentLoaded', function() {
+        initializePopovers();
+        initProductItemHandlers();
+        initProductSearch();
+    });
+
+    function initializePopovers() {
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+
+        popoverTriggerList.forEach(function(popoverTriggerEl) {
+            new bootstrap.Popover(popoverTriggerEl, {
+                sanitize: false,
+                html: true,
+                trigger: 'click'
+            });
+        });
+
+        // Close popovers when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('[data-bs-toggle="popover"]') && !e.target.closest('.popover')) {
+                const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+                popovers.forEach(popover => {
+                    const bsPopover = bootstrap.Popover.getInstance(popover);
+                    if (bsPopover) {
+                        bsPopover.hide();
+                    }
+                });
+            }
+        });
+    }
+
+    function initProductItemHandlers() {
+        const productLinks = document.querySelectorAll('.product-item-link');
+
+        productLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const itemId = this.getAttribute('data-item-id');
+
+                productLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+
+                loadProductDetails(itemId);
+            });
+        });
+    }
+
+    function loadProductDetails(itemId) {
+        const detailArea = document.getElementById('product-detail-area');
+
+        if (!detailArea) {
+            console.error('Product detail area not found');
+            return;
+        }
+
+        detailArea.innerHTML = `
+            <div class="products-loading-state">
+                <div style="text-align: center; color: #6c757d;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
+                    <p>Loading product details...</p>
+                </div>
+            </div>`;
+
+        fetch(`/Web/Services/ViewItemForPartial?id=${itemId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to load product details');
+            }
+            return response.json();
+        })
+        .then(data => {
+            renderProductDetails(data);
+        })
+        .catch(error => {
+            console.error('Error loading product details:', error);
+            detailArea.innerHTML = `
+                <div class="products-loading-state">
+                    <div style="text-align: center; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
+                        <p>Error loading product details</p>
+                        <button class="btn btn-primary btn-sm" onclick="loadProductDetails(${itemId})">Retry</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function renderProductDetails(item) {
+        const detailArea = document.getElementById('product-detail-area');
+
+        if (!item) {
+            detailArea.innerHTML = `
+                <div class="products-loading-state">
+                    <div>
+                        <i class="fas fa-box"></i>
+                        <p>Select an item to view details</p>
+                    </div>
+                </div>`;
+            return;
+        }
+
+        const salePrice = (item.salePrice || 0).toFixed(2);
+        const purchasePrice = (item.purchasePrice || 0).toFixed(2);
+        const openingQuantity = item.openingQuantity || 0;
+        const stockValue = (item.onlineStorePrice || 0).toFixed(2);
+
+        let transactionsHTML = '';
+        if (item.transactions && item.transactions.length > 0) {
+            transactionsHTML = item.transactions.map(transaction => `
+                <tr>
+                    <td>
+                        <span class="products-transaction-dot products-dot-${transaction.type?.toLowerCase()}"></span>
+                        ${transaction.type || 'N/A'} (${transaction.location || 'N/A'})
+                    </td>
+                    <td>${transaction.invoiceRef || '-'}</td>
+                    <td>${transaction.name || '-'}</td>
+                    <td>${transaction.date || '-'}</td>
+                    <td>${transaction.quantity || '-'}</td>
+                    <td>₹ ${(transaction.pricePerUnit || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td>
+                        <span class="products-status-label products-status-${transaction.status?.toLowerCase()}">${transaction.status || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
+                    </td>
+                </tr>
+            `).join('');
+        } else if (openingQuantity > 0) {
+            transactionsHTML = `
+                <tr>
+                    <td>
+                        <span class="products-transaction-dot products-dot-purchase"></span>
+                        Purchase (Main ...)
+                    </td>
+                    <td>-</td>
+                    <td>test</td>
+                    <td>14/06/2025</td>
+                    <td>1 Btl</td>
+                    <td>₹ 1,233.00</td>
+                    <td>
+                        <span class="products-status-label products-status-partial">Partial</span>
+                    </td>
+                    <td>
+                        <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
+                    </td>
+                </tr>
+            `;
+        } else {
+            transactionsHTML = `
+                <tr>
+                    <td colspan="8" class="products-no-data">No transactions to show</td>
+                </tr>
+            `;
+        }
+
+        const html = `
+            <div class="products-detail-header">
+                <div class="products-detail-title">
+                    <span>${item.itemName || 'Unknown Item'}</span>
+                    <a href="/Web/Services/Create?id=${item.id}" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="products-info-grid">
+                <div class="products-info-item">
+                    <div class="products-info-label">Sale Price</div>
+                    <div class="products-info-value">₹ ${salePrice} (excl)</div>
+                </div>
+          
+            </div>
+
+            <div class="products-transactions-area">
+                <div class="products-section-header">
+                    <h3 class="products-section-heading">TRANSACTIONS</h3>
+                    <div class="products-transaction-search">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search transactions...">
+                    </div>
+                </div>
+
+                <div class="products-table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TYPE <i class="fas fa-sort products-sort-arrow"></i></th>
+                                <th>INVOICE/REF. <i class="fas fa-sort products-sort-arrow"></i></th>
+                                <th>NAME <i class="fas fa-sort products-sort-arrow"></i></th>
+                                <th>DATE <i class="fas fa-sort-down products-sort-arrow"></i></th>
+                                <th>QUANTITY <i class="fas fa-sort products-sort-arrow"></i></th>
+                                <th>PRICE/UNIT <i class="fas fa-sort products-sort-arrow"></i></th>
+                                <th>STATUS <i class="fas fa-sort products-sort-arrow"></i></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${transactionsHTML}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        detailArea.innerHTML = html;
+    }
+
+    function initProductSearch() {
+        const searchInput = document.getElementById('product-search');
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const itemRows = document.querySelectorAll('.products-item-entry');
+
+                itemRows.forEach(row => {
+                    const itemName = row.querySelector('.products-item-name-col')?.textContent.toLowerCase();
+                    if (itemName && (itemName.includes(searchTerm) || searchTerm === '')) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+    }
+
+    function viewItem(itemId) {
+        const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+        popovers.forEach(popover => {
+            const bsPopover = bootstrap.Popover.getInstance(popover);
+            if (bsPopover) {
+                bsPopover.hide();
+            }
+        });
+
+        window.location.href = `/Web/Services/Create?id=${itemId}&isview=true`;
+    }
+
+    function deleteItem(itemId) {
+        const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
+        popovers.forEach(popover => {
+            const bsPopover = bootstrap.Popover.getInstance(popover);
+            if (bsPopover) {
+                bsPopover.hide();
+            }
+        });
+
+        if (confirm('Are you sure you want to delete this item?')) {
+            fetch(`/Web/Services/DeleteItem/${itemId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = `/Web/Services/Service`;
+                } else {
+                    return response.json().then(data => {
+                        throw new Error(data.message || 'Failed to delete item');
+                    });
+                }
+            })
+        }
+
+    }
+
+</script>

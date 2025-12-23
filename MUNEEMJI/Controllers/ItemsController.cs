@@ -7,6 +7,7 @@ using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
 using SkiaSharp;
+using System.ComponentModel.Design;
 using System.Globalization;
 using static MUNEEMJI.Models.ItemModel;
 using Category = MUNEEMJI.Models.Category;
@@ -35,6 +36,33 @@ namespace MUNEEMJI.Controllers
 
         [HttpGet]
         public IActionResult MainIndex(int? id)
+        {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+            var viewModel = GetItemsAsync(companyId);
+
+            ItemViewModel itemViewModel = new ItemViewModel();
+            itemViewModel.ItemView = viewModel;
+            if (id > 0)
+            {
+                itemViewModel.SelectedItem = new BillItem();
+                itemViewModel.SelectedItem = viewModel.Where(x => x.Id == id).FirstOrDefault();
+            }
+            else
+            {
+
+                itemViewModel.SelectedItem = new BillItem();
+                itemViewModel.SelectedItem = viewModel.FirstOrDefault();
+
+            }
+
+
+            return View(itemViewModel);
+        }
+
+
+        [HttpGet]
+        public IActionResult Products(int? id)
         {
             var companyId = _CompayTenancy.GetCurrentCompanyId();
 
@@ -330,6 +358,87 @@ namespace MUNEEMJI.Controllers
             return PartialView("_CategoryPartial", ViewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult>Category()
+        {
+            ItemViewModel ViewModel = new ItemViewModel();
+            ViewModel.Categories = new List<Category>();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+            try
+            {
+                await Task.Delay(1);
+
+                using (var conn = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+                {
+                    conn.Open();
+                    string query = @"SELECT id, name 
+                     FROM categorieses 
+                     WHERE companyid = @p_companyid";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        // Add parameter value here
+                        cmd.Parameters.AddWithValue("p_companyid", companyId); // 👈 replace companyId with your variable
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                ViewModel.Categories.Add(new Category
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1)
+                                });
+                            }
+                        }
+                    }
+                }
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return View(ViewModel);
+
+        }
+
+
+
+        public IActionResult CategoryCreate([FromBody] CategoryDropdownModel model)
+        {
+            var _dbconnectionstrig = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+            try
+            {
+                using (var Conn = new NpgsqlConnection(_dbconnectionstrig))
+                {
+                    var insertquery = string.Empty;
+                    if (model.Id > 0)
+                    {
+                        insertquery = "update categorieses set name = @p_name where id = @p_id ";
+
+                    }
+                    else
+                    {
+                        insertquery = "insert into categorieses(name,companyid)values(@p_name,@p_companyid) ";
+                    }
+
+                    Conn.ExecuteSql(insertquery, new { p_name = model.Name, p_companyid = companyId , p_id = model.Id});
+                }
+
+                return Json(new { success = true, message = "Category created successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         [HttpPost]
         public IActionResult DeleteItem(int id)
         {
@@ -584,7 +693,7 @@ namespace MUNEEMJI.Controllers
                     model.Units = connection.QuerySql<UnitViewModel>("select id , fullname , shortname from units").ToList();
 
                 }
-                
+
             }
 
             catch (Exception ex)
@@ -592,6 +701,61 @@ namespace MUNEEMJI.Controllers
             }
             return PartialView("_UnitsPartial", model);
         }
+
+        [HttpGet]
+        public IActionResult ViewItemForPartial(int id)
+        {
+            BillItem billItem = new BillItem();
+
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                var item = GetItemsAsync(companyId);
+                if (item != null && item.Count() > 0)
+                {
+                    billItem = item.Where(x => x.Id == id).FirstOrDefault();
+                }
+
+                if (item == null)
+                {
+                    return NotFound(new { success = false, message = "Item not found" });
+                }
+
+                var response = new
+                {
+                    id = billItem.Id,
+                    itemName = billItem.ItemName,
+                    salePrice = billItem.SalePrice,
+                    purchasePrice = billItem.PurchasePrice,
+                    openingQuantity = billItem.OpeningQuantity,
+                    onlineStorePrice = billItem.OnlineStorePrice,
+                    transactions = new List<object>
+                    {
+                         new
+                {
+                    type = "Purchase",
+                    location = "Main",
+                    invoiceRef = "123",
+                    name = "Supplier Name",
+                    date = DateTime.UtcNow.ToString("dd/MM/yyyy"),
+                    quantity = 1,
+                    pricePerUnit = 456,
+                    status = "Pending"
+                }
+                    }
+                };
+
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+
+
+                return StatusCode(500, new { success = false, message = "Internal server error" });
+            }
+        }
+
     }
 }
 

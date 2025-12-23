@@ -25,8 +25,6 @@ namespace MUNEEMJI.Controllers
 
         }
 
-
-
         [HttpGet]
         public async Task<IActionResult> Create(int id = 0)
         {
@@ -292,5 +290,195 @@ namespace MUNEEMJI.Controllers
                 return null;
             }
         }
+
+
+        [HttpGet]
+        public IActionResult ViewItemForPartial(int id)
+        {
+            BillItem billItem = new BillItem();
+
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                var item = GetItemsAsync(companyId);
+                if (item != null && item.Count() > 0)
+                {
+                    billItem = item.Where(x => x.Id == id).FirstOrDefault();
+                }
+
+                if (item == null)
+                {
+                    return NotFound(new { success = false, message = "Item not found" });
+                }
+
+                var response = new
+                {
+                    id = billItem.Id,
+                    itemName = billItem.ItemName,
+                    salePrice = billItem.SalePrice,
+                    purchasePrice = billItem.PurchasePrice,
+                    openingQuantity = billItem.OpeningQuantity,
+                    onlineStorePrice = billItem.OnlineStorePrice,
+                    transactions = new List<object>
+                    {
+                         new
+                {
+                    type = "Purchase",
+                    location = "Main",
+                    invoiceRef = "123",
+                    name = "Supplier Name",
+                    date = DateTime.UtcNow.ToString("dd/MM/yyyy"),
+                    quantity = 1,
+                    pricePerUnit = 456,
+                    status = "Pending"
+                }
+                    }
+                };
+
+                return Json(response);
+            }
+            catch (Exception ex)
+            {
+
+
+                return StatusCode(500, new { success = false, message = "Internal server error" });
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Service(int? id)
+        {
+            var viewModel = GetServiceAsync();
+
+            ItemViewModel itemViewModel = new ItemViewModel();
+            itemViewModel.ItemView = viewModel;
+            if (id > 0)
+            {
+                itemViewModel.SelectedItem = new BillItem();
+                itemViewModel.SelectedItem = viewModel.Where(x => x.Id == id).FirstOrDefault();
+            }
+            else
+            {
+
+                itemViewModel.SelectedItem = new BillItem();
+                itemViewModel.SelectedItem = viewModel.FirstOrDefault();
+            }
+
+            return View(itemViewModel);
+
+        }
+
+        public List<BillItem> GetServiceAsync()
+        {
+            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+
+            List<BillItem> items = new List<BillItem>();
+            try
+            {
+
+                using (var connection = new NpgsqlConnection(_connectionString))
+                {
+
+                    // ✅ Query to get all bill items
+                    var billItemSql = @"
+                                    SELECT 
+                                        id AS ""Id"",
+                                        item_type AS ""ItemType"",
+                                        item_name AS ""ItemName"",
+                                        item_hsn AS ""ItemHsn"",
+                                        item_code AS ""ItemCode"",
+                                        category AS ""Category"",
+                                        unit AS ""Unit"",
+                                        item_image_url AS ""ItemImageUrl"",
+                                        sale_price AS ""SalePrice"",
+                                        sale_price_tax_type AS ""SalePriceTaxType"",
+                                        discount_on_sale_price AS ""DiscountOnSalePrice"",
+                                        discount_type AS ""DiscountType"",
+                                        purchase_price AS ""PurchasePrice"",
+                                        purchase_price_tax_type AS ""PurchasePriceTaxType"",
+                                        tax_rate AS ""TaxRate"",
+                                        wholesale_price AS ""WholesalePrice"",
+                                        opening_quantity AS ""OpeningQuantity"",
+                                        at_price AS ""AtPrice"",
+                                        as_of_date AS ""AsOfDate"",
+                                        location AS ""Location"",
+                                        min_stock_to_maintain AS ""MinStockToMaintain"",
+                                        online_store_price AS ""OnlineStorePrice"",
+                                        description AS ""Description"",
+                                        raw_materials AS ""RawMaterials"",
+                                        additional_costs AS ""AdditionalCosts"",
+                                        total_estimated_cost AS ""TotalEstimatedCost"",
+                                        service_name AS ""ServiceName"",
+                                        service_hsn AS ""ServiceHsn"",
+                                        service_code AS ""ServiceCode"",
+                                        created_at AS ""CreatedAt"",
+                                        updated_at AS ""UpdatedAt""
+                                    FROM billitem where item_type = @p_itemtye
+                                    ORDER BY id;
+                                    ";
+
+                    // ✅ Fetch bill items
+                    var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtye = "service" }).ToList();
+
+                    if (billItems != null && billItems.Count > 0)
+                    {
+                        foreach (var billItem in billItems)
+                        {
+                            // ✅ Query to fetch manufacturing data for each bill item
+                            var manufacturingSql = @"
+                                                SELECT 
+                                                    id AS ""Id"",
+                                                    itembillingid AS ""ItemBillingId"",
+                                                    name AS ""Name"",
+                                                    quantity AS ""Quantity"",
+                                                    unit AS ""Unit"",
+                                                    purchasepriceperunit AS ""PurchasePricePerUnit"",
+                                                    estimatedcost AS ""EstimatedCost""
+                                                FROM manufacturing
+                                                WHERE itembillingid = @_itembillingid;
+                                                 ";
+
+                            var manufacturing = connection
+                                .QuerySql<RawMaterial>(manufacturingSql, new { _itembillingid = billItem.Id })
+                                .ToList();
+
+                            billItem.Manufacturing = manufacturing;
+                            items.Add(billItem);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return items;
+        }
+        [HttpPost]
+        public IActionResult DeleteItem(int id)
+        {
+            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+
+            try
+            {
+                if (id > 0)
+                {
+                    string Query = "delete from billitem where id = @p_id";
+                    using (var conn = new NpgsqlConnection(_connectionString))
+                    {
+                        conn.QuerySql(Query, new { p_id = id });
+                    }
+                }
+                return Json(new { success = true, message = "Item deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
     }
 }

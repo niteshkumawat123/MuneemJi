@@ -1,10 +1,51 @@
 ﻿@model ItemViewModel
 
+<style>
+    .service-item-row {
+        padding: 12px 15px;
+        border-bottom: 1px solid #e9ecef;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .service-item-row:hover {
+            background-color: #f8f9fa;
+        }
+
+        .service-item-row.active {
+            background-color: #e7f5ff;
+            border-left: 3px solid #228be6;
+        }
+
+    .service-item-name {
+        flex: 1;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .service-menu-btn {
+        padding: 4px 8px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #6c757d;
+        margin-left: 10px;
+    }
+
+        .service-menu-btn:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+</style>
+
 <div class="d-flex">
     <div class="sidebar">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" placeholder="Search Service...">
+            <input type="text" id="service-search" placeholder="Search services...">
         </div>
 
         <button class="add-item-btn" onclick="window.location.href='/Web/Services/create';">
@@ -20,46 +61,40 @@
 
         <div class="item-list">
             <div class="item-list-header">
-                <div class="item-name">ITEM <i class="fas fa-filter"></i></div>
-               @*  <div class="item-quantity">QUANTITY</div> *@
+                <div class="item-name">SERVICE <i class="fas fa-filter"></i></div>
             </div>
+
             @foreach (var item in Model.ItemView)
             {
-                <div class="item-row">
-                    <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
-                       asp-action="MainIndex" asp-route-id="@item.Id" style="text-decoration: none; color: inherit; width: 100%; display: flex;">
-                        <div class="item-name">@item.ItemName</div>
-@*                         <div class="item-quantity">@item.OpeningQuantity</div>
- *@                        <i class="fas fa-ellipsis-v" style=" color: #6c757d;"></i>
-                    </a>
-
-                    <!-- Updated button with Bootstrap popover -->
+                <div class="service-item-row @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
+                     onclick="loadServiceDetails(@item.Id, this)">
+                    <div class="service-item-name">@item.ItemName</div>
                     <button type="button"
-                            class="btn btn-link p-1"
+                            class="service-menu-btn"
                             data-bs-toggle="popover"
                             data-bs-placement="left"
-                            data-bs-trigger="click"
+                            data-bs-trigger="focus"
                             data-bs-html="true"
-                            data-bs-content='<a href="#" class="popover-action" onclick="viewService(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteService(@item.Id); return false;">Delete</a>'
-                            style="border: none; background: none; outline: none; cursor: pointer;">
-                        <span style="font-size: 16px; color: #6c757d;">⋮</span>
+                            data-item-id="@item.Id"
+                            data-bs-content='<div style="padding:4px 0"><a href="#" class="popover-action view-action" style="display:block;padding:8px 16px;text-decoration:none;color:#333;white-space:nowrap">View</a><a href="#" class="popover-action delete-action" style="display:block;padding:8px 16px;text-decoration:none;color:#333;white-space:nowrap">Delete</a></div>'
+                            onclick="event.stopPropagation();">
+                        <i class="fas fa-ellipsis-v"></i>
                     </button>
                 </div>
             }
         </div>
     </div>
 
-    <div class="content-area">
+    <div class="content-area" id="service-detail-area">
         @if (Model.SelectedItem != null)
         {
             <div class="product-header">
                 <div class="product-title">
                     <span>@Model.SelectedItem.ItemName</span>
-                    <a asp-action="Create" asp-controller="Services" asp-route-id="@Model.SelectedItem.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                    <a asp-action="Create" asp-route-id="@Model.SelectedItem.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
                         <i class="bi bi-pencil"></i>
                     </a>
                 </div>
-             
             </div>
 
             <div class="product-info">
@@ -67,18 +102,6 @@
                     <div class="info-label">Sale Price</div>
                     <div class="info-value">₹ @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
                 </div>
-              @*   <div class="info-card">
-                    <div class="info-label">Purchase Price</div>
-                    <div class="info-value">₹ @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label stock-warning">Stock Quantity</div>
-                    <div class="info-value stock-warning">@(Model.SelectedItem?.OpeningQuantity ?? 0)</div>
-                </div>
-                <div class="info-card">
-                    <div class="info-label">Stock Value</div>
-                    <div class="info-value stock-value">₹ @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
-                </div> *@
             </div>
 
             <div class="transactions-section">
@@ -141,11 +164,232 @@
             <div class="loading-content">
                 <div>
                     <i class="fas fa-box"></i>
-                    <p>Select an item to view details</p>
+                    <p>Select a service to view details</p>
                 </div>
             </div>
         }
     </div>
 </div>
 
+<script>
+    console.log('Services partial loaded');
 
+    function loadServiceDetails(serviceId, rowElement) {
+        console.log('Loading service:', serviceId);
+
+        // Update active state
+        document.querySelectorAll('.service-item-row').forEach(row => {
+            row.classList.remove('active');
+        });
+        if (rowElement) {
+            rowElement.classList.add('active');
+        }
+
+        // Get detail area
+        const detailArea = document.getElementById('service-detail-area');
+        if (!detailArea) return;
+
+        // Show loading
+        detailArea.innerHTML = `
+            <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                <div style="text-align: center; color: #6c757d;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
+                    <p>Loading service details...</p>
+                </div>
+            </div>`;
+
+        // Fetch data
+        fetch(`/Web/Services/ViewItemForPartial?id=${serviceId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to load');
+            return response.json();
+        })
+        .then(data => {
+            console.log('Service data:', data);
+            renderServiceDetails(data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            detailArea.innerHTML = `
+                <div class="loading-content" style="display: flex; justify-content: center; align-items: center; height: 400px;">
+                    <div style="text-align: center; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
+                        <p>Error loading service details</p>
+                        <button class="btn btn-primary btn-sm" onclick="loadServiceDetails(${serviceId})">Retry</button>
+                    </div>
+                </div>`;
+        });
+    }
+
+    function renderServiceDetails(item) {
+        const detailArea = document.getElementById('service-detail-area');
+        if (!item) return;
+
+        const salePrice = (item.salePrice || 0).toFixed(2);
+        const purchasePrice = (item.purchasePrice || 0).toFixed(2);
+        const openingQuantity = item.openingQuantity || 0;
+        const stockValue = (item.onlineStorePrice || 0).toFixed(2);
+
+        // Build transactions HTML
+        let transactionsHTML = '';
+        if (item.transactions && item.transactions.length > 0) {
+            transactionsHTML = item.transactions.map(t => `
+                <tr>
+                    <td>
+                        <span class="transaction-indicator indicator-${t.type?.toLowerCase()}"></span>
+                        ${t.type || 'N/A'} (${t.location || 'N/A'})
+                    </td>
+                    <td>${t.invoiceRef || '-'}</td>
+                    <td>${t.name || '-'}</td>
+                    <td>${t.date || '-'}</td>
+                    <td>${t.quantity || '-'}</td>
+                    <td>₹ ${(t.pricePerUnit || 0).toLocaleString('en-IN', {minimumFractionDigits: 2})}</td>
+                    <td>
+                        <span class="status-badge status-${t.status?.toLowerCase()}">${t.status || 'N/A'}</span>
+                    </td>
+                    <td>
+                        <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
+                    </td>
+                </tr>
+            `).join('');
+        } else {
+            transactionsHTML = '<tr><td colspan="8" class="no-transactions">No transactions to show</td></tr>';
+        }
+
+        // Render the complete details
+        detailArea.innerHTML = `
+            <div class="product-header">
+                <div class="product-title">
+                    <span>${item.itemName || 'Unknown Service'}</span>
+                    <a href="/Web/Services/Create?id=${item.id}" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="product-info">
+                <div class="info-card">
+                    <div class="info-label">Sale Price</div>
+                    <div class="info-value">₹ ${salePrice} (excl)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Purchase Price</div>
+                    <div class="info-value">₹ ${purchasePrice} (excl)</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label stock-warning">Stock Quantity</div>
+                    <div class="info-value stock-warning">${openingQuantity}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Stock Value</div>
+                    <div class="info-value stock-value">₹ ${stockValue}</div>
+                </div>
+            </div>
+
+            <div class="transactions-section">
+                <div class="section-header">
+                    <h3 class="section-title">TRANSACTIONS</h3>
+                    <div class="search-transactions">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search transactions...">
+                    </div>
+                </div>
+
+                <div class="transactions-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TYPE <i class="fas fa-sort sort-icon"></i></th>
+                                <th>INVOICE/REF. <i class="fas fa-sort sort-icon"></i></th>
+                                <th>NAME <i class="fas fa-sort sort-icon"></i></th>
+                                <th>DATE <i class="fas fa-sort-down sort-icon"></i></th>
+                                <th>QUANTITY <i class="fas fa-sort sort-icon"></i></th>
+                                <th>PRICE/UNIT <i class="fas fa-sort sort-icon"></i></th>
+                                <th>STATUS <i class="fas fa-sort sort-icon"></i></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${transactionsHTML}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }
+
+    // Search functionality
+    const searchInput = document.getElementById('service-search');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const term = this.value.toLowerCase();
+            document.querySelectorAll('.service-item-row').forEach(row => {
+                const name = row.querySelector('.service-item-name')?.textContent.toLowerCase();
+                row.style.display = (name && name.includes(term)) ? '' : 'none';
+            });
+        });
+    }
+
+    // Initialize popovers
+        // Initialize popovers with proper event handling
+    if (typeof bootstrap !== 'undefined') {
+        setTimeout(() => {
+            const popoverElements = document.querySelectorAll('[data-bs-toggle="popover"]');
+
+            popoverElements.forEach(el => {
+                const popover = new bootstrap.Popover(el, {
+                    html: true,
+                    sanitize: false,
+                    trigger: 'focus'
+                });
+
+                // Add event listener for when popover is shown
+                el.addEventListener('shown.bs.popover', function() {
+                    const itemId = this.getAttribute('data-item-id');
+
+                    // Handle View action
+                    const viewBtn = document.querySelector('.popover .view-action');
+                    if (viewBtn) {
+                        viewBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            viewService(itemId);
+                            popover.hide();
+                        });
+                    }
+
+                    // Handle Delete action
+                    const deleteBtn = document.querySelector('.popover .delete-action');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', function(e) {
+                            e.preventDefault();
+                            deleteService(itemId);
+                            popover.hide();
+                        });
+                    }
+                });
+            });
+        }, 100);
+    }
+
+    // Global functions for popover actions
+    window.viewService = function(id) {
+        console.log('View service:', id);
+        window.location.href = `/Web/Services/Details/${id}`;
+    };
+
+    window.deleteService = function(id) {
+        if (confirm('Are you sure you want to delete this service?')) {
+            console.log('Delete service:', id);
+            // Add your delete logic here
+        }
+    };
+
+    // Make loadServiceDetails global
+    window.loadServiceDetails = loadServiceDetails;
+</script>

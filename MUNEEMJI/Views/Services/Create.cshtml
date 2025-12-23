@@ -1266,7 +1266,7 @@
                 : 'Service has been saved successfully!');
 
             // Redirect to partial view page after success
-            showMessageModal(true, message, '/Web/items/MainIndex#services');
+            showMessageModal(true, message, '/Web/Services/Service');
         } else {
             const error = await response.text();
             console.error('Error:', error);
@@ -1437,7 +1437,7 @@
             uploadContent.style.display = 'block';
         }
          function closeView() {
-                       window.location.href = '/Web/items/mainindex'; // Or your desired controller/action
+                       window.location.href = '/Web/Services/Service'; // Or your desired controller/action
                }
 
 

@@ -1,0 +1,548 @@
+﻿@model MUNEEMJI.Models.AddUserViewModel
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .edituser-body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+    }
+
+    .edituser-container {
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .edituser-modal-header {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+    }
+
+        .edituser-modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+    .edituser-close-btn {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+    .edituser-modal-body {
+        padding: 20px;
+    }
+
+    .edituser-form-row {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .edituser-form-group {
+        flex: 1;
+    }
+
+        .edituser-form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .edituser-form-group input,
+        .edituser-form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+            .edituser-form-group input:focus,
+            .edituser-form-group select:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+            .edituser-form-group input:disabled {
+                background-color: #f8f9fa;
+                cursor: not-allowed;
+            }
+
+    .edituser-required {
+        color: #dc3545;
+    }
+
+    .edituser-help-text {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .edituser-custom-dropdown {
+        position: relative;
+    }
+
+    .edituser-dropdown-trigger {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background: white;
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-sizing: border-box;
+        user-select: none;
+    }
+
+        .edituser-dropdown-trigger:hover {
+            border-color: #007bff;
+        }
+
+        .edituser-dropdown-trigger:active {
+            background-color: #f8f9fa;
+        }
+
+    .edituser-dropdown-list {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ccc;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 9999;
+        display: none;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+        .edituser-dropdown-list.edituser-dropdown-visible {
+            display: block !important;
+        }
+
+    .edituser-dropdown-option {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.2s;
+    }
+
+        .edituser-dropdown-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .edituser-dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+    .edituser-permissions-panel {
+        margin-top: 30px;
+        display: block;
+    }
+
+    .edituser-permissions-header {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .edituser-permissions-grid {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+    }
+
+        .edituser-permissions-grid th {
+            background-color: #f8f9fa;
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            border: 1px solid #e0e0e0;
+        }
+
+        .edituser-permissions-grid td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+            .edituser-permissions-grid td:first-child {
+                text-align: left;
+                font-weight: 500;
+            }
+
+    .edituser-permission-allowed {
+        color: #28a745;
+        font-size: 16px;
+    }
+
+    .edituser-permission-denied {
+        color: #dc3545;
+        font-size: 16px;
+    }
+
+    .edituser-permission-notapplicable {
+        color: #999;
+        font-size: 12px;
+    }
+
+    .edituser-modal-footer {
+        padding: 20px;
+        border-top: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        background: white;
+    }
+
+    .edituser-btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .edituser-delete-btn {
+        background-color: #dc3545;
+        color: white;
+    }
+
+        .edituser-delete-btn:hover {
+            background-color: #c82333;
+        }
+
+    .edituser-submit-btn {
+        background-color: #007bff;
+        color: white;
+    }
+
+        .edituser-submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+    .edituser-status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        margin-left: 10px;
+    }
+
+    .edituser-status-active {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .edituser-status-inactive {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+</style>
+
+<div class="edituser-container">
+    <div class="edituser-modal-header">
+        <div>
+            <h2>
+                Edit User
+                @if (true)
+                {
+                    <span class="edituser-status-badge edituser-status-active">Active</span>
+                }
+                else
+                {
+                    <span class="edituser-status-badge edituser-status-inactive">Inactive</span>
+                }
+            </h2>
+        </div>
+        <a href="@Url.Action("Index", "User")" class="edituser-close-btn">×</a>
+    </div>
+
+    <form asp-action="EditUser" method="post" id="edituserForm">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="edituser-modal-body">
+            <div class="edituser-form-row">
+                <div class="edituser-form-group">
+                    <label>Full Name <span class="edituser-required">*</span></label>
+                    <input type="text" asp-for="FullName" required />
+                </div>
+
+                <div class="edituser-form-group">
+                    <label>Phone Number or Email <span class="edituser-required">*</span></label>
+                    <input type="text" asp-for="PhoneOrEmail" disabled />
+                    <div class="edituser-help-text">Contact information cannot be changed.</div>
+                </div>
+
+                <div class="edituser-form-group">
+                    <label>User Role <span class="edituser-required">*</span></label>
+                    <div class="edituser-custom-dropdown">
+                        <div class="edituser-dropdown-trigger" onclick="edituserToggleDropdown()" id="edituserDropdownTrigger">
+                            <span id="edituserSelectedRole">@Model.AvailableRoles</span>
+                            <span>▼</span>
+                        </div>
+                        <div class="edituser-dropdown-list" id="edituserRoleDropdown">
+                            @if (Model.AvailableRoles != null && Model.AvailableRoles.Any())
+                            {
+                                @foreach (var role in Model.AvailableRoles)
+                                {
+                                    <div class="edituser-dropdown-option" onclick="edituserSelectRole('@role.RoleId', '@role.RoleName')">@role.RoleName</div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="edituser-dropdown-option" onclick="edituserSelectRole('1', 'Secondary Admin')">Secondary Admin</div>
+                                <div class="edituser-dropdown-option" onclick="edituserSelectRole('2', 'Salesman')">Salesman</div>
+                                <div class="edituser-dropdown-option" onclick="edituserSelectRole('3', 'Biller')">Biller</div>
+                                <div class="edituser-dropdown-option" onclick="edituserSelectRole('4', 'Biller and Salesman')">Biller and Salesman</div>
+                                <div class="edituser-dropdown-option" onclick="edituserSelectRole('5', 'CA/Accountant')">CA/Accountant</div>
+                                <div class="edituser-dropdown-option" onclick="edituserSelectRole('6', 'Stock Keeper')">Stock Keeper</div>
+                            }
+                        </div>
+                    </div>
+                    <input type="hidden" asp-for="SelectedRoleId" id="edituserSelectedRoleId" value="@Model.SelectedRoleId" />
+                </div>
+            </div>
+
+            <div class="edituser-permissions-panel" id="edituserPermissionsPanel">
+                <div class="edituser-permissions-header" id="edituserPermissionsHeader">@Model.AvailableRoles Permissions</div>
+
+                <table class="edituser-permissions-grid">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Module</th>
+                            <th>VIEW</th>
+                            <th>CREATE</th>
+                            <th>EDIT</th>
+                            <th>SHARE</th>
+                            <th>DELETE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="edituserPermissionsTableBody">
+                        @if (Model.ModulePermissions != null && Model.ModulePermissions.Any())
+                        {
+                            @foreach (var permission in Model.ModulePermissions)
+                            {
+                                <tr>
+                                    <td>@permission.ModuleName</td>
+                                    <td>
+                                        @if (permission.CanView)
+                                        {
+                                            <span class="edituser-permission-allowed">✓</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="edituser-permission-denied">✗</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (permission.CanCreate)
+                                        {
+                                            <span class="edituser-permission-allowed">✓</span>
+                                        }
+                                        else if (!permission.CanCreate && permission.ModuleName.Contains("Settings"))
+                                        {
+                                            <span class="edituser-permission-notapplicable">NA</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="edituser-permission-denied">✗</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (permission.CanEdit)
+                                        {
+                                            <span class="edituser-permission-allowed">✓</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="edituser-permission-denied">✗</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (permission.CanShare)
+                                        {
+                                            <span class="edituser-permission-allowed">✓</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="edituser-permission-notapplicable">NA</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (permission.CanDelete)
+                                        {
+                                            <span class="edituser-permission-allowed">✓</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="edituser-permission-notapplicable">NA</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: #999;">No permissions data available</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="edituser-modal-footer">
+            <button type="button" class="edituser-btn edituser-delete-btn" onclick="edituserConfirmDelete()">Delete User</button>
+            <button type="submit" class="edituser-btn edituser-submit-btn">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function edituserToggleDropdown() {
+        var dropdown = document.getElementById('edituserRoleDropdown');
+        var trigger = document.getElementById('edituserDropdownTrigger');
+
+        dropdown.classList.toggle('edituser-dropdown-visible');
+
+        if (trigger) {
+            if (dropdown.classList.contains('edituser-dropdown-visible')) {
+                trigger.style.backgroundColor = '#e3f2fd';
+                trigger.style.borderColor = '#007bff';
+            } else {
+                trigger.style.backgroundColor = '';
+                trigger.style.borderColor = '#ccc';
+            }
+        }
+    }
+
+    function edituserSelectRole(roleId, roleName) {
+        var selectedRoleSpan = document.getElementById('edituserSelectedRole');
+        var selectedRoleInput = document.getElementById('edituserSelectedRoleId');
+        var dropdown = document.getElementById('edituserRoleDropdown');
+        var trigger = document.getElementById('edituserDropdownTrigger');
+
+        if (selectedRoleSpan) selectedRoleSpan.textContent = roleName;
+        if (selectedRoleInput) selectedRoleInput.value = roleId;
+
+        if (dropdown) dropdown.classList.remove('edituser-dropdown-visible');
+        if (trigger) {
+            trigger.style.backgroundColor = '';
+            trigger.style.borderColor = '#28a745';
+        }
+
+        var permissionsHeader = document.getElementById('edituserPermissionsHeader');
+        if (permissionsHeader) {
+            permissionsHeader.textContent = roleName + ' Permissions';
+        }
+
+        edituserLoadRolePermissions(roleId);
+    }
+
+    function edituserLoadRolePermissions(roleId) {
+        console.log('Loading permissions for role:', roleId);
+
+        fetch('/Web/User/GetRolePermissions?roleId=' + roleId)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(permissions => {
+                console.log('Permissions received:', permissions);
+                edituserUpdatePermissionsTable(permissions);
+            })
+            .catch(error => {
+                console.error('Error loading permissions:', error);
+                alert(`Failed to load permissions. Error: ${error.message || error}`);
+            });
+    }
+
+    function edituserUpdatePermissionsTable(permissions) {
+        const tbody = document.getElementById('edituserPermissionsTableBody');
+        tbody.innerHTML = '';
+
+        permissions.forEach(permission => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${permission.moduleName}</td>
+                <td>${permission.canView ? '<span class="edituser-permission-allowed">✓</span>' : '<span class="edituser-permission-denied">✗</span>'}</td>
+                <td>${permission.canCreate ? '<span class="edituser-permission-allowed">✓</span>' : '<span class="edituser-permission-notapplicable">NA</span>'}</td>
+                <td>${permission.canEdit ? '<span class="edituser-permission-allowed">✓</span>' : '<span class="edituser-permission-notapplicable">NA</span>'}</td>
+                <td>${permission.canShare ? '<span class="edituser-permission-allowed">✓</span>' : '<span class="edituser-permission-notapplicable">NA</span>'}</td>
+                <td>${permission.canDelete ? '<span class="edituser-permission-allowed">✓</span>' : '<span class="edituser-permission-notapplicable">NA</span>'}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function edituserConfirmDelete() {
+        if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+            window.location.href = '@Url.Action("DeleteUser", "User", new { id = Model.Id })';
+        }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+        var customDropdown = document.querySelector('.edituser-custom-dropdown');
+        var dropdown = document.getElementById('edituserRoleDropdown');
+        var trigger = document.getElementById('edituserDropdownTrigger');
+
+        if (customDropdown && dropdown && !customDropdown.contains(event.target)) {
+            dropdown.classList.remove('edituser-dropdown-visible');
+            if (trigger) {
+                trigger.style.backgroundColor = '';
+                trigger.style.borderColor = '#ccc';
+            }
+        }
+    });
+
+    // Form validation
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('edituserForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                var roleId = document.getElementById('edituserSelectedRoleId').value;
+                if (!roleId) {
+                    e.preventDefault();
+                    alert('Please select a user role.');
+                    return false;
+                }
+            });
+        }
+    });
+</script>

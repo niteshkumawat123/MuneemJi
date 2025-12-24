@@ -756,6 +756,105 @@ namespace MUNEEMJI.Controllers
             }
             return PartialView("Sale_Purchase_Order_report", Model);
         }
+
+        public async Task<IActionResult> LoanReport()
+        {
+            var transactions = new List<LoanReportModel>();
+
+            try
+            {
+                string sql = @"
+        SELECT 
+            id,
+            loanaccountid,
+            transactiontype,
+            principalamount,
+            interestamount,
+            totalamount,
+            transactiondate,
+            paymentmethod,
+            interestrate,
+            termduration,
+            description,
+            createddate
+        FROM loantransactions
+        ORDER BY transactiondate DESC, createddate DESC";
+
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                using var cmd = new NpgsqlCommand(sql, conn);
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                while (await reader.ReadAsync())
+                {
+                    transactions.Add(new LoanReportModel
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("id")),
+                        LoanAccountId = reader.IsDBNull(reader.GetOrdinal("loanaccountid"))
+                            ? 0
+                            : reader.GetInt32(reader.GetOrdinal("loanaccountid")),
+
+                        TransactionType = reader.IsDBNull(reader.GetOrdinal("transactiontype"))
+                            ? null
+                            : reader.GetString(reader.GetOrdinal("transactiontype")),
+
+                        PrincipalAmount = reader.IsDBNull(reader.GetOrdinal("principalamount"))
+                            ? 0
+                            : reader.GetDecimal(reader.GetOrdinal("principalamount")),
+
+                        InterestAmount = reader.IsDBNull(reader.GetOrdinal("interestamount"))
+                            ? 0
+                            : reader.GetDecimal(reader.GetOrdinal("interestamount")),
+
+                        TotalAmount = reader.GetDecimal(reader.GetOrdinal("totalamount")),
+
+                        TransactionDate = reader.IsDBNull(reader.GetOrdinal("transactiondate"))
+                            ? null
+                            : reader.GetDateTime(reader.GetOrdinal("transactiondate")),
+
+                        PaymentMethod = reader.IsDBNull(reader.GetOrdinal("paymentmethod"))
+                            ? null
+                            : reader.GetString(reader.GetOrdinal("paymentmethod")),
+
+                        InterestRate = reader.IsDBNull(reader.GetOrdinal("interestrate"))
+                            ? null
+                            : reader.GetDecimal(reader.GetOrdinal("interestrate")),
+
+                        TermDuration = reader.IsDBNull(reader.GetOrdinal("termduration"))
+                            ? null
+                            : reader.GetInt32(reader.GetOrdinal("termduration")),
+
+                        Description = reader.IsDBNull(reader.GetOrdinal("description"))
+                            ? null
+                            : reader.GetString(reader.GetOrdinal("description")),
+
+                        CreatedDate = reader.IsDBNull(reader.GetOrdinal("createddate"))
+                            ? null
+                            : reader.GetDateTime(reader.GetOrdinal("createddate"))
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return View(transactions);
+        }
+
+        public async Task<IActionResult>ExpenseReport()
+        {
+            return View();
+        }
+        public async Task<IActionResult> ExpenseCategoryReport()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> ExpenseItemReport()
+        {
+            return View();
+        }
     }
 }
 

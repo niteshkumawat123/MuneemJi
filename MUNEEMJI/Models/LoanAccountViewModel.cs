@@ -124,4 +124,31 @@ namespace MUNEEMJI.Models
         public decimal Amount { get; set; }
         public string LoanReceivedIn { get; set; }
     }
+    public class LoanReportModel
+    {
+        public int Id { get; set; }
+
+        public int LoanAccountId { get; set; }
+
+        public string TransactionType { get; set; }
+
+        public decimal PrincipalAmount { get; set; }
+
+        public decimal InterestAmount { get; set; }
+
+        public decimal TotalAmount { get; set; }
+
+        public DateTime? TransactionDate { get; set; }
+
+        public string PaymentMethod { get; set; }
+
+        public decimal? InterestRate { get; set; }
+
+        public int? TermDuration { get; set; }
+
+        public string Description { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+    }
+
 }

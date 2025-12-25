@@ -1,0 +1,690 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .month-dropdown {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            background-color: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 5L6 8L9 5' stroke='%23333' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .between-btn {
+            padding: 8px 16px;
+            background-color: #9e9e9e;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .date-input {
+            padding: 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 130px;
+        }
+
+        .date-separator {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .form-select {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+            font-size: 12px;
+        }
+
+            .icon-btn svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .icon-btn:hover {
+                color: #333;
+            }
+
+        /* Transactions Section */
+        .transactions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .transactions-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .search-box {
+            width: 250px;
+            padding: 10px 15px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+            .search-box:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+        .add-expense-btn {
+            padding: 12px 24px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+            .add-expense-btn:hover {
+                background-color: #c82333;
+            }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #fafafa;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+            th .sort-icon {
+                display: inline-flex;
+                flex-direction: column;
+                margin-left: 5px;
+                cursor: pointer;
+            }
+
+                th .sort-icon svg {
+                    width: 12px;
+                    height: 12px;
+                }
+
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+            tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+            tbody tr.selected-row {
+                background-color: #e8e8e8;
+            }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background-color: #d4edda;
+            color: #28a745;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: #666;
+        }
+
+            .menu-btn:hover {
+                color: #333;
+            }
+
+        /* Footer */
+        .watermark {
+            text-align: right;
+            color: #d0d0d0;
+            font-size: 18px;
+            margin-top: 40px;
+            margin-bottom: 5px;
+        }
+
+        .watermark-subtitle {
+            text-align: right;
+            color: #e0e0e0;
+            font-size: 12px;
+        }
+
+        @@media (max-width: 1024px) {
+            .header-section
+
+        {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .action-buttons {
+            justify-content: flex-end;
+        }
+
+        .date-input,
+        .form-select,
+        .month-dropdown {
+            width: 100%;
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .container
+
+        {
+            padding: 15px;
+        }
+
+        .transactions-header {
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        .search-box {
+            width: 100%;
+        }
+
+        table {
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="filter-group">
+                <select class="month-dropdown" id="monthSelect">
+                    <option value="this-month">This Month</option>
+                    <option value="last-month">Last Month</option>
+                    <option value="this-quarter">This Quarter</option>
+                    <option value="this-year">This Year</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+
+                <button class="between-btn">Between</button>
+
+                <input type="text" class="date-input" value="01/12/2025" id="startDate">
+                <span class="date-separator">To</span>
+                <input type="text" class="date-input" value="31/12/2025" id="endDate">
+
+                <select class="form-select" id="firmsSelect">
+                    <option value="all">ALL FIRMS</option>
+                    <option value="firm1">Firm 1</option>
+                    <option value="firm2">Firm 2</option>
+                </select>
+
+                <select class="form-select" id="usersSelect">
+                    <option value="all">ALL USERS</option>
+                    <option value="user1">User 1</option>
+                    <option value="user2">User 2</option>
+                </select>
+            </div>
+
+            <div class="action-buttons">
+                <button class="icon-btn" id="graphBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                    <span>Graph</span>
+                </button>
+
+                <button class="icon-btn" id="excelBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    <span>Excel Report</span>
+                </button>
+
+                <button class="icon-btn" id="printBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>Print</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Transactions Section -->
+        <div class="transactions-header">
+            <h2 class="transactions-title">TRANSACTIONS</h2>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; flex: 1; justify-content: space-between;">
+                <input type="text" class="search-box" placeholder="Search..." id="searchBox">
+                <button class="add-expense-btn" id="addExpenseBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    Add Expense
+                </button>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            DATE
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            EXP NO.
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            PARTY
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            CATEGORY
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            PAYMENT TYPE
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            AMOUNT
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            BALANCE DUE
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            DUE DATE
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            STATUS
+                            <span class="sort-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"></polyline>
+                                </svg>
+                            </span>
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>18/12/2025</td>
+                        <td></td>
+                        <td></td>
+                        <td>Interest Paym...</td>
+                        <td></td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td></td>
+                        <td><span class="status-badge">Paid</span></td>
+                        <td>
+                            <button class="menu-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="5" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="19" r="2"></circle>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>18/12/2025</td>
+                        <td></td>
+                        <td></td>
+                        <td>Interest Paym...</td>
+                        <td></td>
+                        <td>1</td>
+                        <td>0</td>
+                        <td></td>
+                        <td><span class="status-badge">Paid</span></td>
+                        <td>
+                            <button class="menu-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="5" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="19" r="2"></circle>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>18/12/2025</td>
+                        <td></td>
+                        <td></td>
+                        <td>Charges on L...</td>
+                        <td></td>
+                        <td>10000</td>
+                        <td>0</td>
+                        <td></td>
+                        <td><span class="status-badge">Paid</span></td>
+                        <td>
+                            <button class="menu-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="5" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="19" r="2"></circle>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="selected-row">
+                        <td>18/12/2025</td>
+                        <td></td>
+                        <td></td>
+                        <td>Charges on L...</td>
+                        <td></td>
+                        <td>1000</td>
+                        <td>0</td>
+                        <td></td>
+                        <td><span class="status-badge">Paid</span></td>
+                        <td>
+                            <button class="menu-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="5" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="19" r="2"></circle>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>18/12/2025</td>
+                        <td></td>
+                        <td></td>
+                        <td>Charges on L...</td>
+                        <td></td>
+                        <td>129</td>
+                        <td>0</td>
+                        <td></td>
+                        <td><span class="status-badge">Paid</span></td>
+                        <td>
+                            <button class="menu-btn">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="5" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="19" r="2"></circle>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+       
+    </div>
+
+    <script>
+        // Date picker initialization
+        document.getElementById('startDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('endDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        // Month dropdown change handler
+        document.getElementById('monthSelect').addEventListener('change', function() {
+            console.log('Selected period:', this.value);
+            // Implement date range logic based on selection
+        });
+
+        // Firms dropdown change handler
+        document.getElementById('firmsSelect').addEventListener('change', function() {
+            console.log('Selected firm:', this.value);
+            // Implement firm filter logic
+        });
+
+        // Users dropdown change handler
+        document.getElementById('usersSelect').addEventListener('change', function() {
+            console.log('Selected user:', this.value);
+            // Implement user filter logic
+        });
+
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Add Expense button
+        document.getElementById('addExpenseBtn').addEventListener('click', function() {
+            alert('Add Expense functionality would be implemented here');
+        });
+
+        // Graph button
+        document.getElementById('graphBtn').addEventListener('click', function() {
+            alert('Graph view functionality would be implemented here');
+        });
+
+        // Excel button
+        document.getElementById('excelBtn').addEventListener('click', function() {
+            alert('Excel export functionality would be implemented here');
+        });
+
+        // Print button
+        document.getElementById('printBtn').addEventListener('click', function() {
+            window.print();
+        });
+
+        // Row click handler
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', function(e) {
+                if (!e.target.closest('.menu-btn')) {
+                    document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('selected-row'));
+                    this.classList.add('selected-row');
+                }
+            });
+        });
+
+        // Menu button handlers
+        document.querySelectorAll('.menu-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                alert('Options: Edit, Delete, View Details');
+            });
+        });
+
+        // Sort functionality
+        document.querySelectorAll('.sort-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const th = this.closest('th');
+                const column = Array.from(th.parentElement.children).indexOf(th);
+                const tbody = document.querySelector('tbody');
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                rows.sort((a, b) => {
+                    const aVal = a.children[column].textContent;
+                    const bVal = b.children[column].textContent;
+                    return aVal.localeCompare(bVal, undefined, {numeric: true});
+                });
+
+                // Toggle sort direction
+                if (this.dataset.direction === 'asc') {
+                    rows.reverse();
+                    this.dataset.direction = 'desc';
+                } else {
+                    this.dataset.direction = 'asc';
+                }
+
+                rows.forEach(row => tbody.appendChild(row));
+            });
+        });
+    </script>
+</body>
+</html>

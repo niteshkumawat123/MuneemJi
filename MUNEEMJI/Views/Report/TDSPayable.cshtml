@@ -1,0 +1,712 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TDS Payable Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .month-dropdown {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+            background-color: white;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3 5L6 8L9 5' stroke='%23333' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+        }
+
+        .from-label {
+            padding: 8px 16px;
+            background-color: #9e9e9e;
+            color: white;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .date-input {
+            padding: 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 130px;
+        }
+
+        .date-separator {
+            font-weight: 600;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-select {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #495057;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+            .icon-btn svg {
+                width: 26px;
+                height: 26px;
+            }
+
+            .icon-btn:hover {
+                color: #333;
+            }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            width: 250px;
+            padding: 10px 15px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+            .search-box:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+        /* Table Section */
+        .table-container {
+            overflow-x: auto;
+            flex: 1;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 11px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+            th:first-child {
+                width: 40px;
+                text-align: center;
+            }
+
+            th .filter-icon {
+                display: inline-flex;
+                margin-left: 5px;
+                cursor: pointer;
+                vertical-align: middle;
+            }
+
+                th .filter-icon svg {
+                    width: 12px;
+                    height: 12px;
+                }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+            tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        td {
+            padding: 14px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+        }
+
+            td:first-child {
+                text-align: center;
+                color: #666;
+            }
+
+        /* Empty State */
+        .empty-state-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 450px;
+            flex: 1;
+        }
+
+        .empty-icon {
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+            .empty-icon svg {
+                width: 120px;
+                height: 120px;
+            }
+
+        .empty-message {
+            text-align: center;
+        }
+
+            .empty-message h3 {
+                color: #333;
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+            .empty-message p {
+                color: #999;
+                font-size: 14px;
+            }
+
+        /* Footer Section */
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            margin-top: auto;
+        }
+
+        .totals-left {
+            display: flex;
+            gap: 50px;
+        }
+
+        .total-item {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+            .total-item .amount {
+                color: #28a745;
+            }
+
+        .watermark {
+            text-align: right;
+            color: #e0e0e0;
+        }
+
+        .watermark-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .watermark-subtitle {
+            font-size: 12px;
+            color: #d0d0d0;
+        }
+
+        @@media (max-width: 1024px) {
+            .header-section
+
+        {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .filter-group {
+            flex-direction: column;
+        }
+
+        .date-input,
+        .form-select,
+        .month-dropdown {
+            width: 100%;
+        }
+
+        .action-buttons {
+            justify-content: flex-end;
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .container
+
+        {
+            padding: 15px;
+        }
+
+        .footer-section {
+            flex-direction: column-reverse;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .totals-left {
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .watermark {
+            text-align: left;
+        }
+
+        table {
+            font-size: 10px;
+        }
+
+        th, td {
+            padding: 8px 4px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="filter-group">
+                <select class="month-dropdown" id="monthSelect">
+                    <option value="this-month">This Month</option>
+                    <option value="last-month">Last Month</option>
+                    <option value="this-quarter">This Quarter</option>
+                    <option value="this-year">This Year</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+
+                <span class="from-label">From</span>
+
+                <input type="text" class="date-input" value="01/12/2025" id="startDate">
+                <span class="date-separator">To</span>
+                <input type="text" class="date-input" value="31/12/2025" id="endDate">
+
+                <select class="form-select" id="firmsSelect">
+                    <option value="all">ALL FIRMS</option>
+                    <option value="firm1">Firm 1</option>
+                    <option value="firm2">Firm 2</option>
+                </select>
+            </div>
+
+            <div class="action-buttons">
+                <button class="icon-btn" id="excelBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                    </svg>
+                    <span>Excel Report</span>
+                </button>
+
+                <button class="icon-btn" id="printBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>Print</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <input type="text" class="search-box" placeholder="🔍" id="searchBox">
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>
+                            PARTY NAME
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            TRANSACTION...
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            BILL NO
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            TOTAL AMOUNT
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            TAXABLE AMO...
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            TDS PAYABLE
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            DATE OF D...
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            TAX NAME
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            TAX SECT...
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                        <th>
+                            TDS R...
+                            <span class="filter-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                                    <line x1="11" y1="18" x2="13" y2="18"></line>
+                                </svg>
+                            </span>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="reportTableBody">
+                    <!-- Data will be populated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state-container" id="emptyState">
+            <div class="empty-icon">
+                <svg viewBox="0 0 200 200" fill="none">
+                    <rect x="40" y="50" width="80" height="100" rx="4" stroke="#ddd" stroke-width="3" fill="none" />
+                    <rect x="80" y="30" width="80" height="100" rx="4" stroke="#ccc" stroke-width="3" fill="white" />
+                    <line x1="90" y1="50" x2="150" y2="50" stroke="#ddd" stroke-width="2" />
+                    <line x1="90" y1="65" x2="150" y2="65" stroke="#ddd" stroke-width="2" />
+                    <line x1="90" y1="80" x2="140" y2="80" stroke="#ddd" stroke-width="2" />
+                    <line x1="90" y1="95" x2="150" y2="95" stroke="#ddd" stroke-width="2" />
+                    <circle cx="135" cy="110" r="8" fill="#007bff" />
+                </svg>
+            </div>
+            <div class="empty-message">
+                <h3>No Data Available!</h3>
+                <p>Please try again after making relevant changes.</p>
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer-section">
+            <div class="totals-left">
+                <div class="total-item">Total Purchase With TDS: <span class="amount">₹ 0.00</span></div>
+                <div class="total-item">Total TDS: <span class="amount">₹ 0.00</span></div>
+            </div>
+
+            <div class="watermark">
+                <div class="watermark-title">Activate Windows</div>
+                <div class="watermark-subtitle">Go to Settings to activate Windows.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date picker initialization
+        document.getElementById('startDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('endDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('startDate').addEventListener('blur', function() {
+            if (!this.value) {
+                this.type = 'text';
+            }
+        });
+
+        document.getElementById('endDate').addEventListener('blur', function() {
+            if (!this.value) {
+                this.type = 'text';
+            }
+        });
+
+        // Month dropdown change handler
+        document.getElementById('monthSelect').addEventListener('change', function() {
+            console.log('Selected period:', this.value);
+            fetchTDSPayableReport();
+        });
+
+        // Firms dropdown change handler
+        document.getElementById('firmsSelect').addEventListener('change', function() {
+            console.log('Selected firm:', this.value);
+            fetchTDSPayableReport();
+        });
+
+        // Date change handlers
+        document.getElementById('startDate').addEventListener('change', function() {
+            console.log('Start date changed:', this.value);
+            fetchTDSPayableReport();
+        });
+
+        document.getElementById('endDate').addEventListener('change', function() {
+            console.log('End date changed:', this.value);
+            fetchTDSPayableReport();
+        });
+
+        // Search functionality
+        document.getElementById('searchBox').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#reportTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Excel Export button
+        document.getElementById('excelBtn').addEventListener('click', function() {
+            console.log('Export to Excel clicked');
+            exportToExcel();
+        });
+
+        // Print button
+        document.getElementById('printBtn').addEventListener('click', function() {
+            console.log('Print clicked');
+            window.print();
+        });
+
+        // Helper Functions
+        function fetchTDSPayableReport() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const firm = document.getElementById('firmsSelect').value;
+
+            console.log('Fetching TDS Payable report', { startDate, endDate, firm });
+
+            // Example API call:
+            // fetch(`/api/tds-payable-report?start=${startDate}&end=${endDate}&firm=${firm}`)
+            //     .then(response => response.json())
+            //     .then(data => updateReport(data))
+            //     .catch(error => console.error('Error:', error));
+
+            // For demonstration, show empty state
+            showEmptyState();
+        }
+
+        function updateReport(data) {
+            console.log('Updating report with data:', data);
+
+            if (!data || data.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            hideEmptyState();
+            populateTable(data);
+            updateTotals(data);
+        }
+
+        function populateTable(data) {
+            const tbody = document.getElementById('reportTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.partyName}</td>
+                    <td>${item.transactionType}</td>
+                    <td>${item.billNo}</td>
+                    <td>₹ ${formatNumber(item.totalAmount)}</td>
+                    <td>₹ ${formatNumber(item.taxableAmount)}</td>
+                    <td>₹ ${formatNumber(item.tdsPayable)}</td>
+                    <td>${item.dateOfDeduction}</td>
+                    <td>${item.taxName}</td>
+                    <td>${item.taxSection}</td>
+                    <td>${item.tdsRate}%</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateTotals(data) {
+            if (!data || data.length === 0) {
+                document.querySelector('.totals-left').innerHTML = `
+                    <div class="total-item">Total Purchase With TDS: <span class="amount">₹ 0.00</span></div>
+                    <div class="total-item">Total TDS: <span class="amount">₹ 0.00</span></div>
+                `;
+                return;
+            }
+
+            const totalPurchase = data.reduce((sum, item) => sum + (item.totalAmount || 0), 0);
+            const totalTDS = data.reduce((sum, item) => sum + (item.tdsPayable || 0), 0);
+
+            document.querySelector('.totals-left').innerHTML = `
+                <div class="total-item">Total Purchase With TDS: <span class="amount">₹ ${formatNumber(totalPurchase)}</span></div>
+                <div class="total-item">Total TDS: <span class="amount">₹ ${formatNumber(totalTDS)}</span></div>
+            `;
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function showEmptyState() {
+            document.getElementById('emptyState').style.display = 'flex';
+            document.getElementById('reportTableBody').innerHTML = '';
+        }
+
+        function hideEmptyState() {
+            document.getElementById('emptyState').style.display = 'none';
+        }
+
+        function exportToExcel() {
+            alert('Excel Export\n\nThis would generate and download an Excel file containing:\n- TDS Payable Report\n- All purchase transaction details with TDS\n- Total Purchase With TDS and Total TDS\n- For the selected date range');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('TDS Payable Report page loaded');
+            fetchTDSPayableReport();
+        });
+    </script>
+</body>
+</html>

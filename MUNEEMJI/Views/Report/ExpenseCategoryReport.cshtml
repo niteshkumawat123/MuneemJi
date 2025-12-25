@@ -1,0 +1,504 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Summary</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 80vh;
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .date-range-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .date-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .date-input {
+            padding: 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 140px;
+            background-color: white;
+        }
+
+            .date-input:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+        .calendar-icon {
+            color: #999;
+        }
+
+        .user-select {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #007bff;
+            background-color: white;
+            cursor: pointer;
+            min-width: 150px;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #d0d0d0;
+            border-radius: 50%;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+            .icon-btn:hover {
+                background-color: #f0f0f0;
+            }
+
+            .icon-btn.excel {
+                background-color: #e8f5f1;
+            }
+
+            .icon-btn.print {
+                background-color: #e8f0f5;
+            }
+
+        /* Expense Section */
+        .expense-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .expense-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            letter-spacing: 0.5px;
+        }
+
+        .add-expense-btn {
+            padding: 10px 24px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+            .add-expense-btn:hover {
+                background-color: #c82333;
+            }
+
+        /* Table Section */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        thead {
+            background-color: #fafafa;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+            tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        .amount-cell {
+            text-align: right;
+            font-weight: 500;
+        }
+
+        /* Footer Section */
+        .footer-section {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            margin-top: 60px;
+            position: relative;
+        }
+
+        .watermark {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            color: #e0e0e0;
+        }
+
+        .watermark-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .watermark-subtitle {
+            font-size: 12px;
+            color: #d0d0d0;
+        }
+
+        .total-section {
+            text-align: right;
+        }
+
+        .total-expense {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            color: #dc3545;
+            font-weight: 700;
+        }
+
+        @@media (max-width: 768px) {
+            .container
+
+        {
+            padding: 15px;
+        }
+
+        .header-section {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .date-range-group {
+            flex-direction: column;
+        }
+
+        .date-input {
+            width: 100%;
+        }
+
+        .user-select {
+            width: 100%;
+        }
+
+        .action-icons {
+            justify-content: flex-end;
+        }
+
+        .expense-header {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 15px;
+        }
+
+        .add-expense-btn {
+            justify-content: center;
+        }
+
+        table {
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 10px 8px;
+        }
+
+        .footer-section {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 30px;
+        }
+
+        .watermark {
+            position: static;
+        }
+
+        .total-section {
+            text-align: left;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="date-range-group">
+                <div class="date-input-wrapper">
+                    <span class="date-label">From</span>
+                    <input type="text" class="date-input" value="01/12/2025" id="fromDate">
+                    <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+
+                <div class="date-input-wrapper">
+                    <span class="date-label">To</span>
+                    <input type="text" class="date-input" value="24/12/2025" id="toDate">
+                    <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+
+                <select class="user-select" id="userSelect">
+                    <option value="all">ALL USERS</option>
+                    <option value="user1">User 1</option>
+                    <option value="user2">User 2</option>
+                </select>
+            </div>
+
+            <div class="action-icons">
+                <button class="icon-btn excel" id="excelBtn" title="Export to Excel">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00a67e" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+                <button class="icon-btn print" id="printBtn" title="Print">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Expense Section -->
+        <div class="expense-header">
+            <h2 class="expense-title">EXPENSE</h2>
+            <button class="add-expense-btn" id="addExpenseBtn">
+                <span style="font-size: 18px;">+</span>
+                Add Expense
+            </button>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Expense Category</th>
+                        <th>Category Type</th>
+                        <th style="text-align: right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Interest Payment for [khk]</td>
+                        <td>Indirect Expense</td>
+                        <td class="amount-cell">₹ 2.00</td>
+                    </tr>
+                    <tr>
+                        <td>Charges on Loan</td>
+                        <td>Indirect Expense</td>
+                        <td class="amount-cell">₹ 11,129.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer-section">
+         
+
+            <div class="total-section">
+                <p class="total-expense">
+                    Total Expense: <span class="total-amount">₹ 11,131.00</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date picker initialization
+        document.getElementById('fromDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('toDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('fromDate').addEventListener('blur', function() {
+            if (!this.value) {
+                this.type = 'text';
+            }
+        });
+
+        document.getElementById('toDate').addEventListener('blur', function() {
+            if (!this.value) {
+                this.type = 'text';
+            }
+        });
+
+        // User select change handler
+        document.getElementById('userSelect').addEventListener('change', function() {
+            console.log('Selected user:', this.value);
+            // Implement user filter logic here
+            // This would typically make an API call to filter expenses by user
+        });
+
+        // Date change handlers
+        document.getElementById('fromDate').addEventListener('change', function() {
+            console.log('From date changed:', this.value);
+            // Implement date filter logic here
+            // This would typically make an API call to fetch expenses for the date range
+        });
+
+        document.getElementById('toDate').addEventListener('change', function() {
+            console.log('To date changed:', this.value);
+            // Implement date filter logic here
+        });
+
+        // Add Expense button
+        document.getElementById('addExpenseBtn').addEventListener('click', function() {
+            // This would typically open a modal or redirect to an expense form
+            console.log('Add Expense clicked');
+            alert('Add Expense functionality would be implemented here');
+        });
+
+        // Excel Export button
+        document.getElementById('excelBtn').addEventListener('click', function() {
+            console.log('Export to Excel clicked');
+            // Implement Excel export logic here
+            // This would typically make an API call to generate and download an Excel file
+            alert('Excel export functionality would be implemented here');
+        });
+
+        // Print button
+        document.getElementById('printBtn').addEventListener('click', function() {
+            console.log('Print clicked');
+            window.print();
+        });
+
+        // Table row click handler (for editing)
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', function() {
+                console.log('Row clicked:', this.cells[0].textContent);
+                // Implement row click logic (e.g., edit expense)
+                // This would typically open an edit modal or redirect to an edit page
+            });
+        });
+
+        // Format currency function
+        function formatCurrency(amount) {
+            return '₹ ' + amount.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Calculate and update total
+        function updateTotal() {
+            const rows = document.querySelectorAll('tbody tr');
+            let total = 0;
+
+            rows.forEach(row => {
+                const amountText = row.cells[2].textContent.replace(/[₹,\s]/g, '');
+                const amount = parseFloat(amountText);
+                if (!isNaN(amount)) {
+                    total += amount;
+                }
+            });
+
+            document.querySelector('.total-amount').textContent = formatCurrency(total);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Expense Summary page loaded');
+            // Any initialization code can go here
+        });
+    </script>
+</body>
+</html>

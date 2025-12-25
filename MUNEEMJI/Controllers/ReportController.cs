@@ -855,6 +855,33 @@ namespace MUNEEMJI.Controllers
         {
             return View();
         }
+
+        public async Task<IActionResult> GstReport()
+        {
+            return View();
+        }
+        public async Task<IActionResult> GSTRateReport()
+        {
+            return View();
+        }
+        public async Task<IActionResult> Form27EQ()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> TCSReceivable()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> TDSPayable()
+        {
+            return View();
+        }
+        public async Task<IActionResult> TDSReceivable()
+        {
+            return View();
+        }
     }
 }
 

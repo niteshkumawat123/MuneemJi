@@ -1,0 +1,755 @@
+﻿
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Report Details</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .date-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .date-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .date-input {
+            padding: 6px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 130px;
+            background-color: white;
+        }
+
+            .date-input:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+        .calendar-icon {
+            color: #999;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+        }
+
+            .checkbox-group input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+
+            .checkbox-group label {
+                font-size: 14px;
+                color: #495057;
+                cursor: pointer;
+                user-select: none;
+            }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #d0d0d0;
+            border-radius: 50%;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+            .icon-btn:hover {
+                background-color: #f0f0f0;
+            }
+
+            .icon-btn.excel {
+                background-color: #e8f5f1;
+            }
+
+            .icon-btn.print {
+                background-color: #e8f0f5;
+            }
+
+        /* Details Section */
+        .details-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Table Section */
+        .table-container {
+            overflow-x: auto;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th {
+            padding: 10px 6px;
+            text-align: center;
+            font-weight: 600;
+            color: #495057;
+            border: 1px solid #e0e0e0;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+            th:first-child {
+                text-align: left;
+                min-width: 150px;
+            }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+            tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        td {
+            padding: 10px 6px;
+            border: 1px solid #e0e0e0;
+            color: #333;
+            text-align: center;
+            font-size: 12px;
+        }
+
+            td:first-child {
+                text-align: left;
+                font-weight: 500;
+                color: #495057;
+            }
+
+            td.profit {
+                color: #28a745;
+                font-weight: 600;
+            }
+
+        /* Footer Section */
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+            margin-top: auto;
+        }
+
+        .total-amount {
+            font-size: 16px;
+            font-weight: 700;
+            color: #333;
+        }
+
+            .total-amount .amount {
+                color: #28a745;
+            }
+
+        .watermark {
+            text-align: right;
+            color: #e0e0e0;
+        }
+
+        .watermark-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .watermark-subtitle {
+            font-size: 12px;
+            color: #d0d0d0;
+        }
+
+        @@media (max-width: 1024px) {
+            .header-section
+
+        {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .date-filter-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .checkbox-group {
+            margin-left: 0;
+        }
+
+        .action-buttons {
+            justify-content: flex-end;
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .container
+
+        {
+            padding: 15px;
+        }
+
+        .footer-section {
+            flex-direction: column-reverse;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .watermark {
+            text-align: left;
+        }
+
+        table {
+            font-size: 10px;
+        }
+
+        th, td {
+            padding: 6px 4px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="date-filter-group">
+                <div class="date-input-group">
+                    <span class="date-label">From</span>
+                    <input type="text" class="date-input" value="01/12/2025" id="fromDate">
+                    <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+
+                <span class="date-label">To</span>
+
+                <div class="date-input-group">
+                    <input type="text" class="date-input" value="27/12/2025" id="toDate">
+                    <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="itemsHavingSale">
+                    <label for="itemsHavingSale">Items Having Sale</label>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="icon-btn excel" id="excelBtn" title="Export to Excel">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00a67e" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+
+                <button class="icon-btn print" id="printBtn" title="Print">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Details Title -->
+        <h2 class="details-title">DETAILS</h2>
+
+        <!-- Table Section -->
+        <div class="table-container">
+            <table id="stockTable">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Sale</th>
+                        <th>Cr. Note / Sale Return</th>
+                        <th>Purchase</th>
+                        <th>Dr. Note / Purchase Return</th>
+                        <th>Opening Stock</th>
+                        <th>Closing Stock</th>
+                        <th>Tax Receivable</th>
+                        <th>Tax Payable</th>
+                        <th>Mfg. Cost</th>
+                        <th>Consumption Cost</th>
+                        <th>Net Profit/Loss</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2, 4 D Ethyl Ester 38% EC</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Acephate 75% SP</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>asdfasf</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Atrazine 50% WP</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Chlorpyriphos 20% EC</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Chlorpyriphos 50% + Cypermethrin 5% EC</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Chlorpyriphos 50% EC</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Cypermethrin 10% EC</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Cypermethrin 3% + Quinalphos 20% EC</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Digitel Marketing</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Emamectin Benzoate 5% SG</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Fenvelrate 0.4% DP</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Fenvelrate 20% EC</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Fipronil 0.3% GR</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>ncncv</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>teslakit</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 0.00</td>
+                    </tr>
+                    <tr>
+                        <td>Test Item - 1</td>
+                        <td>180</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>84.75</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td>0</td>
+                        <td class="profit">₹ 95.25</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer-section">
+            <div class="total-amount">
+                Total Amount: <span class="amount">₹ 95.25</span>
+            </div>
+
+            <div class="watermark">
+                <div class="watermark-title">Activate Windows</div>
+                <div class="watermark-subtitle">Go to Settings to activate Windows.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date picker initialization
+        document.getElementById('fromDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('toDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('fromDate').addEventListener('blur', function() {
+            if (!this.value) {
+                this.type = 'text';
+            }
+        });
+
+        document.getElementById('toDate').addEventListener('blur', function() {
+            if (!this.value) {
+                this.type = 'text';
+            }
+        });
+
+        // Calendar icon click handlers
+        document.querySelectorAll('.calendar-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                input.type = 'date';
+                input.focus();
+            });
+        });
+
+        // Date change handlers
+        document.getElementById('fromDate').addEventListener('change', function() {
+            console.log('From date changed:', this.value);
+            fetchStockReport();
+        });
+
+        document.getElementById('toDate').addEventListener('change', function() {
+            console.log('To date changed:', this.value);
+            fetchStockReport();
+        });
+
+        // Items Having Sale checkbox
+        document.getElementById('itemsHavingSale').addEventListener('change', function() {
+            console.log('Items Having Sale filter:', this.checked);
+            filterItemsWithSale(this.checked);
+        });
+
+        // Excel Export button
+        document.getElementById('excelBtn').addEventListener('click', function() {
+            console.log('Export to Excel clicked');
+            exportToExcel();
+        });
+
+        // Print button
+        document.getElementById('printBtn').addEventListener('click', function() {
+            console.log('Print clicked');
+            window.print();
+        });
+
+        // Helper Functions
+        function fetchStockReport() {
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+
+            console.log('Fetching stock report from', fromDate, 'to', toDate);
+
+            // Example API call:
+            // fetch(`/api/stock-report?from=${fromDate}&to=${toDate}`)
+            //     .then(response => response.json())
+            //     .then(data => updateTable(data))
+            //     .catch(error => console.error('Error:', error));
+        }
+
+        function filterItemsWithSale(showOnlyWithSale) {
+            const rows = document.querySelectorAll('#stockTable tbody tr');
+
+            rows.forEach(row => {
+                const saleCell = row.cells[1];
+                const saleValue = parseInt(saleCell.textContent);
+
+                if (showOnlyWithSale) {
+                    row.style.display = saleValue > 0 ? '' : 'none';
+                } else {
+                    row.style.display = '';
+                }
+            });
+
+            updateTotalAmount();
+        }
+
+        function updateTotalAmount() {
+            const rows = document.querySelectorAll('#stockTable tbody tr');
+            let total = 0;
+
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const profitCell = row.cells[11];
+                    const profitText = profitCell.textContent.replace(/[₹,\s]/g, '');
+                    const profitValue = parseFloat(profitText);
+                    if (!isNaN(profitValue)) {
+                        total += profitValue;
+                    }
+                }
+            });
+
+            document.querySelector('.total-amount .amount').textContent = formatCurrency(total);
+        }
+
+        function formatCurrency(amount) {
+            return '₹ ' + amount.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function exportToExcel() {
+            alert('Excel Export\n\nThis would generate and download an Excel file containing:\n- Stock Report Details\n- All item-wise transactions\n- Opening stock, closing stock, and profit/loss\n- For the selected date range');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Stock Report Details page loaded');
+            updateTotalAmount();
+        });
+    </script>
+</body>
+</html>

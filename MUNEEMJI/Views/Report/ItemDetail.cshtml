@@ -1,0 +1,634 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Wise Movement Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .date-filter-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .date-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .date-input {
+            padding: 6px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 130px;
+            background-color: white;
+        }
+
+            .date-input:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+        .calendar-icon {
+            color: #999;
+            cursor: pointer;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #d0d0d0;
+            border-radius: 50%;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+            .icon-btn:hover {
+                background-color: #f0f0f0;
+            }
+
+            .icon-btn.excel {
+                background-color: #e8f5f1;
+            }
+
+            .icon-btn.print {
+                background-color: #e8f0f5;
+            }
+
+        /* Details Section */
+        .details-section {
+            margin-bottom: 20px;
+        }
+
+        .details-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .item-name-input {
+            padding: 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 200px;
+            background-color: white;
+        }
+
+            .item-name-input:focus {
+                outline: none;
+                border-color: #007bff;
+            }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .checkbox-wrapper input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+
+            .checkbox-wrapper label {
+                font-size: 14px;
+                color: #495057;
+                cursor: pointer;
+                user-select: none;
+            }
+
+        .form-select {
+            padding: 8px 30px 8px 12px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        /* Table Section */
+        .table-container {
+            overflow-x: auto;
+            flex: 1;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            border-bottom: 2px solid #e0e0e0;
+            font-size: 13px;
+        }
+
+            th:not(:first-child) {
+                text-align: right;
+            }
+
+        tbody tr {
+            transition: background-color 0.2s;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+            tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        td {
+            padding: 14px 16px;
+            color: #333;
+        }
+
+            td:first-child {
+                color: #495057;
+            }
+
+            td:not(:first-child) {
+                text-align: right;
+            }
+
+        /* Empty State */
+        .empty-state-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            flex: 1;
+        }
+
+        .empty-icon {
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+            .empty-icon svg {
+                width: 100px;
+                height: 100px;
+            }
+
+        .empty-message {
+            text-align: center;
+            color: #999;
+            font-size: 15px;
+        }
+
+        /* Footer Section */
+        .footer-section {
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+            padding-top: 20px;
+            margin-top: auto;
+        }
+
+        .watermark {
+            text-align: right;
+            color: #e0e0e0;
+        }
+
+        .watermark-title {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .watermark-subtitle {
+            font-size: 12px;
+            color: #d0d0d0;
+        }
+
+        @@media (max-width: 1024px) {
+            .header-section
+
+        {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .date-filter-group {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .action-buttons {
+            justify-content: flex-end;
+        }
+
+        .filter-controls {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .item-name-input,
+        .form-select {
+            width: 100%;
+        }
+
+        }
+
+        @@media (max-width: 768px) {
+            .container
+
+        {
+            padding: 15px;
+        }
+
+        table {
+            font-size: 11px;
+        }
+
+        th, td {
+            padding: 8px 10px;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="date-filter-group">
+                <div class="date-input-group">
+                    <span class="date-label">From</span>
+                    <input type="text" class="date-input" value="01/12/2025" id="fromDate">
+                    <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+
+                <span class="date-label">To</span>
+
+                <div class="date-input-group">
+                    <input type="text" class="date-input" value="27/12/2025" id="toDate">
+                    <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="icon-btn excel" id="excelBtn" title="Export to Excel">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00a67e" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+
+                <button class="icon-btn print" id="printBtn" title="Print">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Details Section -->
+        <div class="details-section">
+            <h2 class="details-title">DETAILS</h2>
+
+            <div class="filter-controls">
+                <div class="filter-item">
+                    <span class="filter-label">Item name</span>
+                    <input type="text" class="item-name-input" id="itemNameInput" placeholder="Search by item name...">
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="hideInactiveDates">
+                    <label for="hideInactiveDates">Hide inactive dates</label>
+                </div>
+
+                <select class="form-select" id="godownFilter">
+                    <option value="all">All Godown</option>
+                    <option value="godown1">Godown 1</option>
+                    <option value="godown2">Godown 2</option>
+                    <option value="godown3">Godown 3</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-container">
+            <table id="movementTable">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Sale Quantity</th>
+                        <th>Purchase Quantity</th>
+                        <th>Adjustment Quantity</th>
+                        <th>Closing Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Empty initially -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state-container" id="emptyState">
+            <div class="empty-icon">
+                <svg viewBox="0 0 200 200" fill="none">
+                    <circle cx="100" cy="100" r="60" stroke="#ddd" stroke-width="3" fill="none" />
+                    <path d="M70 100 L90 120 L130 80" stroke="#ddd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                </svg>
+            </div>
+            <div class="empty-message">
+                Select an item to view movement details
+            </div>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer-section">
+            <div class="watermark">
+                <div class="watermark-title">Activate Windows</div>
+                <div class="watermark-subtitle">Go to Settings to activate Windows.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Date picker initialization
+        document.getElementById('fromDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('toDate').addEventListener('click', function() {
+            this.type = 'date';
+        });
+
+        document.getElementById('fromDate').addEventListener('blur', function() {
+            if (!this.value) {
+                this.type = 'text';
+            }
+        });
+
+        document.getElementById('toDate').addEventListener('blur', function() {
+            if (!this.value) {
+                this.type = 'text';
+            }
+        });
+
+        // Calendar icon click handlers
+        document.querySelectorAll('.calendar-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                input.type = 'date';
+                input.focus();
+            });
+        });
+
+        // Date change handlers
+        document.getElementById('fromDate').addEventListener('change', function() {
+            console.log('From date changed:', this.value);
+            fetchMovementData();
+        });
+
+        document.getElementById('toDate').addEventListener('change', function() {
+            console.log('To date changed:', this.value);
+            fetchMovementData();
+        });
+
+        // Item name search
+        document.getElementById('itemNameInput').addEventListener('input', function() {
+            const itemName = this.value.trim();
+            console.log('Item name search:', itemName);
+
+            if (itemName) {
+                fetchMovementData(itemName);
+            } else {
+                showEmptyState();
+            }
+        });
+
+        // Hide inactive dates checkbox
+        document.getElementById('hideInactiveDates').addEventListener('change', function() {
+            console.log('Hide inactive dates:', this.checked);
+            filterInactiveDates(this.checked);
+        });
+
+        // Godown filter
+        document.getElementById('godownFilter').addEventListener('change', function() {
+            console.log('Selected godown:', this.value);
+            fetchMovementData();
+        });
+
+        // Excel Export button
+        document.getElementById('excelBtn').addEventListener('click', function() {
+            console.log('Export to Excel clicked');
+            exportToExcel();
+        });
+
+        // Print button
+        document.getElementById('printBtn').addEventListener('click', function() {
+            console.log('Print clicked');
+            window.print();
+        });
+
+        // Helper Functions
+        function fetchMovementData(itemName = null) {
+            if (!itemName) {
+                itemName = document.getElementById('itemNameInput').value.trim();
+            }
+
+            if (!itemName) {
+                showEmptyState();
+                return;
+            }
+
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const godown = document.getElementById('godownFilter').value;
+
+            console.log('Fetching movement data', { itemName, fromDate, toDate, godown });
+
+            // Example API call:
+            // fetch(`/api/item-movement?item=${itemName}&from=${fromDate}&to=${toDate}&godown=${godown}`)
+            //     .then(response => response.json())
+            //     .then(data => updateTable(data))
+            //     .catch(error => console.error('Error:', error));
+
+            // For demo, show empty state
+            showEmptyState();
+        }
+
+        function updateTable(data) {
+            if (!data || data.length === 0) {
+                showEmptyState();
+                return;
+            }
+
+            hideEmptyState();
+
+            const tbody = document.querySelector('#movementTable tbody');
+            tbody.innerHTML = '';
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.date}</td>
+                    <td>${formatNumber(item.saleQuantity)}</td>
+                    <td>${formatNumber(item.purchaseQuantity)}</td>
+                    <td>${formatNumber(item.adjustmentQuantity)}</td>
+                    <td>${formatNumber(item.closingQuantity)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterInactiveDates(hideInactive) {
+            if (!hideInactive) {
+                document.querySelectorAll('#movementTable tbody tr').forEach(row => {
+                    row.style.display = '';
+                });
+                return;
+            }
+
+            const rows = document.querySelectorAll('#movementTable tbody tr');
+            rows.forEach(row => {
+                const saleQty = parseInt(row.cells[1].textContent) || 0;
+                const purchaseQty = parseInt(row.cells[2].textContent) || 0;
+                const adjustmentQty = parseInt(row.cells[3].textContent) || 0;
+
+                const hasActivity = saleQty > 0 || purchaseQty > 0 || adjustmentQty !== 0;
+                row.style.display = hasActivity ? '' : 'none';
+            });
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('en-IN');
+        }
+
+        function showEmptyState() {
+            document.getElementById('emptyState').style.display = 'flex';
+            document.querySelector('.table-container').style.display = 'none';
+        }
+
+        function hideEmptyState() {
+            document.getElementById('emptyState').style.display = 'none';
+            document.querySelector('.table-container').style.display = 'block';
+        }
+
+        function exportToExcel() {
+            const itemName = document.getElementById('itemNameInput').value.trim();
+
+            if (!itemName) {
+                alert('Please select an item first');
+                return;
+            }
+
+            alert('Excel Export\n\nThis would generate and download an Excel file containing:\n- Item Wise Movement Report for: ' + itemName + '\n- Date-wise movement details\n- Sale, Purchase, Adjustment, and Closing quantities\n- For the selected date range');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Item Wise Movement Report page loaded');
+            showEmptyState();
+        });
+    </script>
+</body>
+</html>

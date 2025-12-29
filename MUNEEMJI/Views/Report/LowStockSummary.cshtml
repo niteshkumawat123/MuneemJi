@@ -1,0 +1,445 @@
+﻿@{
+
+    Layout = null;
+}
+@model List<BillItem>;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Summary Report</title>
+    <style>
+        * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        }
+
+        body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+        }
+
+        .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        min-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        }
+
+        /* Header Section */
+        .header-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+        gap: 20px;
+        }
+
+        .filters-group {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        }
+
+        .filter-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #495057;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        }
+
+        .filter-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        }
+
+        .form-select {
+        padding: 8px 30px 8px 12px;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+        font-size: 14px;
+        background-color: white;
+        cursor: pointer;
+        min-width: 180px;
+        }
+
+        .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        border: 2px solid #d0d0d0;
+        }
+
+        .checkbox-wrapper label {
+        font-size: 14px;
+        color: #495057;
+        cursor: pointer;
+        user-select: none;
+        }
+
+        .action-buttons {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        }
+
+        .icon-btn {
+        width: 42px;
+        height: 42px;
+        border: 1px solid #d0d0d0;
+        border-radius: 50%;
+        background-color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+        background-color: #f0f0f0;
+        }
+
+        .icon-btn.excel {
+        background-color: #e8f5f1;
+        }
+
+        .icon-btn.print {
+        background-color: #e8f0f5;
+        }
+
+        /* Table Section */
+        .table-container {
+        overflow-x: auto;
+        flex: 1;
+        margin-bottom: 20px;
+        }
+
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+        }
+
+        thead {
+        background-color: #f8f9fa;
+        }
+
+        th {
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: #495057;
+        border-bottom: 2px solid #e0e0e0;
+        font-size: 13px;
+        }
+
+        th:first-child {
+        width: 60px;
+        text-align: center;
+        }
+
+        th:nth-child(3),
+        th:nth-child(4) {
+        text-align: right;
+        }
+
+        tbody tr {
+        transition: background-color 0.2s;
+        border-bottom: 1px solid #e9ecef;
+        }
+
+        tbody tr:hover {
+        background-color: #f8f9fa;
+        }
+
+        td {
+        padding: 14px 16px;
+        color: #333;
+        }
+
+        td:first-child {
+        text-align: center;
+        color: #666;
+        font-weight: 500;
+        }
+
+        td:nth-child(3),
+        td:nth-child(4) {
+        text-align: right;
+        }
+
+        td:last-child {
+        text-align: right;
+        color: #495057;
+        font-weight: 500;
+        }
+
+        /* Footer Section */
+        .footer-section {
+        display: flex;
+        justify-content: flex-end;
+        align-items: flex-end;
+        padding-top: 20px;
+        margin-top: auto;
+        }
+
+        .watermark {
+        text-align: right;
+        color: #e0e0e0;
+        }
+
+        .watermark-title {
+        font-size: 18px;
+        margin-bottom: 5px;
+        }
+
+        .watermark-subtitle {
+        font-size: 12px;
+        color: #d0d0d0;
+        }
+
+        @@media (max-width: 1024px) {
+        .header-section {
+        flex-direction: column;
+        align-items: stretch;
+        }
+
+        .filters-group {
+        flex-direction: column;
+        align-items: stretch;
+        }
+
+        .filter-item {
+        flex-direction: column;
+        align-items: stretch;
+        }
+
+        .form-select {
+        width: 100%;
+        }
+
+        .action-buttons {
+        justify-content: flex-end;
+        }
+        }
+
+        @@media (max-width: 768px) {
+        .container {
+        padding: 15px;
+        }
+
+        table {
+        font-size: 12px;
+        }
+
+        th, td {
+        padding: 10px 8px;
+        }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="filters-group">
+                <span class="filter-label">FILTERS</span>
+
+                <div class="filter-item">
+                    <select class="form-select" id="categoryFilter">
+                        <option value="all">All Categories</option>
+                        <option value="pesticides">Pesticides</option>
+                        <option value="fertilizers">Fertilizers</option>
+                        <option value="seeds">Seeds</option>
+                    </select>
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="showInStockItems">
+                    <label for="showInStockItems">Show items in stock</label>
+                </div>
+
+                <div class="filter-item">
+                    <select class="form-select" id="godownFilter">
+                        <option value="all">All Godown</option>
+                        <option value="godown1">Godown 1</option>
+                        <option value="godown2">Godown 2</option>
+                        <option value="godown3">Godown 3</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="icon-btn excel" id="excelBtn" title="Export to Excel">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00a67e" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                </button>
+
+                <button class="icon-btn print" id="printBtn" title="Print">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a90e2" stroke-width="2">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="table-container">
+            <table id="stockTable">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Item Name</th>
+                        <th>Minimum Stock Qty</th>
+                        <th>Stock Qty</th>
+                        <th>Stock Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Count() > 0)
+                    {
+                        int counter = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@counter</td>
+                                <td>@item.ItemName</td>
+                                <td>@item.MinStockToMaintain</td>
+                                <td>@item.OpeningQuantity</td>
+                                <td>₹@item.OnlineStorePrice</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer-section">
+            <div class="watermark">
+                <div class="watermark-title">Activate Windows</div>
+                <div class="watermark-subtitle">Go to Settings to activate Windows.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Category filter change handler
+        document.getElementById('categoryFilter').addEventListener('change', function() {
+            console.log('Selected category:', this.value);
+            filterStockData();
+        });
+
+        // Show in stock items checkbox
+        document.getElementById('showInStockItems').addEventListener('change', function() {
+            console.log('Show in stock items:', this.checked);
+            filterInStockItems(this.checked);
+        });
+
+        // Godown filter change handler
+        document.getElementById('godownFilter').addEventListener('change', function() {
+            console.log('Selected godown:', this.value);
+            filterStockData();
+        });
+
+        // Excel Export button
+        document.getElementById('excelBtn').addEventListener('click', function() {
+            console.log('Export to Excel clicked');
+            exportToExcel();
+        });
+
+        // Print button
+        document.getElementById('printBtn').addEventListener('click', function() {
+            console.log('Print clicked');
+            window.print();
+        });
+
+        // Helper Functions
+        function filterStockData() {
+            const category = document.getElementById('categoryFilter').value;
+            const godown = document.getElementById('godownFilter').value;
+
+            console.log('Filtering stock data...', { category, godown });
+
+            // Example API call:
+            // fetch(`/api/stock-summary?category=${category}&godown=${godown}`)
+            //     .then(response => response.json())
+            //     .then(data => updateTable(data))
+            //     .catch(error => console.error('Error:', error));
+        }
+
+        function filterInStockItems(showOnlyInStock) {
+            const rows = document.querySelectorAll('#stockTable tbody tr');
+
+            rows.forEach(row => {
+                const stockQtyCell = row.cells[3];
+                const stockQty = parseInt(stockQtyCell.textContent);
+
+                if (showOnlyInStock) {
+                    row.style.display = stockQty > 0 ? '' : 'none';
+                } else {
+                    row.style.display = '';
+                }
+            });
+        }
+
+        function updateTable(data) {
+            const tbody = document.querySelector('#stockTable tbody');
+            tbody.innerHTML = '';
+
+            data.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${item.itemName}</td>
+                    <td>${item.minimumStockQty}</td>
+                    <td>${item.stockQty}</td>
+                    <td>${formatCurrency(item.stockValue)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function formatCurrency(amount) {
+            return '₹ ' + amount.toLocaleString('en-IN', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        function exportToExcel() {
+            alert('Excel Export\n\nThis would generate and download an Excel file containing:\n- Stock Summary Report\n- Item names, minimum stock, current stock, and stock value\n- Filtered by selected category and godown');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Stock Summary Report page loaded');
+        });
+    </script>
+</body>
+</html>

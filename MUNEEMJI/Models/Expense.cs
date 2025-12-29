@@ -116,12 +116,16 @@ namespace MUNEEMJI.Models
         public int ExpenseId { get; set; }
 
         public int ItemId { get; set; }
+        public string itemname { get; set; }
 
         public decimal Quantity { get; set; }
 
         public decimal Price { get; set; }
 
         public decimal Amount { get; set; }
+        public string expenseno { get; set; }
+        public DateTime? expensedate { get; set; }
+        public string Category { get; set; }
     }
     public class ExpenseItemMaster
     {

@@ -1,7 +1,7 @@
 ﻿@{
-
     Layout = null;
 }
+@model List<ExpenseItemTransection>;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -208,6 +208,24 @@
                     height: 14px;
                 }
 
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s;
+        }
+
+            tbody tr:hover {
+                background-color: #f9f9f9;
+            }
+
+        td {
+            padding: 14px 16px;
+            color: #333;
+        }
+
+            td:first-child {
+                font-weight: 500;
+            }
+
         /* Empty State */
         .empty-state {
             flex: 1;
@@ -256,64 +274,58 @@
         }
 
         @@media (max-width: 1024px) {
-            .header-section
+            .header-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
 
-        {
-            flex-direction: column;
-            align-items: stretch;
-        }
+            .filter-group {
+                flex-direction: column;
+            }
 
-        .filter-group {
-            flex-direction: column;
-        }
+            .date-input,
+            .form-select,
+            .month-dropdown {
+                width: 100%;
+            }
 
-        .date-input,
-        .form-select,
-        .month-dropdown {
-            width: 100%;
-        }
-
-        .action-buttons {
-            justify-content: flex-end;
-        }
-
+            .action-buttons {
+                justify-content: flex-end;
+            }
         }
 
         @@media (max-width: 768px) {
-            .container
+            .container {
+                padding: 15px;
+            }
 
-        {
-            padding: 15px;
-        }
+            .search-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
 
-        .search-section {
-            flex-direction: column;
-            align-items: stretch;
-        }
+            .search-box {
+                width: 100%;
+            }
 
-        .search-box {
-            width: 100%;
-        }
+            .add-expense-btn {
+                justify-content: center;
+            }
 
-        .add-expense-btn {
-            justify-content: center;
-        }
+            .footer-section {
+                flex-direction: column-reverse;
+                gap: 20px;
+                align-items: flex-start;
+            }
 
-        .footer-section {
-            flex-direction: column-reverse;
-            gap: 20px;
-            align-items: flex-start;
-        }
+            .totals-left {
+                flex-direction: column;
+                gap: 10px;
+            }
 
-        .totals-left {
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .watermark {
-            text-align: left;
-        }
-
+            .watermark {
+                text-align: left;
+            }
         }
     </style>
 </head>
@@ -373,7 +385,7 @@
 
         <!-- Search and Button Section -->
         <div class="search-section">
-            <input type="text" class="search-box" placeholder="🔍" id="searchBox">
+            <input type="text" class="search-box" placeholder="🔍 Search expenses..." id="searchBox">
             <button class="add-expense-btn" id="addExpenseBtn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -386,61 +398,88 @@
 
         <!-- Table Section -->
         <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>
-                            EXPENSE ITEM
-                            <span class="sort-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M7 10l5 5 5-5"></path>
-                                </svg>
-                            </span>
-                        </th>
-                        <th>
-                            UNIT PRICE
-                            <span class="sort-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M7 10l5 5 5-5"></path>
-                                </svg>
-                            </span>
-                        </th>
-                        <th>
-                            QUANTITY
-                            <span class="sort-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M7 10l5 5 5-5"></path>
-                                </svg>
-                            </span>
-                        </th>
-                        <th>
-                            AMOUNT
-                            <span class="sort-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M7 10l5 5 5-5"></path>
-                                </svg>
-                            </span>
-                        </th>
-                    </tr>
-                </thead>
-            </table>
-
-            <!-- Empty State -->
-            <div class="empty-state">
-                No transactions to show
-            </div>
+            @if (Model != null && Model.Count() > 0)
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>
+                                EXPENSE ITEM
+                                <span class="sort-icon" data-column="item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M7 10l5 5 5-5"></path>
+                                    </svg>
+                                </span>
+                            </th>
+                            <th>
+                                UNIT PRICE
+                                <span class="sort-icon" data-column="price">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M7 10l5 5 5-5"></path>
+                                    </svg>
+                                </span>
+                            </th>
+                            <th>
+                                QUANTITY
+                                <span class="sort-icon" data-column="quantity">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M7 10l5 5 5-5"></path>
+                                    </svg>
+                                </span>
+                            </th>
+                            <th>
+                                AMOUNT
+                                <span class="sort-icon" data-column="amount">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M7 10l5 5 5-5"></path>
+                                    </svg>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseTableBody">
+                        @foreach (var item in Model)
+                        {
+                            <tr data-item="@item.itemname"
+                                data-price="@item.Price"
+                                data-quantity="@item.Quantity"
+                                data-amount="@item.Amount">
+                                <td>@item.itemname</td>
+                                <td>₹ @item.Price.ToString("N2")</td>
+                                <td>@item.Quantity</td>
+                                <td>₹ @item.Amount.ToString("N2")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <!-- Empty State -->
+                <div class="empty-state">
+                    No transactions to show
+                </div>
+            }
         </div>
 
         <!-- Footer Section -->
         <div class="footer-section">
             <div class="totals-left">
-                <div class="total-item">Total Quantity: 0</div>
-                <div class="total-item">Total Amount: ₹ 0.00</div>
-            </div>          
+                <div class="total-item" id="totalQuantity">
+                    Total Quantity: @(Model?.Sum(x => x.Quantity) ?? 0)
+                </div>
+                <div class="total-item" id="totalAmount">
+                    Total Amount: ₹ @((Model?.Sum(x => x.Amount) ?? 0).ToString("N2"))
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        // Store original data for filtering/sorting
+        let expenseData = @Html.Raw(Json.Serialize(Model ?? new List<ExpenseItemTransection>()));
+        let filteredData = [...expenseData];
+
         // Date picker initialization
         document.getElementById('startDate').addEventListener('click', function() {
             this.type = 'date';
@@ -462,110 +501,114 @@
             }
         });
 
-        // Month dropdown change handler
-        document.getElementById('monthSelect').addEventListener('change', function() {
-            console.log('Selected period:', this.value);
-            // Implement date range logic based on selection
-            if (this.value === 'this-month') {
-                // Set current month dates
-            } else if (this.value === 'last-month') {
-                // Set last month dates
-            }
-            // Add more logic as needed
-        });
-
-        // Firms dropdown change handler
-        document.getElementById('firmsSelect').addEventListener('change', function() {
-            console.log('Selected firm:', this.value);
-            // Implement firm filter logic
-            fetchExpenseItems(this.value);
-        });
-
-        // Users dropdown change handler
-        document.getElementById('usersSelect').addEventListener('change', function() {
-            console.log('Selected user:', this.value);
-            // Implement user filter logic
-            fetchExpenseItems(null, this.value);
-        });
-
         // Search functionality
         document.getElementById('searchBox').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
-            console.log('Searching for:', searchTerm);
-            // Implement search logic
-            // This would filter the expense items based on the search term
-        });
 
-        // Add Expense button
-        document.getElementById('addExpenseBtn').addEventListener('click', function() {
-            console.log('Add Expense clicked');
-            // This would typically open a modal or redirect to an expense form
-            // For now, we'll show an alert
-            showAddExpenseModal();
-        });
+            filteredData = expenseData.filter(item => {
+                return item.expenseItem.toLowerCase().includes(searchTerm) ||
+                       item.unitPrice.toString().includes(searchTerm) ||
+                       item.quantity.toString().includes(searchTerm) ||
+                       item.amount.toString().includes(searchTerm);
+            });
 
-        // Excel Export button
-        document.getElementById('excelBtn').addEventListener('click', function() {
-            console.log('Export to Excel clicked');
-            // Implement Excel export logic
-            exportToExcel();
-        });
-
-        // Print button
-        document.getElementById('printBtn').addEventListener('click', function() {
-            console.log('Print clicked');
-            window.print();
+            renderTable();
         });
 
         // Sort functionality
         document.querySelectorAll('.sort-icon').forEach(icon => {
             icon.addEventListener('click', function() {
-                const th = this.closest('th');
-                const column = Array.from(th.parentElement.children).indexOf(th);
-                console.log('Sorting column:', column);
+                const column = this.dataset.column;
+                const direction = this.dataset.direction === 'asc' ? 'desc' : 'asc';
 
-                // Toggle sort direction
-                if (this.dataset.direction === 'asc') {
-                    this.dataset.direction = 'desc';
-                } else {
-                    this.dataset.direction = 'asc';
-                }
+                // Reset all sort icons
+                document.querySelectorAll('.sort-icon').forEach(i => {
+                    i.dataset.direction = '';
+                });
 
-                // Implement actual sorting logic here
-                sortTable(column, this.dataset.direction);
+                this.dataset.direction = direction;
+
+                filteredData.sort((a, b) => {
+                    let valA, valB;
+
+                    switch(column) {
+                        case 'item':
+                            valA = a.expenseItem.toLowerCase();
+                            valB = b.expenseItem.toLowerCase();
+                            break;
+                        case 'price':
+                            valA = a.unitPrice;
+                            valB = b.unitPrice;
+                            break;
+                        case 'quantity':
+                            valA = a.quantity;
+                            valB = b.quantity;
+                            break;
+                        case 'amount':
+                            valA = a.amount;
+                            valB = b.amount;
+                            break;
+                    }
+
+                    if (direction === 'asc') {
+                        return valA > valB ? 1 : -1;
+                    } else {
+                        return valA < valB ? 1 : -1;
+                    }
+                });
+
+                renderTable();
             });
         });
 
-        // Helper Functions
-        function fetchExpenseItems(firm = null, user = null) {
-            console.log('Fetching expense items...', { firm, user });
-            // This would make an API call to fetch expense items
-            // For now, it just logs the parameters
+        // Render table function
+        function renderTable() {
+            const tbody = document.getElementById('expenseTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = '';
+
+            filteredData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.expenseItem}</td>
+                    <td>₹ ${item.unitPrice.toFixed(2)}</td>
+                    <td>${item.quantity}</td>
+                    <td>₹ ${item.amount.toFixed(2)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            updateTotals();
         }
 
-        function showAddExpenseModal() {
-            alert('Add Expense Modal\n\nThis would open a form to add a new expense item with fields:\n- Expense Item\n- Unit Price\n- Quantity\n- Amount (calculated)');
+        // Update totals
+        function updateTotals() {
+            const totalQuantity = filteredData.reduce((sum, item) => sum + item.quantity, 0);
+            const totalAmount = filteredData.reduce((sum, item) => sum + item.amount, 0);
+
+            document.getElementById('totalQuantity').textContent = `Total Quantity: ${totalQuantity}`;
+            document.getElementById('totalAmount').textContent = `Total Amount: ₹ ${totalAmount.toFixed(2)}`;
         }
 
-        function exportToExcel() {
-            alert('Excel Export\n\nThis would generate and download an Excel file with all expense items based on the current filters.');
-        }
+        // Add Expense button
+        document.getElementById('addExpenseBtn').addEventListener('click', function() {
+            alert('Add Expense Modal\n\nThis would open a form to add a new expense item.');
+        });
 
-        function sortTable(column, direction) {
-            console.log(`Sorting column ${column} in ${direction} order`);
-            // Implement actual sorting logic here
-        }
+        // Excel Export button
+        document.getElementById('excelBtn').addEventListener('click', function() {
+            alert('Excel Export\n\nThis would generate and download an Excel file.');
+        });
 
-        function updateTotals(quantity, amount) {
-            document.querySelector('.totals-left div:first-child').textContent = `Total Quantity: ${quantity}`;
-            document.querySelector('.totals-left div:last-child').textContent = `Total Amount: ₹ ${amount.toFixed(2)}`;
-        }
+        // Print button
+        document.getElementById('printBtn').addEventListener('click', function() {
+            window.print();
+        });
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('Expense Items page loaded');
-            // Load initial data
-            fetchExpenseItems();
+            console.log('Expense Items page loaded with', expenseData.length, 'items');
         });
     </script>
 </body>

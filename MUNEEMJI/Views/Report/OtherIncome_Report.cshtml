@@ -2,7 +2,10 @@
 @using System.Linq;
 
 @{
-    var TotalAmount = Model.OtherIncomeEntries.Sum(x => x.Total);
+    var TotalAmount = Model.OtherIncomeEntries?.Sum(x => x.Total) ?? 0;
+}
+@{
+    Layout = null;
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -96,6 +99,7 @@
             border: none;
             color: #0078d4;
             font-size: 12px;
+            transition: opacity 0.3s;
         }
 
             .export-btn:hover {
@@ -213,6 +217,75 @@
             color: #6c757d;
             font-size: 14px;
         }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #dc3545;
+            font-size: 14px;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #0078d4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @@keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @@media print {
+            body {
+                padding: 0;
+                background: white;
+            }
+
+            .header, .search-container, .export-buttons {
+                display: none !important;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            table {
+                page-break-inside: auto;
+            }
+
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+
+            thead {
+                display: table-header-group;
+            }
+        }
     </style>
 </head>
 <body>
@@ -243,6 +316,24 @@
                 </select>
             </div>
 
+            <div class="dropdown">
+                <select id="categoryFilter">
+                    <option value="">All Income Categories</option>
+                    @if (Model?.OtherIncomeCategoryDropDown != null)
+                    {
+                        foreach (var item in Model.OtherIncomeCategoryDropDown)
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="header-row">
+            <div class="search-container">
+                <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search...">
+            </div>
             <div class="export-buttons">
                 <button class="export-btn" onclick="exportToExcel()">
                     <div class="icon excel-icon">📊</div>
@@ -255,154 +346,343 @@
             </div>
         </div>
 
-        <div class="dropdown">
-            <select id="categoryFilter">
-                <option value="">All Income Categories</option>
-                @foreach (var item in Model.OtherIncomeEntries)
-                {
-                    <option value="@item.IncomeCategoryId" >@item.IncomeCategory</option>
-
-                }
-            </select>
-        </div>
-
-        <h2 class="section-title">INCOME TRANSACTIONS</h2>
-
-        <div class="search-container">
-            <input type="text" class="search-box" id="searchInput" placeholder="🔍">
-        </div>
-
-        <table id="transactionTable">
-            <thead>
-                <tr>
-                    <th>DATE <span class="filter-icon">▼</span></th>
-                    <th>INCOME CATEGORY <span class="filter-icon">▼</span></th>
-                    <th class="amount">AMOUNT <span class="filter-icon">▼</span></th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                @foreach (var item in Model.OtherIncomeEntries)
-                {
+        <div id="tableContainer">
+            <table id="transactionTable">
+                <thead>
                     <tr>
-                        <td>@item.EntryDate.ToString("dd-MM-yyyy")</td>
-                        <td>@item.IncomeCategory</td>
-                        <td class="amount">₹@item.amount</td>
+                        <th>DATE <span class="filter-icon">▼</span></th>
+                        <th>INCOME CATEGORY <span class="filter-icon">▼</span></th>
+                        <th class="amount">AMOUNT <span class="filter-icon">▼</span></th>
                     </tr>
-                }
+                </thead>
+                <tbody id="tableBody">
+                    @if (Model?.OtherIncomeEntries != null && Model.OtherIncomeEntries.Any())
+                    {
+                        foreach (var item in Model.OtherIncomeEntries)
+                        {
+                            <tr>
+                                <td>@item.EntryDate.ToString("dd-MM-yyyy")</td>
+                                <td>@item.IncomeCategory</td>
+                                <td class="amount">₹ @item.amount.ToString("N2")</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="no-results">No transactions found</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
 
-            </tbody>
-        </table>
-
-        <div class="total-row">
-            Total Income: <span id="totalIncome">₹ @TotalAmount</span>
+            <div class="total-row">
+                Total Income: <span id="totalIncome">₹ @TotalAmount.ToString("N2")</span>
+            </div>
         </div>
-
-      
     </div>
 
     <script>
-        // Sample data
-        const transactions = [
-            { date: '14/10/2025, 08:40 PM', category: 'qwer', amount: 125433.00 },
-            { date: '14/10/2025, 08:57 PM', category: 'StockMarket', amount: 288054.00 },
-            { date: '14/10/2025, 09:17 PM', category: 'Digital Market', amount: 2456360.00 },
-            { date: '14/10/2025, 09:17 PM', category: 'Digital Market', amount: 2456360.00 }
-        ];
+        // Global state object
+        const state = {
+            categoryId: 0,
+            startDate: '',
+            endDate: '',
+            firmId: '',
+            isLoading: false
+        };
 
-        let filteredTransactions = [...transactions];
+        // Initialize once when page loads
+        (function init() {
+            console.log('Initializing page...');
 
-        // Format currency
-        function formatCurrency(amount) {
-            return '₹ ' + amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
+            // Set initial date values
+            const startDateEl = document.getElementById('startDate');
+            const endDateEl = document.getElementById('endDate');
 
-        // Render table
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
+            if (startDateEl) state.startDate = startDateEl.value;
+            if (endDateEl) state.endDate = endDateEl.value;
 
-            if (filteredTransactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="no-results">No transactions found</td></tr>';
-                document.getElementById('totalIncome').textContent = formatCurrency(0);
+            // Category filter
+            const categoryFilter = document.getElementById('categoryFilter');
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', function(e) {
+                    console.log('✅ Category dropdown changed to:', e.target.value);
+                    state.categoryId = e.target.value || 0;
+                    loadIncomeData();
+                });
+                console.log('✅ Category filter listener attached');
+            } else {
+                console.error('❌ Category filter element not found!');
+            }
+
+            // Start date filter
+            if (startDateEl) {
+                startDateEl.addEventListener('change', function(e) {
+                    console.log('Start date changed to:', e.target.value);
+                    state.startDate = e.target.value;
+                    loadIncomeData();
+                });
+            }
+
+            // End date filter
+            if (endDateEl) {
+                endDateEl.addEventListener('change', function(e) {
+                    console.log('End date changed to:', e.target.value);
+                    state.endDate = e.target.value;
+                    loadIncomeData();
+                });
+            }
+
+            // Firm filter
+            const firmFilter = document.getElementById('firmFilter');
+            if (firmFilter) {
+                firmFilter.addEventListener('change', function(e) {
+                    console.log('Firm changed to:', e.target.value);
+                    state.firmId = e.target.value;
+                    loadIncomeData();
+                });
+            }
+
+            // Month filter
+            const monthFilter = document.getElementById('monthFilter');
+            if (monthFilter) {
+                monthFilter.addEventListener('change', function(e) {
+                    console.log('Month filter changed to:', e.target.value);
+                    handleMonthFilter(e.target.value);
+                });
+            }
+
+            // Search functionality
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    handleSearch(e.target.value);
+                });
+            }
+
+            console.log('✅ All event listeners attached');
+        })();
+
+        // Load income data via AJAX
+        function loadIncomeData() {
+            if (state.isLoading) {
+                console.log('Already loading, skipping...');
                 return;
             }
 
-            tbody.innerHTML = filteredTransactions.map(t => `
-                <tr>
-                    <td>${t.date}</td>
-                    <td>${t.category}</td>
-                    <td class="amount">${formatCurrency(t.amount)}</td>
-                </tr>
-            `).join('');
+            state.isLoading = true;
 
-            // Calculate total
-            const total = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
-            document.getElementById('totalIncome').textContent = formatCurrency(total);
-        }
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            applyFilters(searchTerm);
-        });
-
-        // Category filter
-        document.getElementById('categoryFilter').addEventListener('change', function(e) {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            applyFilters(searchTerm);
-        });
-
-        // Apply all filters
-        function applyFilters(searchTerm = '') {
-            const categoryFilter = document.getElementById('categoryFilter').value;
-
-            filteredTransactions = transactions.filter(t => {
-                const matchesSearch =
-                    t.date.toLowerCase().includes(searchTerm) ||
-                    t.category.toLowerCase().includes(searchTerm) ||
-                    t.amount.toString().includes(searchTerm);
-
-                const matchesCategory = !categoryFilter || t.category === categoryFilter;
-
-                return matchesSearch && matchesCategory;
+            console.log('📡 Loading data with state:', {
+                categoryId: state.categoryId,
+                startDate: state.startDate,
+                endDate: state.endDate,
+                firmId: state.firmId
             });
 
-            renderTable();
+            const tableContainer = document.getElementById('tableContainer');
+            if (!tableContainer) {
+                console.error('❌ Table container not found!');
+                state.isLoading = false;
+                return;
+            }
+
+            // Show loading state
+            tableContainer.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading data...</p>
+                </div>
+            `;
+
+            // Build URL with parameters
+            const params = [];
+
+            if (state.categoryId) {
+                params.push('categoryid=' + encodeURIComponent(state.categoryId));
+            }
+            if (state.startDate) {
+                params.push('startDate=' + encodeURIComponent(state.startDate));
+            }
+            if (state.endDate) {
+                params.push('endDate=' + encodeURIComponent(state.endDate));
+            }
+            if (state.firmId) {
+                params.push('firmId=' + encodeURIComponent(state.firmId));
+            }
+
+            // Construct the final URL
+            let url = '/Web/Report/OtherIncomeReport';
+            if (params.length > 0) {
+                url += '?' + params.join('&');
+            }
+
+            console.log('🌐 Requesting URL:', url);
+
+            // Make AJAX call
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'text/html',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                console.log('📥 Response received. Status:', response.status);
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.text();
+            })
+            .then(html => {
+                console.log('✅ HTML received, length:', html.length);
+
+                // Create a temporary div to parse the HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+
+                // Extract ONLY the table container content
+                const newTableContainer = tempDiv.querySelector('#tableContainer');
+                if (newTableContainer) {
+                    tableContainer.innerHTML = newTableContainer.innerHTML;
+                    console.log('✅ Table updated successfully');
+                } else {
+                    console.warn('⚠️ Could not find #tableContainer in response');
+                    console.log('Response preview:', html.substring(0, 500));
+                    tableContainer.innerHTML = `
+                        <div class="error-message">
+                            <p>❌ Error: Invalid response format</p>
+                            <small>Check browser console for details</small>
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('❌ Fetch error:', error);
+                tableContainer.innerHTML = `
+                    <div class="error-message">
+                        <p>❌ Error loading data</p>
+                        <p style="font-size: 12px; margin-top: 10px;">${error.message}</p>
+                        <button onclick="loadIncomeData()"
+                                style="margin-top: 15px; padding: 8px 16px; cursor: pointer;
+                                       border: 1px solid #ccc; background: white; border-radius: 4px;">
+                            Retry
+                        </button>
+                    </div>
+                `;
+            })
+            .finally(() => {
+                state.isLoading = false;
+                console.log('✅ Request completed');
+            });
         }
 
-        // Month filter
-        document.getElementById('monthFilter').addEventListener('change', function(e) {
-            console.log('Month filter changed:', e.target.value);
-            // Implement date range logic here
-        });
+        // Handle month filter
+        function handleMonthFilter(value) {
+            const today = new Date();
+            let startDate, endDate;
 
-        // Firm filter
-        document.getElementById('firmFilter').addEventListener('change', function(e) {
-            console.log('Firm filter changed:', e.target.value);
-            // Implement firm filtering logic here
-        });
+            switch(value) {
+                case 'last-month':
+                    startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                    break;
+                case 'this-year':
+                    startDate = new Date(today.getFullYear(), 0, 1);
+                    endDate = new Date(today.getFullYear(), 11, 31);
+                    break;
+                case '':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                default:
+                    return;
+            }
 
-        // Date filters
-        document.getElementById('startDate').addEventListener('change', function(e) {
-            console.log('Start date changed:', e.target.value);
-            // Implement date filtering logic here
-        });
+            const startDateStr = startDate.toISOString().split('T')[0];
+            const endDateStr = endDate.toISOString().split('T')[0];
 
-        document.getElementById('endDate').addEventListener('change', function(e) {
-            console.log('End date changed:', e.target.value);
-            // Implement date filtering logic here
-        });
+            document.getElementById('startDate').value = startDateStr;
+            document.getElementById('endDate').value = endDateStr;
 
-        // Export functions
+            state.startDate = startDateStr;
+            state.endDate = endDateStr;
+
+            loadIncomeData();
+        }
+
+        // Handle client-side search
+        function handleSearch(searchTerm) {
+            const rows = document.querySelectorAll('#tableBody tr');
+            const term = searchTerm.toLowerCase();
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(term) ? '' : 'none';
+            });
+
+            updateVisibleTotal();
+        }
+
+        // Update total for visible rows
+        function updateVisibleTotal() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            let total = 0;
+
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const amountCell = row.querySelector('.amount');
+                    if (amountCell) {
+                        const amountText = amountCell.textContent.replace(/[₹,\s]/g, '');
+                        const amount = parseFloat(amountText);
+                        if (!isNaN(amount)) {
+                            total += amount;
+                        }
+                    }
+                }
+            });
+
+            const totalElement = document.getElementById('totalIncome');
+            if (totalElement) {
+                totalElement.textContent = '₹ ' + total.toLocaleString('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+        }
+
+        // Export to Excel
         function exportToExcel() {
-            alert('Export to Excel functionality');
+            const table = document.getElementById('transactionTable');
+            const rows = table.querySelectorAll('tr');
+            let csvContent = '';
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                const rowData = Array.from(cells).map(cell => {
+                    return '"' + cell.textContent.trim().replace(/"/g, '""') + '"';
+                }).join(',');
+                csvContent += rowData + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'income_transactions_' + new Date().getTime() + '.csv');
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
 
+        // Print report
         function printReport() {
             window.print();
         }
-
-        // Initial render
-        renderTable();
     </script>
 </body>
 </html>

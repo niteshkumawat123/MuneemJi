@@ -12,4 +12,22 @@ namespace MUNEEMJI.Models.ReportModel
         public decimal PurchaseAmount { get;set; }
 
     }
+
+    public class LoanReportViewModel
+    { 
+      public int AccountID { get; set; }
+      public string AccountName { get; set; }
+      public List<LoanTransectionReprotModel>LoanTransections { get; set; }
+    
+    }
+
+    public class LoanTransectionReprotModel
+    {
+
+        public int loanaccountid { get; set; }
+        public DateTime? Date { get; set; }
+        public string Type { get; set; }
+        public decimal? Amount { get; set; }
+        public decimal? EndingBalance { get; set; }
+    }
 }

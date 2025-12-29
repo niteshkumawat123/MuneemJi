@@ -1,5 +1,6 @@
 ﻿using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using MUNEEMJI.Areas.Settings.Controllers;
 using MUNEEMJI.Models;
 using MUNEEMJI.Models.ReportModel;
@@ -7,8 +8,10 @@ using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
 using NuGet.Packaging.Signing;
+using NuGet.Protocol.Plugins;
 using System.ComponentModel.Design;
 using System.Composition;
+using static MUNEEMJI.Models.ItemModel;
 
 namespace MUNEEMJI.Controllers
 {
@@ -249,7 +252,7 @@ namespace MUNEEMJI.Controllers
             }
         }
 
-        
+
         public async Task<IActionResult> DayBook()
         {
             var companyId = _CompayTenancy.GetCurrentCompanyId();
@@ -260,7 +263,7 @@ namespace MUNEEMJI.Controllers
             {
                 using (var Conn = new NpgsqlConnection(_connectionString))
                 {
-                    var QueryString = " SELECT  td.partyid, td.tradedocumenttypesid,  td.final_amount as FinalAmount , td.total , td.invoicenumber FROM tradedocuments td " + 
+                    var QueryString = " SELECT  td.partyid, td.tradedocumenttypesid,  td.final_amount as FinalAmount , td.total , td.invoicenumber FROM tradedocuments td " +
                                       " WHERE td.tradedocumenttypesid IN(4,5) ";
 
 
@@ -277,13 +280,13 @@ namespace MUNEEMJI.Controllers
                         {
                             PartyId = item.Id,
                             PartyName = item.PartyName,
-                            FinalAmount = Traderecord.Where(x => x.PartyId == item.Id ).Select(x => x.FinalAmount).FirstOrDefault(),
+                            FinalAmount = Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.FinalAmount).FirstOrDefault(),
                             Total = Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.Total).FirstOrDefault(),
                             tradedocumenttypesid = TradeDocumentTypeId,
                             TradeDocumentType = TradeDocumentType,
-                            MoneyIn = TradeDocumentTypeId==5? Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.FinalAmount).FirstOrDefault():0,
+                            MoneyIn = TradeDocumentTypeId == 5 ? Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.FinalAmount).FirstOrDefault() : 0,
                             MoneyOut = TradeDocumentTypeId == 4 ? Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.FinalAmount).FirstOrDefault() : 0,
-                            invoicenumber= Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.invoicenumber).FirstOrDefault(),
+                            invoicenumber = Traderecord.Where(x => x.PartyId == item.Id).Select(x => x.invoicenumber).FirstOrDefault(),
                         };
 
                         reportByItemModels.Add(partyReportByItemModel);
@@ -573,7 +576,7 @@ namespace MUNEEMJI.Controllers
         }
 
         // Sale Purchase By Party Group - Returns Partial View
-        public async  Task<IActionResult> SalePurchaseByPartyGroup()
+        public async Task<IActionResult> SalePurchaseByPartyGroup()
         {
             var companyId = _CompayTenancy.GetCurrentCompanyId();
             List<PartyReportByItemModel> reportByItemModels = new List<PartyReportByItemModel>();
@@ -633,17 +636,26 @@ namespace MUNEEMJI.Controllers
             return PartialView("_ReportTemplate");
         }
 
-        public async Task<IActionResult> OtherIncomeReport()
+        public async Task<IActionResult> OtherIncomeReport(int categoryid)
         {
             OtherIncomeReportModel Model = new OtherIncomeReportModel();
             try
             {
                 using (var Conn = new NpgsqlConnection(_connectionString))
                 {
-                    var QueryString = $" select income_category as IncomeCategory , incomecategoryid, entry_date as EntryDate , total, amount from public.income_entries" +
-                        $" left join income_entry_items on income_entry_items.entry_id = income_entries.id ";
+                    var QueryString = "SELECT income_category AS IncomeCategory, " +
+                    "incomecategoryid, entry_date AS EntryDate, " +
+                    "total, amount " +
+                    "FROM public.income_entries " +
+                    "LEFT JOIN income_entry_items ON income_entry_items.entry_id = income_entries.id";
 
-                    Model.OtherIncomeEntries = Conn.QuerySql<OtherIncomeViewModel>(QueryString).ToList();
+                    if (categoryid > 0)
+                    {
+                        QueryString += " WHERE incomecategoryid = @p_categoryid";
+                    }
+
+
+                    Model.OtherIncomeEntries = Conn.QuerySql<OtherIncomeViewModel>(QueryString, new { p_categoryid = categoryid }).ToList();
                 }
                 var companyId = _CompayTenancy.GetCurrentCompanyId();
                 Model.OtherIncomeCategoryDropDown = await _otherIncome.GetAllOtherIncomeCategories();
@@ -759,81 +771,50 @@ namespace MUNEEMJI.Controllers
 
         public async Task<IActionResult> LoanReport()
         {
-            var transactions = new List<LoanReportModel>();
+            List<LoanReportViewModel> transactions = new List<LoanReportViewModel>();
 
             try
             {
+                await Task.Delay(1);
+
+                var SqlAccount = " select id as AccountID , account_name as AccountName from loan_accounts ";
+
+
                 string sql = @"
-        SELECT 
-            id,
-            loanaccountid,
-            transactiontype,
-            principalamount,
-            interestamount,
-            totalamount,
-            transactiondate,
-            paymentmethod,
-            interestrate,
-            termduration,
-            description,
-            createddate
-        FROM loantransactions
-        ORDER BY transactiondate DESC, createddate DESC";
+                                    SELECT 
+                                        id,
+                                        loanaccountid,
+                                        transactiontype type,
+                                        principalamount,
+                                        interestamount,
+                                        totalamount as amount,
+                                        transactiondate,
+                                        paymentmethod,
+                                        interestrate,
+                                        termduration,
+                                        description,
+                                        createddate as date
+                                    FROM loantransactions
+                                    ORDER BY transactiondate DESC, createddate DESC";
 
-                using var conn = new NpgsqlConnection(_connectionString);
-                await conn.OpenAsync();
 
-                using var cmd = new NpgsqlCommand(sql, conn);
-                using var reader = await cmd.ExecuteReaderAsync();
-
-                while (await reader.ReadAsync())
+                using (var Conn = new NpgsqlConnection(_connectionString))
                 {
-                    transactions.Add(new LoanReportModel
+                    transactions = Conn.QuerySql<LoanReportViewModel>(SqlAccount).ToList();
+
+                    var loantransection = Conn.QuerySql<LoanTransectionReprotModel>(sql).ToList();
+
+                    if(transactions!=null && transactions.Count()>0 && loantransection!=null && loantransection.Count()>0)
                     {
-                        Id = reader.GetInt32(reader.GetOrdinal("id")),
-                        LoanAccountId = reader.IsDBNull(reader.GetOrdinal("loanaccountid"))
-                            ? 0
-                            : reader.GetInt32(reader.GetOrdinal("loanaccountid")),
+                        foreach (var item in transactions)
+                        {
+                            item.LoanTransections = loantransection.Where(x => x.loanaccountid == item.AccountID).ToList();
+                        }
+                    }
 
-                        TransactionType = reader.IsDBNull(reader.GetOrdinal("transactiontype"))
-                            ? null
-                            : reader.GetString(reader.GetOrdinal("transactiontype")),
 
-                        PrincipalAmount = reader.IsDBNull(reader.GetOrdinal("principalamount"))
-                            ? 0
-                            : reader.GetDecimal(reader.GetOrdinal("principalamount")),
-
-                        InterestAmount = reader.IsDBNull(reader.GetOrdinal("interestamount"))
-                            ? 0
-                            : reader.GetDecimal(reader.GetOrdinal("interestamount")),
-
-                        TotalAmount = reader.GetDecimal(reader.GetOrdinal("totalamount")),
-
-                        TransactionDate = reader.IsDBNull(reader.GetOrdinal("transactiondate"))
-                            ? null
-                            : reader.GetDateTime(reader.GetOrdinal("transactiondate")),
-
-                        PaymentMethod = reader.IsDBNull(reader.GetOrdinal("paymentmethod"))
-                            ? null
-                            : reader.GetString(reader.GetOrdinal("paymentmethod")),
-
-                        InterestRate = reader.IsDBNull(reader.GetOrdinal("interestrate"))
-                            ? null
-                            : reader.GetDecimal(reader.GetOrdinal("interestrate")),
-
-                        TermDuration = reader.IsDBNull(reader.GetOrdinal("termduration"))
-                            ? null
-                            : reader.GetInt32(reader.GetOrdinal("termduration")),
-
-                        Description = reader.IsDBNull(reader.GetOrdinal("description"))
-                            ? null
-                            : reader.GetString(reader.GetOrdinal("description")),
-
-                        CreatedDate = reader.IsDBNull(reader.GetOrdinal("createddate"))
-                            ? null
-                            : reader.GetDateTime(reader.GetOrdinal("createddate"))
-                    });
                 }
+
             }
             catch (Exception ex)
             {
@@ -842,9 +823,32 @@ namespace MUNEEMJI.Controllers
             return View(transactions);
         }
 
-        public async Task<IActionResult>ExpenseReport()
+        public async Task<IActionResult> ExpenseReport()
         {
-            return View();
+            List<ExpenseItemTransection> itemTransections = new List<ExpenseItemTransection>();
+
+            try
+            {
+                await Task.Delay(1);
+
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var SqlConnectionString = @" SELECT et.id, et.expenseid, et.itemid, et.quantity, et.price, et.amount , ess.expenseno , ess.expensedate , ec.category 
+                                                 FROM expenseitemtransection as et
+                                                 left join  expenses as ess  on et.expenseid = ess.id
+                                                 left join expensecategory as ec on ess.categoryid = ec.id ";
+
+                    itemTransections = Conn.QuerySql<ExpenseItemTransection>(SqlConnectionString).ToList();
+
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return View(itemTransections);
+
+
         }
         public async Task<IActionResult> ExpenseCategoryReport()
         {
@@ -853,7 +857,23 @@ namespace MUNEEMJI.Controllers
 
         public async Task<IActionResult> ExpenseItemReport()
         {
-            return View();
+            List<ExpenseItemTransection> itemTransections = new List<ExpenseItemTransection>();
+            try
+            {
+                await Task.Delay(1);
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    var QueryStrin = " select epit.*, item_name as itemname from expenseitemtransection as epit  left join  public.billitem as its on its.id = epit.itemid ";
+
+                    itemTransections = conn.QuerySql<ExpenseItemTransection>(QueryStrin).ToList();
+                }
+
+            }
+            catch(Exception ex)
+            {
+                
+            }
+            return View(itemTransections);
         }
 
         public async Task<IActionResult> GstReport()
@@ -881,6 +901,179 @@ namespace MUNEEMJI.Controllers
         public async Task<IActionResult> TDSReceivable()
         {
             return View();
+        }
+
+        public async Task<IActionResult> ItemWiseProfitAndLoss()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> LowStockSummary()
+        {
+            List<BillItem> bills = new List<BillItem>();
+            try
+            {
+                await Task.Delay(1);
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var billItemSql = @"
+                                    SELECT 
+                                        id AS ""Id"",
+                                        item_type AS ""ItemType"",
+                                        item_name AS ""ItemName"",
+                                        item_hsn AS ""ItemHsn"",
+                                        item_code AS ""ItemCode"",
+                                        category AS ""Category"",
+                                        unit AS ""Unit"",
+                                        item_image_url AS ""ItemImageUrl"",
+                                        sale_price AS ""SalePrice"",
+                                        sale_price_tax_type AS ""SalePriceTaxType"",
+                                        discount_on_sale_price AS ""DiscountOnSalePrice"",
+                                        discount_type AS ""DiscountType"",
+                                        purchase_price AS ""PurchasePrice"",
+                                        purchase_price_tax_type AS ""PurchasePriceTaxType"",
+                                        tax_rate AS ""TaxRate"",
+                                        wholesale_price AS ""WholesalePrice"",
+                                        opening_quantity AS ""OpeningQuantity"",
+                                        at_price AS ""AtPrice"",
+                                        as_of_date AS ""AsOfDate"",
+                                        location AS ""Location"",
+                                        min_stock_to_maintain AS ""MinStockToMaintain"",
+                                        online_store_price AS ""OnlineStorePrice"",
+                                        description AS ""Description"",
+                                        raw_materials AS ""RawMaterials"",
+                                        additional_costs AS ""AdditionalCosts"",
+                                        total_estimated_cost AS ""TotalEstimatedCost"",
+                                        service_name AS ""ServiceName"",
+                                        service_hsn AS ""ServiceHsn"",
+                                        service_code AS ""ServiceCode"",
+                                        created_at AS ""CreatedAt"",
+                                        updated_at AS ""UpdatedAt""
+                                    FROM billitem where  item_type = @p_itemtype 
+                                    ORDER BY id;
+                                    ";
+
+                    // ✅ Fetch bill items
+                    bills = Conn.QuerySql<BillItem>(billItemSql, new { p_itemtype = "product"}).ToList();
+                }
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return View(bills);
+        }
+
+        public async Task<IActionResult> StockDetail()
+        {
+            List<BillItem> bills = new List<BillItem>();
+            try
+            {
+                await Task.Delay(1);
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var billItemSql = @"
+                                    SELECT 
+                                        id AS ""Id"",
+                                        item_type AS ""ItemType"",
+                                        item_name AS ""ItemName"",
+                                        item_hsn AS ""ItemHsn"",
+                                        item_code AS ""ItemCode"",
+                                        category AS ""Category"",
+                                        unit AS ""Unit"",
+                                        item_image_url AS ""ItemImageUrl"",
+                                        sale_price AS ""SalePrice"",
+                                        sale_price_tax_type AS ""SalePriceTaxType"",
+                                        discount_on_sale_price AS ""DiscountOnSalePrice"",
+                                        discount_type AS ""DiscountType"",
+                                        purchase_price AS ""PurchasePrice"",
+                                        purchase_price_tax_type AS ""PurchasePriceTaxType"",
+                                        tax_rate AS ""TaxRate"",
+                                        wholesale_price AS ""WholesalePrice"",
+                                        opening_quantity AS ""OpeningQuantity"",
+                                        at_price AS ""AtPrice"",
+                                        as_of_date AS ""AsOfDate"",
+                                        location AS ""Location"",
+                                        min_stock_to_maintain AS ""MinStockToMaintain"",
+                                        online_store_price AS ""OnlineStorePrice"",
+                                        description AS ""Description"",
+                                        raw_materials AS ""RawMaterials"",
+                                        additional_costs AS ""AdditionalCosts"",
+                                        total_estimated_cost AS ""TotalEstimatedCost"",
+                                        service_name AS ""ServiceName"",
+                                        service_hsn AS ""ServiceHsn"",
+                                        service_code AS ""ServiceCode"",
+                                        created_at AS ""CreatedAt"",
+                                        updated_at AS ""UpdatedAt""
+                                    FROM billitem where  item_type = @p_itemtype 
+                                    ORDER BY id;
+                                    ";
+
+                    // ✅ Fetch bill items
+                    bills = Conn.QuerySql<BillItem>(billItemSql, new { p_itemtype = "product" }).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return View(bills);
+        }
+
+        public async Task<IActionResult> ItemDetail()
+        {
+            List<BillItem> bills = new List<BillItem>();
+            try
+            {
+                await Task.Delay(1);
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var billItemSql = @"
+                                    SELECT 
+                                        id AS ""Id"",
+                                        item_type AS ""ItemType"",
+                                        item_name AS ""ItemName"",
+                                        item_hsn AS ""ItemHsn"",
+                                        item_code AS ""ItemCode"",
+                                        category AS ""Category"",
+                                        unit AS ""Unit"",
+                                        item_image_url AS ""ItemImageUrl"",
+                                        sale_price AS ""SalePrice"",
+                                        sale_price_tax_type AS ""SalePriceTaxType"",
+                                        discount_on_sale_price AS ""DiscountOnSalePrice"",
+                                        discount_type AS ""DiscountType"",
+                                        purchase_price AS ""PurchasePrice"",
+                                        purchase_price_tax_type AS ""PurchasePriceTaxType"",
+                                        tax_rate AS ""TaxRate"",
+                                        wholesale_price AS ""WholesalePrice"",
+                                        opening_quantity AS ""OpeningQuantity"",
+                                        at_price AS ""AtPrice"",
+                                        as_of_date AS ""AsOfDate"",
+                                        location AS ""Location"",
+                                        min_stock_to_maintain AS ""MinStockToMaintain"",
+                                        online_store_price AS ""OnlineStorePrice"",
+                                        description AS ""Description"",
+                                        raw_materials AS ""RawMaterials"",
+                                        additional_costs AS ""AdditionalCosts"",
+                                        total_estimated_cost AS ""TotalEstimatedCost"",
+                                        service_name AS ""ServiceName"",
+                                        service_hsn AS ""ServiceHsn"",
+                                        service_code AS ""ServiceCode"",
+                                        created_at AS ""CreatedAt"",
+                                        updated_at AS ""UpdatedAt""
+                                    FROM billitem where  item_type = @p_itemtype 
+                                    ORDER BY id;
+                                    ";
+
+                    // ✅ Fetch bill items
+                    bills = Conn.QuerySql<BillItem>(billItemSql, new { p_itemtype = "product" }).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return View(bills);
         }
     }
 }

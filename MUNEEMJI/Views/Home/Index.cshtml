@@ -27,6 +27,8 @@
             justify-content: space-between;
             border-bottom: 1px solid #e0e0e0;
             height: 50px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .search-box {
@@ -36,6 +38,9 @@
             border-radius: 6px;
             padding: 6px 10px;
             width: 250px;
+            min-width: 150px;
+            flex: 1;
+            max-width: 350px;
         }
 
             .search-box input {
@@ -51,6 +56,7 @@
             display: flex;
             gap: 8px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -63,6 +69,7 @@
             align-items: center;
             gap: 4px;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .btn-sale {
@@ -81,16 +88,18 @@
             cursor: pointer;
             padding: 6px;
             color: #666;
-            font-size: 16px;
+            font-size: 20px;
+            font-weight: bold;
         }
 
         .container {
             display: grid;
-            grid-template-columns: 1.8fr 1fr;
+            grid-template-columns: 1fr;
             gap: 12px;
             padding: 12px;
-            height: calc(100vh - 50px);
             max-width: 100%;
+            height: calc(100vh - 50px);
+            overflow: hidden;
         }
 
         .left-section {
@@ -98,12 +107,16 @@
             flex-direction: column;
             gap: 12px;
             overflow-y: auto;
+            overflow-x: hidden;
+            height: 100%;
+            padding-right: 4px;
         }
 
         .stats-row {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 12px;
+            flex-shrink: 0;
         }
 
         .stat-card {
@@ -161,6 +174,7 @@
             border-radius: 6px;
             padding: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         .chart-header {
@@ -168,6 +182,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .chart-title {
@@ -187,6 +203,7 @@
         .chart-container {
             position: relative;
             height: 180px;
+            width: 100%;
         }
 
         canvas {
@@ -194,11 +211,21 @@
             height: 100%;
         }
 
+        .widget-slider-section {
+            flex-shrink: 0;
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
         .reports-section {
             background: white;
             border-radius: 6px;
             padding: 12px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            margin-bottom: 10%;
         }
 
         .reports-header {
@@ -222,7 +249,7 @@
 
         .reports-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 8px;
         }
 
@@ -247,11 +274,81 @@
             color: #333;
         }
 
+        .widget-slider {
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .widget-track {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+
+        .widget-item {
+            min-width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            color: white;
+        }
+
+            .widget-item h4 {
+                font-size: 13px;
+                margin-bottom: 8px;
+                opacity: 0.9;
+            }
+
+        .widget-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .widget-stat {
+            text-align: center;
+        }
+
+        .widget-stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .widget-stat-label {
+            font-size: 9px;
+            opacity: 0.8;
+        }
+
+        .slider-controls {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .slider-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ccc;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .slider-dot.active {
+                background: #667eea;
+                width: 20px;
+                border-radius: 3px;
+            }
+
         .right-section {
             display: flex;
             flex-direction: column;
             gap: 10px;
             overflow-y: auto;
+            height: 100%;
+            padding-right: 4px;
         }
 
         .sidebar-card {
@@ -259,6 +356,7 @@
             border-radius: 6px;
             padding: 10px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         .sidebar-header {
@@ -323,19 +421,12 @@
             padding: 10px 0;
         }
 
-        .add-widget {
-            color: #1976d2;
-            font-size: 11px;
-            cursor: pointer;
-            margin-top: 8px;
-            display: inline-block;
-        }
-
         .integration-card {
             background: white;
             border-radius: 6px;
             padding: 10px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-shrink: 0;
         }
 
         .integration-header {
@@ -384,7 +475,46 @@
                 background-color: #bbdefb;
             }
 
-        /* Modal Styles */
+        /* Fixed Add Widget Section */
+        .widget-add-section-fixed {
+            position: absolute;
+            bottom: 0;
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            margin-top: auto;
+            width: 28%;   
+        }
+
+        .add-widget-area {
+            width: 100%;
+            text-align: center;
+            padding: 20px 16px;
+            border: 2px dashed #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+            .add-widget-area:hover {
+                border-color: #1976d2;
+                background: #f8f9fa;
+            }
+
+        .add-widget-icon {
+            font-size: 32px;
+            color: #1976d2;
+            margin-bottom: 8px;
+        }
+
+        .add-widget-text {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -402,6 +532,7 @@
             width: auto;
             max-width: 900px;
             margin: 1.75rem auto;
+            padding: 0 15px;
         }
 
         .ShortCutmodal-content {
@@ -423,9 +554,10 @@
         }
 
         .col-md-4 {
-            flex: 0 0 33.333333%;
-            max-width: 33.333333%;
+            flex: 0 0 100%;
+            max-width: 100%;
             padding: 0 15px;
+            margin-bottom: 1rem;
         }
 
         .p-3 {
@@ -509,28 +641,106 @@
                 background: #aaa;
             }
 
-        @@media (max-width: 768px) {
+        @@media (min-width: 768px) {
             .col-md-4
 
         {
-            flex: 0 0 100%;
-            max-width: 100%;
-            margin-bottom: 1rem;
-        }
-
-        .reports-grid {
-            grid-template-columns: repeat(2, 1fr);
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
         }
 
         .container {
+            grid-template-columns: 1.8fr 1fr;
+        }
+
+        .header {
+            flex-wrap: nowrap;
+        }
+
+        }
+
+        @@media (max-width: 767px) {
+            .header
+
+        {
+            padding: 8px 12px;
+            height: auto;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 100%;
+            order: 3;
+            flex-basis: 100%;
+        }
+
+        .header-actions {
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .btn {
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+
+        .stats-row {
             grid-template-columns: 1fr;
+        }
+
+        .reports-grid {
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
+
+        .container {
+            padding: 8px;
+            gap: 10px;
+            grid-template-columns: 1fr;
+        }
+
+        .left-section,
+        .right-section {
+            height: auto;
+            max-height: none;
+        }
+
+        .stat-value {
+            font-size: 20px;
+        }
+
+        .chart-container {
+            height: 150px;
+        }
+
+        .widget-stats {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .add-widget-area {
+            padding: 20px 16px;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            .reports-grid
+
+        {
+            grid-template-columns: 1fr;
+        }
+
+        .stat-value {
+            font-size: 18px;
+        }
+
+        .widget-stats {
+            grid-template-columns: repeat(2, 1fr);
         }
 
         }
     </style>
 </head>
 <body>
-    <!-- Quick Action Modal -->
     <div id="quickActionPopup" class="modal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="ShortCutmodal-content">
@@ -586,8 +796,6 @@
             <button class="btn btn-sale" onclick="window.location.href='/Web/Sales/Create'">+ Add Sale</button>
             <button class="btn btn-purchase" onclick="window.location.href='/Web/Purchase/Bill'">+ Add Purchase</button>
             <button class="btn-icon" id="plusButton">+</button>
-            <button class="btn-icon">🖨</button>
-            <button class="btn-icon">⋮</button>
         </div>
     </div>
 
@@ -630,6 +838,81 @@
                 </div>
             </div>
 
+            <div class="widget-slider-section">
+                <div class="widget-slider">
+                    <div class="widget-track" id="widgetTrack">
+                        <div class="widget-item">
+                            <h4>Today's Overview</h4>
+                            <div class="widget-stats">
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">5</div>
+                                    <div class="widget-stat-label">Invoices</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">₹12K</div>
+                                    <div class="widget-stat-label">Revenue</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">3</div>
+                                    <div class="widget-stat-label">Pending</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">8</div>
+                                    <div class="widget-stat-label">Parties</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="widget-item" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                            <h4>This Week</h4>
+                            <div class="widget-stats">
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">28</div>
+                                    <div class="widget-stat-label">Invoices</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">₹85K</div>
+                                    <div class="widget-stat-label">Revenue</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">12</div>
+                                    <div class="widget-stat-label">Pending</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">45</div>
+                                    <div class="widget-stat-label">Parties</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="widget-item" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                            <h4>This Month</h4>
+                            <div class="widget-stats">
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">156</div>
+                                    <div class="widget-stat-label">Invoices</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">₹3.2L</div>
+                                    <div class="widget-stat-label">Revenue</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">24</div>
+                                    <div class="widget-stat-label">Pending</div>
+                                </div>
+                                <div class="widget-stat">
+                                    <div class="widget-stat-value">128</div>
+                                    <div class="widget-stat-label">Parties</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slider-controls">
+                    <div class="slider-dot active" data-index="0"></div>
+                    <div class="slider-dot" data-index="1"></div>
+                    <div class="slider-dot" data-index="2"></div>
+                </div>
+            </div>
+
             <div class="reports-section">
                 <div class="reports-header">
                     <span class="reports-title">Most Used Reports</span>
@@ -653,19 +936,11 @@
                         <span>›</span>
                     </div>
                     <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
-                        <span class="report-name">Expense</span>
+                        <span class="report-name">Purchase Report</span>
                         <span>›</span>
                     </div>
                     <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
-                        <span class="report-name">Other Income</span>
-                        <span>›</span>
-                    </div>
-                    <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
-                        <span class="report-name">Loan Statement</span>
-                        <span>›</span>
-                    </div>
-                    <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
-                        <span class="report-name">Stock Detail</span>
+                        <span class="report-name">Expense Report</span>
                         <span>›</span>
                     </div>
                 </div>
@@ -733,152 +1008,120 @@
                 <a href="#" class="see-more">See More ›</a>
             </div>
 
-            <div class="sidebar-card">
-                <div class="sidebar-header">
-                    <span class="sidebar-title">Expiring Stocks</span>
-                    <span class="sidebar-date">In 7 days</span>
+            <!-- Fixed Add Widget at the bottom -->
+            <div class="widget-add-section-fixed">
+                <div class="add-widget-area" onclick="alert('Add new widget functionality')">
+                    <div class="add-widget-icon">+</div>
+                    <div class="add-widget-text">Add Widget of Your Choice</div>
                 </div>
-                <div class="no-items">No items to show</div>
-                <a href="#" class="add-widget">Add Widget of Your Choice +</a>
-            </div>
-
-            <div class="integration-card">
-                <div class="integration-header">
-                    <div class="integration-title">
-                        <span style="color: #25D366; font-size: 16px;">📱</span>
-                        <span>WhatsApp Connect</span>
-                    </div>
-                    <span class="integration-badge">LOGGED OUT</span>
-                </div>
-                <div class="integration-desc">Order status updates reduce customer anxiety by 80%</div>
-                <button class="connect-btn">Connect WhatsApp</button>
-            </div>
-
-            <div class="integration-card">
-                <div class="integration-header">
-                    <div class="integration-title">
-                        <span style="color: #4285f4; font-size: 16px;">G</span>
-                        <span>Google Profile Manager</span>
-                    </div>
-                </div>
-                <div class="integration-desc">Positive reviews can increase conversions by up to 270%</div>
-                <button class="connect-btn">Connect Now</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Chart rendering code
-        const canvas = document.getElementById('salesChart');
-        const ctx = canvas.getContext('2d');
+        function renderChart() {
+            const canvas = document.getElementById('salesChart');
+            const ctx = canvas.getContext('2d');
 
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
 
-        const dates = ['1 Dec', '4 Dec', '7 Dec', '10 Dec', '13 Dec', '16 Dec', '19 Dec', '22 Dec', '25 Dec', '28 Dec', '31 Dec'];
-        const values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 180, 0];
+            const dates = ['1 Dec', '4 Dec', '7 Dec', '10 Dec', '13 Dec', '16 Dec', '19 Dec', '22 Dec', '25 Dec', '28 Dec', '31 Dec'];
+            const values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 180, 0];
 
-        const padding = 30;
-        const chartWidth = canvas.width - padding * 2;
-        const chartHeight = canvas.height - padding * 2;
-        const maxValue = Math.max(...values) || 200;
+            const padding = 30;
+            const chartWidth = canvas.width - padding * 2;
+            const chartHeight = canvas.height - padding * 2;
+            const maxValue = Math.max(...values) || 200;
 
-        // Grid lines
-        ctx.strokeStyle = '#f0f0f0';
-        ctx.lineWidth = 1;
-        for (let i = 0; i <= 4; i++) {
-            const y = padding + (chartHeight / 4) * i;
-            ctx.beginPath();
-            ctx.moveTo(padding, y);
-            ctx.lineTo(canvas.width - padding, y);
-            ctx.stroke();
-        }
-
-        // Y-axis labels
-        ctx.fillStyle = '#999';
-        ctx.font = '9px sans-serif';
-        ctx.textAlign = 'right';
-        for (let i = 0; i <= 4; i++) {
-            const value = maxValue - (maxValue / 4) * i;
-            const y = padding + (chartHeight / 4) * i;
-            ctx.fillText(Math.round(value), padding - 5, y + 3);
-        }
-
-        // Points
-        const points = values.map((value, index) => ({
-            x: padding + (chartWidth / (values.length - 1)) * index,
-            y: padding + chartHeight - (value / maxValue) * chartHeight,
-            value: value,
-            date: dates[index]
-        }));
-
-        // Gradient area
-        const gradient = ctx.createLinearGradient(0, padding, 0, canvas.height - padding);
-        gradient.addColorStop(0, 'rgba(66, 133, 244, 0.3)');
-        gradient.addColorStop(1, 'rgba(66, 133, 244, 0)');
-
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, canvas.height - padding);
-        points.forEach(point => {
-            ctx.lineTo(point.x, point.y);
-        });
-        ctx.lineTo(points[points.length - 1].x, canvas.height - padding);
-        ctx.closePath();
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        // Line
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        points.forEach(point => {
-            ctx.lineTo(point.x, point.y);
-        });
-        ctx.strokeStyle = '#4285f4';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        // Special marker
-        const specialPoint = points[5];
-        ctx.fillStyle = '#2e7d32';
-        ctx.beginPath();
-        ctx.arc(specialPoint.x, specialPoint.y, 5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Tooltip
-        const tooltipX = specialPoint.x - 20;
-        const tooltipY = specialPoint.y - 35;
-
-        ctx.fillStyle = '#2e7d32';
-        ctx.beginPath();
-        ctx.roundRect(tooltipX, tooltipY, 40, 30, 4);
-        ctx.fill();
-
-        ctx.beginPath();
-        ctx.moveTo(specialPoint.x, tooltipY + 30);
-        ctx.lineTo(specialPoint.x - 5, tooltipY + 30);
-        ctx.lineTo(specialPoint.x, tooltipY + 36);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = 'white';
-        ctx.font = 'bold 9px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('15 Dec', tooltipX + 20, tooltipY + 12);
-        ctx.font = '9px sans-serif';
-        ctx.fillText('₹ 0', tooltipX + 20, tooltipY + 24);
-
-        // X-axis labels
-        ctx.fillStyle = '#999';
-        ctx.font = '9px sans-serif';
-        ctx.textAlign = 'center';
-        dates.forEach((date, index) => {
-            if (index % 2 === 0) {
-                const x = padding + (chartWidth / (dates.length - 1)) * index;
-                ctx.fillText(date, x, canvas.height - padding + 15);
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
             }
-        });
 
-        // Polyfill for roundRect
+            ctx.fillStyle = '#999';
+            ctx.font = '9px sans-serif';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 4; i++) {
+                const value = maxValue - (maxValue / 4) * i;
+                const y = padding + (chartHeight / 4) * i;
+                ctx.fillText(Math.round(value), padding - 5, y + 3);
+            }
+
+            const points = values.map((value, index) => ({
+                x: padding + (chartWidth / (values.length - 1)) * index,
+                y: padding + chartHeight - (value / maxValue) * chartHeight,
+                value: value,
+                date: dates[index]
+            }));
+
+            const gradient = ctx.createLinearGradient(0, padding, 0, canvas.height - padding);
+            gradient.addColorStop(0, 'rgba(66, 133, 244, 0.3)');
+            gradient.addColorStop(1, 'rgba(66, 133, 244, 0)');
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, canvas.height - padding);
+            points.forEach(point => {
+                ctx.lineTo(point.x, point.y);
+            });
+            ctx.lineTo(points[points.length - 1].x, canvas.height - padding);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            points.forEach(point => {
+                ctx.lineTo(point.x, point.y);
+            });
+            ctx.strokeStyle = '#4285f4';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            const specialPoint = points[5];
+            ctx.fillStyle = '#2e7d32';
+            ctx.beginPath();
+            ctx.arc(specialPoint.x, specialPoint.y, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            const tooltipX = specialPoint.x - 20;
+            const tooltipY = specialPoint.y - 35;
+
+            ctx.fillStyle = '#2e7d32';
+            ctx.beginPath();
+            ctx.roundRect(tooltipX, tooltipY, 40, 30, 4);
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(specialPoint.x, tooltipY + 30);
+            ctx.lineTo(specialPoint.x - 5, tooltipY + 30);
+            ctx.lineTo(specialPoint.x, tooltipY + 36);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 9px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('15 Dec', tooltipX + 20, tooltipY + 12);
+            ctx.font = '9px sans-serif';
+            ctx.fillText('₹ 0', tooltipX + 20, tooltipY + 24);
+
+            ctx.fillStyle = '#999';
+            ctx.font = '9px sans-serif';
+            ctx.textAlign = 'center';
+            dates.forEach((date, index) => {
+                if (index % 2 === 0) {
+                    const x = padding + (chartWidth / (dates.length - 1)) * index;
+                    ctx.fillText(date, x, canvas.height - padding + 15);
+                }
+            });
+        }
+
         if (!CanvasRenderingContext2D.prototype.roundRect) {
             CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
                 this.moveTo(x + radius, y);
@@ -892,11 +1135,36 @@
                 this.quadraticCurveTo(x, y, x + radius, y);
             };
         }
-    </script>
 
-    <!-- Modal and Keyboard Shortcuts Scripts -->
-    <script>
-        // Plus Button and Modal Toggle
+        renderChart();
+        window.addEventListener('resize', renderChart);
+
+        // Widget Slider
+        let currentSlide = 0;
+        const track = document.getElementById('widgetTrack');
+        const dots = document.querySelectorAll('.slider-dot');
+        const totalSlides = 3;
+
+        function updateSlider() {
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                updateSlider();
+            });
+        });
+
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateSlider();
+        }, 5000);
+
+        // Modal
         document.addEventListener('DOMContentLoaded', function () {
             const plusButton = document.getElementById('plusButton');
             const popup = document.getElementById('quickActionPopup');
@@ -905,14 +1173,12 @@
                 popup.style.display = 'block';
             });
 
-            // Close modal when clicking outside
             popup.addEventListener('click', function (e) {
                 if (e.target === popup) {
                     popup.style.display = 'none';
                 }
             });
 
-            // Ctrl + Enter to toggle modal
             document.addEventListener('keydown', function (e) {
                 if (e.ctrlKey && e.key === 'Enter') {
                     e.preventDefault();
@@ -921,73 +1187,29 @@
             });
         });
 
-        // Keyboard Shortcuts for Navigation
+        // Keyboard Shortcuts
         document.addEventListener("keydown", function (e) {
             if (e.altKey && !e.ctrlKey && !e.shiftKey) {
                 const key = e.key.toLowerCase();
-
-                switch (key) {
-                    // SALE
-                    case "s":
-                        e.preventDefault();
-                        window.location.href = "/Web/Sales/Create";
-                        break;
-                    case "i":
-                        e.preventDefault();
-                        window.location.href = "/Web/PaymentIn/Create";
-                        break;
-                    case "r":
-                        e.preventDefault();
-                        window.location.href = "/Web/CreditNote/Create";
-                        break;
-                    case "f":
-                        e.preventDefault();
-                        window.location.href = "/Web/SalesOrder/Create";
-                        break;
-                    case "m":
-                        e.preventDefault();
-                        window.location.href = "/Web/Estimate_Quotations/Create";
-                        break;
-                    case "k":
-                        e.preventDefault();
-                        window.location.href = "/Web/Sales/Proforma";
-                        break;
-                    case "d":
-                        e.preventDefault();
-                        window.location.href = "/Web/DeliveryChallan/Create";
-                        break;
-
-                    // PURCHASE
-                    case "p":
-                        e.preventDefault();
-                        window.location.href = "/Web/Purchase/Bill";
-                        break;
-                    case "o":
-                        e.preventDefault();
-                        window.location.href = "/Web/PaymentOut/Create";
-                        break;
-                    case "l":
-                        e.preventDefault();
-                        window.location.href = "/Web/DebitNote/Create";
-                        break;
-                    case "g":
-                        e.preventDefault();
-                        window.location.href = "/Web/PurchaseOrder/Create";
-                        break;
-
-                    // OTHERS
-                    case "e":
-                        e.preventDefault();
-                        window.location.href = "/Expenses";
-                        break;
-                    case "q":
-                        e.preventDefault();
-                        window.location.href = "/Web/OtherIncome/Create";
-                        break;
-                    case "j":
-                        e.preventDefault();
-                        window.location.href = "/Web/Party/Add";
-                        break;
+                const shortcuts = {
+                    's': '/Web/Sales/Create',
+                    'i': '/Web/PaymentIn/Create',
+                    'r': '/Web/CreditNote/Create',
+                    'f': '/Web/SalesOrder/Create',
+                    'm': '/Web/Estimate_Quotations/Create',
+                    'k': '/Web/Sales/Proforma',
+                    'd': '/Web/DeliveryChallan/Create',
+                    'p': '/Web/Purchase/Bill',
+                    'o': '/Web/PaymentOut/Create',
+                    'l': '/Web/DebitNote/Create',
+                    'g': '/Web/PurchaseOrder/Create',
+                    'e': '/Expenses',
+                    'q': '/Web/OtherIncome/Create',
+                    'j': '/Web/Party/Add'
+                };
+                if (shortcuts[key]) {
+                    e.preventDefault();
+                    window.location.href = shortcuts[key];
                 }
             }
         });

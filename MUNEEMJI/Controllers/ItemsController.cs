@@ -6,6 +6,7 @@ using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
+using NuGet.Protocol.Plugins;
 using SkiaSharp;
 using System.ComponentModel.Design;
 using System.Globalization;
@@ -123,6 +124,8 @@ namespace MUNEEMJI.Controllers
                 }
                 else
                 {
+                    var itemcoed = GetItemCode(companyId);
+
                     model = new BillItemViewModel
                     {
 
@@ -133,7 +136,8 @@ namespace MUNEEMJI.Controllers
                             SalePriceTaxType = "Without Tax",
                             PurchasePriceTaxType = "Without Tax",
                             DiscountType = "Percentage",
-                            TaxRate = "None"
+                            TaxRate = "None",
+                            ItemCode = Convert.ToString(itemcoed)
                         },
                         Categories = await _billItemService.GetCategoriesAsync(),
                         Units = await _billItemService.GetUnitsAsync(),
@@ -756,6 +760,29 @@ namespace MUNEEMJI.Controllers
             }
         }
 
+        public  int GetItemCode(int CompanyId)
+        {
+            int itemcode = 96105600;
+            try
+            {
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var SelectQuery = " select count(*)  FROM billitem where  item_type = @p_itemtype and companyid = @p_companyid ";
+
+                    var billItems =  Conn.ExecuteScalarSql<long>(SelectQuery, new { p_itemtype = "product", p_companyid = CompanyId });
+
+                    if (billItems > 0)
+                    {
+                        itemcode = itemcode + Convert.ToInt32(billItems);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return itemcode;
+        }
     }
 }
 

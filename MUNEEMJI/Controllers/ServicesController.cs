@@ -60,6 +60,7 @@ namespace MUNEEMJI.Controllers
                 }
                 else
                 {
+                    var ServiceCode = GetServiceCode(companyId);
                     model = new BillItemViewModel
                     {
 
@@ -70,7 +71,9 @@ namespace MUNEEMJI.Controllers
                             SalePriceTaxType = "Without Tax",
                             PurchasePriceTaxType = "Without Tax",
                             DiscountType = "Percentage",
-                            TaxRate = "None"
+                            TaxRate = "None",
+                            ItemCode =Convert.ToString(ServiceCode)
+                            
                         },
                         Categories = await _billItemService.GetCategoriesAsync(),
                         Units = await _billItemService.GetUnitsAsync(),
@@ -478,6 +481,31 @@ namespace MUNEEMJI.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+        }
+        public int GetServiceCode(int CompanyId)
+        {
+            int itemcode = 96105600;
+            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+
+            try
+            {
+                using (var Conn = new NpgsqlConnection(_connectionString))
+                {
+                    var SelectQuery = " select count(*)  FROM billitem where  item_type = @p_itemtype and companyid = @p_companyid ";
+
+                    var billItems = Conn.ExecuteScalarSql<long>(SelectQuery, new { p_itemtype = "service", p_companyid = CompanyId });
+
+                    if (billItems > 0)
+                    {
+                        itemcode = itemcode + Convert.ToInt32(billItems);
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+            return itemcode;
         }
 
     }

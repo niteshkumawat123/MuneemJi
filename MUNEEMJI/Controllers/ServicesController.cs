@@ -353,7 +353,9 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public async Task<IActionResult> Service(int? id)
         {
-            var viewModel = GetServiceAsync();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+            var viewModel = GetServiceAsync(companyId);
 
             ItemViewModel itemViewModel = new ItemViewModel();
             itemViewModel.ItemView = viewModel;
@@ -373,7 +375,7 @@ namespace MUNEEMJI.Controllers
 
         }
 
-        public List<BillItem> GetServiceAsync()
+        public List<BillItem> GetServiceAsync(int companyId)
         {
             var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
 
@@ -418,12 +420,12 @@ namespace MUNEEMJI.Controllers
                                         service_code AS ""ServiceCode"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
-                                    FROM billitem where item_type = @p_itemtye
+                                    FROM billitem where item_type = @p_itemtye and companyid = @p_companyId
                                     ORDER BY id;
                                     ";
 
                     // ✅ Fetch bill items
-                    var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtye = "service" }).ToList();
+                    var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtye = "service", p_companyId = companyId }).ToList();
 
                     if (billItems != null && billItems.Count > 0)
                     {

@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MUNEEMJI.Models;
-using MUNEEMJI.Models.BusinessDashboard.Models;
 using MUNEEMJI.Services;
 using Npgsql;
 using Npgsql.Internal.Postgres;
@@ -313,17 +312,46 @@ namespace MUNEEMJI.Controllers
             await Task.Delay(100);
             decimal TotalReceivable = 0;
             decimal TotalPayable = 0;
+            decimal ExpenseAmount = 0;
+            decimal CashInHand = 0;
+            decimal BanckAmount = 0;
+            decimal StockAmount = 0;
 
             using (var conn = new NpgsqlConnection(_connectionString))
             {
 
-                string QueryString = "SELECT SUM(CAST(PaidReciveAmount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid and companyid = @p_companyid ";
+                string QueryString = "SELECT SUM(CAST(final_amount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid and companyid = @p_companyid ";
 
                  TotalReceivable = conn.QuerySql<decimal?>(QueryString, new { P_typeid = (int)TradeDocumentTypes.SalesChallan , p_companyid  = CompanyId}).FirstOrDefault() ?? 0;
 
-                string QueryString1 = "SELECT SUM(CAST(PaidReciveAmount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid and companyid = @p_companyid ";
+                string QueryString1 = "SELECT SUM(CAST(final_amount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid and companyid = @p_companyid ";
 
                  TotalPayable = conn.QuerySql<decimal?>(QueryString1, new { P_typeid = (int)TradeDocumentTypes.PurchaseChallan, p_companyid = CompanyId }).FirstOrDefault() ?? 0;
+
+                string QueryString2 = " SELECT SUM(CAST(amount AS DECIMAL(18,2))) FROM expenseitemtransection  ";
+
+                ExpenseAmount = conn.QuerySql<decimal?>(QueryString2).FirstOrDefault() ?? 0;
+
+                string QueryString3 = @" SELECT
+                                                COALESCE(SUM(
+                                                    CASE 
+                                                        WHEN adjusttypeid = 1 THEN CAST(amount AS DECIMAL(18,2))
+                                                        WHEN adjusttypeid = 2 THEN -CAST(amount AS DECIMAL(18,2))
+                                                        ELSE 0
+                                                    END
+                                                ), 0) AS balance
+                                        FROM public.bank_cash ; " ;
+
+                CashInHand = conn.QuerySql<decimal?>(QueryString3).FirstOrDefault() ?? 0;
+
+
+                string QueryString4 = " select sum(cast(opening_balance as decimal(18,2))) from extended_bank_accounts ";
+                BanckAmount = conn.QuerySql<decimal?>(QueryString4).FirstOrDefault() ?? 0;
+
+                string QueryString5 = " select coalesce(sum(cast((opening_quantity*sale_price)as decimal(18,2) )),0) from  billitem where  item_type = 'product' " +
+                                        " and companyid = @p_companyid";
+                StockAmount = conn.QuerySql<decimal?>(QueryString5,new { p_companyid  = CompanyId}).FirstOrDefault() ?? 0;
+
 
             }
 
@@ -336,7 +364,12 @@ namespace MUNEEMJI.Controllers
                 TotalSalesThisMonth = 0,
                 SalesChartData = GetSampleChartData(),
                 MostUsedReports = GetMostUsedReports(),
-                Widgets = new List<WidgetViewModel>()
+                Widgets = new List<WidgetViewModel>(),
+                ExpenseAmount = ExpenseAmount,
+                BanckAmount = BanckAmount,
+                CashInHand = CashInHand,
+                StockAmount= StockAmount,
+
             };
         }
 

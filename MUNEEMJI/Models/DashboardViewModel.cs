@@ -1,10 +1,9 @@
-﻿namespace MUNEEMJI.Models
-{
+﻿
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
 
-    namespace BusinessDashboard.Models
+    namespace MUNEEMJI.Models
     {
         // Main Dashboard ViewModel
         public class DashboardViewModel
@@ -19,6 +18,10 @@
             public List<WidgetViewModel> Widgets { get; set; }
             public string ReceivableMessage => HasReceivables ? $"From {PayablePartyCount} Parties" : "You don't have any receivables as of now.";
             public string PayableMessage => $"From {PayablePartyCount} Party";
+            public decimal ExpenseAmount { get; set; }
+            public decimal CashInHand  { get; set; }
+            public decimal BanckAmount { get; set; }
+            public decimal StockAmount { get; set; }
         }
 
         // Sales Chart Data
@@ -260,13 +263,13 @@
         }
 
         // Error ViewModel
-        public class ErrorViewModel
-        {
-            public string RequestId { get; set; }
-            public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-            public string Message { get; set; }
-            public string Details { get; set; }
-        }
+        //public class ErrorViewModel
+        //{
+        //    public string RequestId { get; set; }
+        //    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+        //    public string Message { get; set; }
+        //    public string Details { get; set; }
+        //}
 
         // Pagination Helper
         public class PaginatedList<T> : List<T>
@@ -295,24 +298,24 @@
         }
 
         // Enums
-        public enum TransactionType
-        {
-            Sale,
-            Purchase,
-            Payment,
-            Receipt,
-            Journal
-        }
+        //public enum TransactionType
+        //{
+        //    Sale,
+        //    Purchase,
+        //    Payment,
+        //    Receipt,
+        //    Journal
+        //}
 
-        public enum TransactionStatus
-        {
-            Draft,
-            Confirmed,
-            Paid,
-            PartiallyPaid,
-            Overdue,
-            Cancelled
-        }
+        //public enum TransactionStatus
+        //{
+        //    Draft,
+        //    Confirmed,
+        //    Paid,
+        //    PartiallyPaid,
+        //    Overdue,
+        //    Cancelled
+        //}
 
         public enum WidgetType
         {
@@ -334,4 +337,4 @@
             Custom
         }
     }
-}
+

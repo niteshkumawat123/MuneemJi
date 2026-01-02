@@ -1,7 +1,6 @@
 ﻿using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
-using MUNEEMJI.Models.BusinessDashboard.Models;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;

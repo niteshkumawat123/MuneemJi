@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using MUNEEMJI.Models;
+@model DashboardViewModel;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -199,8 +202,8 @@
         }
 
         .stat-value {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 600;
             margin-bottom: 6px;
             background: black;
             -webkit-background-clip: text;
@@ -473,7 +476,7 @@
 
         .sidebar-value {
             font-size: 22px;
-            font-weight: 700;
+            font-weight: 600;
             background: black;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -975,7 +978,7 @@
                         <span class="stat-title">Total Receivable</span>
                         <div class="stat-icon icon-down">↓</div>
                     </div>
-                    <div class="stat-value">₹ 724</div>
+                    <div class="stat-value">₹ @Model.</div>
                     <div class="stat-subtitle">From 1 Party</div>
                 </div>
 

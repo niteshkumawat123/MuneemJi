@@ -202,8 +202,8 @@
         }
 
         .stat-value {
-            font-size: 22px;
-            font-weight: 600;
+            font-size: 19px;
+            font-weight: 500;
             margin-bottom: 6px;
             background: black;
             -webkit-background-clip: text;
@@ -460,7 +460,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
         }
 
         .sidebar-title {
@@ -475,11 +474,12 @@
         }
 
         .sidebar-value {
-            font-size: 22px;
-            font-weight: 600;
+            font-size: 19px;
+            font-weight: 500;
             background: black;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            padding-left: 16px;
         }
 
         .widget-remove-btn {
@@ -978,7 +978,7 @@
                         <span class="stat-title">Total Receivable</span>
                         <div class="stat-icon icon-down">↓</div>
                     </div>
-                    <div class="stat-value">₹ @Model.</div>
+                    <div class="stat-value">₹ @Model.TotalReceivable</div>
                     <div class="stat-subtitle">From 1 Party</div>
                 </div>
 
@@ -987,7 +987,7 @@
                         <span class="stat-title">Total Payable</span>
                         <div class="stat-icon icon-up">↑</div>
                     </div>
-                    <div class="stat-value">₹ 2,36,271</div>
+                    <div class="stat-value">₹@Model.TotalPayable</div>
                     <div class="stat-subtitle">From 1 Party</div>
                 </div>
             </div>
@@ -1002,7 +1002,7 @@
                     </select>
                 </div>
                 <div style="margin-bottom: 12px;">
-                    <div class="stat-value">₹ 180</div>
+                    <div class="stat-value">₹@Model.TotalReceivable</div>
                 </div>
                 <div class="chart-container">
                     <canvas id="salesChart"></canvas>
@@ -1150,35 +1150,35 @@
                 id: 'purchases',
                 title: 'Purchases',
                 subtitle: 'This Month',
-                value: '₹ 0',
+                value: @Model.TotalPayable,
                 visible: true
             },
             {
                 id: 'expenses',
                 title: 'Expenses',
                 subtitle: 'This Month',
-                value: '₹ 0',
+                value: @Model.ExpenseAmount,
                 visible: true
             },
             {
                 id: 'stockValue',
                 title: 'Stock Value',
                 subtitle: 'As of Now',
-                value: '₹ 30,15,99,090',
+                value: @Model.StockAmount,
                 visible: true
             },
             {
                 id: 'cashInHand',
                 title: 'Cash In Hand',
                 subtitle: 'As of Now',
-                value: '₹ -77,24,28,632',
+                value: @Model.CashInHand,
                 visible: true
             },
             {
                 id: 'bankBalance',
                 title: 'Total Bank Balance',
                 subtitle: 'As of Now',
-                value: '₹ 0',
+                value: @Model.BanckAmount,
                 visible: true
             },
             {
@@ -1473,7 +1473,7 @@
             ctx.textAlign = 'center';
             ctx.fillText('28 Dec', tooltipX + 25, tooltipY + 14);
             ctx.font = '10px sans-serif';
-            ctx.fillText('₹ 180', tooltipX + 25, tooltipY + 28);
+            ctx.fillText(@Model.TotalReceivable, tooltipX + 25, tooltipY + 28);
 
             // Draw X-axis labels
             ctx.fillStyle = '#999';

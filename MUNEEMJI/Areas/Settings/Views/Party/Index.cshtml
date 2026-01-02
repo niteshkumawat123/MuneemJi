@@ -5,6 +5,36 @@
     Layout = "~/Areas/Settings/Views/Shared/_SettingsLayout.cshtml";
 }
 
+<script type="text/javascript">
+    function navigateBack() {
+        try {
+            var urlParams = new URLSearchParams(window.location.search);
+            var returnUrl = urlParams.get('returnUrl');
+
+            // If no returnUrl, go to Home/Index
+            if (!returnUrl || returnUrl === '') {
+                window.location.href = '/Web/Home/Index';
+                return;
+            }
+
+            // Decode and check if the returnUrl contains another nested returnUrl
+            var decodedReturnUrl = decodeURIComponent(returnUrl);
+
+            // If nested returnUrl exists (2+ levels), go to Home/Index
+            if (decodedReturnUrl.indexOf('returnUrl=') !== -1) {
+                window.location.href = '/Web/Home/Index';
+            } else {
+                // Single returnUrl, navigate to it normally
+                window.location.href = returnUrl;
+            }
+        } catch (e) {
+            // If any error, go to Home/Index as fallback
+            window.location.href = '/Web/Home/Index';
+        }
+    }
+</script>
+
+
 <style>
     body {
         background-color: #f8f9fa;
@@ -296,16 +326,13 @@
     }
 
     @@keyframes spin {
-        0%
+        0% {
+            transform: rotate(0deg);
+        }
 
-    {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     .alert {
@@ -462,26 +489,20 @@
             </div>
 
             <!-- Enable Loyalty Point Section -->
-            <div class="settings-section">
+
+            <div class="settings-section" style="
+                 margin-left: 333px;>
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 class="section-title">Enable Loyalty Point</h3>
                     <button type="button" class="btn-close btn-close-custom"
                             style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
-                    height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
-                    padding-right: 6px;"
+                            height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
+                            padding-right: 6px;"
                             aria-label="Close"
-                            onclick="window.location.href = new URLSearchParams(window.location.search).get('returnUrl') || window.history.back();">
+                            onclick="navigateBack(); return false;">
                     </button>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="EnableLoyaltyPoint" id="enableLoyaltyPoint" @(Model?.EnableLoyaltyPoint == true ? "checked" : "")>
-                    <label class="form-check-label" for="enableLoyaltyPoint">
-                        Enable Loyalty Point
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
             </div>
-          
+
         </div>
 
         <!-- Save Button -->

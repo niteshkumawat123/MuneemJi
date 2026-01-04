@@ -1,7 +1,4 @@
-﻿@using MUNEEMJI.Models;
-@model DashboardViewModel;
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -50,19 +47,19 @@
             transition: all 0.3s;
         }
 
-        .search-box:focus-within {
-            background-color: #fff;
-            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
-        }
+            .search-box:focus-within {
+                background-color: #fff;
+                box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+            }
 
-        .search-box input {
-            border: none;
-            background: none;
-            outline: none;
-            margin-left: 8px;
-            font-size: 14px;
-            width: 100%;
-        }
+            .search-box input {
+                border: none;
+                background: none;
+                outline: none;
+                margin-left: 8px;
+                font-size: 14px;
+                width: 100%;
+            }
 
         .header-actions {
             display: flex;
@@ -91,10 +88,10 @@
             box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
         }
 
-        .btn-sale:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
-        }
+            .btn-sale:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+            }
 
         .btn-purchase {
             background: #4dabf7b5;
@@ -102,10 +99,10 @@
             box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
         }
 
-        .btn-purchase:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
-        }
+            .btn-purchase:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+            }
 
         .btn-icon {
             background: #0000ffa8;
@@ -120,10 +117,10 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-icon:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
+            .btn-icon:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            }
 
         .container {
             display: grid;
@@ -163,10 +160,10 @@
             border: 1px solid rgba(255,255,255,0.5);
         }
 
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-        }
+            .stat-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            }
 
         .stat-header {
             display: flex;
@@ -249,10 +246,10 @@
             transition: all 0.3s;
         }
 
-        .chart-filter:hover {
-            border-color: #667eea;
-            background: #fff;
-        }
+            .chart-filter:hover {
+                border-color: #667eea;
+                background: #fff;
+            }
 
         .chart-container {
             position: relative;
@@ -283,7 +280,7 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             flex-shrink: 0;
             border: 1px solid rgba(255,255,255,0.5);
-            margin-bottom: 45px;
+            margin-bottom: 61px;
         }
 
         .reports-header {
@@ -307,9 +304,9 @@
             transition: all 0.3s;
         }
 
-        .view-all:hover {
-            color: #764ba2;
-        }
+            .view-all:hover {
+                color: #764ba2;
+            }
 
         .reports-grid {
             display: grid;
@@ -329,11 +326,11 @@
             background: white;
         }
 
-        .report-card:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            border-color: #667eea;
-            transform: translateX(4px);
-        }
+            .report-card:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+                border-color: #667eea;
+                transform: translateX(4px);
+            }
 
         .report-name {
             font-size: 13px;
@@ -362,12 +359,12 @@
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .widget-item h4 {
-            font-size: 15px;
-            margin-bottom: 16px;
-            opacity: 0.95;
-            font-weight: 600;
-        }
+            .widget-item h4 {
+                font-size: 15px;
+                margin-bottom: 16px;
+                opacity: 0.95;
+                font-weight: 600;
+            }
 
         .widget-stats {
             display: grid;
@@ -411,25 +408,23 @@
             transition: all 0.3s;
         }
 
-        .slider-dot.active {
-            background: #667eea;
-            width: 24px;
-            border-radius: 4px;
-        }
+            .slider-dot.active {
+                background: #667eea;
+                width: 24px;
+                border-radius: 4px;
+            }
 
         .right-section {
             display: flex;
             flex-direction: column;
-            gap: 16px;
             height: 100%;
-            position: relative;
             overflow: hidden;
         }
 
         .right-section-scroll {
+            flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            flex: 1;
             padding-right: 8px;
             padding-bottom: 16px;
         }
@@ -447,14 +442,14 @@
             position: relative;
         }
 
-        .sidebar-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-        }
+            .sidebar-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            }
 
-        .sidebar-card.hidden {
-            display: none;
-        }
+            .sidebar-card.hidden {
+                display: none;
+            }
 
         .sidebar-header {
             display: flex;
@@ -520,9 +515,9 @@
             border-bottom: 1px solid #f0f0f0;
         }
 
-        .low-stock-item:last-child {
-            border-bottom: none;
-        }
+            .low-stock-item:last-child {
+                border-bottom: none;
+            }
 
         .item-name {
             font-size: 12px;
@@ -547,22 +542,22 @@
             transition: all 0.3s;
         }
 
-        .see-more:hover {
-            color: #764ba2;
-        }
+            .see-more:hover {
+                color: #764ba2;
+            }
 
         .widget-add-section {
+            flex-shrink: 0;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 11px;
             box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
             border: 1px solid rgba(255,255,255,0.5);
-            position: absolute;
-            bottom: 76px;
-            left: 0;
-            right: 0;
+            margin-top: 16px;
+            position: relative;
             z-index: 10;
+            margin-bottom: 82px;
         }
 
         .add-widget-area {
@@ -577,11 +572,11 @@
             position: relative;
         }
 
-        .add-widget-area:hover {
-            border-color: #667eea;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-            transform: scale(1.02);
-        }
+            .add-widget-area:hover {
+                border-color: #667eea;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+                transform: scale(1.02);
+            }
 
         .add-widget-icon {
             font-size: 40px;
@@ -601,33 +596,36 @@
         /* Widget Dropdown Styles */
         .widget-dropdown {
             position: absolute;
-            bottom: 100%;
+            bottom: calc(100% + 8px);
             left: 0;
             right: 0;
             background: white;
             border-radius: 12px;
             box-shadow: 0 -8px 24px rgba(0,0,0,0.15);
-            margin-bottom: 8px;
             max-height: 400px;
             overflow-y: auto;
             display: none;
             z-index: 100;
         }
 
-        .widget-dropdown.show {
-            display: block;
-            animation: slideUp 0.3s ease;
-        }
+            .widget-dropdown.show {
+                display: block;
+                animation: slideUp 0.3s ease;
+            }
 
         @@keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         }
 
         .widget-dropdown-header {
@@ -651,9 +649,9 @@
             transition: all 0.3s;
         }
 
-        .dropdown-close:hover {
-            color: #333;
-        }
+            .dropdown-close:hover {
+                color: #333;
+            }
 
         .widget-dropdown-item {
             padding: 14px 16px;
@@ -665,13 +663,13 @@
             align-items: center;
         }
 
-        .widget-dropdown-item:last-child {
-            border-bottom: none;
-        }
+            .widget-dropdown-item:last-child {
+                border-bottom: none;
+            }
 
-        .widget-dropdown-item:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
-        }
+            .widget-dropdown-item:hover {
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            }
 
         .widget-dropdown-item-content {
             flex: 1;
@@ -706,10 +704,10 @@
             padding: 0;
         }
 
-        .widget-add-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
+            .widget-add-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            }
 
         .modal {
             display: none;
@@ -778,26 +776,26 @@
             list-style: none;
         }
 
-        .list-unstyled li {
-            margin-bottom: 10px;
-        }
+            .list-unstyled li {
+                margin-bottom: 10px;
+            }
 
-        .list-unstyled li a {
-            color: #333;
-            text-decoration: none;
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            border-radius: 6px;
-            transition: all 0.3s;
-        }
+                .list-unstyled li a {
+                    color: #333;
+                    text-decoration: none;
+                    font-size: 14px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    transition: all 0.3s;
+                }
 
-        .list-unstyled li a:hover {
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            color: #667eea;
-        }
+                    .list-unstyled li a:hover {
+                        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+                        color: #667eea;
+                    }
 
         .text-muted {
             color: #6c757d;
@@ -845,69 +843,75 @@
             border-radius: 4px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(102, 126, 234, 0.7);
-        }
+            ::-webkit-scrollbar-thumb:hover {
+                background: rgba(102, 126, 234, 0.7);
+            }
 
         @@media (min-width: 768px) {
-            .col-md-4 {
-                flex: 0 0 33.333333%;
-                max-width: 33.333333%;
-            }
+            .col-md-4
 
-            .container {
-                grid-template-columns: 1.8fr 1fr;
-            }
+        {
+            flex: 0 0 33.333333%;
+            max-width: 33.333333%;
+        }
 
-            .header {
-                flex-wrap: nowrap;
-            }
+        .container {
+            grid-template-columns: 1.8fr 1fr;
+        }
+
+        .header {
+            flex-wrap: nowrap;
+        }
+
         }
 
         @@media (max-width: 767px) {
-            .header {
-                padding: 10px 16px;
-                height: auto;
-            }
+            .header
 
-            .search-box {
-                width: 100%;
-                max-width: 100%;
-                order: 3;
-                flex-basis: 100%;
-            }
+        {
+            padding: 10px 16px;
+            height: auto;
+        }
 
-            .header-actions {
-                justify-content: space-between;
-                width: 100%;
-            }
+        .search-box {
+            width: 100%;
+            max-width: 100%;
+            order: 3;
+            flex-basis: 100%;
+        }
 
-            .btn {
-                font-size: 13px;
-                padding: 8px 14px;
-            }
+        .header-actions {
+            justify-content: space-between;
+            width: 100%;
+        }
 
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
+        .btn {
+            font-size: 13px;
+            padding: 8px 14px;
+        }
 
-            .reports-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            }
+        .stats-row {
+            grid-template-columns: 1fr;
+        }
 
-            .container {
-                padding: 12px;
-                gap: 12px;
-                grid-template-columns: 1fr;
-            }
+        .reports-grid {
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        }
 
-            .stat-value {
-                font-size: 24px;
-            }
+        .container {
+            padding: 12px;
+            gap: 12px;
+            grid-template-columns: 1fr;
+        }
 
-            .chart-container {
-                height: 180px;
-            }
+        .stat-value {
+            font-size: 24px;
+        }
+
+        .chart-container {
+            height: 180px;
+        }
+
         }
     </style>
 </head>
@@ -920,30 +924,30 @@
                         <div class="col-md-4">
                             <h5><strong>SALE</strong></h5>
                             <ul class="list-unstyled">
-                                <li><a href="/Web/Sales/Create">Sale Invoice <span class="text-muted">ALT + S</span></a></li>
-                                <li><a href="/Web/PaymentIn/Create">Payment-In <span class="text-muted">ALT + I</span></a></li>
-                                <li><a href="/Web/CreditNote/Create">Sale Return <small>Cr Note</small> <span class="text-muted">ALT + R</span></a></li>
-                                <li><a href="/Web/SalesOrder/Create">Sale Order <span class="text-muted">ALT + F</span></a></li>
-                                <li><a href="/Web/Estimate_Quotations/Create">Estimate/Quotation <span class="text-muted">ALT + M</span></a></li>
-                                <li><a href="/Web/Sales/Proforma">Proforma Invoice <span class="text-muted">ALT + K</span></a></li>
-                                <li><a href="/Web/DeliveryChallan/Create">Delivery Challan <span class="text-muted">ALT + D</span></a></li>
+                                <li><a href="#">Sale Invoice <span class="text-muted">ALT + S</span></a></li>
+                                <li><a href="#">Payment-In <span class="text-muted">ALT + I</span></a></li>
+                                <li><a href="#">Sale Return <small>Cr Note</small> <span class="text-muted">ALT + R</span></a></li>
+                                <li><a href="#">Sale Order <span class="text-muted">ALT + F</span></a></li>
+                                <li><a href="#">Estimate/Quotation <span class="text-muted">ALT + M</span></a></li>
+                                <li><a href="#">Proforma Invoice <span class="text-muted">ALT + K</span></a></li>
+                                <li><a href="#">Delivery Challan <span class="text-muted">ALT + D</span></a></li>
                             </ul>
                         </div>
                         <div class="col-md-4">
                             <h5><strong>PURCHASE</strong></h5>
                             <ul class="list-unstyled">
-                                <li><a href="/Web/Purchase/Bill">Purchase Bill <span class="text-muted">ALT + P</span></a></li>
-                                <li><a href="/Web/PaymentOut/Create">Payment-Out <span class="text-muted">ALT + O</span></a></li>
-                                <li><a href="/Web/DebitNote/Create">Purchase Return <small>Dr Note</small> <span class="text-muted">ALT + L</span></a></li>
-                                <li><a href="/Web/PurchaseOrder/Create">Purchase Order <span class="text-muted">ALT + G</span></a></li>
+                                <li><a href="#">Purchase Bill <span class="text-muted">ALT + P</span></a></li>
+                                <li><a href="#">Payment-Out <span class="text-muted">ALT + O</span></a></li>
+                                <li><a href="#">Purchase Return <small>Dr Note</small> <span class="text-muted">ALT + L</span></a></li>
+                                <li><a href="#">Purchase Order <span class="text-muted">ALT + G</span></a></li>
                             </ul>
                         </div>
                         <div class="col-md-4">
                             <h5><strong>OTHERS</strong></h5>
                             <ul class="list-unstyled">
-                                <li><a href="/Expenses">Expenses <span class="text-muted">ALT + E</span></a></li>
-                                <li><a href="/Web/OtherIncome/Create">Other Income <span class="text-muted">ALT + Q</span></a></li>
-                                <li><a href="/Web/Party/Add">Party To Party Transfer <span class="text-muted">ALT + J</span></a></li>
+                                <li><a href="#">Expenses <span class="text-muted">ALT + E</span></a></li>
+                                <li><a href="#">Other Income <span class="text-muted">ALT + Q</span></a></li>
+                                <li><a href="#">Party To Party Transfer <span class="text-muted">ALT + J</span></a></li>
                             </ul>
                         </div>
                     </div>
@@ -964,8 +968,8 @@
             <input type="text" placeholder="Search Transactions">
         </div>
         <div class="header-actions">
-            <button class="btn btn-sale" onclick="window.location.href='/Web/Sales/Create'">+ Add Sale</button>
-            <button class="btn btn-purchase" onclick="window.location.href='/Web/PurchaseBill/Create'">+ Add Purchase</button>
+            <button class="btn btn-sale">+ Add Sale</button>
+            <button class="btn btn-purchase">+ Add Purchase</button>
             <button class="btn-icon" id="plusButton">+</button>
         </div>
     </div>
@@ -978,7 +982,7 @@
                         <span class="stat-title">Total Receivable</span>
                         <div class="stat-icon icon-down">↓</div>
                     </div>
-                    <div class="stat-value">₹ @Model.TotalReceivable</div>
+                    <div class="stat-value">₹ 45,800</div>
                     <div class="stat-subtitle">From 1 Party</div>
                 </div>
 
@@ -987,7 +991,7 @@
                         <span class="stat-title">Total Payable</span>
                         <div class="stat-icon icon-up">↑</div>
                     </div>
-                    <div class="stat-value">₹@Model.TotalPayable</div>
+                    <div class="stat-value">₹ 32,500</div>
                     <div class="stat-subtitle">From 1 Party</div>
                 </div>
             </div>
@@ -1002,7 +1006,7 @@
                     </select>
                 </div>
                 <div style="margin-bottom: 12px;">
-                    <div class="stat-value">₹@Model.TotalReceivable</div>
+                    <div class="stat-value">₹ 45,800</div>
                 </div>
                 <div class="chart-container">
                     <canvas id="salesChart"></canvas>
@@ -1087,30 +1091,30 @@
             <div class="reports-section">
                 <div class="reports-header">
                     <span class="reports-title">Most Used Reports</span>
-                    <a href="/Web/Report/Index" class="view-all">View All</a>
+                    <a href="#" class="view-all">View All</a>
                 </div>
                 <div class="reports-grid">
-                    <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
+                    <div class="report-card">
                         <span class="report-name">Sale Report</span>
                         <span>›</span>
                     </div>
-                    <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
+                    <div class="report-card">
                         <span class="report-name">All Transactions</span>
                         <span>›</span>
                     </div>
-                    <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
+                    <div class="report-card">
                         <span class="report-name">Daybook Report</span>
                         <span>›</span>
                     </div>
-                    <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
+                    <div class="report-card">
                         <span class="report-name">Party Statement</span>
                         <span>›</span>
                     </div>
-                    <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
+                    <div class="report-card">
                         <span class="report-name">Purchase Report</span>
                         <span>›</span>
                     </div>
-                    <div class="report-card" onclick="window.location.href='/Web/Report/Index'">
+                    <div class="report-card">
                         <span class="report-name">Expense Report</span>
                         <span>›</span>
                     </div>
@@ -1150,35 +1154,35 @@
                 id: 'purchases',
                 title: 'Purchases',
                 subtitle: 'This Month',
-                value: @Model.TotalPayable,
+                value: '₹ 32,500',
                 visible: true
             },
             {
                 id: 'expenses',
                 title: 'Expenses',
                 subtitle: 'This Month',
-                value: @Model.ExpenseAmount,
+                value: '₹ 8,450',
                 visible: true
             },
             {
                 id: 'stockValue',
                 title: 'Stock Value',
                 subtitle: 'As of Now',
-                value: @Model.StockAmount,
+                value: '₹ 1,24,000',
                 visible: true
             },
             {
                 id: 'cashInHand',
                 title: 'Cash In Hand',
                 subtitle: 'As of Now',
-                value: @Model.CashInHand,
+                value: '₹ 15,600',
                 visible: true
             },
             {
                 id: 'bankBalance',
                 title: 'Total Bank Balance',
                 subtitle: 'As of Now',
-                value: @Model.BanckAmount,
+                value: '₹ 3,45,800',
                 visible: true
             },
             {
@@ -1354,8 +1358,8 @@
             const dropdown = document.getElementById('widgetDropdown');
             const addArea = document.querySelector('.add-widget-area');
 
-            if (dropdown.classList.contains('show') && 
-                !dropdown.contains(event.target) && 
+            if (dropdown.classList.contains('show') &&
+                !dropdown.contains(event.target) &&
                 !addArea.contains(event.target)) {
                 dropdown.classList.remove('show');
             }
@@ -1473,7 +1477,7 @@
             ctx.textAlign = 'center';
             ctx.fillText('28 Dec', tooltipX + 25, tooltipY + 14);
             ctx.font = '10px sans-serif';
-            ctx.fillText(@Model.TotalReceivable, tooltipX + 25, tooltipY + 28);
+            ctx.fillText('₹ 45,800', tooltipX + 25, tooltipY + 28);
 
             // Draw X-axis labels
             ctx.fillStyle = '#999';
@@ -1629,4 +1633,3 @@
     </script>
 </body>
 </html>
-  

@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +20,7 @@ namespace MUNEEMJI.Controllers
     {
 
 
-        private readonly string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private readonly string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly ICompanyTenancy _CompayTenancy;
         public IParty _party;
         public PartyController(ICompanyTenancy companyTenancy, IParty party)
@@ -185,7 +185,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                // ✅ RETURN JSON ERROR
+                // ? RETURN JSON ERROR
                 return Json(new
                 {
                     success = false,

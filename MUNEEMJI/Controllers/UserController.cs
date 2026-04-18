@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using Npgsql;
 using System.Data;
@@ -20,7 +20,7 @@ namespace MUNEEMJI.Controllers
 
         public UserController(IConfiguration configuration, ICompanyTenancy companyTenancy, IUser user)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             _companyTenancy = companyTenancy;
             _iuser = user;
         }
@@ -91,7 +91,7 @@ namespace MUNEEMJI.Controllers
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // 🔹 Step 1: Check if user already exists
+            // ?? Step 1: Check if user already exists
             var checkQuery = @"
                                 SELECT COUNT(1) 
                                 FROM businesses 
@@ -106,14 +106,14 @@ namespace MUNEEMJI.Controllers
 
                 if (exists > 0)
                 {
-                    // User already exists → return with error message
+                    // User already exists ? return with error message
                     ModelState.AddModelError("", "A user with this email already exists for this business.");
                     model.AvailableRoles = await GetAvailableRoles();
                     return View(model);
                 }
             }
 
-            // 🔹 Step 2: Insert new user if not exists
+            // ?? Step 2: Insert new user if not exists
             var insertQuery = @"
                                 INSERT INTO businesses 
                                 ( business_name, phone, email, created_at, updated_at, status, roleid, isactive, companyid, username, isowner)

@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +17,7 @@ namespace MUNEEMJI.Controllers
         private readonly ICompanyTenancy _tenancy;
         public PaymentOutController(IConfiguration configuration, ICompanyTenancy company)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             _tenancy = company;
         }
 

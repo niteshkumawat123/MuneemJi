@@ -1,4 +1,4 @@
-﻿using MUNEEMJI.Models;
+using MUNEEMJI.Models;
 using Npgsql;
 using System.Data;
 
@@ -20,7 +20,7 @@ namespace MUNEEMJI.Repositories
 
         public Estimate_QuotationsRepository(IConfiguration configuration)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         }
 
         public async Task<int> CreateBillAsync(PurchaseBill bill, int CompanyId)
@@ -179,7 +179,7 @@ namespace MUNEEMJI.Repositories
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // ✅ Explicit column list for tradedocuments
+            // ? Explicit column list for tradedocuments
             var billQuery = @"
         SELECT 
             id, bill_number, bill_date, stateid, state_of_supply, phone_no, po_no, po_date,
@@ -260,7 +260,7 @@ namespace MUNEEMJI.Repositories
 
             await billReader.CloseAsync();
 
-            // ✅ Explicit column list for tradedocumentitems
+            // ? Explicit column list for tradedocumentitems
             var itemsQuery = @"
         SELECT 
             id, tradedocumentsid, itemid, categoryid, serialno, batchno, modelno, expirydate,

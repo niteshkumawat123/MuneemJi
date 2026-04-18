@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
@@ -15,7 +15,7 @@ namespace MUNEEMJI.Controllers
 
         //public PurchaseController(IConfiguration config, IWebHostEnvironment env)
         //{
-        //    _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        //    _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         //    _env = env;
         //}
 

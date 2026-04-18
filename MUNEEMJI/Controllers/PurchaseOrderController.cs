@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
@@ -15,7 +15,7 @@ namespace MUNEEMJI.Controllers
         private readonly ICompanyTenancy _CompayTenancy;
         private readonly IParty partyController;
 
-        string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         // GET: Bill
 
         public PurchaseOrderController(IPurchaseOrderService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy CompayTenancy, IParty partyController)

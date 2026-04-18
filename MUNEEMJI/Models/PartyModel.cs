@@ -39,6 +39,9 @@ namespace MUNEEMJI.Models
         public  bool IsSaveAgain { get; set; }
         public List<StateModel> States { get; set; }
         public string save { get; set; }
+        public string  StateName { get; set; }
+        public string  StateCode { get; set; }
+        public int StateId { get; set; }
     }
 
     public class PartyViewModel

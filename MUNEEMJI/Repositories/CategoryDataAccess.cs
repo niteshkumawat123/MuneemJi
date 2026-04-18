@@ -1,11 +1,11 @@
-﻿using Npgsql;
+using Npgsql;
 using static MUNEEMJI.Models.ItemModel;
 
 namespace MUNEEMJI.Repositories
 {
     public class CategoryDataAccess
     {
-        private static string ConnString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private static string ConnString = MUNEEMJI.DbConfig.ConnectionString;
 
         public static List<Category> GetAllWithCounts()
         {

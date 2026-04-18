@@ -1,4 +1,4 @@
-﻿
+
 using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
@@ -21,7 +21,7 @@ namespace MUNEEMJI.Controllers
         {
             _billItemService = billItemService;
             _logger = logger;
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             _companyTenancy = companyTenancy;
             _environment = environment;
         }
@@ -195,7 +195,7 @@ namespace MUNEEMJI.Controllers
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // ✅ Query to get all bill items
+            // ? Query to get all bill items
             var billItemSql = @"
         SELECT 
             id AS ""Id"",
@@ -233,14 +233,14 @@ namespace MUNEEMJI.Controllers
         ORDER BY id;
     ";
 
-            // ✅ Fetch bill items
+            // ? Fetch bill items
             var billItems = connection.QuerySql<BillItem>(billItemSql).ToList();
 
             if (billItems != null && billItems.Count > 0)
             {
                 foreach (var billItem in billItems)
                 {
-                    // ✅ Query to fetch manufacturing data for each bill item
+                    // ? Query to fetch manufacturing data for each bill item
                     var manufacturingSql = @"
                 SELECT 
                     id AS ""Id"",

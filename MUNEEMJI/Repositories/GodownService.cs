@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using MUNEEMJI.Models;
 using Npgsql;
 using System.ComponentModel.Design;
@@ -22,7 +22,7 @@ namespace MUNEEMJI.Repositories
 
         public GodownService(IConfiguration configuration)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         }
 
         public async Task<List<Godown>> GetAllGodownsAsync(int CompanyId)

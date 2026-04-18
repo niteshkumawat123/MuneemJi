@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Client;
 using MUNEEMJI.Models;
@@ -11,7 +11,7 @@ namespace MUNEEMJI.Controllers
     [Authorize]
     public class LoanController : Controller
     {
-        private readonly string _connStr = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private readonly string _connStr = MUNEEMJI.DbConfig.ConnectionString;
 
         public IActionResult Index()
         {

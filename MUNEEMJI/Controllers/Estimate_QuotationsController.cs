@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
@@ -12,7 +12,7 @@ namespace MUNEEMJI.Controllers
         private readonly IEstimate_QuotationsRepository _billService;
         private readonly IWebHostEnvironment _environment;
         private readonly IBillItemService _IBillItemService;
-        string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly IParty partyController;
         private readonly ICompanyTenancy _CompayTenancy;
 

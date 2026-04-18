@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using MUNEEMJI.Models;
 using Newtonsoft.Json;
 using Npgsql;
@@ -20,7 +20,7 @@ namespace MUNEEMJI.Repositories
 
         public BillItemService(IConfiguration configuration)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         }
 
        
@@ -253,7 +253,7 @@ namespace MUNEEMJI.Repositories
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // ✅ Query to get all bill items
+            // ? Query to get all bill items
             var billItemSql = @"
                                SELECT 
                                    id AS ""Id"",
@@ -292,7 +292,7 @@ namespace MUNEEMJI.Repositories
                                ORDER BY id;
 ";
 
-            // ✅ Fetch bill items
+            // ? Fetch bill items
             items = connection.QuerySql<BillItem>(billItemSql,new { p_companyid = Companyid }).ToList();
             return items;
         }

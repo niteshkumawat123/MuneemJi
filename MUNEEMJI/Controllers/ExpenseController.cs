@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -19,7 +19,7 @@ namespace MUNEEMJI.Controllers
 
         public ExpenseController(IConfiguration configuration, ICompanyTenancy tenancy)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             _CompanyTenancy = tenancy;
         }
 

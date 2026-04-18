@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -177,14 +177,14 @@ namespace MUNEEMJI.Controllers
         {
             var companyId = _CompayTenancy.GetCurrentCompanyId();
 
-            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
             List<BillItem> items = new List<BillItem>();
 
             using (var connection = new NpgsqlConnection(_connectionString))
             {
 
-                // ✅ Query to get all bill items
+                // ? Query to get all bill items
                 var billItemSql = @"
                                     SELECT 
                                         id AS ""Id"",
@@ -222,14 +222,14 @@ namespace MUNEEMJI.Controllers
                                     ORDER BY id;
                                     ";
 
-                // ✅ Fetch bill items
+                // ? Fetch bill items
                 var billItems = connection.QuerySql<BillItem>(billItemSql,new { p_companyid  = companyId }).ToList();
 
                 if (billItems != null && billItems.Count > 0)
                 {
                     foreach (var billItem in billItems)
                     {
-                        // ✅ Query to fetch manufacturing data for each bill item
+                        // ? Query to fetch manufacturing data for each bill item
                         var manufacturingSql = @"
                                                 SELECT 
                                                     id AS ""Id"",
@@ -377,7 +377,7 @@ namespace MUNEEMJI.Controllers
 
         public List<BillItem> GetServiceAsync(int companyId)
         {
-            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
             List<BillItem> items = new List<BillItem>();
             try
@@ -386,7 +386,7 @@ namespace MUNEEMJI.Controllers
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
 
-                    // ✅ Query to get all bill items
+                    // ? Query to get all bill items
                     var billItemSql = @"
                                     SELECT 
                                         id AS ""Id"",
@@ -424,14 +424,14 @@ namespace MUNEEMJI.Controllers
                                     ORDER BY id;
                                     ";
 
-                    // ✅ Fetch bill items
+                    // ? Fetch bill items
                     var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtye = "service", p_companyId = companyId }).ToList();
 
                     if (billItems != null && billItems.Count > 0)
                     {
                         foreach (var billItem in billItems)
                         {
-                            // ✅ Query to fetch manufacturing data for each bill item
+                            // ? Query to fetch manufacturing data for each bill item
                             var manufacturingSql = @"
                                                 SELECT 
                                                     id AS ""Id"",
@@ -465,7 +465,7 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public IActionResult DeleteItem(int id)
         {
-            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
             try
             {
@@ -487,7 +487,7 @@ namespace MUNEEMJI.Controllers
         public int GetServiceCode(int CompanyId)
         {
             int itemcode = 96105600;
-            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
             try
             {

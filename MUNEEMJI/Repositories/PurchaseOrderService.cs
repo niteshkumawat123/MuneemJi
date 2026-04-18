@@ -1,4 +1,4 @@
-﻿using MUNEEMJI.Models;
+using MUNEEMJI.Models;
 using Npgsql;
 using System.Data;
 
@@ -20,7 +20,7 @@ namespace MUNEEMJI.Repositories
 
         public PurchaseOrderService(IConfiguration configuration)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         }
 
         public async Task<int> CreateBillAsync(PurchaseBill bill, int Companyid)
@@ -515,7 +515,7 @@ namespace MUNEEMJI.Repositories
 
             try
             {
-                // 🔁 Update existing bill
+                // ?? Update existing bill
                 var updateQuery = @"
             UPDATE TradeDocuments 
             SET bill_number = @BillNumber,
@@ -563,13 +563,13 @@ namespace MUNEEMJI.Repositories
 
                 await updateCommand.ExecuteNonQueryAsync();
 
-                // ❌ Delete existing items for this bill (clean slate approach)
+                // ? Delete existing items for this bill (clean slate approach)
                 var deleteItemsQuery = "DELETE FROM TradeDocumentItems WHERE TradeDocumentsid = @BillId";
                 using var deleteCommand = new NpgsqlCommand(deleteItemsQuery, connection, transaction);
                 deleteCommand.Parameters.AddWithValue("@BillId", bill.Id);
                 await deleteCommand.ExecuteNonQueryAsync();
 
-                // ➕ Re-insert bill items
+                // ? Re-insert bill items
                 foreach (var item in bill.BillItems)
                 {
                     if (item.ItemId > 0)

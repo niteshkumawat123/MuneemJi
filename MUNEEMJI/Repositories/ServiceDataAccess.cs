@@ -1,11 +1,11 @@
-﻿using MUNEEMJI.Models;
+using MUNEEMJI.Models;
 using Npgsql;
 
 namespace MUNEEMJI.Repositories
 {
     public class ServiceDataAccess
     {
-        private static string ConnString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private static string ConnString = MUNEEMJI.DbConfig.ConnectionString;
 
         public static List<Service> GetAll()
         {

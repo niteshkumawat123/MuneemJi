@@ -201,6 +201,7 @@
                                             <ul class="dropdown-menu">
                                                 <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
                                                 <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0)" onclick="openPdf(@bill.Id)">Open PDF</a></li>
                                                 @*                                                 <li><a class="dropdown-item" href="/Web/Sales/DeleteConfirmed?id=@(bill.Id)">Delete</a></li>
  *@                                                <li>
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="showDeleteConfirmation(@bill.Id)">

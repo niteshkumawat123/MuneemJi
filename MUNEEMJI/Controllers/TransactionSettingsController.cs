@@ -1,4 +1,4 @@
-﻿using MUNEEMJI.Models.Setting;
+using MUNEEMJI.Models.Setting;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
@@ -23,7 +23,7 @@ namespace MUNEEMJI.Controllers
                 PaymentInPrefix = "None"
             };
 
-            using (var connection = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+            using (var connection = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
             {
                 connection.Open();
 
@@ -109,7 +109,7 @@ namespace MUNEEMJI.Controllers
             // default model values
             var settings = new ItemSettingsViewModel();
 
-            using (var connection = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+            using (var connection = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
             {
                 connection.Open();
 

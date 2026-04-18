@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
@@ -15,7 +15,7 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public IActionResult UnitCreate([FromBody] Unit model)
         {
-            var _dbconnectionstrig = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _dbconnectionstrig = MUNEEMJI.DbConfig.ConnectionString;
 
             try
             {
@@ -49,7 +49,7 @@ namespace MUNEEMJI.Controllers
             try
             {
                 await Task.Delay(1);
-                using (var conn = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+                using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
                 {
 
                     string query = " delete from units where  id =@p_id ";
@@ -78,7 +78,7 @@ namespace MUNEEMJI.Controllers
             {
                 await Task.Delay(1);
 
-                using (var conn = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+                using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
                 {
                     conn.Open();
                     string query = @"SELECT id, fullname , shortname , name

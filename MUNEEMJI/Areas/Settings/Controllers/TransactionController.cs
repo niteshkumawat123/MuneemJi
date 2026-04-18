@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MUNEEMJI.Models.Setting;
@@ -11,7 +11,7 @@ namespace MUNEEMJI.Areas.Settings.Controllers
     {
         public IActionResult Index(string? returnUrl)
         {
-            var connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var connectionString = MUNEEMJI.DbConfig.ConnectionString;
             TransactionSettingsViewModel settings = null;
 
             using (var conn = new NpgsqlConnection(connectionString))
@@ -61,13 +61,13 @@ namespace MUNEEMJI.Areas.Settings.Controllers
                 field5 AS ""Field5"",
                 field6 AS ""Field6""
             FROM transaction_settings
-            LIMIT 1;   -- ✅ Only first record
+            LIMIT 1;   -- ? Only first record
         ";
 
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
-                    if (reader.Read()) // ✅ FirstOrDefault
+                    if (reader.Read()) // ? FirstOrDefault
                     {
                         settings = new TransactionSettingsViewModel
                         {
@@ -127,7 +127,7 @@ namespace MUNEEMJI.Areas.Settings.Controllers
         {
             try
             {
-                var connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+                var connectionString = MUNEEMJI.DbConfig.ConnectionString;
                 using var connection = new NpgsqlConnection(connectionString);
                 await connection.OpenAsync();
 

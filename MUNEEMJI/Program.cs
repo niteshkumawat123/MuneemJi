@@ -3,6 +3,9 @@ using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 var builder = WebApplication.CreateBuilder(args);
 
+MUNEEMJI.DbConfig.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
+
+
 
 // Add services to the container.
 

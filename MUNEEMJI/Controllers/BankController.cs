@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +10,7 @@ namespace MUNEEMJI.Controllers
     [Authorize]
     public class BankController: Controller
     {
-        private readonly string _connStr = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private readonly string _connStr = MUNEEMJI.DbConfig.ConnectionString;
 
         [HttpGet]
         public IActionResult AddBankAccount(int id = 0, int typeid = 0)
@@ -144,7 +144,7 @@ namespace MUNEEMJI.Controllers
             var accounts = new List<BankAccountModel>();
 
             // Get connection string from configuration
-            string connStr = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"; 
+            string connStr = MUNEEMJI.DbConfig.ConnectionString; 
             using var conn = new NpgsqlConnection(connStr);
             conn.Open();  // Open the PostgreSQL connection:contentReference[oaicite:6]{index=6}
 

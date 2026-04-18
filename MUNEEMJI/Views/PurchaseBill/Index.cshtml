@@ -234,6 +234,7 @@
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 <li><a class="dropdown-item" href="/PurchaseBill/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)"><i class="bi bi-eye me-2"></i>View</a></li>
                                                 <li><a class="dropdown-item" href="/PurchaseBill/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0)" onclick="openPdf(@bill.Id)"><i class="bi bi-file-pdf me-2"></i>Open PDF</a></li>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li>
                                                     <a class="dropdown-item text-danger" href="javascript:void(0)" onclick="showDeleteConfirmation(@bill.Id)">

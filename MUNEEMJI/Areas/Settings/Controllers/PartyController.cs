@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models.Setting;
 using Npgsql;
@@ -14,7 +14,7 @@ namespace MUNEEMJI.Areas.Settings.Controllers
         public PartyController(IConfiguration configuration)
         {
             _configuration = configuration;
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"; 
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString; 
         }
 
         // GET: Settings/Party/Index

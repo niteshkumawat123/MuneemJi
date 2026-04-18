@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Accounting Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         * {
             margin: 0;
@@ -1002,8 +1003,8 @@
                 <div style="margin-bottom: 12px;">
                     <div class="stat-value">₹ @Model.TotalReceivable</div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="salesChart"></canvas>
+                <div class="chart-container" style="height: 250px;">
+                    <div id="salesChart"></div>
                 </div>
             </div>
 
@@ -1360,144 +1361,109 @@
         });
 
         // ============================================
-        // CHART RENDERING
+        // CHART RENDERING (ApexCharts)
         // ============================================
 
+        let apexChartInstance = null;
+
         function renderChart() {
-            const canvas = document.getElementById('salesChart');
-            if (!canvas) return;
+            const chartContainer = document.querySelector("#salesChart");
+            if (!chartContainer) return;
 
-            const ctx = canvas.getContext('2d');
-
-            // Set canvas size
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            const dates = ['1 Dec', '4 Dec', '7 Dec', '10 Dec', '13 Dec', '16 Dec', '19 Dec', '22 Dec', '25 Dec', '28 Dec', '31 Dec'];
-            const values = [0, 0, 0, 0, 0, 0, 0, 0, 0, 180, 0];
-
-            const padding = 35;
-            const chartWidth = canvas.width - padding * 2;
-            const chartHeight = canvas.height - padding * 2;
-            const maxValue = Math.max(...values) || 200;
-
-            // Draw grid lines
-            ctx.strokeStyle = '#f0f0f0';
-            ctx.lineWidth = 1;
-            for (let i = 0; i <= 4; i++) {
-                const y = padding + (chartHeight / 4) * i;
-                ctx.beginPath();
-                ctx.moveTo(padding, y);
-                ctx.lineTo(canvas.width - padding, y);
-                ctx.stroke();
+            if (apexChartInstance) {
+                apexChartInstance.destroy();
             }
 
-            // Draw Y-axis labels
-            ctx.fillStyle = '#999';
-            ctx.font = '10px sans-serif';
-            ctx.textAlign = 'right';
-            for (let i = 0; i <= 4; i++) {
-                const value = maxValue - (maxValue / 4) * i;
-                const y = padding + (chartHeight / 4) * i;
-                ctx.fillText(Math.round(value), padding - 8, y + 4);
-            }
-
-            // Calculate points
-            const points = values.map((value, index) => ({
-                x: padding + (chartWidth / (values.length - 1)) * index,
-                y: padding + chartHeight - (value / maxValue) * chartHeight,
-                value: value,
-                date: dates[index]
-            }));
-
-            // Draw gradient fill
-            const gradient = ctx.createLinearGradient(0, padding, 0, canvas.height - padding);
-            gradient.addColorStop(0, 'rgba(102, 126, 234, 0.4)');
-            gradient.addColorStop(1, 'rgba(102, 126, 234, 0.05)');
-
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, canvas.height - padding);
-            points.forEach(point => {
-                ctx.lineTo(point.x, point.y);
-            });
-            ctx.lineTo(points[points.length - 1].x, canvas.height - padding);
-            ctx.closePath();
-            ctx.fillStyle = gradient;
-            ctx.fill();
-
-            // Draw line
-            ctx.beginPath();
-            ctx.moveTo(points[0].x, points[0].y);
-            points.forEach(point => {
-                ctx.lineTo(point.x, point.y);
-            });
-            ctx.strokeStyle = '#667eea';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // Draw special point (28 Dec with value 180)
-            const specialPoint = points[9];
-            ctx.fillStyle = '#667eea';
-            ctx.beginPath();
-            ctx.arc(specialPoint.x, specialPoint.y, 6, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // Draw tooltip
-            const tooltipX = specialPoint.x - 25;
-            const tooltipY = specialPoint.y - 45;
-
-            ctx.fillStyle = '#667eea';
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-            ctx.shadowBlur = 10;
-            ctx.beginPath();
-            ctx.roundRect(tooltipX, tooltipY, 50, 35, 6);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            // Draw tooltip arrow
-            ctx.beginPath();
-            ctx.moveTo(specialPoint.x, tooltipY + 35);
-            ctx.lineTo(specialPoint.x - 6, tooltipY + 35);
-            ctx.lineTo(specialPoint.x, tooltipY + 42);
-            ctx.closePath();
-            ctx.fill();
-
-            // Draw tooltip text
-            ctx.fillStyle = 'white';
-            ctx.font = 'bold 10px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText('28 Dec', tooltipX + 25, tooltipY + 14);
-            ctx.font = '10px sans-serif';
-            ctx.fillText('₹ @Model.TotalReceivable', tooltipX + 25, tooltipY + 28);
-
-            // Draw X-axis labels
-            ctx.fillStyle = '#999';
-            ctx.font = '10px sans-serif';
-            ctx.textAlign = 'center';
-            dates.forEach((date, index) => {
-                if (index % 2 === 0) {
-                    const x = padding + (chartWidth / (dates.length - 1)) * index;
-                    ctx.fillText(date, x, canvas.height - padding + 18);
+            var options = {
+                series: [{
+                    name: 'Sales',
+                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 180, 0]
+                }],
+                chart: {
+                    type: 'area',
+                    height: '100%',
+                    width: '100%',
+                    fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    toolbar: { show: false },
+                    zoom: { enabled: false },
+                    sparkline: { enabled: false }
+                },
+                colors: ['#667eea'],
+                fill: {
+                    type: 'gradient',
+                    gradient: {
+                        shadeIntensity: 1,
+                        opacityFrom: 0.4,
+                        opacityTo: 0.05,
+                        stops: [0, 100]
+                    }
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 3
+                },
+                xaxis: {
+                    categories: ['1 Dec', '4 Dec', '7 Dec', '10 Dec', '13 Dec', '16 Dec', '19 Dec', '22 Dec', '25 Dec', '28 Dec', '31 Dec'],
+                    axisBorder: { show: false },
+                    axisTicks: { show: false },
+                    labels: {
+                        style: { colors: '#999', fontSize: '11px' }
+                    }
+                },
+                yaxis: {
+                    labels: {
+                        style: { colors: '#999', fontSize: '11px' },
+                        formatter: function (val) {
+                            return Math.round(val);
+                        }
+                    }
+                },
+                grid: {
+                    borderColor: '#f0f0f0',
+                    strokeDashArray: 0,
+                    xaxis: { lines: { show: false } },
+                    yaxis: { lines: { show: true } },
+                    padding: { top: 0, right: 0, bottom: 0, left: 10 }
+                },
+                tooltip: {
+                    theme: 'dark',
+                    y: {
+                        formatter: function (val) {
+                            return "₹ " + val;
+                        }
+                    }
+                },
+                annotations: {
+                    points: [{
+                        x: '28 Dec',
+                        y: 180,
+                        marker: {
+                            size: 6,
+                            fillColor: '#667eea',
+                            strokeColor: 'white',
+                            strokeWidth: 2,
+                            radius: 2
+                        },
+                        label: {
+                            borderColor: '#667eea',
+                            style: {
+                                color: '#fff',
+                                background: '#667eea',
+                                fontSize: '10px',
+                                fontWeight: 'bold',
+                                padding: { left: 8, right: 8, top: 4, bottom: 4 }
+                            },
+                            text: '₹ @Model.TotalReceivable'
+                        }
+                    }]
                 }
-            });
-        }
-
-        // Polyfill for roundRect if not available
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
-                this.moveTo(x + radius, y);
-                this.lineTo(x + width - radius, y);
-                this.quadraticCurveTo(x + width, y, x + width, y + radius);
-                this.lineTo(x + width, y + height - radius);
-                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-                this.lineTo(x + radius, y + height);
-                this.quadraticCurveTo(x, y + height, x, y + height - radius);
-                this.lineTo(x, y + radius);
-                this.quadraticCurveTo(x, y, x + radius, y);
             };
+
+            apexChartInstance = new ApexCharts(chartContainer, options);
+            apexChartInstance.render();
         }
 
         // ============================================

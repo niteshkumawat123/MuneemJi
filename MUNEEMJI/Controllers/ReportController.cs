@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using MUNEEMJI.Areas.Settings.Controllers;
@@ -18,7 +18,7 @@ namespace MUNEEMJI.Controllers
     public class ReportController : Controller
     {
         private readonly ICompanyTenancy _CompayTenancy;
-        string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly IParty partyController;
         private readonly IGodownService _godownService;
         private readonly IUser _user;
@@ -953,7 +953,7 @@ namespace MUNEEMJI.Controllers
                                     ORDER BY id;
                                     ";
 
-                    // ✅ Fetch bill items
+                    // ? Fetch bill items
                     bills = Conn.QuerySql<BillItem>(billItemSql, new { p_itemtype = "product"}).ToList();
                 }
             }
@@ -1009,7 +1009,7 @@ namespace MUNEEMJI.Controllers
                                     ORDER BY id;
                                     ";
 
-                    // ✅ Fetch bill items
+                    // ? Fetch bill items
                     bills = Conn.QuerySql<BillItem>(billItemSql, new { p_itemtype = "product" }).ToList();
                 }
             }
@@ -1065,7 +1065,7 @@ namespace MUNEEMJI.Controllers
                                     ORDER BY id;
                                     ";
 
-                    // ✅ Fetch bill items
+                    // ? Fetch bill items
                     bills = Conn.QuerySql<BillItem>(billItemSql, new { p_itemtype = "product" }).ToList();
                 }
             }

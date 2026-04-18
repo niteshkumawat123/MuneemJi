@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,16 +17,19 @@ namespace MUNEEMJI.Controllers
         private readonly ICompanyTenancy companyTenancy;
         public PaymentInController(IConfiguration configuration, ICompanyTenancy tenancy)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             companyTenancy = tenancy;
         }
 
         public async Task<IActionResult> Index()
         {
-            var CompanyId = companyTenancy.GetCurrentCompanyId();
-            using var connection = new NpgsqlConnection(_connectionString);
+            try
+            {
 
-            var paymentInOuts = connection.QuerySql<PaymentInOutViewModel>(@"
+                var CompanyId = companyTenancy.GetCurrentCompanyId();
+                using var connection = new NpgsqlConnection(_connectionString);
+
+                var paymentInOuts = connection.QuerySql<PaymentInOutViewModel>(@"
                 SELECT 
                     p.Id,
                     p.Date,
@@ -44,7 +47,12 @@ namespace MUNEEMJI.Controllers
                 ORDER BY p.Date DESC
             ", new { p_companyid = CompanyId, p_moduleid = TradeDocumentTypes.PaymentIn }).ToList();
 
-            return View(paymentInOuts);
+                return View(paymentInOuts);
+            }
+            catch(Exception ex)
+            {
+                return View();
+            }
         }
 
         [HttpGet]

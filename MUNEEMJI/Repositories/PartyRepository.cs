@@ -1,4 +1,4 @@
-﻿using Dapper;
+using Dapper;
 using Insight.Database;
 using MUNEEMJI.Models;
 using MUNEEMJI.Services;
@@ -14,7 +14,7 @@ namespace MUNEEMJI.Repositories
     }
     public class PartyRepository : IParty
     {
-        private readonly string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private readonly string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
         public async Task<List<PartyDropDownModel>> GetPartyDropDownAsync(int CompanyId)
         {

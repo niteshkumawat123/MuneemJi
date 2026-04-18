@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
@@ -21,7 +21,7 @@ namespace MUNEEMJI.Controllers
                 return View(businesses); // no email in session
             }
 
-            using var connection = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser");
+            using var connection = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString);
             await connection.OpenAsync();
 
             // ---------------- Query 1: Businesses shared with me (by email) ----------------
@@ -92,7 +92,7 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
-                var connection = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+                var connection = MUNEEMJI.DbConfig.ConnectionString;
                 using (var conn = new NpgsqlConnection(connection))
                 {
                     if (Id > 0)

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using Npgsql;
@@ -21,7 +21,7 @@ namespace MUNEEMJI.Controllers
 
         public WhatsAppMarketingController(IConfiguration configuration, IWebHostEnvironment environment)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"; 
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString; 
             _environment = environment;
         }
 
@@ -458,10 +458,10 @@ namespace MUNEEMJI.Controllers
         {
             return new List<TemplateViewModel>
             {
-                new TemplateViewModel { Id = 1, Title = "हार मत मानो", ImageUrl = "/images/template1.jpg", Category = "Motivation", Type = "Greetings" },
-                new TemplateViewModel { Id = 2, Title = "जिंदगी सिर्फ सोनात से बदलती है", ImageUrl = "/images/template2.jpg", Category = "Motivation", Type = "Greetings" },
-                new TemplateViewModel { Id = 3, Title = "उड़ने का शौक रखो", ImageUrl = "/images/template3.jpg", Category = "Adventure", Type = "Greetings" },
-                new TemplateViewModel { Id = 4, Title = "याद रखना कल कभी नहीं आता है", ImageUrl = "/images/template4.jpg", Category = "Memory", Type = "Greetings" },
+                new TemplateViewModel { Id = 1, Title = "??? ?? ????", ImageUrl = "/images/template1.jpg", Category = "Motivation", Type = "Greetings" },
+                new TemplateViewModel { Id = 2, Title = "?????? ????? ????? ?? ????? ??", ImageUrl = "/images/template2.jpg", Category = "Motivation", Type = "Greetings" },
+                new TemplateViewModel { Id = 3, Title = "????? ?? ??? ???", ImageUrl = "/images/template3.jpg", Category = "Adventure", Type = "Greetings" },
+                new TemplateViewModel { Id = 4, Title = "??? ???? ?? ??? ???? ??? ??", ImageUrl = "/images/template4.jpg", Category = "Memory", Type = "Greetings" },
                 new TemplateViewModel { Id = 5, Title = "Good Night", ImageUrl = "/images/template5.jpg", Category = "Good Night", Type = "Greetings" },
                 new TemplateViewModel { Id = 6, Title = "ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE", ImageUrl = "/images/template6.jpg", Category = "Good Night", Type = "Greetings" },
                 new TemplateViewModel { Id = 7, Title = "Hard work beats TALENT", ImageUrl = "/images/template7.jpg", Category = "Motivation", Type = "Business" },

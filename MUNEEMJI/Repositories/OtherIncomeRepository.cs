@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using MUNEEMJI.Models;
 using Npgsql;
 using System.Data;
@@ -20,7 +20,7 @@ namespace MUNEEMJI.Repositories
 
         public OtherIncomeRepository(IConfiguration configuration)
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         }
 
         public async Task<bool> SaveBillItemAsync(BillItem model)
@@ -56,7 +56,7 @@ namespace MUNEEMJI.Repositories
                 @service_name, @service_hsn, @service_code,
                 @created_at, @updated_at
             )
-            RETURNING id;";   // ✅ This will return the generated primary key
+            RETURNING id;";   // ? This will return the generated primary key
 
                 using var command = new NpgsqlCommand(sql, connection, transaction);
 
@@ -96,10 +96,10 @@ namespace MUNEEMJI.Repositories
                 command.Parameters.AddWithValue("@created_at", DateTime.UtcNow);
                 command.Parameters.AddWithValue("@updated_at", DateTime.UtcNow);
 
-                // ✅ Get the inserted BillItem Id
+                // ? Get the inserted BillItem Id
                 var itemBillingId = (int)(await command.ExecuteScalarAsync())!;
 
-                // ✅ Insert into Manufacturing table if data exists
+                // ? Insert into Manufacturing table if data exists
                 if (model.Manufacturing != null && model.Manufacturing.Any())
                 {
                     foreach (var item in model.Manufacturing)
@@ -206,7 +206,7 @@ namespace MUNEEMJI.Repositories
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            // ✅ Query to get all bill items
+            // ? Query to get all bill items
             var billItemSql = @"
                                SELECT 
                                    id AS ""Id"",
@@ -244,7 +244,7 @@ namespace MUNEEMJI.Repositories
                                ORDER BY id;
                                          ";
 
-            // ✅ Fetch bill items
+            // ? Fetch bill items
             items = connection.QuerySql<BillItem>(billItemSql).ToList();
             return items;
         }

@@ -18,6 +18,8 @@ namespace MUNEEMJI.Models
         public int BusinessTypeId { get; set; }
         public int BusinessCategoryId { get; set; }
         public int StateId { get; set; }
+        public string  statename  { get; set; }
+        public string  statecode { get; set; }
 
         public string Pincode { get; set; }
         public string Address { get; set; }

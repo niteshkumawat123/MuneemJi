@@ -1,4 +1,4 @@
-﻿using MUNEEMJI.Services;
+using MUNEEMJI.Services;
 using Npgsql;
 
 namespace MUNEEMJI.Repositories
@@ -13,7 +13,7 @@ namespace MUNEEMJI.Repositories
         private readonly string _connectionString;
         public UserRepository() 
         {
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
         }
         public async Task<List<MUNEEMJI.Models.Business>> GetUserDropdown(int CompanyId)

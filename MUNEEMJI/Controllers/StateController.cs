@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MUNEEMJI.Models;
@@ -8,7 +8,7 @@ namespace MUNEEMJI.Controllers
 {
     public class StateController : Controller
     {
-        string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
         public StateController()
         {

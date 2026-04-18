@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +14,7 @@ namespace MUNEEMJI.Controllers
     public class BusinessProfileController : Controller
     {
         private readonly IWebHostEnvironment _env;
-        private static string connString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        private static string connString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
         public BusinessProfileController( IWebHostEnvironment env, IWebHostEnvironment webHostEnvironment)

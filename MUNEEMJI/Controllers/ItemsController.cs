@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,7 @@ namespace MUNEEMJI.Controllers
         public ItemsController(IWebHostEnvironment webHostEnv, IBillItemService billItemService, ICompanyTenancy CompayTenancy, IWebHostEnvironment webHostEnvironment)
         {
             _webHostEnv = webHostEnv;
-            _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             _billItemService = billItemService;
             _CompayTenancy = CompayTenancy;
             _webHostEnvironment = webHostEnvironment;
@@ -236,14 +236,14 @@ namespace MUNEEMJI.Controllers
         }
         public List<BillItem> GetItemsAsync(int CompanyId)
         {
-            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
             List<BillItem> items = new List<BillItem>();
 
             using (var connection = new NpgsqlConnection(_connectionString))
             {
 
-                // ✅ Query to get all bill items
+                // ? Query to get all bill items
                 var billItemSql = @"
                                     SELECT 
                                         id AS ""Id"",
@@ -281,14 +281,14 @@ namespace MUNEEMJI.Controllers
                                     ORDER BY id;
                                     ";
 
-                // ✅ Fetch bill items
+                // ? Fetch bill items
                 var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtype = "product", p_companyid = CompanyId }).ToList();
 
                 if (billItems != null && billItems.Count > 0)
                 {
                     foreach (var billItem in billItems)
                     {
-                        // ✅ Query to fetch manufacturing data for each bill item
+                        // ? Query to fetch manufacturing data for each bill item
                         var manufacturingSql = @"
                                                 SELECT 
                                                     id AS ""Id"",
@@ -326,7 +326,7 @@ namespace MUNEEMJI.Controllers
             {
 
 
-                using (var conn = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+                using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
                 {
                     conn.Open();
                     string query = @"SELECT id, name 
@@ -336,7 +336,7 @@ namespace MUNEEMJI.Controllers
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         // Add parameter value here
-                        cmd.Parameters.AddWithValue("p_companyid", companyId); // 👈 replace companyId with your variable
+                        cmd.Parameters.AddWithValue("p_companyid", companyId); // ?? replace companyId with your variable
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -373,7 +373,7 @@ namespace MUNEEMJI.Controllers
             {
                 await Task.Delay(1);
 
-                using (var conn = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+                using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
                 {
                     conn.Open();
                     string query = @"SELECT id, name 
@@ -383,7 +383,7 @@ namespace MUNEEMJI.Controllers
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
                         // Add parameter value here
-                        cmd.Parameters.AddWithValue("p_companyid", companyId); // 👈 replace companyId with your variable
+                        cmd.Parameters.AddWithValue("p_companyid", companyId); // ?? replace companyId with your variable
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -414,7 +414,7 @@ namespace MUNEEMJI.Controllers
 
         public IActionResult CategoryCreate([FromBody] CategoryDropdownModel model)
         {
-            var _dbconnectionstrig = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _dbconnectionstrig = MUNEEMJI.DbConfig.ConnectionString;
             var companyId = _CompayTenancy.GetCurrentCompanyId();
 
             try
@@ -561,7 +561,7 @@ namespace MUNEEMJI.Controllers
 
         public List<BillItem> GetServiceAsync()
         {
-            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
             List<BillItem> items = new List<BillItem>();
             try
@@ -570,7 +570,7 @@ namespace MUNEEMJI.Controllers
                 using (var connection = new NpgsqlConnection(_connectionString))
                 {
 
-                    // ✅ Query to get all bill items
+                    // ? Query to get all bill items
                     var billItemSql = @"
                                     SELECT 
                                         id AS ""Id"",
@@ -608,14 +608,14 @@ namespace MUNEEMJI.Controllers
                                     ORDER BY id;
                                     ";
 
-                    // ✅ Fetch bill items
+                    // ? Fetch bill items
                     var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtye = "service" }).ToList();
 
                     if (billItems != null && billItems.Count > 0)
                     {
                         foreach (var billItem in billItems)
                         {
-                            // ✅ Query to fetch manufacturing data for each bill item
+                            // ? Query to fetch manufacturing data for each bill item
                             var manufacturingSql = @"
                                                 SELECT 
                                                     id AS ""Id"",
@@ -686,7 +686,7 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUnitsPartialView()
         {
-            var _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+            var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             ItemViewModel model = new ItemViewModel();
             try
             {

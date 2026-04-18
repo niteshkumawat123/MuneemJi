@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,7 +14,7 @@ namespace MUNEEMJI.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        string _connectionString = "Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser";
+        string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly ICompanyTenancy _comapnytenancy;
 
         public HomeController(ILogger<HomeController> logger, ICompanyTenancy tenancy)

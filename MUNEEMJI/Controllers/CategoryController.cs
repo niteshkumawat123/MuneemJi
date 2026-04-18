@@ -1,4 +1,4 @@
-﻿using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
@@ -20,7 +20,7 @@ namespace MUNEEMJI.Controllers
         {
             var categories = new List<CategoryDropdownModel>();
 
-            using (var conn = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+            using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
             {
                 conn.Open();
                 string query = @"SELECT id, name 
@@ -49,7 +49,7 @@ namespace MUNEEMJI.Controllers
             try
             {
                 await Task.Delay(1);
-                using (var conn = new NpgsqlConnection("Host=154.61.75.70;Port=5433;Database=MuneemJi;Username=betauser;Password=betauser"))
+                using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
                 {
 
                     string query = " delete from categorieses where  id =@p_id ";

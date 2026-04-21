@@ -2,6 +2,7 @@ using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
+using MUNEEMJI.PdfServices;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
@@ -19,15 +20,18 @@ namespace MUNEEMJI.Controllers
         private readonly TransactionSettingsController settingsController;
         private readonly ICompanyTenancy _CompayTenancy;
         private readonly IParty partyController;
+        private readonly ISalesInvoicesPdf _salesInvoicesPdf;
 
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
-        public SalesController(ISalesBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy companyTenancy, IParty _partyController)
+        public SalesController(ISalesBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService,
+            ICompanyTenancy companyTenancy, IParty _partyController, ISalesInvoicesPdf salesInvoicesPdf)
         {
             _billService = billService;
             _environment = environment;
             _IBillItemService = iBillItemService;
             _CompayTenancy = companyTenancy;
             partyController = _partyController;
+            _salesInvoicesPdf = salesInvoicesPdf;
         }
    public async Task<IActionResult> Index()
 {
@@ -235,6 +239,11 @@ namespace MUNEEMJI.Controllers
                 CalculateBillTotals(viewModel.Bill);
 
                 var billId = await _billService.CreateBillAsync(viewModel.Bill, companyId);
+
+                if(billId>0)
+                {
+                   await _salesInvoicesPdf.GetContractPdfById(billId, _environment);
+                }
 
                 return Json(new { success = true, message = "Data saved successfully!" });
 

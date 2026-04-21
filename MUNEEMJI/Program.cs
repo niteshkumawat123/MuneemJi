@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MUNEEMJI.PdfServices;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,8 @@ builder.Services.AddScoped<IOtherIncomeRepository, OtherIncomeRepository>();
 builder.Services.AddScoped<ICompanyTenancy, CompanyTenancyService>();
 builder.Services.AddScoped<IParty, PartyRepository>();
 builder.Services.AddScoped<IUser, UserRepository>();
+builder.Services.AddScoped<MUNEEMJI.Services.IGstSettingsService, MUNEEMJI.Services.GstSettingsService>();
+builder.Services.AddScoped<ISalesInvoicesPdf, SalesInvoicesPdf>();
 builder.Services.AddRazorPages();
 
 // Add Session services

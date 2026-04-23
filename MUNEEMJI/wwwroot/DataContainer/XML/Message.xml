@@ -1,0 +1,1558 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<StringMessages>
+  <Admin>
+    <SaveMessage>Admin User has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Admin User has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Admin User has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateEmailMessage>Email Already Exists!</DuplicateEmailMessage>
+  </Admin>
+
+  <MasterAddress>
+    <SaveMessage>Address User has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Address User has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Address User has been Deleted Successfully!</DeleteMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateEmailMessage>Address Already Exists!</DuplicateEmailMessage>
+  </MasterAddress>
+
+  <Tran_Client>
+    <SaveMessage>Client has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Client has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Client has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateNameMessage>Client Name Already Exists!</DuplicateNameMessage>
+    <DuplicateEmailMessage>Email Already Exists!</DuplicateEmailMessage>
+  </Tran_Client>
+
+  <ServiceDeliverableAudit>
+    <SaveMessage>ServiceDeliverableAudit has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>ServiceDeliverableAudit has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>ServiceDeliverableAudit has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <!--<DuplicateNameMessage>Client Name Already Exists!</DuplicateNameMessage>-->
+    <!--<DuplicateEmailMessage>Email Already Exists!</DuplicateEmailMessage>-->
+  </ServiceDeliverableAudit>
+
+  <Tran_Leads>
+    <SaveMessage>Lead has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Lead has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Lead has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateEmailMessage>Email Already Exists!</DuplicateEmailMessage>
+    <DeclineMessage>Lead Declined</DeclineMessage>    <!--0-->
+    <VerifyLeadMessage>Lead Verified</VerifyLeadMessage>    <!--3-->
+    <DueBallParkMessage>Project Manager Assigned for BallPark Estimation</DueBallParkMessage>
+    <BallParkApprovalPendingMessage>BallPark Estimation Submitted for Approval</BallParkApprovalPendingMessage>   <!--5-->
+    <BallParkVerifiedMessage>BallPark Estimation Approved and Send for Audit</BallParkVerifiedMessage>
+    <BallParkShareMessage>BallPark Estimation Audited For Sharing with Client </BallParkShareMessage>
+    <BallParkConfirmMessage>Client Given go ahead on BallPark </BallParkConfirmMessage>
+    <DueEstimationMessage>Project Manager Assigned for Final Estimation and Proposal</DueEstimationMessage>
+    <EstimateApprovalPendingMessage>Final Estimation Submitted for Approval</EstimateApprovalPendingMessage>    <!--10-->
+    <ApproveEstimationMessage>Final Estimation Approved and Send for Audit</ApproveEstimationMessage>
+    <SharedEstimationMessage>Final Estimation Audited For Sharing with Client</SharedEstimationMessage>
+    <LeadConvertedMessage>Congratulation! Lead has been Converted</LeadConvertedMessage>  <!--13-->
+    <FeatureListSave>Feature List has been Saved Successfully!</FeatureListSave> 
+    <EstimationSave>Estimation has been Saved Successfully!</EstimationSave>     
+    <BallParkRework>BallPark Estimation sent for Rework</BallParkRework>
+    <EstimationReWork>Estimation sent for Rework</EstimationReWork>
+    <BallParkSaveFC> BallPark Estimation can be shared with client </BallParkSaveFC>
+  </Tran_Leads> 
+
+  <ClientDetail>
+    <SaveMessage>Client Detail has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Client Detail has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Client Detail has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateEmailMessage>Client Already Exists!</DuplicateEmailMessage>
+  </ClientDetail>
+
+  <LeadDetail>
+    <SaveMessage>Lead Detail has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Lead Detail has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Lead Detail has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateEmailMessage>Lead Already Exists!</DuplicateEmailMessage>
+  </LeadDetail>
+
+  <FinancialYear>
+    <SaveMessage>Financial Year has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Financial Year has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Financial Year has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateNameMessage>Financial Year Already Exists!</DuplicateNameMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </FinancialYear>
+
+  <HolidayType>
+    <SaveMessage>Holiday Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Holiday Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Holiday Type has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateNameMessage>Holiday Type Already Exists!</DuplicateNameMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </HolidayType>
+
+  <KeyTechnology>
+    <SaveMessage>Key Technology has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Key Technology has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Key Technology has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Key Technology Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </KeyTechnology>
+
+  <ServiceOrder>
+    <SaveMessage>Order details has been saved successfully.</SaveMessage>
+    <UpdateMessage>Order details has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Order details has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+  </ServiceOrder>
+
+  <Company>
+    <SaveMessage>Company has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Company has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Company has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateCompanyMessage>Company Already Exist!</DuplicateCompanyMessage>
+    <DuplicateEmailMessage>EmailId Already Exist!</DuplicateEmailMessage>
+    <DuplicateWebsiteMessage>Website Already Exist!</DuplicateWebsiteMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Company>
+
+  <CompanyDetails>
+    <SaveMessage>Company Details has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Company Details has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Company Details has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>GSTIN and PANNo Already Exist!</DuplicateNameMessage>
+    <!--<DuplicateEmailMessage>EmailId Already Exist!</DuplicateEmailMessage>
+    <DuplicateWebsiteMessage>Website Already Exist!</DuplicateWebsiteMessage>-->
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+  </CompanyDetails>
+
+  <Location>
+    <SaveMessage>Location Details has been Saved Successfully.</SaveMessage>
+    <UpdateMessage>Location Details has been Updated Successfully.</UpdateMessage>
+    <DeleteMessage>Location Details has been Deleted Successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This Record Already Exist .</DuplicateValueMessage>
+  </Location>
+
+  <Prospect>
+    <SaveMessage>Prospect has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Prospect has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Prospect has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Client Name Already Exists!</DuplicateNameMessage>
+    <DuplicateEmailIdMessage>Primary EmailId Already Exists!</DuplicateEmailIdMessage>
+    <DuplicateWebsiteMessage>Website Already Exists!</DuplicateWebsiteMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+  </Prospect>
+
+  <ProspectContact>
+    <SaveMessage>Prospect Contact has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Prospect Contact has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Prospect Contact has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Prospect Contact Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+  </ProspectContact>
+
+  <timelinedetails>
+    <SaveMessage>TimeLine details has been saved successfully.</SaveMessage>
+    <UpdateMessage>TimeLine details has been updated successfully.</UpdateMessage>
+    <DeleteMessage>TimeLine details has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+  </timelinedetails>
+
+  <MasterCostCenterName>
+    <SaveMessage>Cost Center Name has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Cost Center Name has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Cost Center Name has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Cost Center Name Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MasterCostCenterName>
+
+  <MasterCostCenterType>
+    <SaveMessage>Cost Center Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Cost Center Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Cost Center Type has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Cost Center Type Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+  </MasterCostCenterType>
+
+  <paymentdetails>
+    <SaveMessage>Payment details has been saved successfully.</SaveMessage>
+    <UpdateMessage>Payment details has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Payment details has been deleted successfully.</DeleteMessage>
+  </paymentdetails>
+
+  <Servicedetails>
+    <SaveMessage>Service details has been saved successfully.</SaveMessage>
+    <UpdateMessage>Service details has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Service details has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+
+  </Servicedetails>
+
+  <LeadDetail>
+    <SaveMessage>Lead details has been saved successfully.</SaveMessage>
+    <UpdateMessage>Lead details has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Lead details has been deleted successfully.</DeleteMessage>
+    <proceedMessage>Lead details has been proceed successfully.</proceedMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+
+  </LeadDetail>
+
+  <UserLogin>
+    <InvalidCompanyCode>Invalid Company Code.</InvalidCompanyCode>
+    <InvalidLogin>Invalid Username or Password.</InvalidLogin>
+    <InvalidCode>Company code is incorrect. Please enter correct one. If you have forgot company code then please check your mail.</InvalidCode>
+  </UserLogin>
+
+  <ResetPassword>
+    <PasswordChanged>Your password has been reset successfully.</PasswordChanged>
+    <InvalidLink>Reset password link is invalid. Please resubmit request to get new password reset link.</InvalidLink>
+    <TimeExpired>Reset password link time is expired. Please resubmit request to get new password reset link.</TimeExpired>
+    <Maximum>Maximum allowed 20 Characters</Maximum>
+    <Minimum>Minimum required 6 Characters</Minimum>
+  </ResetPassword>
+
+  <ChangePassword>
+    <passwordChanged>
+      Your password has been changed successfully.
+    </passwordChanged>
+    <InvalidPassword>
+      Invalid old password.
+    </InvalidPassword>
+    <InvalidUser>
+      Invalid User.
+    </InvalidUser>
+    <Exception>
+      Not able to make connection with server.
+    </Exception>
+    <InvalidNewPassword>
+      New password should be different from old password.
+    </InvalidNewPassword>
+    <PassworMustdMatch>
+      The new password and confirmation password do not match.
+    </PassworMustdMatch>
+    <ExsitingPassword>Existing password does not exist.</ExsitingPassword>
+  </ChangePassword>
+
+  <QuickTaskMaster>
+    <SaveMessage>Quick Task has been saved successfully.</SaveMessage>
+    <UpdateMessage>Quick Task has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Quick Task has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Quick Task is associated with member, so you cannot delete this Quick Task.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Quick Task already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </QuickTaskMaster>
+
+  <ServiceLandingHelp>
+    <UpdateMessage>Service Help has been updated successfully.</UpdateMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </ServiceLandingHelp>
+
+  <RolePermission>
+    <SaveMessage>Role Permission has been Saved Successfully.</SaveMessage>
+    <UpdateMessage>Role Permission has been Updated Successfully.</UpdateMessage>
+    <ServiceSaveMessage>Role Permission has been Saved Successfully.</ServiceSaveMessage>
+    <ServiceUpdateMessage>Role Permission has been Updated Successfully.</ServiceUpdateMessage>
+
+  </RolePermission>
+
+  <SkillsMaster>
+    <SaveMessage>Skill has been saved successfully.</SaveMessage>
+    <UpdateMessage>Skill has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Skill has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Skill is associated with member, so you cannot delete this Skill.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Skill already exists!!</DuplicateValueMessage>
+    <DuplicateCodeMessage>Skill Code already exists!!</DuplicateCodeMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+
+  </SkillsMaster>
+
+  <UserRole>
+    <SaveMessage>User role saved successfully.</SaveMessage>
+    <UpdateMessage>User role updated successfully.</UpdateMessage>
+    <DeleteMessage>User role deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Sub Activity Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateValueMessage>User role already exists!!</DuplicateValueMessage>
+  </UserRole>
+
+  <Employee>
+    <SaveMessage>Employee has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Employee has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Employee has been Deleted Successfully!</DeleteMessage>
+    <DuplicateEmailMessage>Employee Official Email Already Exists!</DuplicateEmailMessage>
+    <DuplicateEmployeeSkillsMessage>SkillName and SkillLevelName Already Exists!</DuplicateEmployeeSkillsMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+  </Employee>
+
+  <CostCenterDetail>
+    <SaveMessage>Cost Center Detail has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Cost Center Detail has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Cost Center Detail has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Cost Center Detail Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </CostCenterDetail>
+  <ProfitCenterDetail>
+    <SaveMessage>Profit Center Detail has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Profit Center Detail has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Profit Center Detail has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Profit Center Detail Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </ProfitCenterDetail>
+  <Label>
+    <SaveMessage>Label has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Label has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Label has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Label Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Label>
+  <ModeOfPO>
+    <SaveMessage>ModeOfPO has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>ModeOfPO has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>ModeOfPO has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>ModeOfPO Already Exists!</DuplicateNameMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+  </ModeOfPO>
+
+  <WorkingSchedule>
+    <SaveMessage>Working Schedule has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Working Schedule has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Working Schedule has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Working Schedule Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </WorkingSchedule>
+
+  <MasterCountry>
+    <SaveMessage>Country  has been Saved Successfully.</SaveMessage>
+    <UpdateMessage>Country  has been Updated Successfully.</UpdateMessage>
+    <DeleteMessage>Country  has been Deleted Successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+  </MasterCountry>
+
+  <PaymentTerms>
+    <SaveMessage>Payment Terms has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Payment Terms has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Payment Terms has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Payment Terms Already Exists!</DuplicateNameMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </PaymentTerms>
+
+  <MasterCity>
+    <SaveMessage> City has been Saved Successfully.</SaveMessage>
+    <UpdateMessage> City has been Updated Successfully.</UpdateMessage>
+    <DeleteMessage> City  has been Deleted Successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+  </MasterCity>
+
+  <MasterState>
+    <SaveMessage>State  has been Saved Successfully.</SaveMessage>
+    <UpdateMessage>State  has been Updated Successfully.</UpdateMessage>
+    <DeleteMessage>State  has been Deleted Successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+  </MasterState>
+
+  <MasterSubActivity>
+    <SaveMessage>Sub Activity has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Sub Activity has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Sub Activity has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Sub Activity Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MasterSubActivity>
+
+
+  <DurationUnit>
+    <SaveMessage>DurationUnit has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>DurationUnit has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>DurationUnit has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>DurationUnit Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </DurationUnit>
+
+
+  <BufferPercentage>
+    <SaveMessage>BufferPercentage has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>BufferPercentage has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>BufferPercentage has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>BufferPercentage Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </BufferPercentage>
+  <AddressType>
+    <SaveMessage>AddressType has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>AddressType has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>AddressType has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>AddressType Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </AddressType>
+  
+
+  <Halt>
+    <SaveMessage>Halt has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Halt has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Halt has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Halt Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Halt>
+
+  <Server>
+    <SaveMessage>Server has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Server has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Server has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Server Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Server>
+  
+  <Database>
+    <SaveMessage>Database has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Database has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Database has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Database Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Database>
+
+
+  <Shift>
+    <SaveMessage>Shift has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Shift has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Shift has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Shift Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Shift>
+
+  <POType>
+    <SaveMessage>POType has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>POType has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>POType has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>POType Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </POType>
+  
+  <Reproducibility>
+    <SaveMessage>Reproducibility has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Reproducibility has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Reproducibility has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Reproducibility Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Reproducibility>
+
+  
+  <Tax>
+    <SaveMessage>Tax has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Tax has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Tax has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Tax Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Tax>
+  <General>
+    <SaveMessage>General has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>General has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>General has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>General Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </General>
+
+  <MultiHoliday>
+    <SaveMessage>MultiHoliday has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>MultiHoliday has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>MultiHoliday has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>MultiHoliday Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MultiHoliday>
+  <Business>
+    <SaveMessage>Business has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Business has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Business has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Business Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Business>
+  
+  
+  <Licence>
+    <SaveMessage>Licence has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Licence has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Licence has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Licence Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Licence>
+  
+  <Language>
+    <SaveMessage>Language has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Language has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Language has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Language Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Language>
+
+  <InvoiceType>
+    <SaveMessage>InvoiceType has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>InvoiceType has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>InvoiceType has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>InvoiceType Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </InvoiceType>
+  <PaymentType>
+    <SaveMessage>PaymentType has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>PaymentType has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>PaymentType has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>PaymentType Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </PaymentType>
+
+  <OrganisationType>
+    <SaveMessage>Organisation Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Organisation Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Organisation Type has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>This Organisation Type is associated with member, so you cannot delete this Company!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Organisation Type Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </OrganisationType>
+
+
+  <CompanyBank>
+    <SaveMessage>Bank Detail has been Saved successfully.</SaveMessage>
+    <UpdateMessage>Bank Detail has been Updated Successfully.</UpdateMessage>
+    <DeleteMessage>Bank Detail has been Deleted Successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Bank Detail is associated with member, so you cannot delete this Company.</InvalidDeleteMessage>
+  </CompanyBank>
+
+  <BranchDetails>
+    <SaveMessage>Branch Detail has been Saved successfully.</SaveMessage>
+    <UpdateMessage>Branch Detail has been Updated Successfully.</UpdateMessage>
+    <DeleteMessage>Branch Detail has been Deleted Successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Branch Detail is associated with member, so you cannot delete this Company.</InvalidDeleteMessage>
+  </BranchDetails>
+
+  <Projectdetails>
+    <SaveMessage>Project details has been saved successfully.</SaveMessage>
+    <UpdateMessage>Project details has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Project details has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Project details is associated with member, so you cannot delete this Activity.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Project details Name already exists!!</DuplicateValueMessage>
+  </Projectdetails>
+
+  <ProjecTypeMaster>
+    <SaveMessage>Project Type has been saved successfully.</SaveMessage>
+    <UpdateMessage>Project Type has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Project Type has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Project Type is associated with member, so you cannot delete this Project Type.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Project Type already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </ProjecTypeMaster>
+
+  <PaymentMethodMaster>
+    <SaveMessage>Payment Method has been saved successfully.</SaveMessage>
+    <UpdateMessage>Payment Method has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Payment Method has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Payment Method is associated with Invoice, so you cannot delete this Payment Method.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Payment Method already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </PaymentMethodMaster>
+
+  <InvoiceMaster>
+    <SaveMessage>Invoice has been saved successfully.</SaveMessage>
+    <UpdateMessage>Invoice has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Invoice has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Invoice is associated with Some Entry, so you cannot delete this Invoice.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Invoice already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <NotDeletePerformaInvoice>You Can Not Delete this Performa Invoice!</NotDeletePerformaInvoice>
+    <DeletePerformaInvoice>Performa Invoice Deleted Successfully!</DeletePerformaInvoice>
+  </InvoiceMaster>
+
+  <Audit>
+    <UpdateMessage>Data Updated Successfully!</UpdateMessage>
+  </Audit>
+
+  <InvoiceStatusMaster>
+    <SaveMessage>Invoice Status has been saved successfully.</SaveMessage>
+    <UpdateMessage>Invoice Status has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Invoice Status has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Invoice Status is associated with Invoice, so you cannot delete this Invoice Status.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Invoice Status already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </InvoiceStatusMaster>
+
+  <ForgetPassword>
+    <Success>Your new password has been sent to your email address.</Success>
+    <Existance>Username does not exist.</Existance>
+    <MailFailed>New password cannot be sent through mail currently.</MailFailed>
+  </ForgetPassword>
+
+  <ProjectServiceTaxDetail>
+    <SaveMessage>Tax Detail has been saved successfully.</SaveMessage>
+    <UpdateMessage>Tax Detail has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Tax Detail has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Tax Detail is associated with member, so you cannot delete this Tax Detail.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Tax Detail already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </ProjectServiceTaxDetail>
+
+  <Designation>
+    <SaveMessage>Designation has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Designation has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Designation has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Designation Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Designation>
+
+  <Holiday>
+    <SaveMessage>Holiday has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Holiday has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Holiday has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Holiday Associated with member, so you cannot delete this Holiday detail!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Holiday Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Holiday>
+
+  <MonthMaster>
+    <SaveMessage>Month detail has been saved successfully.</SaveMessage>
+    <UpdateMessage>Month detail has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Month detail has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Month detail is associated with member, so you cannot delete this Month detail.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Month detail already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </MonthMaster>
+
+  <ClientMaster>
+    <SaveMessage>Client detail has been saved successfully.</SaveMessage>
+    <UpdateMessage>Client detail has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Client detail has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Client detail is associated with member, so you cannot delete this Client detail.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Client detail already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <DuplicateNameMessage>Name is already Registered.</DuplicateNameMessage>
+    <DuplicateEmailMessage>Email is already Registered.</DuplicateEmailMessage>
+    <DuplicateWebsiteMessage>Website is already Registered.</DuplicateWebsiteMessage>
+  </ClientMaster>
+
+  <ProjectMaster>
+    <SaveMessage>Project has been saved successfully.</SaveMessage>
+    <UpdateMessage>Project has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Project has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Project is associated with member, so you cannot delete this Project.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Project already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <ZeroAlert>Hours or Amount cannot be zero!!</ZeroAlert>
+    <ProjectCloseAlert>Project status can not be closed,till now it is associated with open tasks!!</ProjectCloseAlert>
+  </ProjectMaster>
+
+  <LeadMaster>
+    <SaveMessage>Lead has been saved successfully.</SaveMessage>
+    <UpdateMessage>Lead has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Lead has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Lead is associated with member, so you cannot delete this Project.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Lead already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <DuplicateNameMessage>Name is already Registered.</DuplicateNameMessage>
+  </LeadMaster>
+
+  <EmailMessages>
+
+    <EmployeeCreate>
+      Hi [Name],<br />Your Account has been created successfully. Please find below your login credentials<br /><br />Company Code:  [Code] <br />Username:  [username] <br />Password:  [Password] <br /><br />Best Regards,<br />PMS Admin
+    </EmployeeCreate>
+
+    <ForgetPassword>
+      Hi [Name],<br />Your password has been reset. Please find it below<br />New Password:   [Password] <br /><br />Best Regards,<br />PMS Admin
+    </ForgetPassword>
+
+    <OnHoldMessage>
+      Hi [Name],<br /> Project [Project] is going to be hold for now.<br /><br />Best Regards,<br />PMS Admin
+    </OnHoldMessage>
+
+    <OnCreateProject>
+      <b>Dear Manager</b> ,<br /><br />New Project <b>[Project] - ([ProjectType]) </b> has been added to your account details as below:<br/><br/><b>
+        Development Hours- [DevelopmentHRS]<br/>Designing Hours- [DesigningHRS]<br/>Start Date- [StartDate]<br/>End Date- [EndDate]
+      </b> <br/><br/>You are requested to plan accordingly and complete the same on the respective delivery dates. For completing the project you may request related resources and necessary details.<br/><br /><br />Best Regards,<br />PMS Admin
+    </OnCreateProject>
+
+    <ServiceCreateClient>
+      <b>Dear Manager</b> ,<br /><br />New Service <b>[ServiceName] - ([ServiceType]) [Description] [Hours]</b> has been added to your account details as below:<br/><br/><b>
+        Start Date- [StartDate]<br/>End Date- [EndDate]
+      </b> <br/><br/>You are requested to plan accordingly and complete the same on the respective delivery dates. For completing the project you may request related resources and necessary details.<br/><br /><br />Best Regards,<br />PMS Admin
+    </ServiceCreateClient>
+
+    <ServiceRenewClient>
+      Hi [Name],<br /> [ServiceName] ([ServiceType]) [StartDate] to [EndDate] [Description] [Hours]<br /><br />Best Regards,<br />PMS Admin
+    </ServiceRenewClient>
+
+    <CustomerAdd>
+      [CustomerName] [Address] [CustEmail] [ContactPerson] <br /><br />Best Regards,<br />PMS Admin
+    </CustomerAdd>
+
+    <ProjectHoursOver>
+      Dear Manager,<br/><br/>Following projets are exceed the hours limit. Kindly have look into this. <br/> [ProjectTable] <br /><br />Best Regards,<br />PMS Admin
+    </ProjectHoursOver>
+
+    <ProjectsForPM>
+      Dear Manager,<br/><br/> Please find the your project report as below :<br/> <br/> [ProjectTable] <br /><br />Best Regards,<br />PMS Admin
+    </ProjectsForPM>
+
+    <PMSEntryAlert>
+      Dear Employee,<br/><br/> We did not find your PMS entries for yesterday. You are requested to do it on regular basis. If this happens for 3 times in continuation then you will have to report to your reporting manager and there after resume your services.<br /><br />Best Regards,<br />PMS Admin
+    </PMSEntryAlert>
+
+    <PMSEntryAlertHrAdmin>
+      Dear Manager,<br/><br/> We did not find PMS entries for yesterday for following employees:<br/> <br/> [Table] <br /><br />Best Regards,<br />PMS Admin
+    </PMSEntryAlertHrAdmin>
+
+    <RenewalServiceAlert>
+      Dear Manager,<br/><br/>The following services will expire in next month :<br/> <br/> [Table] <br /><br />Best Regards,<br />PMS Admin
+    </RenewalServiceAlert>
+
+    <ServiceInvoiceDue>
+      Dear Manager,<br/><br/>  The following service invoice will be due next month :<br/> <br/> [Table] <br /><br />Best Regards,<br />PMS Admin
+    </ServiceInvoiceDue>
+
+    <ServiceProjectNextWeek>
+      Dear Manager,<br/><br/>  The following project will be complete next month :<br/> <br/> [Table] <br /><br />Best Regards,<br />PMS Admin
+    </ServiceProjectNextWeek>
+
+    <EmployeeNotFillCompleteHr>
+      Dear Manager,<br/><br/>  The following Employee not fill complete hours :<br/> <br/> [Table] <br /><br />Best Regards,<br />PMS Admin
+    </EmployeeNotFillCompleteHr>
+
+    <ResourceAllocation>
+      Dear [EmployeeName],<br/><br/>You have been assigned on [ProjectName] for [Hour] Hours as per schedule below :<br/><br/>[Table]<br/><br/>
+      For this assignment you will have to report to [Name],[Deg]<br/><br/>
+      Best Regards,<br />PMS Admin
+    </ResourceAllocation>
+
+    <ResourceDetach>
+      Dear [EmployeeName],<br/><br/>You have been detach on Project [ProjectName] form Date :[Date] and Hours :  [Hour]Hrs.<br/><br/>Best Regards,<br />PMS Admin
+    </ResourceDetach>
+
+    <ProjectResourceDetach>
+      Dear [EmployeeName],<br/><br/>
+      On [ProjectName] project your working hours [status]. Kindly contact to Project Manager ([Requester]).
+      <br/>
+      <br/>
+      [Duration]<br/>
+      <br/>Best Regards,<br />PMS Admin
+    </ProjectResourceDetach>
+
+    <TaskAllocation>
+      Dear [EmployeeName],<br/><br/>
+      On [ProjectName] [TaskName]  [Hours] hours [status] on [Date]. Kindly contact to Project Manager ([Requester]).
+      <br/>Best Regards,<br />PMS Admin
+    </TaskAllocation>
+    <ServiceConfirm>
+      Dear [ServiceOwner],<br/><br/>Following Service has been <b>confirmed </b> from admin and you are requested to deliver the same.<br/><br/>
+      Service Name: [ServiceName]<br/>
+      Client Name: [ClientName]<br/>
+      Service Code: [ServiceCode]<br/>
+      Duration: [Duration]<br/><br/>
+      <br/>Best Regards,<br />PMS Admin
+    </ServiceConfirm>
+
+    <ServiceDelivery>
+      Dear PMS Admin,<br/><br/>Following Service has been <b>delivered</b> against your confirmation.<br/><br/>
+      Service Name: [ServiceName]<br/>
+      Client Name: [ClientName]<br/>
+      Service Code: [ServiceCode]<br/>
+      Duration: [Duration]<br/><br/>
+      <br/>Best Regards,<br />PMS Admin
+    </ServiceDelivery>
+
+    <ResourceAllocationRequester>
+      Dear [RequesterName],<br/><br/>
+      Below resource has been allotted on your request.
+      <br/>
+      Name: [EmployeeName] <br/>
+      Project Name: [ProjectName] <br/>
+      Skill Set: [SkillSet]<br/>
+      Duration: [Duration]<br/>
+      <br/>Best Regards,<br />PMS Admin
+    </ResourceAllocationRequester>
+
+    <ResourceAllocationMail>
+      Dear [EmployeeName],<br/><br/>
+      You have assigned on [ProjectName](Task:- [TaskName]). Kindly contact to Project Manager ([Requester]).
+      <br/>
+      <br/>
+
+      [Duration]<br/>
+      <br/>Best Regards,<br />PMS Admin
+    </ResourceAllocationMail>
+    <ResourceAllocationMailFormat>
+      Dear [EmployeeName],<br/><br/>
+      You have assigned on [ProjectName]. Kindly contact to Project Manager ([Requester]).
+      <br/>
+      <br/>
+
+      [Duration]<br/>
+      <br/>Best Regards,<br />PMS Admin
+    </ResourceAllocationMailFormat>
+    <LeadCreationMail>
+      Dear Sir/Madam,<br/><br/>
+      A New Lead [LeadName] Created  on [CreatedDate] by [CreatedBy].
+      Assigned to [Project Owner] as Project Owner  and [AccountManager] as Account Manager.
+      <br/>Best Regards,<br />PMS Admin
+    </LeadCreationMail>
+    <ProjectAssignMail>
+      Dear Sir/Madam,<br/><br/>
+      A Project [ProjectName] Created  on [CreatedDate] by [CreatedBy].
+      Assigned to [Project Owner] as Project Owner  and [AccountManager] as Account Manager.
+      <br/>Best Regards,<br />PMS Admin
+    </ProjectAssignMail>
+
+
+    <RequestTimeMail>
+      Dear Resource Allocator,<br/><br/>
+      Resource request made by [RequesterName] :
+      <br/><br/>
+      Duration : [Duration]<br/>
+      Hours : [Hours]<br/>
+      Department : [Department]<br/>
+      Skill : [Skill]<br/>
+      <br/>Best Regards,<br />PMS Admin.
+    </RequestTimeMail>
+    <ServiceInvoiceDueAlert>
+      Dear Manager,<br/><br/>  The following service invoice will be due next 15 days :<br/> <br/> [Table] <br /><br />Best Regards,<br />PMS Admin
+    </ServiceInvoiceDueAlert>
+  </EmailMessages>
+
+  <PlanningActivity>
+    <SaveMessage>Planning Activity has been saved successfully.</SaveMessage>
+    <UpdateMessage>Planning Activity has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Planning Activity has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Planning Activity is associated with member, so you cannot delete this Planning Activity.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Planning Activity already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </PlanningActivity>
+
+  <ProjectEmployee>
+    <SaveMessage>Employee has been added successfully into team.</SaveMessage>
+    <UpdateMessage>Employee detail has been updated successfully.</UpdateMessage>
+    <EmployeeNotAvailable>Employee is not available for this duration.</EmployeeNotAvailable>
+    <InvalidDeleteMessage>This employee associated with task,so you cannot removed this employee from selected project.</InvalidDeleteMessage>
+    <DeleteMessage>Employee has been removed successfully from selected project.</DeleteMessage>
+    <ProjectDate>Employee can join the Team between Project Start Date and End Date</ProjectDate>
+  </ProjectEmployee>
+
+  <ServiceEmployee>
+    <SaveMessage>Employee has been added successfully into team.</SaveMessage>
+    <UpdateMessage>Employee detail has been updated successfully.</UpdateMessage>
+    <EmployeeNotAvailable>Employee is not available for this duration.</EmployeeNotAvailable>
+    <InvalidDeleteMessage>This employee associated with task,so you cannot removed this employee from selected Service.</InvalidDeleteMessage>
+    <DeleteMessage>Employee has been removed successfully from selected Service.</DeleteMessage>
+    <ServiceDate>Employee can join the Team between Service Start Date and End Date</ServiceDate>
+  </ServiceEmployee>
+
+  <ProjectRole>
+    <SaveMessage>Project Role has been saved successfully.</SaveMessage>
+    <UpdateMessage>Project Role has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Project Role has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Project Role is associated with member, so you cannot delete this Project Role.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Project Role already exist!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </ProjectRole>
+
+  <EntryLog>
+    <SaveMessage>Time Entry has been saved successfully.</SaveMessage>
+    <UpdateMessage>Time Entry has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Time Entry has been deleted successfully.</DeleteMessage>
+    <InvalidDelete>Time Entry can not be deleted.</InvalidDelete>
+    <DuplicateValueMessage>Time Entry already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <Approve>Time Entry has been approved successfully.</Approve>
+    <Reject>Time Entry has been rejected.</Reject>
+    <HoursCheck>Hours cannot be greater than 24.</HoursCheck>
+    <InvalidDateByTask>Date should be in between Task Dates</InvalidDateByTask>
+    <InvalidDate>Date is Invalid</InvalidDate>
+    <SetAsFixed>Selected Time Entry has been fixed successfully.</SetAsFixed>
+  </EntryLog>
+
+  <CompanyAccount>
+    <SaveMessage>Company Account detail has been saved successfully.</SaveMessage>
+    <UpdateMessage>Company Account detail has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Company Account detail has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Company Account detail is associated with member, so you cannot delete this Company Account detail.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Company Account Code already exist!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </CompanyAccount>
+
+  <DayStatus>
+    <SaveMessage>Day Status has been saved successfully.</SaveMessage>
+  </DayStatus>
+
+  <OtherActivityMaster>
+    <SaveMessage>Other Activity has been saved successfully.</SaveMessage>
+    <UpdateMessage>Other Activity has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Other Activity has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Other Activity is associated with member, so you cannot delete this Other Activity.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Other Activity already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </OtherActivityMaster>
+
+  <EmployeeOtherActivity>
+    <SaveMessage>Employee Other Activity has been saved successfully.</SaveMessage>
+    <UpdateMessage>Employee Other Activity has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Employee Other Activity has been deleted successfully.</DeleteMessage>
+    <InvalidDelete>Employee Other Activity can not be deleted.</InvalidDelete>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <InvalidDate>Invalid Date.</InvalidDate>
+    <DuplicateRecord>Record Already Exist!</DuplicateRecord>
+  </EmployeeOtherActivity>
+
+  <ServiceMaster>
+    <SaveMessage>Service has been saved successfully.</SaveMessage>
+    <UpdateMessage>Service has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Service has been deleted successfully.</DeleteMessage>
+    <DuplicateValueMessage>Service already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </ServiceMaster>
+
+  <PaymentMaster>
+    <SaveMessage>Payment Term has been saved successfully.</SaveMessage>
+    <UpdateMessage>Payment Term has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Payment Term has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Payment Term is associated with Service, so you cannot delete this role.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Duplicate Payment Term OR Month not allowed!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </PaymentMaster>
+
+  <PlanningActivityStage>
+    <SaveMessage>Planning Stage has been saved successfully.</SaveMessage>
+    <UpdateMessage>Planning Stage has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Planning Stage has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Planning Stage is associated with member, so you cannot delete this Planning Activity.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Planning Stage already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </PlanningActivityStage>
+
+  <GradeMaster>
+    <SaveMessage>Grade has been saved successfully.</SaveMessage>
+    <UpdateMessage>Grade has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Grade has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Grade is associated with member, so you cannot delete this Grade.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Grade already exists!!</DuplicateValueMessage>
+    <DuplicateCodeMessage>Grade Code already exists!!</DuplicateCodeMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+
+  </GradeMaster>
+
+  <SeverityMaster>
+    <SaveMessage>Severity has been saved successfully.</SaveMessage>
+    <UpdateMessage>Severity has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Severity has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Severity is associated with member, so you cannot delete this Severity.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Severity already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </SeverityMaster>
+
+  <IndustryType>
+    <SaveMessage>Industry Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Industry Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Industry Type has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Industry Type Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </IndustryType>
+
+  <Department>
+    <SaveMessage>Department has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Department has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Department has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>This Department is Associated with Member, so you cannot Delete this Department!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Department Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Department>
+
+  <TaxType>
+    <SaveMessage>Tax Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Tax Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Tax Type has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>This Tax Type is associated with member, so you cannot delete this Tax Type!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Tax Type Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </TaxType>
+
+  <SkillsMaster>
+    <SaveMessage>Skill has been saved successfully.</SaveMessage>
+    <UpdateMessage>Skill has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Skill has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Skill is associated with member, so you cannot delete this Skill.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Skill already exists!!</DuplicateValueMessage>
+    <DuplicateCodeMessage>Skill Code already exists!!</DuplicateCodeMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </SkillsMaster>
+
+  <RoleMaster>
+    <SaveMessage>Role has been saved successfully.</SaveMessage>
+    <UpdateMessage>Role has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Role has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This role is associated with member, so you cannot delete this role.</InvalidDeleteMessage>
+    <DuplicateValueMessage>Role already exists!!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </RoleMaster>
+
+  <MailAccount>
+    <SaveMessage>MailAccount  has been saved successfully.</SaveMessage>
+    <UpdateMessage>MailAccount  has been updated successfully.</UpdateMessage>
+    <DeleteMessage>MailAccount  has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+  </MailAccount>
+
+  <BankAccounts>
+    <SaveMessage>BankAccounts  has been saved successfully.</SaveMessage>
+    <UpdateMessage>BankAccounts  has been updated successfully.</UpdateMessage>
+    <DeleteMessage>BankAccounts  has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+  </BankAccounts>
+
+  <BankAccountType>
+    <SaveMessage>Bank Account Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Bank Account Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Bank Account Type has been Deleted successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Bank Account Type Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </BankAccountType>
+
+  <MailConfigList>
+    <SaveMessage>MailConfigList  has been saved successfully.</SaveMessage>
+    <UpdateMessage>MailConfigList  has been updated successfully.</UpdateMessage>
+    <DeleteMessage>MailConfigList  has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password.</InvalidDeleteMessage>
+    <DuplicateValueMessage> This record already exist .</DuplicateValueMessage>
+  </MailConfigList>
+
+  <MasterLeadType>
+    <SaveMessage>Lead Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Lead Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Lead Type has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <DuplicateNameMessage>Lead Type Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MasterLeadType>
+
+  <MasterKeyFeature>
+    <SaveMessage>KeyFeature has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>KeyFeature has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>KeyFeature has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateNameMessage>KeyFeature Name Already Exists!</DuplicateNameMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MasterKeyFeature>
+
+  <DocumentType>
+    <SaveMessage>DocumentType has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>DocumentType has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>DocumentType has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Record!</InvalidLoginMessage>
+    <DuplicateNameMessage>DocumentType Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </DocumentType>
+
+  <MasterUnit>
+    <SaveMessage>Unit has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Unit has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Unit has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateNameMessage>Unit Already Exists!</DuplicateNameMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MasterUnit>
+
+  <ReferenceMode>
+    <SaveMessage>Reference Mode has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Reference Mode has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Reference Mode has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateNameMessage>Reference Mode Already Exists!</DuplicateNameMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </ReferenceMode>
+
+  <ProjectType>
+    <SaveMessage>Project Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Project Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Project Type has been Deleted Successfully!</DeleteMessage>
+    <InvalidLoginMessage>Invalid Username or Password!</InvalidLoginMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <DuplicateNameMessage>Project Type Already Exists!</DuplicateNameMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </ProjectType>
+
+  <Project>
+    <SaveMessage>Order details has been saved successfully.</SaveMessage>
+    <UpdateMessage>Order details has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Order details has been deleted successfully.</DeleteMessage>
+    <DuplicateValueMessage>This project name already exists.</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+  </Project>
+
+  <Bank>
+    <SaveMessage>Bank has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Bank has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Bank has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Bank Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData> Not Record Found! </NotFoundData>
+    <NotExistParameter> Not Exist! </NotExistParameter>
+
+  </Bank>
+
+  <Service>
+    <SaveMessage>Service has been saved successfully.</SaveMessage>
+    <UpdateMessage>Service has been updated successfully.</UpdateMessage>
+    <DeleteMessage>Service has been deleted successfully.</DeleteMessage>
+    <DuplicateEmailMessage>Email is already Registered.</DuplicateEmailMessage>
+    <SaveAdditionalMessage>Data has been saved successfully.</SaveAdditionalMessage>
+    <UpdateAdditionalMessage>Data has been updated successfully.</UpdateAdditionalMessage>
+  </Service>
+
+  <CompanyType>
+    <SaveMessage>Company Type has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Company Type has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Company Type has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Company Type Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+
+  </CompanyType>
+
+  <NatureOfBusiness>
+    <SaveMessage>Nature Of Business has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Nature Of Business has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Nature Of Business has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Nature Of Business Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </NatureOfBusiness>
+
+  <Package>
+    <SaveMessage>Package has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Package has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Package has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Package Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Package>
+
+  <Nationality>
+    <SaveMessage>Nationality has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Nationality has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Nationality has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Nationality Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Nationality>
+
+  <SkillSet>
+    <SaveMessage>Skill Set has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Skill Set has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Skill Set has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Skill Set Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </SkillSet>
+
+  <CustomerSegment>
+    <SaveMessage>Customer Segment has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Customer Segment has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Customer Segment has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage> Customer Segment Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+
+  </CustomerSegment>
+
+  <BusinessProcess>
+    <SaveMessage>Business Process has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Business Process has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Business Process has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Business Process Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </BusinessProcess>
+
+  <MasterCurrency>
+    <SaveMessage>Currency has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Currency has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Currency has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Currency Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MasterCurrency>
+
+  <Activity>
+    <SaveMessage>Activity has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Activity has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Activity has been Seleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Activity Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Activity>
+
+  <MaterialCategory>
+    <SaveMessage>Material Category has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Material Category has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Material Category has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Material Category Already Exists!</DuplicateNameMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MaterialCategory>
+
+  <MaterialSubCategory>
+    <SaveMessage>Material SubCategory has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Material SubCategory has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Material SubCategory has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Material SubCategory Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MaterialSubCategory>
+
+  <Severity>
+    <SaveMessage>Severity has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Severity has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Severity has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Severity Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Severity>
+  
+  <Level>
+    <SaveMessage>Level has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Level has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Level has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Level Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <InvalidDeleteMessage>This Bank Detail is associated with member, so you cannot delete this Company!</InvalidDeleteMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Level>
+
+  <ProfitCenter>
+    <SaveMessage>Profit Center has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Profit Center has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>ProfitCenter has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Profit Center Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </ProfitCenter>
+
+  <Category>
+    <SaveMessage>Category has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Category has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Category has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateValueMessage>Category Already Exists!</DuplicateValueMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Category>
+
+  <Status>
+    <SaveMessage> Status has been Saved Successfully!</SaveMessage>
+    <UpdateMessage> Status has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage> Status has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage> Status Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Status>
+
+  <ProspectLabel>
+    <SaveMessage>Prospect Label has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Prospect Label has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Prospect Label has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage>Prospect Label Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+  </ProspectLabel>
+
+
+  <Reason>
+    <SaveMessage>Reason has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Reason has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Reason has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Reason Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Reason>
+  <ScheduleType>
+    <SaveMessage>ScheduleType has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>ScheduleType has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>ScheduleType has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>ScheduleType Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </ScheduleType>
+
+  <Tran_Projects>
+    <ProjectFileCreated>Project File Has been Successfully Created!</ProjectFileCreated>
+    <ProjectAssigned>Project has been Assigned!</ProjectAssigned>
+    <SaveMessage>Project has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Project has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Project has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Project Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Tran_Projects>
+
+  <Tran_Services>
+    <ServiceFileCreated>Service File Has been Successfully Created!</ServiceFileCreated>
+    <ServiceAssigned>Service has been Assigned!</ServiceAssigned>
+    <SaveMessage>Service has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Service has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Service has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Service Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Tran_Services>
+
+  <MasterLocation>
+    <SaveMessage>Location has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>Location has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>Location has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>Location Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MasterLocation>
+  <MasterPreRequisite>
+    <SaveMessage>PreRequisite has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>PreRequisite has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>PreRequisite has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>PreRequisite Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </MasterPreRequisite>
+  <TaskAssignment>
+    <SaveMessage>Task has been assigned successfully.</SaveMessage>   
+    <UpdateMessage>Task has been updated successfully.</UpdateMessage>
+    <SaveTimeSheet>Timesheet has been submitted successfully.</SaveTimeSheet>
+    <ApproveTimeSheet>Timesheet has been Approved successfully.</ApproveTimeSheet>
+    <DuplicateNameMessage>Task is already Registered.</DuplicateNameMessage>
+    <DeleteMessage>Task has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This task is associated with member,So you cannot delete this task.</InvalidDeleteMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <ZeroAlert>Alloted time cannot be zero!!</ZeroAlert>
+    <ActivityHours>Task time duration should not be greater than activity time alloted.</ActivityHours>
+    <ProjectDate>Task date must be between activity start date and end date</ProjectDate>
+    <Authenticate>You are not authenticate to assign task for selected project.</Authenticate>
+  </TaskAssignment>
+
+  <ProspectsSchedule>
+    <SaveMeeting>Meeting has been Save successfully.</SaveMeeting>
+    <!--<MeetingAlready>All Person Not Available in these Meeting Schedule.</MeetingAlready>-->
+    <SaveMessage>Prospects Schedule has been Save successfully.</SaveMessage>
+    <UpdateMessage>Prospects Schedule has been updated successfully.</UpdateMessage>
+    <DuplicateNameMessage>Prospect is already Exist.</DuplicateNameMessage>
+    <DeleteMessage>Prospects Schedule has been deleted successfully.</DeleteMessage>
+    <InvalidDeleteMessage>This Prospects is associated with member,So you cannot delete this task.</InvalidDeleteMessage>
+    <InvalidRequestMessage>Invalid Request.</InvalidRequestMessage>
+    <ZeroAlert>Alloted time cannot be zero!!</ZeroAlert>
+  </ProspectsSchedule>
+  <StatutoryCompliance>
+    <SaveMessage>StatutoryCompliance has been Saved Successfully!</SaveMessage>
+    <UpdateMessage>StatutoryCompliance has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage>StatutoryCompliance has been Deleted Successfully!</DeleteMessage>
+    <InvalidDeleteMessage>Invalid Username or Password!</InvalidDeleteMessage>
+    <DuplicateNameMessage>StatutoryCompliance Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </StatutoryCompliance>
+
+  <IssueType>
+    <SaveMessage> IssueType has been Saved Successfully!</SaveMessage>
+    <UpdateMessage> IssueType has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage> IssueType has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage> IssueType Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </IssueType>
+
+  <TestingType>
+    <SaveMessage> TestingType has been Saved Successfully!</SaveMessage>
+    <UpdateMessage> TestingType has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage> TestingType has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage> TestingType Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </TestingType>
+  
+   <EstimationBuffer>
+    <SaveMessage> EstimationBuffer has been Saved Successfully!</SaveMessage>
+    <UpdateMessage> EstimationBuffer has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage> EstimationBuffer has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage> EstimationBuffer Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </EstimationBuffer>
+
+  <Tran_MenuSection>
+    <SaveMessage> MenuSection has been Saved Successfully!</SaveMessage>
+    <UpdateMessage> MenuSection has been Updated Successfully!</UpdateMessage>
+    <DeleteMessage> MenuSection has been Deleted Successfully!</DeleteMessage>
+    <DuplicateNameMessage> EstimationBuffer Already Exists!</DuplicateNameMessage>
+    <InvalidRequestMessage>Invalid Request!</InvalidRequestMessage>
+    <NotFoundData>Not Record Found!</NotFoundData>
+    <NotExistParameter>Not Exist!</NotExistParameter>
+  </Tran_MenuSection>
+
+
+
+  
+
+</StringMessages>

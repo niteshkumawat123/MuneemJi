@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using MUNEEMJI.Models;
 using MUNEEMJI.Services;
+using MUNEEMJI.PdfServices;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
@@ -15,10 +16,14 @@ namespace MUNEEMJI.Controllers
     {
         private readonly string _connectionString;
         private readonly ICompanyTenancy companyTenancy;
-        public PaymentInController(IConfiguration configuration, ICompanyTenancy tenancy)
+        private readonly IWebHostEnvironment _environment;
+        private readonly IPaymentInPdf _pdfService;
+        public PaymentInController(IConfiguration configuration, ICompanyTenancy tenancy, IWebHostEnvironment environment, IPaymentInPdf pdfService)
         {
             _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             companyTenancy = tenancy;
+            _environment = environment;
+            _pdfService = pdfService;
         }
 
         public async Task<IActionResult> Index()
@@ -241,6 +246,21 @@ namespace MUNEEMJI.Controllers
                 Value = p.Id.ToString(),
                 Text = p.Name
             }).ToList();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadPdf(int id)
+        {
+            try
+            {
+                string relativePath = await _pdfService.GetPaymentInPdfById(id, _environment);
+                if (string.IsNullOrEmpty(relativePath)) return NotFound("PDF could not be generated.");
+                string absolutePath = Path.Combine(_environment.WebRootPath, relativePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                if (!System.IO.File.Exists(absolutePath)) return NotFound("PDF file not found.");
+                byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(absolutePath);
+                return File(fileBytes, "application/pdf", $"PaymentIn_{id}.pdf");
+            }
+            catch { return StatusCode(500, "Error generating PDF."); }
         }
     }
 

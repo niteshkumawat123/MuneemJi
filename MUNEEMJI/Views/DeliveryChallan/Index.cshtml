@@ -337,6 +337,7 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="/Web/DeliveryChallan/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
                                 <li><a class="dropdown-item" href="/Web/DeliveryChallan/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                <li><a class="dropdown-item" href="/Web/PdfDownload/DeliveryChallan/@item.Id" target="_blank"><i class="bi bi-download"></i> Download PDF</a></li>
                                 <li><a class="dropdown-item" href="/Web/DeliveryChallan/DeleteConfirmed?id=@(item.Id)">Delete</a></li>
                             </ul>
                         </td>

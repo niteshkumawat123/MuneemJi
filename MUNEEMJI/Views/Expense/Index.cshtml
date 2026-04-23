@@ -508,6 +508,7 @@
                         <td class="balance-cell">@expense.Balance</td>
                         <td>
                             <button class="menu-btn" onclick="openEditModal(@expense.Id)">⋮</button>
+                            <a href="/Web/PdfDownload/Expense/@expense.Id" target="_blank" class="btn btn-sm btn-outline-primary" title="Download PDF"><i class="bi bi-download"></i></a>
                         </td>
                     </tr>
                 }

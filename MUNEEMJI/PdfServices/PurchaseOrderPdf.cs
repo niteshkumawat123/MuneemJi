@@ -1,4 +1,4 @@
-using iTextSharp.text;
+ï»¿using iTextSharp.text;
 using iTextSharp.text.pdf;
 using Insight.Database;
 using MUNEEMJI.Models;
@@ -10,18 +10,18 @@ using System.Text;
 
 namespace MUNEEMJI.PdfServices
 {
-    public interface ISalesInvoicesPdf
+    public interface IPurchaseOrderPdf
     {
-        Task<string> GetContractPdfById(int id, IWebHostEnvironment _env);
+        Task<string> GetPurchaseOrderPdfById(int id, IWebHostEnvironment _env);
     }
 
-    public class SalesInvoicesPdf : ISalesInvoicesPdf
+    public class PurchaseOrderPdf : IPurchaseOrderPdf
     {
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
-        public SalesInvoicesPdf() { }
+        public PurchaseOrderPdf() { }
 
-        public async Task<string> GetContractPdfById(int id, IWebHostEnvironment _env)
+        public async Task<string> GetPurchaseOrderPdfById(int id, IWebHostEnvironment _env)
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             string FontPath = Path.Combine(_env.WebRootPath, "DataContainer", "Font");
@@ -89,14 +89,14 @@ namespace MUNEEMJI.PdfServices
                 using (PdfWriter wri = PdfWriter.GetInstance(doc, stream))
                 {
                     wri.CloseStream = false;
-                    wri.PageEvent = new PdfPageEvents(companydetail, _env);
+                    wri.PageEvent = new SalesInvoicesPdf.PdfPageEvents(companydetail, _env);
 
                     doc.Open();
                     doc.NewPage();
 
-                    // ===== SECTION 1: "Tax Invoice" Title =====
+                    // ===== SECTION 1: "Purchase Order" Title =====
                     var titlePhrase = new Phrase();
-                    titlePhrase.Add(new Chunk("Tax Invoice", new Font(bfArial, 14f, Font.BOLD, darkBrown)));
+                    titlePhrase.Add(new Chunk("Purchase Order", new Font(bfArial, 14f, Font.BOLD, darkBrown)));
                     var titlePara = new Paragraph(titlePhrase);
                     titlePara.Alignment = Element.ALIGN_CENTER;
                     titlePara.SpacingAfter = 8f;
@@ -114,62 +114,46 @@ namespace MUNEEMJI.PdfServices
                     AddHeaderCell(infoGrid, "Invoice Details", fSmallBold, grayBg, borderClr);
 
                     // Bill To content
-                    float lineSpacing = 6f;
-                    {
-                        var cell = new PdfPCell();
-                        cell.BorderColor = borderClr;
-                        cell.Padding = 5f;
-                        cell.VerticalAlignment = Element.ALIGN_TOP;
-                        var p1 = new Paragraph((partydetail?.PartyName ?? "N/A"), fBold); p1.SpacingAfter = lineSpacing; cell.AddElement(p1);
-                        var p2 = new Paragraph((partydetail?.BillingAddress ?? ""), fSmall); p2.SpacingAfter = lineSpacing; cell.AddElement(p2);
-                        var p3 = new Paragraph("State: " + (partydetail?.StateCode ?? "") + "-" + (partydetail?.StateName ?? ""), fSmall); cell.AddElement(p3);
-                        infoGrid.AddCell(cell);
-                    }
+                    var billToPhrase = new Phrase(12f);
+                    billToPhrase.Add(new Chunk((partydetail?.PartyName ?? "N/A") + "\n", fBold));
+                    billToPhrase.Add(new Chunk((partydetail?.BillingAddress ?? "") + "\n", fSmall));
+                    billToPhrase.Add(new Chunk("State: " + (partydetail?.StateCode ?? "") + "-" + (partydetail?.StateName ?? ""), fSmall));
+                    AddContentCell(infoGrid, billToPhrase, borderClr);
 
                     // Ship To content
                     string shipAddr = !string.IsNullOrEmpty(Bill.ShippingAddress) ? Bill.ShippingAddress : (partydetail?.ShippingAddress ?? "");
-                    {
-                        var cell = new PdfPCell();
-                        cell.BorderColor = borderClr;
-                        cell.Padding = 5f;
-                        cell.VerticalAlignment = Element.ALIGN_TOP;
-                        var p1 = new Paragraph(shipAddr, fSmall); cell.AddElement(p1);
-                        infoGrid.AddCell(cell);
-                    }
+                    var shipToPhrase = new Phrase(12f);
+                    shipToPhrase.Add(new Chunk(shipAddr, fSmall));
+                    AddContentCell(infoGrid, shipToPhrase, borderClr);
 
                     // Transportation Details content
                     string deliveryDateStr = Bill.DeliveryDate.HasValue && Bill.DeliveryDate.Value != DateTime.MinValue
                         ? Bill.DeliveryDate.Value.ToString("dd-MM-yyyy") : "";
-                    {
-                        var cell = new PdfPCell();
-                        cell.BorderColor = borderClr;
-                        cell.Padding = 5f;
-                        cell.VerticalAlignment = Element.ALIGN_TOP;
-                        var p1 = new Paragraph("Transport Name: " + (Bill.TransportName ?? ""), fSmall); p1.SpacingAfter = lineSpacing; cell.AddElement(p1);
-                        var p2 = new Paragraph("Vehicle Number: " + (Bill.VehicleNumber ?? ""), fSmall); p2.SpacingAfter = lineSpacing; cell.AddElement(p2);
-                        var p3 = new Paragraph("Delivery Date: " + deliveryDateStr, fSmall); p3.SpacingAfter = lineSpacing; cell.AddElement(p3);
-                        var p4 = new Paragraph("Delivery Location: " + (Bill.DeliveryLocation ?? ""), fSmall); p4.SpacingAfter = lineSpacing; cell.AddElement(p4);
-                        var p5 = new Paragraph("Field 5: " + (Bill.Field5 ?? ""), fSmall); p5.SpacingAfter = lineSpacing; cell.AddElement(p5);
-                        var p6 = new Paragraph("Field 6: " + (Bill.Field6 ?? ""), fSmall); cell.AddElement(p6);
-                        infoGrid.AddCell(cell);
-                    }
+                    var transportPhrase = new Phrase(12f);
+                    transportPhrase.Add(new Chunk("Transport Name: " + (Bill.TransportName ?? "") + "\n", fSmall));
+                    transportPhrase.Add(new Chunk("Vehicle Number: " + (Bill.VehicleNumber ?? "") + "\n", fSmall));
+                    transportPhrase.Add(new Chunk("Delivery Date: " + deliveryDateStr + "\n", fSmall));
+                    transportPhrase.Add(new Chunk("Delivery Location: " + (Bill.DeliveryLocation ?? "") + "\n", fSmall));
+                    transportPhrase.Add(new Chunk("Field 5: " + (Bill.Field5 ?? "") + "\n", fSmall));
+                    transportPhrase.Add(new Chunk("Field 6: " + (Bill.Field6 ?? ""), fSmall));
+                    AddContentCell(infoGrid, transportPhrase, borderClr);
 
                     // Invoice Details content
                     string invDateStr = Bill.InvoiceDate.HasValue && Bill.InvoiceDate.Value != DateTime.MinValue
                         ? Bill.InvoiceDate.Value.ToString("dd-MM-yyyy") : "";
                     string timeStr = Bill.Time.HasValue && Bill.Time.Value != TimeSpan.MinValue
                         ? Bill.Time.Value.ToString(@"hh\:mm") + " " + (Bill.Time.Value.Hours >= 12 ? "PM" : "AM") : "";
-                    {
-                        var cell = new PdfPCell();
-                        cell.BorderColor = borderClr;
-                        cell.Padding = 5f;
-                        cell.VerticalAlignment = Element.ALIGN_TOP;
-                        var p1 = new Paragraph("Invoice No. : " + (Bill.InvoiceNumber?.ToString() ?? ""), fSmall); p1.Alignment = Element.ALIGN_RIGHT; p1.SpacingAfter = lineSpacing; cell.AddElement(p1);
-                        var p2 = new Paragraph("Date : " + invDateStr, fSmall); p2.Alignment = Element.ALIGN_RIGHT; p2.SpacingAfter = lineSpacing; cell.AddElement(p2);
-                        var p3 = new Paragraph("Time : " + timeStr, fSmall); p3.Alignment = Element.ALIGN_RIGHT; p3.SpacingAfter = lineSpacing; cell.AddElement(p3);
-                        var p4 = new Paragraph("Place of supply: " + (Bill.StateOfSupply ?? ""), fSmall); p4.Alignment = Element.ALIGN_RIGHT; cell.AddElement(p4);
-                        infoGrid.AddCell(cell);
-                    }
+                    var invPhrase = new Phrase(12f);
+                    invPhrase.Add(new Chunk("Invoice No. : " + (Bill.InvoiceNumber?.ToString() ?? "") + "\n", fSmall));
+                    invPhrase.Add(new Chunk("Date : " + invDateStr + "\n", fSmall));
+                    invPhrase.Add(new Chunk("Time : " + timeStr + "\n", fSmall));
+                    invPhrase.Add(new Chunk("Place of supply: " + (Bill.StateOfSupply ?? ""), fSmall));
+                    var invCell = new PdfPCell(invPhrase);
+                    invCell.BorderColor = borderClr;
+                    invCell.Padding = 5f;
+                    invCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    invCell.VerticalAlignment = Element.ALIGN_TOP;
+                    infoGrid.AddCell(invCell);
 
                     doc.Add(infoGrid);
 
@@ -296,16 +280,15 @@ namespace MUNEEMJI.PdfServices
                     summaryOuter.KeepTogether = true;
 
                     // LEFT: Invoice Amount In Words + Terms
-                    {
-                        var cell = new PdfPCell();
-                        cell.Border = Rectangle.NO_BORDER;
-                        cell.Padding = 5f;
-                        var pa1 = new Paragraph("Invoice Amount In Words", fBold); pa1.SpacingAfter = lineSpacing; cell.AddElement(pa1);
-                        var pa2 = new Paragraph(ConfigControls.ConvertAmountToWords(Bill.FinalAmount), fSmall); pa2.SpacingAfter = lineSpacing * 2; cell.AddElement(pa2);
-                        var pa3 = new Paragraph("Terms and Conditions", fBold); pa3.SpacingAfter = lineSpacing; cell.AddElement(pa3);
-                        var pa4 = new Paragraph(Bill.Description ?? "", fSmall); cell.AddElement(pa4);
-                        summaryOuter.AddCell(cell);
-                    }
+                    var leftPhrase = new Phrase();
+                    leftPhrase.Add(new Chunk("Invoice Amount In Words\n", fBold));
+                    leftPhrase.Add(new Chunk(ConfigControls.ConvertAmountToWords(Bill.FinalAmount) + "\n\n", fSmall));
+                    leftPhrase.Add(new Chunk("Terms and Conditions\n", fBold));
+                    leftPhrase.Add(new Chunk(Bill.Description ?? "", fSmall));
+                    var leftCell = new PdfPCell(leftPhrase);
+                    leftCell.Border = Rectangle.NO_BORDER;
+                    leftCell.Padding = 5f;
+                    summaryOuter.AddCell(leftCell);
 
                     // RIGHT: Summary rows
                     PdfPTable summaryTbl = new PdfPTable(2);
@@ -390,17 +373,16 @@ namespace MUNEEMJI.PdfServices
                     bankSection.AddCell(forHeader);
 
                     // Bank details content
-                    {
-                        var cell = new PdfPCell();
-                        cell.BorderColor = borderClr;
-                        cell.Padding = 5f;
-                        cell.MinimumHeight = 60f;
-                        var pb1 = new Paragraph("Bank Name : " + (BankDetail?.BankName ?? "N/A"), fSmall); pb1.SpacingAfter = lineSpacing; cell.AddElement(pb1);
-                        var pb2 = new Paragraph("Bank Account No. : " + (BankDetail?.AccountNumber ?? "N/A"), fSmall); pb2.SpacingAfter = lineSpacing; cell.AddElement(pb2);
-                        var pb3 = new Paragraph("Bank IFSC code : " + (BankDetail?.IFSCCode ?? "N/A"), fSmall); pb3.SpacingAfter = lineSpacing; cell.AddElement(pb3);
-                        var pb4 = new Paragraph("Account holder's name : " + (BankDetail?.AccountDisplayName ?? "N/A"), fSmall); cell.AddElement(pb4);
-                        bankSection.AddCell(cell);
-                    }
+                    var bankPhrase = new Phrase(14f);
+                    bankPhrase.Add(new Chunk("Bank Name : " + (BankDetail?.BankName ?? "N/A") + "\n", fSmall));
+                    bankPhrase.Add(new Chunk("Bank Account No. : " + (BankDetail?.AccountNumber ?? "N/A") + "\n", fSmall));
+                    bankPhrase.Add(new Chunk("Bank IFSC code : " + (BankDetail?.IFSCCode ?? "N/A") + "\n", fSmall));
+                    bankPhrase.Add(new Chunk("Account holder's name : " + (BankDetail?.AccountDisplayName ?? "N/A"), fSmall));
+                    var bankCell = new PdfPCell(bankPhrase);
+                    bankCell.BorderColor = borderClr;
+                    bankCell.Padding = 5f;
+                    bankCell.MinimumHeight = 60f;
+                    bankSection.AddCell(bankCell);
 
                     // Signature cell
                     var sigPhrase = new Phrase();
@@ -483,38 +465,34 @@ namespace MUNEEMJI.PdfServices
                     ackInner.SetWidths(new float[] { 35f, 35f, 30f });
 
                     // Invoice To
-                    {
-                        var cell = new PdfPCell();
-                        cell.Border = Rectangle.NO_BORDER;
-                        cell.Padding = 4f;
-                        var pi1 = new Paragraph("Invoice To:", fBold); pi1.SpacingAfter = lineSpacing; cell.AddElement(pi1);
-                        var pi2 = new Paragraph(partydetail?.PartyName ?? "", fBold); pi2.SpacingAfter = lineSpacing; cell.AddElement(pi2);
-                        var pi3 = new Paragraph(partydetail?.BillingAddress ?? "", fSmall); cell.AddElement(pi3);
-                        ackInner.AddCell(cell);
-                    }
+                    var invToPhrase = new Phrase(14f);
+                    invToPhrase.Add(new Chunk("Invoice To:\n", fBold));
+                    invToPhrase.Add(new Chunk((partydetail?.PartyName ?? "") + "\n", fBold));
+                    invToPhrase.Add(new Chunk(partydetail?.BillingAddress ?? "", fSmall));
+                    var invToCell = new PdfPCell(invToPhrase);
+                    invToCell.Border = Rectangle.NO_BORDER;
+                    invToCell.Padding = 4f;
+                    ackInner.AddCell(invToCell);
 
                     // Invoice Details
-                    {
-                        var cell = new PdfPCell();
-                        cell.Border = Rectangle.NO_BORDER;
-                        cell.Padding = 4f;
-                        var pd1 = new Paragraph("Invoice Details:", fBold); pd1.SpacingAfter = lineSpacing; cell.AddElement(pd1);
-                        var pd2 = new Paragraph("Invoice No. : " + (Bill.InvoiceNumber?.ToString() ?? ""), fSmall); pd2.SpacingAfter = lineSpacing; cell.AddElement(pd2);
-                        var pd3 = new Paragraph("Invoice date : " + invDateStr, fSmall); pd3.SpacingAfter = lineSpacing; cell.AddElement(pd3);
-                        var pd4 = new Paragraph("Invoice Amount : \u20B9 " + Bill.FinalAmount.ToString("0.00"), fRupeeSmall); cell.AddElement(pd4);
-                        ackInner.AddCell(cell);
-                    }
+                    var invDetPhrase = new Phrase(14f);
+                    invDetPhrase.Add(new Chunk("Invoice Details:\n", fBold));
+                    invDetPhrase.Add(new Chunk("Invoice No. : " + (Bill.InvoiceNumber?.ToString() ?? "") + "\n", fSmall));
+                    invDetPhrase.Add(new Chunk("Invoice date : " + invDateStr + "\n", fSmall));
+                    invDetPhrase.Add(new Chunk("Invoice Amount : \u20B9 " + Bill.FinalAmount.ToString("0.00"), fRupeeSmall));
+                    var invDetCell = new PdfPCell(invDetPhrase);
+                    invDetCell.Border = Rectangle.NO_BORDER;
+                    invDetCell.Padding = 4f;
+                    ackInner.AddCell(invDetCell);
 
                     // Receiver Seal
-                    {
-                        var cell = new PdfPCell();
-                        cell.Border = Rectangle.NO_BORDER;
-                        cell.Padding = 4f;
-                        var pr1 = new Paragraph(" ", fSmall); pr1.SpacingAfter = lineSpacing * 3; cell.AddElement(pr1);
-                        var pr2 = new Paragraph("---------------------", fSmall); pr2.Alignment = Element.ALIGN_CENTER; pr2.SpacingAfter = lineSpacing; cell.AddElement(pr2);
-                        var pr3 = new Paragraph("Receiver's Seal & Sign", fSmall); pr3.Alignment = Element.ALIGN_CENTER; cell.AddElement(pr3);
-                        ackInner.AddCell(cell);
-                    }
+                    var recPhrase = new Phrase(14f);
+                    recPhrase.Add(new Chunk("\n\n---------------------\nReceiver's Seal & Sign", fSmall));
+                    var recCell = new PdfPCell(recPhrase);
+                    recCell.Border = Rectangle.NO_BORDER;
+                    recCell.Padding = 4f;
+                    recCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    ackInner.AddCell(recCell);
 
                     var ackInnerCell = new PdfPCell(ackInner);
                     ackInnerCell.Border = Rectangle.NO_BORDER;
@@ -531,7 +509,7 @@ namespace MUNEEMJI.PdfServices
                     if (!Directory.Exists(pdfFolderPath))
                         Directory.CreateDirectory(pdfFolderPath);
 
-                    string fileName = $"Invoice_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
+                    string fileName = $"PurchaseOrder_{id}_{DateTime.Now:yyyyMMddHHmmss}.pdf";
                     string fullFilePath = Path.Combine(pdfFolderPath, fileName);
                     await File.WriteAllBytesAsync(fullFilePath, bytes);
 
@@ -556,10 +534,7 @@ namespace MUNEEMJI.PdfServices
             var cell = new PdfPCell(new Phrase(text, font));
             cell.BackgroundColor = bg;
             cell.BorderColor = border;
-            cell.PaddingTop = 6f;
-            cell.PaddingBottom = 6f;
-            cell.PaddingLeft = 4f;
-            cell.PaddingRight = 4f;
+            cell.Padding = 4f;
             table.AddCell(cell);
         }
 
@@ -619,120 +594,6 @@ namespace MUNEEMJI.PdfServices
                 canvas.LineTo(position.Right, position.Bottom);
                 canvas.Stroke();
                 canvas.RestoreState();
-            }
-        }
-
-        // ===== PdfPageEvents — Header on every page =====
-        public class PdfPageEvents : PdfPageEventHelper
-        {
-            PdfContentByte cb;
-            PdfTemplate headerTemplate, footerTemplate;
-            BaseFont bf;
-            iTextSharp.text.Image logo;
-            IWebHostEnvironment _env;
-            BusinessProfileModel companyModel;
-
-            public PdfPageEvents(BusinessProfileModel model, IWebHostEnvironment env)
-            {
-                this.companyModel = model;
-                this._env = env;
-            }
-
-            public override void OnOpenDocument(PdfWriter writer, Document document)
-            {
-                string ImagePath = Path.Combine(_env.WebRootPath, "DataContainer", "Images");
-                try
-                {
-                    bf = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
-                    cb = writer.DirectContent;
-                    headerTemplate = cb.CreateTemplate(100, 100);
-                    footerTemplate = cb.CreateTemplate(50, 50);
-
-                    string logoFile = "MuneemJiLogo.png";
-                    string logoPath = Path.Combine(ImagePath, logoFile);
-                    if (File.Exists(logoPath))
-                        logo = iTextSharp.text.Image.GetInstance(logoPath);
-                }
-                catch { }
-            }
-
-            public override void OnEndPage(PdfWriter writer, Document document)
-            {
-                base.OnEndPage(writer, document);
-                string FontPath = Path.Combine(_env.WebRootPath, "DataContainer", "Font");
-
-                BaseFont bfArial;
-                try { bfArial = BaseFont.CreateFont(Path.Combine(FontPath, "ARIAL.ttf"), BaseFont.IDENTITY_H, BaseFont.EMBEDDED); }
-                catch { bfArial = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED); }
-
-                PdfContentByte cb = writer.DirectContent;
-                float pageWidth = document.PageSize.Width;
-                float left = document.LeftMargin;
-                float right = pageWidth - document.RightMargin;
-                float top = document.PageSize.Top;
-
-                // --- Company details (left side of header) ---
-                float y = top - 15f;
-                float lineHeight = 10f;
-
-                cb.BeginText();
-                cb.SetFontAndSize(bfArial, 12);
-                cb.SetTextMatrix(left, y);
-                cb.ShowText(companyModel.BusinessName ?? "");
-                cb.EndText();
-                y -= (lineHeight + 4f);
-
-                Font smallFont = new Font(bfArial, 7f, Font.NORMAL);
-                string[] lines = {
-                    companyModel.Address?.Replace("\n", " ").Trim() ?? "",
-                    "Phone no. : " + (companyModel.PhoneNumber ?? ""),
-                    "Email : " + (companyModel.Email ?? ""),
-                    "GSTIN : " + (companyModel.Gstin ?? ""),
-                    "State: " + (companyModel.statecode ?? "") + "-" + (companyModel.statename ?? "")
-                };
-
-                foreach (var line in lines)
-                {
-                    cb.BeginText();
-                    cb.SetFontAndSize(bfArial, 7);
-                    cb.SetTextMatrix(left, y);
-                    cb.ShowText(line);
-                    cb.EndText();
-                    y -= lineHeight;
-                }
-
-                // --- Logo (right side) ---
-                if (logo != null)
-                {
-                    logo.ScaleAbsolute(80f, 50f);
-                    logo.SetAbsolutePosition(right - 80f, top - 65f);
-                    cb.AddImage(logo);
-                }
-
-                // --- Horizontal separator line ---
-                float lineY = top - 85f;
-                cb.SaveState();
-                cb.SetLineWidth(0.5f);
-                cb.MoveTo(left, lineY);
-                cb.LineTo(right, lineY);
-                cb.Stroke();
-                cb.RestoreState();
-            }
-
-            public override void OnCloseDocument(PdfWriter writer, Document document)
-            {
-                base.OnCloseDocument(writer, document);
-                headerTemplate.BeginText();
-                headerTemplate.SetFontAndSize(bf, 12);
-                headerTemplate.SetTextMatrix(0, 0);
-                headerTemplate.ShowText("" + (writer.PageNumber - 1));
-                headerTemplate.EndText();
-
-                footerTemplate.BeginText();
-                footerTemplate.SetFontAndSize(bf, 12);
-                footerTemplate.SetTextMatrix(0, 0);
-                footerTemplate.ShowText("" + (writer.PageNumber - 1));
-                footerTemplate.EndText();
             }
         }
 
@@ -889,60 +750,53 @@ namespace MUNEEMJI.PdfServices
         public PartyModel PartDetailForPdfById(int id)
         {
             PartyModel model = null;
-            try
+
+            using (var conn = new NpgsqlConnection(_connectionString))
             {
+                conn.Open();
+                string query = @"SELECT ps.* , ss.name , ss.code  FROM parties as ps left join states as ss on ss.id = ps.stateid  WHERE ps.id = @id";
 
-                using (var conn = new NpgsqlConnection(_connectionString))
+                using (var cmd = new NpgsqlCommand(query, conn))
                 {
-                    conn.Open();
-                    string query = @"SELECT ps.* , ss.name , ss.code  FROM parties as ps left join states as ss on ss.id = ps.stateid  WHERE ps.id = @id";
+                    cmd.Parameters.AddWithValue("id", id);
 
-                    using (var cmd = new NpgsqlCommand(query, conn))
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        cmd.Parameters.AddWithValue("id", id);
-
-                        using (var reader = cmd.ExecuteReader())
+                        if (reader.Read())
                         {
-                            if (reader.Read())
+                            model = new PartyModel
                             {
-                                model = new PartyModel
-                                {
-                                    Id = id,
-                                    PartyName = reader["party_name"].ToString(),
-                                    GSTIN = reader["gstin"].ToString(),
-                                    PhoneNumber = reader["phone_number"].ToString(),
-                                    GSTType = reader["gst_type"].ToString(),
-                                    State = reader["state"].ToString(),
-                                    Email = reader["email"].ToString(),
-                                    BillingAddress = reader["billing_address"].ToString(),
-                                    ShippingAddress = reader["shipping_address"].ToString(),
-                                    IsShippingDisabled = Convert.ToBoolean(reader["is_shipping_disabled"]),
-                                    OpeningBalance = reader["opening_balance"] != DBNull.Value ? Convert.ToDecimal(reader["opening_balance"]) : (decimal?)null,
-                                    AsOfDate = reader["as_of_date"] != DBNull.Value ? Convert.ToDateTime(reader["as_of_date"]) : (DateTime?)null,
-                                    HasCustomCreditLimit = Convert.ToBoolean(reader["has_custom_credit_limit"]),
-                                    CreditLimit = reader["credit_limit"] != DBNull.Value ? Convert.ToDecimal(reader["credit_limit"]) : (decimal?)null,
-                                    AdditionalField1Enabled = Convert.ToBoolean(reader["additional_field1_enabled"]),
-                                    AdditionalField1Value = reader["additional_field1_value"]?.ToString(),
-                                    AdditionalField2Enabled = Convert.ToBoolean(reader["additional_field2_enabled"]),
-                                    AdditionalField2Value = reader["additional_field2_value"]?.ToString(),
-                                    AdditionalField3Enabled = Convert.ToBoolean(reader["additional_field3_enabled"]),
-                                    AdditionalField3Value = reader["additional_field3_value"]?.ToString(),
-                                    AdditionalField4Enabled = Convert.ToBoolean(reader["additional_field4_enabled"]),
-                                    AdditionalField4Value = reader["additional_field4_value"] != DBNull.Value ? Convert.ToDateTime(reader["additional_field4_value"]) : (DateTime?)null,
-                                    PartyGroup = reader["partygroup"] != DBNull.Value ? Convert.ToString(reader["partygroup"]) : string.Empty,
-                                    PartyGroupId = reader["partygroupid"] != DBNull.Value ? Convert.ToInt32(reader["partygroupid"]) : 0,
-                                    StateName = reader["name"]?.ToString(),
-                                    StateCode = reader["code"]?.ToString(),
-                                    StateId = Convert.ToInt32(reader["stateid"])
-                                };
-                            }
+                                Id = id,
+                                PartyName = reader["party_name"].ToString(),
+                                GSTIN = reader["gstin"].ToString(),
+                                PhoneNumber = reader["phone_number"].ToString(),
+                                GSTType = reader["gst_type"].ToString(),
+                                State = reader["state"].ToString(),
+                                Email = reader["email"].ToString(),
+                                BillingAddress = reader["billing_address"].ToString(),
+                                ShippingAddress = reader["shipping_address"].ToString(),
+                                IsShippingDisabled = Convert.ToBoolean(reader["is_shipping_disabled"]),
+                                OpeningBalance = reader["opening_balance"] != DBNull.Value ? Convert.ToDecimal(reader["opening_balance"]) : (decimal?)null,
+                                AsOfDate = reader["as_of_date"] != DBNull.Value ? Convert.ToDateTime(reader["as_of_date"]) : (DateTime?)null,
+                                HasCustomCreditLimit = Convert.ToBoolean(reader["has_custom_credit_limit"]),
+                                CreditLimit = reader["credit_limit"] != DBNull.Value ? Convert.ToDecimal(reader["credit_limit"]) : (decimal?)null,
+                                AdditionalField1Enabled = Convert.ToBoolean(reader["additional_field1_enabled"]),
+                                AdditionalField1Value = reader["additional_field1_value"]?.ToString(),
+                                AdditionalField2Enabled = Convert.ToBoolean(reader["additional_field2_enabled"]),
+                                AdditionalField2Value = reader["additional_field2_value"]?.ToString(),
+                                AdditionalField3Enabled = Convert.ToBoolean(reader["additional_field3_enabled"]),
+                                AdditionalField3Value = reader["additional_field3_value"]?.ToString(),
+                                AdditionalField4Enabled = Convert.ToBoolean(reader["additional_field4_enabled"]),
+                                AdditionalField4Value = reader["additional_field4_value"] != DBNull.Value ? Convert.ToDateTime(reader["additional_field4_value"]) : (DateTime?)null,
+                                PartyGroup = reader["partygroup"] != DBNull.Value ? Convert.ToString(reader["partygroup"]) : string.Empty,
+                                PartyGroupId = reader["partygroupid"] != DBNull.Value ? Convert.ToInt32(reader["partygroupid"]) : 0,
+                                StateName = reader["name"]?.ToString(),
+                                StateCode = reader["code"]?.ToString(),
+                                StateId = Convert.ToInt32(reader["stateid"])
+                            };
                         }
                     }
                 }
-            }
-            catch(Exception ex)
-            {
-
             }
 
             return model;
@@ -1011,3 +865,4 @@ namespace MUNEEMJI.PdfServices
         }
     }
 }
+

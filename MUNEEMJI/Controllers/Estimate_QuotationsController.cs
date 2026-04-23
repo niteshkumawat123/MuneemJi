@@ -2,6 +2,7 @@ using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using MUNEEMJI.Repositories;
+using MUNEEMJI.PdfServices;
 using MUNEEMJI.Services;
 using Npgsql;
 
@@ -15,14 +16,16 @@ namespace MUNEEMJI.Controllers
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly IParty partyController;
         private readonly ICompanyTenancy _CompayTenancy;
+        private readonly IEstimationQuotationPdf _pdfService;
 
-        public Estimate_QuotationsController(IEstimate_QuotationsRepository billService, IWebHostEnvironment environment, IBillItemService iBillItemService, IParty partyController, ICompanyTenancy compayTenancy)
+        public Estimate_QuotationsController(IEstimate_QuotationsRepository billService, IWebHostEnvironment environment, IBillItemService iBillItemService, IParty partyController, ICompanyTenancy compayTenancy, IEstimationQuotationPdf pdfService)
         {
             _billService = billService;
             _environment = environment;
             _IBillItemService = iBillItemService;
             this.partyController = partyController;
             _CompayTenancy = compayTenancy;
+            _pdfService = pdfService;
         }
         public async Task<IActionResult> Index()
         {
@@ -555,6 +558,21 @@ namespace MUNEEMJI.Controllers
 
 
         #endregion
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadPdf(int id)
+        {
+            try
+            {
+                string relativePath = await _pdfService.GetEstimationPdfById(id, _environment);
+                if (string.IsNullOrEmpty(relativePath)) return NotFound("PDF could not be generated.");
+                string absolutePath = Path.Combine(_environment.WebRootPath, relativePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                if (!System.IO.File.Exists(absolutePath)) return NotFound("PDF file not found.");
+                byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(absolutePath);
+                return File(fileBytes, "application/pdf", $"Estimation_{id}.pdf");
+            }
+            catch { return StatusCode(500, "Error generating PDF."); }
+        }
     }
 }
 

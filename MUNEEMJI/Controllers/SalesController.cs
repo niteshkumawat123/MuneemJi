@@ -33,18 +33,18 @@ namespace MUNEEMJI.Controllers
             partyController = _partyController;
             _salesInvoicesPdf = salesInvoicesPdf;
         }
-   public async Task<IActionResult> Index()
-{
-    try
-    {
-        var companyId = _CompayTenancy.GetCurrentCompanyId();
-        DateTime? startDate = DateTime.UtcNow;
-        DateTime? endDate = DateTime.UtcNow;
-        string firmFilter = "ALL FIRMS";
-        string vendorFilter = null;
-        
-        using var connection = new NpgsqlConnection(_connectionString);
-        string query = @"
+        public async Task<IActionResult> Index()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                DateTime? startDate = DateTime.UtcNow;
+                DateTime? endDate = DateTime.UtcNow;
+                string firmFilter = "ALL FIRMS";
+                string vendorFilter = null;
+
+                using var connection = new NpgsqlConnection(_connectionString);
+                string query = @"
             SELECT 
                 td.id AS ""Id"",
                 td.bill_number AS ""BillNumber"",
@@ -74,60 +74,61 @@ namespace MUNEEMJI.Controllers
             WHERE td.TradeDocumentTypesid = @TradeDocumentTypesid 
             AND td.companyid = @p_companyid;
         ";
-        
-        var PurchaseBill = connection.QuerySql<PurchaseBill>(query, 
-            new { 
-                TradeDocumentTypesid = (int)TradeDocumentTypes.SalesChallan, 
-                p_companyid = companyId 
-            }).ToList();
-        
-        if (PurchaseBill != null && PurchaseBill.Count > 0)
-        {
-            // Handle potential null values with null-coalescing operator
-            var paidTotal = PurchaseBill.Any(x=>x.paidReciveamount>0)?PurchaseBill.Sum(b => b.paidReciveamount):decimal.Zero;
-            var unpaidTotal = PurchaseBill.Any(y=>y.Total>0)? (PurchaseBill.Sum(x => (x.Total)) - paidTotal):decimal.Zero;
-            var grandTotal = paidTotal + unpaidTotal;
-            
-            ViewBag.PaidTotal = paidTotal;
-            ViewBag.UnpaidTotal = unpaidTotal;
-            ViewBag.GrandTotal = grandTotal;
-            ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
-            ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
-            ViewBag.FirmFilter = firmFilter;
-            ViewBag.VendorFilter = vendorFilter;
+
+                var PurchaseBill = connection.QuerySql<PurchaseBill>(query,
+                    new
+                    {
+                        TradeDocumentTypesid = (int)TradeDocumentTypes.SalesChallan,
+                        p_companyid = companyId
+                    }).ToList();
+
+                if (PurchaseBill != null && PurchaseBill.Count > 0)
+                {
+                    // Handle potential null values with null-coalescing operator
+                    var paidTotal = PurchaseBill.Any(x => x.paidReciveamount > 0) ? PurchaseBill.Sum(b => b.paidReciveamount) : decimal.Zero;
+                    var unpaidTotal = PurchaseBill.Any(y => y.Total > 0) ? (PurchaseBill.Sum(x => (x.Total)) - paidTotal) : decimal.Zero;
+                    var grandTotal = paidTotal + unpaidTotal;
+
+                    ViewBag.PaidTotal = paidTotal;
+                    ViewBag.UnpaidTotal = unpaidTotal;
+                    ViewBag.GrandTotal = grandTotal;
+                    ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
+                    ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
+                    ViewBag.FirmFilter = firmFilter;
+                    ViewBag.VendorFilter = vendorFilter;
+                }
+                else
+                {
+                    ViewBag.PaidTotal = 0m;
+                    ViewBag.UnpaidTotal = 0m;
+                    ViewBag.GrandTotal = 0m;
+                    ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
+                    ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
+                    ViewBag.FirmFilter = firmFilter;
+                    ViewBag.VendorFilter = vendorFilter;
+
+                    PurchaseBill = new List<PurchaseBill>();
+                }
+
+                return View(PurchaseBill);
+            }
+            catch (Exception ex)
+            {
+                // Log error
+                Console.WriteLine($"Error: {ex.Message}");
+
+                ViewBag.PaidTotal = 0m;
+                ViewBag.UnpaidTotal = 0m;
+                ViewBag.GrandTotal = 0m;
+                ViewBag.StartDate = DateTime.UtcNow.ToString("dd/MM/yyyy");
+                ViewBag.EndDate = DateTime.UtcNow.ToString("dd/MM/yyyy");
+                ViewBag.FirmFilter = "ALL FIRMS";
+                ViewBag.VendorFilter = null;
+                ViewBag.Error = "An error occurred while loading purchase bills.";
+
+                return View(new List<PurchaseBill>());
+            }
         }
-        else
-        {
-            ViewBag.PaidTotal = 0m;
-            ViewBag.UnpaidTotal = 0m;
-            ViewBag.GrandTotal = 0m;
-            ViewBag.StartDate = startDate.Value.ToString("dd/MM/yyyy");
-            ViewBag.EndDate = endDate.Value.ToString("dd/MM/yyyy");
-            ViewBag.FirmFilter = firmFilter;
-            ViewBag.VendorFilter = vendorFilter;
-            
-            PurchaseBill = new List<PurchaseBill>();
-        }
-        
-        return View(PurchaseBill);
-    }
-    catch (Exception ex)
-    {
-        // Log error
-        Console.WriteLine($"Error: {ex.Message}");
-        
-        ViewBag.PaidTotal = 0m;
-        ViewBag.UnpaidTotal = 0m;
-        ViewBag.GrandTotal = 0m;
-        ViewBag.StartDate = DateTime.UtcNow.ToString("dd/MM/yyyy");
-        ViewBag.EndDate = DateTime.UtcNow.ToString("dd/MM/yyyy");
-        ViewBag.FirmFilter = "ALL FIRMS";
-        ViewBag.VendorFilter = null;
-        ViewBag.Error = "An error occurred while loading purchase bills.";
-        
-        return View(new List<PurchaseBill>());
-    }
-}
 
 
 
@@ -240,12 +241,13 @@ namespace MUNEEMJI.Controllers
 
                 var billId = await _billService.CreateBillAsync(viewModel.Bill, companyId);
 
-                if(billId>0)
+                string pdfPath = string.Empty;
+                if (billId > 0)
                 {
-                   await _salesInvoicesPdf.GetContractPdfById(billId, _environment);
+                    pdfPath = await _salesInvoicesPdf.GetContractPdfById(billId, _environment);
                 }
 
-                return Json(new { success = true, message = "Data saved successfully!" });
+                return Json(new { success = true, message = "Data saved successfully!", pdfPath = pdfPath });
 
 
             }
@@ -504,7 +506,7 @@ namespace MUNEEMJI.Controllers
                 CalculateBillTotals(viewModel.Bill);
 
                 var billId = await _billService.UpdateEntries(viewModel.Bill);
-               
+
                 return Json(new { success = true, message = "Data Update successfully!" });
 
             }
@@ -519,7 +521,54 @@ namespace MUNEEMJI.Controllers
 
         #endregion
 
+        [HttpGet]
+        public async Task<IActionResult> DownloadInvoicePdf(int id)
+        {
+            try
+            {
+                CleanupOldInvoicePdfs(_environment);
 
-       
+                string relativePath = await _salesInvoicesPdf.GetContractPdfById(id, _environment);
+
+                if (string.IsNullOrEmpty(relativePath))
+                    return NotFound("PDF could not be generated.");
+
+                string absolutePath = Path.Combine(_environment.WebRootPath,
+                    relativePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+
+                if (!System.IO.File.Exists(absolutePath))
+                    return NotFound("PDF file not found on server.");
+
+                byte[] fileBytes = await System.IO.File.ReadAllBytesAsync(absolutePath);
+                string downloadFileName = $"Invoice_{id}_{DateTime.Now:ddMMyyyyHHmm}.pdf";
+
+                return File(fileBytes, "application/pdf", downloadFileName);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred while generating the PDF.");
+            }
+        }
+
+        private void CleanupOldInvoicePdfs(IWebHostEnvironment env, int keepLastNFiles = 100)
+        {
+            try
+            {
+                string folderPath = Path.Combine(env.WebRootPath, "DataContainer", "GeneratedInvoices");
+                if (!Directory.Exists(folderPath)) return;
+
+                var files = new DirectoryInfo(folderPath)
+                    .GetFiles("*.pdf")
+                    .OrderByDescending(f => f.CreationTime)
+                    .Skip(keepLastNFiles);
+
+                foreach (var file in files)
+                {
+                    file.Delete();
+                }
+            }
+            catch { }
+        }
+
     }
 }

@@ -328,6 +328,7 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="/Web/CreditNote/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
                                 <li><a class="dropdown-item" href="/Web/CreditNote/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                <li><a class="dropdown-item" href="/Web/PdfDownload/CreditNote/@item.Id" target="_blank"><i class="bi bi-download"></i> Download PDF</a></li>
                                 <li><a class="dropdown-item" href="/Web/CreditNote/DeleteConfirmed?id=@(item.Id)">Delete</a></li>
                             </ul>
 

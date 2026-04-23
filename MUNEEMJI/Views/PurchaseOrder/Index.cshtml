@@ -244,6 +244,7 @@
                                 <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="/Web/PurchaseOrder/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
                                 <li><a class="dropdown-item" href="/Web/PurchaseOrder/GetById?id=@(item.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                <li><a class="dropdown-item" href="/Web/PdfDownload/PurchaseOrder/@item.Id" target="_blank"><i class="bi bi-download"></i> Download PDF</a></li>
                                 <li><a class="dropdown-item" href="/Web/PurchaseOrder/DeleteConfirmed?id=@(item.Id)">Delete</a></li>
                                 </ul>
                             

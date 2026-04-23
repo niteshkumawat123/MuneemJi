@@ -28,6 +28,19 @@ builder.Services.AddScoped<IParty, PartyRepository>();
 builder.Services.AddScoped<IUser, UserRepository>();
 builder.Services.AddScoped<MUNEEMJI.Services.IGstSettingsService, MUNEEMJI.Services.GstSettingsService>();
 builder.Services.AddScoped<ISalesInvoicesPdf, SalesInvoicesPdf>();
+builder.Services.AddScoped<IEstimationQuotationPdf, EstimationQuotationPdf>();
+builder.Services.AddScoped<IPaymentInPdf, PaymentInPdf>();
+builder.Services.AddScoped<ISaleOrderPdf, SaleOrderPdf>();
+builder.Services.AddScoped<IDeliveryChallanPdf, DeliveryChallanPdf>();
+builder.Services.AddScoped<ISaleReturnPdf, SaleReturnPdf>();
+builder.Services.AddScoped<ICreditNotePdf, CreditNotePdf>();
+builder.Services.AddScoped<IOtherIncomePdf, OtherIncomePdf>();
+builder.Services.AddScoped<IPurchaseBillPdf, PurchaseBillPdf>();
+builder.Services.AddScoped<IPaymentOutPdf, PaymentOutPdf>();
+builder.Services.AddScoped<IExpensePdf, ExpensePdf>();
+builder.Services.AddScoped<IPurchaseOrderPdf, PurchaseOrderPdf>();
+builder.Services.AddScoped<IPurchaseReturnPdf, PurchaseReturnPdf>();
+builder.Services.AddScoped<IDrNotePdf, DrNotePdf>();
 builder.Services.AddRazorPages();
 
 // Add Session services

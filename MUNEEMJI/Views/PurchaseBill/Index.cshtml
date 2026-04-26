@@ -23,59 +23,33 @@
     </div>
 
     <!-- Filter Row -->
-    <div class="row align-items-center mb-4">
-        <div class="col-auto">
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
-                    This Month
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Week</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                </ul>
-            </div>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
+                This Month
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Today</a></li>
+                <li><a class="dropdown-item" href="#">This Week</a></li>
+                <li><a class="dropdown-item" href="#">This Month</a></li>
+                <li><a class="dropdown-item" href="#">This Year</a></li>
+            </ul>
         </div>
-
-        <div class="col-auto">
-            <span class="filter-label">Between</span>
-        </div>
-
-        <div class="col-auto">
-            <input type="date" class="form-control date-input"
-                   id="startDate"
-                   value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-        </div>
-
-        <div class="col-auto">
-            <span class="filter-label">To</span>
-        </div>
-
-        <div class="col-auto">
-            <input type="date" class="form-control date-input"
-                   value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")"
-                   id="endDate">
-        </div>
-
-        <div class="col-auto">
-            <select class="form-select filter-select">
-                <option selected>@ViewBag.FirmFilter</option>
-                <option>ALL FIRMS</option>
-                <option>FIRM 1</option>
-                <option>FIRM 2</option>
-            </select>
-        </div>
-
-        <div class="col-auto">
-            <select class="form-select filter-select">
-                <option selected>@ViewBag.VendorFilter</option>
-                <option>All Godowns</option>
-                <option>ALL USERS</option>
-            </select>
-        </div>
-
-        <div class="col-auto ms-auto">
+        <span class="filter-label" style="font-size:13px;">Between</span>
+        <input type="date" class="form-control form-control-sm date-input"
+               id="startDate"
+               value="@DateTime.Today.ToString("yyyy-MM-dd")" style="width:140px;" />
+        <span class="filter-label" style="font-size:13px;">To</span>
+        <input type="date" class="form-control form-control-sm date-input"
+               value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")"
+               id="endDate" style="width:140px;" />
+        <select class="form-select form-select-sm filter-select" data-dropdown-source="Users" style="width:130px;">
+            <option selected value="">ALL FIRMS</option>
+        </select>
+        <select class="form-select form-select-sm filter-select" data-dropdown-source="Godowns" style="width:140px;">
+            <option selected value="">All Godowns</option>
+        </select>
+        <div class="ms-auto d-flex gap-1">
             <a href="/path/to/file.xlsx" download>
                 <button type="button" class="btn btn-success btn-sm" title="Download Excel" style="padding: 8px;padding-left: 11px;padding-right: 11px;">
                     <i class="bi bi-file-earmark-excel"></i>
@@ -815,3 +789,4 @@
         }
     }
 </script>
+<script src="/js/dropdown-loader.js"></script>

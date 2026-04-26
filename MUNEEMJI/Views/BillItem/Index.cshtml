@@ -489,11 +489,8 @@
                 <i class="fas fa-plus"></i> Add Item
             </button>
 
-            <select class="godown-select">
-                <option>Godown: All Godowns</option>
-                <option>Main Warehouse</option>
-                <option>Secondary Storage</option>
-                <option>Retail Store</option>
+            <select class="godown-select" data-dropdown-source="Godowns">
+                <option value="">Godown: All Godowns</option>
             </select>
 
             <div class="item-list">
@@ -740,3 +737,4 @@
 
     }
 </script>
+<script src="/js/dropdown-loader.js"></script>

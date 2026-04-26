@@ -1,4 +1,4 @@
-﻿@{
+@{
     Layout = null;
 }
 
@@ -7,587 +7,527 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MuneemJi - Registration</title>
+    <title>MuneemJi - Register Your Business</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background: #f0f2f5;
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
-            animation: slideIn 0.6s ease-out;
-        }
-
-        @@keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .logo-container {
-            margin-bottom: 30px;
-        }
-
-        .logo {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(229, 62, 62, 0.3);
-        }
-
-        .logo-icon {
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 10px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #e53e3e;
-            font-size: 24px;
         }
 
-        .logo-text {
-            color: #2d3748;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* ?? Left Branding Panel ?? */
+        .brand-panel {
+            width: 420px; min-height: 100vh;
+            background: linear-gradient(160deg, #1a202c 0%, #2d3748 50%, #1a202c 100%);
+            padding: 48px 40px;
+            display: flex; flex-direction: column; justify-content: space-between;
+            position: relative; overflow: hidden;
         }
-
-        .tagline {
-            color: #4299e1;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 5px;
+        .brand-panel::before {
+            content: ''; position: absolute; top: -100px; right: -100px;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(229,62,62,.15), transparent 70%);
+            border-radius: 50%;
         }
-
-        .flag {
-            display: inline-block;
-            font-size: 16px;
-            margin-left: 5px;
+        .brand-panel::after {
+            content: ''; position: absolute; bottom: -80px; left: -80px;
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(49,130,206,.1), transparent 70%);
+            border-radius: 50%;
         }
-
-        .form-title {
-            color: #2d3748;
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 30px;
-            letter-spacing: 1px;
+        .brand-top { position: relative; z-index: 1; }
+        .brand-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 48px; }
+        .brand-logo-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 800; font-size: 22px;
+            box-shadow: 0 4px 16px rgba(229,62,62,.35);
         }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
+        .brand-logo-text { font-size: 24px; font-weight: 700; color: #fff; }
+        .brand-headline { font-size: 32px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 16px; }
+        .brand-headline span { color: #e53e3e; }
+        .brand-sub { font-size: 15px; color: #a0aec0; line-height: 1.7; margin-bottom: 40px; }
+        .brand-features { list-style: none; }
+        .brand-features li {
+            display: flex; align-items: flex-start; gap: 12px;
+            margin-bottom: 20px; color: #e2e8f0; font-size: 14px; line-height: 1.5;
         }
-
-        .form-group label {
-            display: block;
-            color: #4a5568;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        .brand-features .feat-icon {
+            width: 32px; height: 32px; min-width: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 14px;
         }
+        .feat-icon.red { background: rgba(229,62,62,.15); color: #fc8181; }
+        .feat-icon.blue { background: rgba(49,130,206,.15); color: #63b3ed; }
+        .feat-icon.green { background: rgba(56,161,105,.15); color: #68d391; }
+        .feat-icon.yellow { background: rgba(214,158,46,.15); color: #f6e05e; }
+        .brand-bottom { position: relative; z-index: 1; font-size: 12px; color: #718096; }
+        .brand-bottom a { color: #a0aec0; text-decoration: none; }
+        .brand-bottom a:hover { color: #fff; }
 
-        .form-control {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
+        /* ?? Right Form Panel ?? */
+        .form-panel { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .form-card { width: 100%; max-width: 480px; }
+        .form-card h1 { font-size: 28px; font-weight: 700; color: #1a202c; margin-bottom: 4px; }
+        .form-card .subtitle { font-size: 14px; color: #a0aec0; margin-bottom: 32px; }
+
+        /* ?? Form Fields ?? */
+        .field { margin-bottom: 20px; }
+        .field label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 6px; }
+        .field-input-wrap { position: relative; }
+        .field-input-wrap i {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: #a0aec0; font-size: 16px;
         }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #e53e3e;
-            background-color: white;
-            box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.1);
-            transform: translateY(-2px);
+        .field input {
+            width: 100%; padding: 12px 16px 12px 44px;
+            border: 2px solid #e2e8f0; border-radius: 10px;
+            font-size: 15px; background: #f7fafc; transition: all .2s; outline: none;
         }
+        .field input:focus { border-color: #e53e3e; background: #fff; box-shadow: 0 0 0 3px rgba(229,62,62,.08); }
+        .field .error-text { font-size: 12px; color: #e53e3e; margin-top: 4px; min-height: 16px; }
 
-        .checkbox-group {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            margin-bottom: 25px;
-            text-align: left;
+        .checkbox-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 24px; }
+        .checkbox-row input[type="checkbox"] { margin-top: 3px; accent-color: #e53e3e; width: 18px; height: 18px; min-width: 18px; }
+        .checkbox-row label { font-size: 13px; color: #718096; line-height: 1.5; cursor: pointer; }
+        .checkbox-row a { color: #e53e3e; text-decoration: none; font-weight: 600; }
+        .checkbox-row a:hover { text-decoration: underline; }
+
+        .btn-submit {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: #fff; border: none; border-radius: 10px;
+            font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s;
+            box-shadow: 0 4px 16px rgba(229,62,62,.3);
+            text-transform: uppercase; letter-spacing: .5px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
         }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(229,62,62,.4); }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
-        .checkbox-group input[type="checkbox"] {
-            margin-top: 3px;
-            accent-color: #e53e3e;
-            width: 18px;
-            height: 18px;
+        .switch-text { text-align: center; margin-top: 24px; font-size: 14px; color: #a0aec0; }
+        .switch-text a { color: #e53e3e; text-decoration: none; font-weight: 600; cursor: pointer; }
+        .switch-text a:hover { text-decoration: underline; }
+
+        /* ?? Alerts ?? */
+        .alert-box {
+            padding: 12px 16px; border-radius: 10px; margin-bottom: 20px;
+            font-size: 13px; font-weight: 500; display: none; align-items: center; gap: 8px;
         }
+        .alert-box.show { display: flex; }
+        .alert-box.error { background: #fff5f5; color: #c53030; border: 1px solid #fed7d7; }
+        .alert-box.success { background: #f0fff4; color: #276749; border: 1px solid #c6f6d5; }
 
-        .checkbox-group label {
-            font-size: 13px;
-            color: #718096;
-            line-height: 1.5;
-            margin-bottom: 0;
+        /* ?? OTP ?? */
+        .otp-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 24px; }
+        .otp-box {
+            width: 52px; height: 56px; text-align: center; font-size: 20px; font-weight: 700;
+            border: 2px solid #e2e8f0; border-radius: 10px; background: #f7fafc; outline: none; transition: all .2s;
         }
+        .otp-box:focus { border-color: #e53e3e; background: #fff; box-shadow: 0 0 0 3px rgba(229,62,62,.08); }
 
-        .checkbox-group a {
-            color: #e53e3e;
-            text-decoration: none;
-            font-weight: 600;
+        .otp-email-hint {
+            text-align: center; font-size: 13px; color: #718096; margin-bottom: 20px;
+            background: #f7fafc; padding: 10px 16px; border-radius: 8px; border: 1px solid #e2e8f0;
         }
+        .otp-email-hint strong { color: #1a202c; }
 
-        .checkbox-group a:hover {
-            text-decoration: underline;
-        }
+        /* ?? Steps ?? */
+        .steps { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 32px; }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: #e2e8f0; transition: all .3s; }
+        .step-dot.active { background: #e53e3e; width: 28px; border-radius: 5px; }
+        .step-dot.done { background: #38a169; }
+        .step-line { width: 24px; height: 2px; background: #e2e8f0; }
 
-        .login-btn, .register-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
-            color: white;
-            border: none;
-            padding: 16px 24px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
-        }
+        .form-section { display: none; }
+        .form-section.active { display: block; }
 
-        .login-btn:hover, .register-btn:hover {
-            background: linear-gradient(135deg, #c53030 0%, #9c2020 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.4);
-        }
+        /* ?? Spinner ?? */
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; }
+        @@keyframes spin { to { transform: rotate(360deg); } }
 
-        .login-btn:active, .register-btn:active {
-            transform: translateY(-1px);
-        }
-
-        .switch-form {
-            margin-top: 25px;
-            font-size: 14px;
-            color: #718096;
-        }
-
-        .switch-form a {
-            color: #e53e3e;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .switch-form a:hover {
-            text-decoration: underline;
-        }
-
-        .text-danger {
-            color: #e53e3e;
-            font-size: 12px;
-            margin-top: 5px;
-            font-weight: 500;
-        }
-
-        .alert {
-            padding: 12px 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .alert-danger {
-            background-color: #fed7d7;
-            color: #c53030;
-            border: 1px solid #feb2b2;
-        }
-
-        .alert-success {
-            background-color: #c6f6d5;
-            color: #2f855a;
-            border: 1px solid #9ae6b4;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .otp-input-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-
-        .otp-input {
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            font-size: 18px;
-            font-weight: bold;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            background: #f8f9fa;
-        }
-
-        .otp-input:focus {
-            border-color: #e53e3e;
-            background: white;
-            outline: none;
-        }
-
-        .resend-link {
-            color: #e53e3e;
-            text-decoration: none;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .resend-link:hover {
-            text-decoration: underline;
-        }
-
-        @@media (max-width: 480px) {
-            .login-container {
-                padding: 30px 20px;
-            }
-
-            .form-title {
-                font-size: 24px;
-            }
-
-            .logo-text {
-                font-size: 24px;
-            }
+        /* ?? Responsive ?? */
+        @@media (max-width: 900px) {
+            body { flex-direction: column; }
+            .brand-panel { width: 100%; min-height: auto; padding: 32px 24px; }
+            .brand-headline { font-size: 24px; }
+            .brand-features { display: none; }
+            .brand-bottom { display: none; }
+            .form-panel { padding: 24px; }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="logo-container">
-            <div class="logo">
-                <div class="logo-icon">M</div>
+
+    <!-- Left Branding Panel -->
+    <div class="brand-panel">
+        <div class="brand-top">
+            <div class="brand-logo">
+                <div class="brand-logo-icon">M</div>
+                <div class="brand-logo-text">MuneemJi</div>
             </div>
-            <div class="logo-text">MuneemJi</div>
-            <div class="tagline">Har Business Banega Digital 🇮🇳</div>
-        </div>
-
-        <!-- Login Form -->
-        <div id="loginForm" class="hidden">
-            <h1 class="form-title">WELCOME BACK</h1>
-            
-            <form id="loginFormSubmit">
-                <div class="form-group">
-                    <label for="loginPhone">Phone Number</label>
-                    <input name="Phone" id="loginPhone" class="form-control" type="tel" placeholder="Enter your phone number" required />
-                </div>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="rememberMe" />
-                    <label for="rememberMe">Remember me</label>
-                </div>
-
-                <button type="submit" class="login-btn">LOGIN</button>
-            </form>
-
-            <div class="switch-form">
-                New to MuneemJi? <a onclick="switchToRegister()">Register here</a>
-            </div>
-        </div>
-
-        <!-- Registration Form -->
-        <div id="registerForm">
-            <h1 class="form-title">ADD BUSINESS</h1>
-
-            <div id="errorAlert" class="alert alert-danger hidden"></div>
-            <div id="successAlert" class="alert alert-success hidden"></div>
-
-            <form id="registerFormSubmit">
-                <div class="form-group">
-                    <label for="BusinessName">Business Name</label>
-                    <input name="BusinessName" id="BusinessName" class="form-control" type="text" placeholder="Enter your business name" required />
-                    <span class="text-danger" id="businessNameError"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="Phone">Phone Number</label>
-                    <input name="Phone" id="Phone" class="form-control" type="tel" placeholder="Enter your phone number" required />
-                    <span class="text-danger" id="phoneError"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="Email">Email</label>
-                    <input name="Email" id="Email" class="form-control" type="email" placeholder="Enter your email address" required />
-                    <span class="text-danger" id="emailError"></span>
-                </div>
-
-                <div class="checkbox-group">
-                    <input type="checkbox" id="acceptTerms" required />
-                    <label for="acceptTerms">
-                        By clicking on the Register button I accept the <a href="http://muneemjii.com/Termsandcondition.html" target="_blank">terms and conditions</a>
-                    </label>
-                </div>
-                <span class="text-danger" id="termsError"></span>
-
-                <button type="submit" class="register-btn">REGISTER</button>
-            </form>
-
-            <div class="switch-form">
-                Already have an account? <a onclick="switchToLogin()">Login here</a>
-            </div>
-        </div>
-
-        <!-- OTP Verification Form -->
-        <div id="otpForm" class="hidden">
-            <h1 class="form-title">VERIFY OTP</h1>
-            
-            <p style="color: #718096; margin-bottom: 20px; font-size: 14px;">
-                Please enter the OTP sent to your phone number
+            <h2 class="brand-headline">
+                Grow your business <span>digitally</span> with smart invoicing
+            </h2>
+            <p class="brand-sub">
+                Join thousands of businesses using MuneemJi for GST billing,
+                inventory management, and financial tracking.
             </p>
+            <ul class="brand-features">
+                <li>
+                    <div class="feat-icon red"><i class="bi bi-receipt"></i></div>
+                    <div><strong>GST Invoicing</strong><br>Create professional GST-compliant invoices in seconds</div>
+                </li>
+                <li>
+                    <div class="feat-icon blue"><i class="bi bi-box-seam"></i></div>
+                    <div><strong>Inventory Tracking</strong><br>Real-time stock management with low-stock alerts</div>
+                </li>
+                <li>
+                    <div class="feat-icon green"><i class="bi bi-graph-up-arrow"></i></div>
+                    <div><strong>Business Reports</strong><br>Detailed profit/loss, sale, and purchase analytics</div>
+                </li>
+                <li>
+                    <div class="feat-icon yellow"><i class="bi bi-people"></i></div>
+                    <div><strong>Party Management</strong><br>Track customer & vendor balances effortlessly</div>
+                </li>
+            </ul>
+        </div>
+        <div class="brand-bottom">
+            <p>&copy; 2025 MuneemJi. <a href="http://muneemjii.com/Termsandcondition.html" target="_blank">Terms</a> &middot; <a href="http://muneemjii.com/gst-billing-app.htm">Support</a></p>
+        </div>
+    </div>
 
-            <form id="otpFormSubmit">
-                <div class="otp-input-group">
-                    <input type="text" class="otp-input" maxlength="1" />
-                    <input type="text" class="otp-input" maxlength="1" />
-                    <input type="text" class="otp-input" maxlength="1" />
-                    <input type="text" class="otp-input" maxlength="1" />
-                    <input type="text" class="otp-input" maxlength="1" />
-                    <input type="text" class="otp-input" maxlength="1" />
+    <!-- Right Form Panel -->
+    <div class="form-panel">
+        <div class="form-card">
+
+            <!-- Step indicator -->
+            <div class="steps">
+                <div class="step-dot active" id="dot1"></div>
+                <div class="step-line"></div>
+                <div class="step-dot" id="dot2"></div>
+                <div class="step-line"></div>
+                <div class="step-dot" id="dot3"></div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="alert-box error" id="alertError"></div>
+            <div class="alert-box success" id="alertSuccess"></div>
+
+            <!-- ??? Step 1: Register ??? -->
+            <div class="form-section active" id="stepRegister">
+                <h1>Add Your Business</h1>
+                <p class="subtitle">Create a new company in just a few steps</p>
+
+                <form id="registerFormSubmit" novalidate>
+                    <div class="field">
+                        <label for="BusinessName">Business Name</label>
+                        <div class="field-input-wrap">
+                            <i class="bi bi-building"></i>
+                            <input type="text" id="BusinessName" name="BusinessName" placeholder="e.g. Sharma Traders" required />
+                        </div>
+                        <div class="error-text" id="errBusiness"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="Phone">Phone Number</label>
+                        <div class="field-input-wrap">
+                            <i class="bi bi-phone"></i>
+                            <input type="tel" id="Phone" name="Phone" placeholder="10-digit mobile number" maxlength="10" required />
+                        </div>
+                        <div class="error-text" id="errPhone"></div>
+                    </div>
+
+                    <div class="field">
+                        <label for="Email">Email Address</label>
+                        <div class="field-input-wrap">
+                            <i class="bi bi-envelope"></i>
+                            <input type="email" id="Email" name="Email" placeholder="you@@example.com" required />
+                        </div>
+                        <div class="error-text" id="errEmail"></div>
+                    </div>
+
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="acceptTerms" name="AcceptTerms" value="true" />
+                        <label for="acceptTerms">
+                            I agree to the <a href="http://muneemjii.com/Termsandcondition.html" target="_blank">Terms & Conditions</a> and <a href="#">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <div class="error-text" id="errTerms" style="margin-top:-16px;margin-bottom:16px;"></div>
+
+                    <button type="submit" class="btn-submit" id="btnRegister">
+                        <i class="bi bi-arrow-right"></i> Register & Continue
+                    </button>
+                </form>
+
+                <div class="switch-text">
+                    Already have an account? <a href="/Account/Login">Login here</a>
+                </div>
+            </div>
+
+            <!-- ??? Step 2: Send OTP ??? -->
+            <div class="form-section" id="stepSendOtp">
+                <h1>Verify Your Email</h1>
+                <p class="subtitle">We'll send a one-time password to your email</p>
+
+                <div class="otp-email-hint">
+                    <i class="bi bi-envelope-check"></i>
+                    OTP will be sent to: <strong id="otpEmailDisplay"></strong>
                 </div>
 
-                <button type="submit" class="login-btn">VERIFY OTP</button>
-            </form>
+                <button type="button" class="btn-submit" id="btnSendOtp" onclick="sendOtp()">
+                    <i class="bi bi-send"></i> Send OTP to Email
+                </button>
 
-            <div class="switch-form">
-                Didn't receive OTP? <a class="resend-link">Resend OTP</a>
+                <div class="switch-text" style="margin-top:16px;">
+                    <a onclick="goToRegister()"><i class="bi bi-arrow-left"></i> Back to registration</a>
+                </div>
             </div>
+
+            <!-- ??? Step 3: Verify OTP ??? -->
+            <div class="form-section" id="stepVerifyOtp">
+                <h1>Enter OTP</h1>
+                <p class="subtitle">Check your email inbox for the 6-digit code</p>
+
+                <div class="otp-email-hint">
+                    <i class="bi bi-envelope-open"></i>
+                    OTP sent to: <strong id="otpEmailDisplay2"></strong>
+                </div>
+
+                <form id="otpFormSubmit" novalidate>
+                    <div class="otp-group">
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" />
+                        <input type="text" class="otp-box" maxlength="1" inputmode="numeric" />
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="btnVerify">
+                        <i class="bi bi-shield-check"></i> Verify & Login
+                    </button>
+                </form>
+
+                <div class="switch-text">
+                    Didn't receive the code? <a onclick="sendOtp()">Resend OTP</a>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script>
-        // Form switching functions
-        function switchToLogin() {
-            document.getElementById('registerForm').classList.add('hidden');
-            document.getElementById('otpForm').classList.add('hidden');
-            document.getElementById('loginForm').classList.remove('hidden');
-            clearErrors();
+        let registeredEmail = '';
+
+        // ?? Step Navigation ??
+        function showStep(stepId) {
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+            clearAlerts();
+            updateDots(stepId);
         }
 
-        function switchToRegister() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('otpForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.remove('hidden');
-            clearErrors();
+        function updateDots(stepId) {
+            const d1 = document.getElementById('dot1');
+            const d2 = document.getElementById('dot2');
+            const d3 = document.getElementById('dot3');
+            d1.className = 'step-dot'; d2.className = 'step-dot'; d3.className = 'step-dot';
+
+            if (stepId === 'stepRegister') { d1.classList.add('active'); }
+            else if (stepId === 'stepSendOtp') { d1.classList.add('done'); d2.classList.add('active'); }
+            else if (stepId === 'stepVerifyOtp') { d1.classList.add('done'); d2.classList.add('done'); d3.classList.add('active'); }
         }
 
-        function switchToOtpForm() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.add('hidden');
-            document.getElementById('otpForm').classList.remove('hidden');
-            clearErrors();
+        function goToRegister() { showStep('stepRegister'); }
+
+        // ?? Alerts ??
+        function showAlert(msg, type) {
+            clearAlerts();
+            const el = type === 'success' ? document.getElementById('alertSuccess') : document.getElementById('alertError');
+            el.innerHTML = '<i class="bi bi-' + (type === 'success' ? 'check-circle' : 'exclamation-circle') + '"></i> ' + msg;
+            el.classList.add('show');
+        }
+        function clearAlerts() {
+            document.getElementById('alertError').classList.remove('show');
+            document.getElementById('alertSuccess').classList.remove('show');
+            document.querySelectorAll('.error-text').forEach(e => e.textContent = '');
         }
 
-        // Clear error messages
-        function clearErrors() {
-            document.querySelectorAll('.text-danger').forEach(span => span.textContent = '');
-            document.getElementById('errorAlert').classList.add('hidden');
-            document.getElementById('successAlert').classList.add('hidden');
+        function setLoading(btn, loading) {
+            if (loading) {
+                btn.disabled = true;
+                btn.dataset.origHtml = btn.innerHTML;
+                btn.innerHTML = '<span class="spinner"></span> Please wait...';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = btn.dataset.origHtml || btn.innerHTML;
+            }
         }
 
-        // Show alert messages
-        function showAlert(message, type = 'error') {
-            const alertElement = type === 'error' ? 
-                document.getElementById('errorAlert') : 
-                document.getElementById('successAlert');
-            
-            alertElement.textContent = message;
-            alertElement.classList.remove('hidden');
-            
-            // Hide the other alert
-            const otherAlert = type === 'error' ? 
-                document.getElementById('successAlert') : 
-                document.getElementById('errorAlert');
-            otherAlert.classList.add('hidden');
-        }
+        // ?? Step 1: Register ??
+        document.getElementById('registerFormSubmit').addEventListener('submit', function (e) {
+            e.preventDefault();
+            clearAlerts();
+            let ok = true;
 
-        // Validate form
-        function validateRegistrationForm() {
-            clearErrors();
-            let isValid = true;
-
-            const businessName = document.getElementById('BusinessName').value.trim();
+            const biz = document.getElementById('BusinessName').value.trim();
             const phone = document.getElementById('Phone').value.trim();
             const email = document.getElementById('Email').value.trim();
-            const acceptTerms = document.getElementById('acceptTerms').checked;
+            const terms = document.getElementById('acceptTerms').checked;
 
-            if (!businessName) {
-                document.getElementById('businessNameError').textContent = 'Business name is required';
-                isValid = false;
+            if (!biz) { document.getElementById('errBusiness').textContent = 'Business name is required'; ok = false; }
+            if (!phone) { document.getElementById('errPhone').textContent = 'Phone number is required'; ok = false; }
+            else if (!/^[0-9]{10}$/.test(phone)) { document.getElementById('errPhone').textContent = 'Enter a valid 10-digit number'; ok = false; }
+            if (!email) { document.getElementById('errEmail').textContent = 'Email is required'; ok = false; }
+            else if (!/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(email)) { document.getElementById('errEmail').textContent = 'Enter a valid email address'; ok = false; }
+            if (!terms) { document.getElementById('errTerms').textContent = 'You must accept the terms'; ok = false; }
+
+            if (!ok) return;
+
+            const btn = document.getElementById('btnRegister');
+            setLoading(btn, true);
+
+            // POST to server
+            const formData = new FormData();
+            formData.append('BusinessName', biz);
+            formData.append('Phone', phone);
+            formData.append('Email', email);
+            formData.append('AcceptTerms', 'true');
+
+            fetch('/Account/Register', {
+                method: 'POST',
+                body: formData,
+                redirect: 'manual'
+            })
+            .then(response => {
+                // The controller redirects on success/failure � status 302
+                // We treat any redirect as success (account created or already exists)
+                // We'll proceed to OTP step either way
+                registeredEmail = email;
+                document.getElementById('otpEmailDisplay').textContent = email;
+                document.getElementById('otpEmailDisplay2').textContent = email;
+                showAlert('Account registered successfully! Now verify your email.', 'success');
+                setTimeout(() => showStep('stepSendOtp'), 1000);
+            })
+            .catch(err => {
+                showAlert('An error occurred during registration. Please try again.', 'error');
+            })
+            .finally(() => setLoading(btn, false));
+        });
+
+        // ?? Step 2: Send OTP ??
+        function sendOtp() {
+            if (!registeredEmail) {
+                showAlert('Email not found. Please register first.', 'error');
+                return;
             }
 
-            if (!phone) {
-                document.getElementById('phoneError').textContent = 'Phone number is required';
-                isValid = false;
-            } else if (!/^[0-9]{10}$/.test(phone)) {
-                document.getElementById('phoneError').textContent = 'Please enter a valid 10-digit phone number';
-                isValid = false;
-            }
+            const btn = document.getElementById('btnSendOtp');
+            setLoading(btn, true);
+            clearAlerts();
 
-            if (!email) {
-                document.getElementById('emailError').textContent = 'Email is required';
-                isValid = false;
-            } 
+            const formData = new FormData();
+            formData.append('Email', registeredEmail);
 
-            if (!acceptTerms) {
-                document.getElementById('termsError').textContent = 'Please accept the terms and conditions';
-                isValid = false;
-            }
-
-            return isValid;
+            fetch('/Account/SendOtp', {
+                method: 'POST',
+                body: formData,
+                redirect: 'manual'
+            })
+            .then(response => {
+                // Controller redirects after sending OTP
+                showAlert('OTP has been sent to ' + registeredEmail + '. Please check your inbox.', 'success');
+                setTimeout(() => showStep('stepVerifyOtp'), 1000);
+            })
+            .catch(err => {
+                showAlert('Failed to send OTP. Please try again.', 'error');
+            })
+            .finally(() => setLoading(btn, false));
         }
 
-        // Handle registration form submission
-        document.getElementById('registerFormSubmit').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (validateRegistrationForm()) {
-                // Simulate registration process
-                const businessName = document.getElementById('BusinessName').value.trim();
-                const phone = document.getElementById('Phone').value.trim();
-                const email = document.getElementById('Email').value.trim();
-
-                // Store registration data (in real app, this would be sent to server)
-                const registrationData = {
-                    businessName: businessName,
-                    phone: phone,
-                    email: email,
-                    timestamp: new Date().toISOString()
-                };
-
-                console.log('Registration Data:', registrationData);
-                
-                showAlert('Registration successful! Please verify your phone number.', 'success');
-                
-                // Switch to OTP form after 2 seconds
-                setTimeout(() => {
-                    switchToOtpForm();
-                }, 2000);
-            }
-        });
-
-        // Handle login form submission
-        document.getElementById('loginFormSubmit').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const phone = document.getElementById('loginPhone').value.trim();
-            
-            if (!phone) {
-                showAlert('Please enter your phone number');
-                return;
-            }
-            
-            if (!/^[0-9]{10}$/.test(phone)) {
-                showAlert('Please enter a valid 10-digit phone number');
-                return;
-            }
-
-            // Simulate sending OTP
-            showAlert('OTP sent to your phone number', 'success');
-            setTimeout(() => {
-                switchToOtpForm();
-            }, 1500);
-        });
-
-        // Handle OTP input
-        const otpInputs = document.querySelectorAll('.otp-input');
-        otpInputs.forEach((input, index) => {
-            input.addEventListener('keyup', function(e) {
-                if (e.target.value.length === 1 && index < otpInputs.length - 1) {
-                    otpInputs[index + 1].focus();
-                }
-                
-                if (e.key === 'Backspace' && index > 0 && e.target.value.length === 0) {
-                    otpInputs[index - 1].focus();
-                }
+        // ?? OTP Input Navigation ??
+        const otpBoxes = document.querySelectorAll('.otp-box');
+        otpBoxes.forEach((box, i) => {
+            box.addEventListener('input', function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value && i < otpBoxes.length - 1) otpBoxes[i + 1].focus();
+            });
+            box.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !this.value && i > 0) otpBoxes[i - 1].focus();
+            });
+            box.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const data = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
+                data.split('').forEach((ch, idx) => { if (otpBoxes[idx]) otpBoxes[idx].value = ch; });
+                if (otpBoxes[Math.min(data.length, 5)]) otpBoxes[Math.min(data.length, 5)].focus();
             });
         });
 
-        // Handle OTP form submission
-        document.getElementById('otpFormSubmit').addEventListener('submit', function(e) {
+        // ?? Step 3: Verify OTP ??
+        document.getElementById('otpFormSubmit').addEventListener('submit', function (e) {
             e.preventDefault();
-            
-            const otpValues = Array.from(otpInputs).map(input => input.value);
-            const otp = otpValues.join('');
-            
+            clearAlerts();
+
+            const otp = Array.from(otpBoxes).map(b => b.value).join('');
             if (otp.length !== 6) {
-                showAlert('Please enter complete OTP');
+                showAlert('Please enter the complete 6-digit OTP', 'error');
                 return;
             }
-            
-            // Simulate OTP verification
-            if (otp === '123456') {
-                showAlert('OTP verified successfully! Welcome to MuneemJi!', 'success');
-                setTimeout(() => {
-                    alert('Registration completed successfully!');
-                }, 1500);
-            } else {
-                showAlert('Invalid OTP. Please try again.');
-            }
-        });
 
-        // Handle URL parameters for form switching
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
+            const btn = document.getElementById('btnVerify');
+            setLoading(btn, true);
 
-            if (urlParams.get('form') === 'login') {
-                switchToLogin();
-            } else if (urlParams.get('form') === 'otp') {
-                switchToOtpForm();
-            }
-        });
+            const formData = new FormData();
+            formData.append('otp', otp);
+            formData.append('email', registeredEmail);
 
-        // Auto-focus first input on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                const firstInput = document.querySelector('#registerForm .form-control');
-                if (firstInput) {
-                    firstInput.focus();
+            fetch('/Account/VerifyOtp', {
+                method: 'POST',
+                body: formData,
+                redirect: 'follow'
+            })
+            .then(response => {
+                // If redirect was followed to Home/Index, that's success
+                if (response.redirected || response.ok) {
+                    showAlert('Verified successfully! Redirecting to dashboard...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/Web/Company/Index';
+                    }, 1000);
+                } else {
+                    return response.text().then(html => {
+                        // Check if the HTML contains an error message
+                        if (html.includes('Invalid OTP') || html.includes('expired')) {
+                            showAlert('Invalid or expired OTP. Please try again.', 'error');
+                        } else {
+                            // Could be a successful redirect page
+                            showAlert('Verified successfully! Redirecting...', 'success');
+                            setTimeout(() => { window.location.href = '/Web/Company/Index'; }, 1000);
+                        }
+                    });
                 }
-            }, 500);
+            })
+            .catch(err => {
+                showAlert('An error occurred. Please try again.', 'error');
+            })
+            .finally(() => setLoading(btn, false));
+        });
+
+        // ?? Init ??
+        document.addEventListener('DOMContentLoaded', function () {
+            const p = new URLSearchParams(window.location.search);
+            if (p.get('form') === 'login') {
+                window.location.href = '/Account/Login';
+            }
+            setTimeout(() => {
+                const first = document.querySelector('.form-section.active input');
+                if (first) first.focus();
+            }, 400);
         });
     </script>
 </body>

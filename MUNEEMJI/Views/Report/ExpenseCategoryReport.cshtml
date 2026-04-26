@@ -330,8 +330,13 @@
 
                 <select class="user-select" id="userSelect">
                     <option value="all">ALL USERS</option>
-                    <option value="user1">User 1</option>
-                    <option value="user2">User 2</option>
+                    @if (ViewBag.UserDropdown != null)
+                    {
+                        foreach (var u in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.UserDropdown)
+                        {
+                            <option value="@u.Id">@u.Name</option>
+                        }
+                    }
                 </select>
             </div>
 

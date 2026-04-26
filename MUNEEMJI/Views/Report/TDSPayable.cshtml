@@ -363,8 +363,13 @@
 
                 <select class="form-select" id="firmsSelect">
                     <option value="all">ALL FIRMS</option>
-                    <option value="firm1">Firm 1</option>
-                    <option value="firm2">Firm 2</option>
+                    @if (ViewBag.UserDropdown != null)
+                    {
+                        foreach (var u in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.UserDropdown)
+                        {
+                            <option value="@u.Id">@u.Name</option>
+                        }
+                    }
                 </select>
             </div>
 

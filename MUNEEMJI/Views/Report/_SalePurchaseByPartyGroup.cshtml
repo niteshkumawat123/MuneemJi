@@ -311,10 +311,24 @@
 
             <select id="firmFilter">
                 <option value="">ALL FIRMS</option>
+                @if (ViewBag.UserDropdown != null)
+                {
+                    foreach (var u in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.UserDropdown)
+                    {
+                        <option value="@u.Id">@u.Name</option>
+                    }
+                }
             </select>
 
             <select id="godownFilter">
-                <option value="">All Godo...</option>
+                <option value="">All Godowns</option>
+                @if (ViewBag.GodownDropdown != null)
+                {
+                    foreach (var g in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.GodownDropdown)
+                    {
+                        <option value="@g.Id">@g.Name</option>
+                    }
+                }
             </select>
 
             <div class="action-buttons">

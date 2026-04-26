@@ -31,53 +31,31 @@
     </div>
 
     <!-- Filters Section -->
-    <div class="row mb-4 align-items-center">
-        <div class="col-auto">
-            <span class="text-muted me-2">Filter by :</span>
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+        <span class="text-muted" style="font-size:13px;">Filter by :</span>
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                This Month
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#">Today</a></li>
+                <li><a class="dropdown-item" href="#">This Week</a></li>
+                <li><a class="dropdown-item" href="#">This Month</a></li>
+                <li><a class="dropdown-item" href="#">This Year</a></li>
+            </ul>
         </div>
-        <div class="col-auto">
-            <div class="dropdown">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                    This Month
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Week</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-auto">
-            <input type="date" class="form-control" id="startDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-        </div>
-        <div class="col-auto">
-            <span class="text-muted">To</span>
-        </div>
-        <div class="col-auto">
-            <input type="date" class="form-control" id="endDate" value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")">
-        </div>
-        <div class="col-auto">
-            <select class="form-select">
-                <option selected>All Firms</option>
-                <option>FIRM 1</option>
-                <option>FIRM 2</option>
-            </select>
-        </div>
-        <div class="col-auto">
-            <select class="form-select">
-                <option selected>All Users</option>
-                <option>User 1</option>
-                <option>User 2</option>
-            </select>
-        </div>
-        <div class="col-auto">
-            <select class="form-select">
-                <option selected>All Godown</option>
-                <option>Godown 1</option>
-                <option>Godown 2</option>
-            </select>
-        </div>
+        <input type="date" class="form-control form-control-sm" id="startDate" value="@DateTime.Today.ToString("yyyy-MM-dd")" style="width:140px;" />
+        <span class="text-muted" style="font-size:13px;">To</span>
+        <input type="date" class="form-control form-control-sm" id="endDate" value="@DateTime.UtcNow.AddMonths(1).ToString("yyyy-MM-dd")" style="width:140px;" />
+        <select class="form-select form-select-sm" data-dropdown-source="Users" style="width:130px;">
+            <option selected value="">All Firms</option>
+        </select>
+        <select class="form-select form-select-sm" data-dropdown-source="Users" style="width:130px;">
+            <option selected value="">All Users</option>
+        </select>
+        <select class="form-select form-select-sm" data-dropdown-source="Godowns" style="width:140px;">
+            <option selected value="">All Godown</option>
+        </select>
     </div>
 
     <!-- Summary Card -->
@@ -734,3 +712,4 @@
         });
     }
 </script>
+<script src="/js/dropdown-loader.js"></script>

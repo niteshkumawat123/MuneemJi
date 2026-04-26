@@ -354,18 +354,26 @@
                     <span class="filter-label">Filter by Item Category</span>
                     <select class="form-select" id="categoryFilter">
                         <option value="all">All Categories</option>
-                        <option value="pesticides">Pesticides</option>
-                        <option value="fertilizers">Fertilizers</option>
-                        <option value="seeds">Seeds</option>
+                        @if (ViewBag.CategoryDropdown != null)
+                        {
+                            foreach (var c in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.CategoryDropdown)
+                            {
+                                <option value="@c.Id">@c.Name</option>
+                            }
+                        }
                     </select>
                 </div>
 
                 <div class="filter-item">
                     <select class="form-select" id="godownFilter">
                         <option value="all">All Godown</option>
-                        <option value="godown1">Godown 1</option>
-                        <option value="godown2">Godown 2</option>
-                        <option value="godown3">Godown 3</option>
+                        @if (ViewBag.GodownDropdown != null)
+                        {
+                            foreach (var g in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.GodownDropdown)
+                            {
+                                <option value="@g.Id">@g.Name</option>
+                            }
+                        }
                     </select>
                 </div>
             </div>

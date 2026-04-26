@@ -424,6 +424,13 @@
                     <label class="filter-label">FIRM</label>
                     <select id="firmFilter">
                         <option value="">ALL FIRMS</option>
+                        @if (ViewBag.UserDropdown != null)
+                        {
+                            foreach (var u in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.UserDropdown)
+                            {
+                                <option value="@u.Id">@u.Name</option>
+                            }
+                        }
                     </select>
                 </div>
 

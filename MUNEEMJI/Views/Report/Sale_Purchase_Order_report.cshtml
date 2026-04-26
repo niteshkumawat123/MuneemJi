@@ -284,9 +284,13 @@
                 <div class="user-filter">
                     <select id="userFilter">
                         <option value="">ALL USERS</option>
-                        <option value="user1">User 1</option>
-                        <option value="user2">User 2</option>
-                        <option value="user3">User 3</option>
+                        @if (ViewBag.UserDropdown != null)
+                        {
+                            foreach (var u in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.UserDropdown)
+                            {
+                                <option value="@u.Id">@u.Name</option>
+                            }
+                        }
                     </select>
                 </div>
             </div>
@@ -324,9 +328,13 @@
 
             <select id="godownFilter">
                 <option value="">All Godown</option>
-                <option value="godown1">Godown 1</option>
-                <option value="godown2">Godown 2</option>
-                <option value="godown3">Godown 3</option>
+                @if (ViewBag.GodownDropdown != null)
+                {
+                    foreach (var g in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.GodownDropdown)
+                    {
+                        <option value="@g.Id">@g.Name</option>
+                    }
+                }
             </select>
         </div>
 

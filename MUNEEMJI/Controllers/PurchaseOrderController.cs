@@ -14,17 +14,19 @@ namespace MUNEEMJI.Controllers
         private readonly IBillItemService _IBillItemService;
         private readonly ICompanyTenancy _CompayTenancy;
         private readonly IParty partyController;
+        private readonly IGstTaxService _gstTaxService;
 
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         // GET: Bill
 
-        public PurchaseOrderController(IPurchaseOrderService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy CompayTenancy, IParty partyController)
+        public PurchaseOrderController(IPurchaseOrderService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy CompayTenancy, IParty partyController, IGstTaxService gstTaxService)
         {
             _billService = billService;
             _environment = environment;
             _IBillItemService = iBillItemService;
             _CompayTenancy = CompayTenancy;
             this.partyController = partyController;
+            _gstTaxService = gstTaxService;
         }
         public async Task<IActionResult> Index()
         {
@@ -130,6 +132,8 @@ namespace MUNEEMJI.Controllers
 
             var PartyList = await partyController.GetPartyDropDownAsync(companyId);
             ViewBag.PartyList = PartyList;
+            ViewBag.GstRateOptions = await _gstTaxService.GetGstRateOptionsAsync(companyId, viewModel.Bill?.StateOfSupply);
+            ViewBag.IsSameState = await _gstTaxService.IsSameStateAsync(companyId, viewModel.Bill?.StateOfSupply);
             return View(viewModel);
         }
 
@@ -418,6 +422,8 @@ namespace MUNEEMJI.Controllers
                 };
             }
             ViewBag.PartyList = await partyController.GetPartyDropDownAsync(companyId);
+            ViewBag.GstRateOptions = await _gstTaxService.GetGstRateOptionsAsync(companyId, viewModel.Bill?.StateOfSupply);
+            ViewBag.IsSameState = await _gstTaxService.IsSameStateAsync(companyId, viewModel.Bill?.StateOfSupply);
             return View("Create", viewModel);
         }
         [HttpPost]
@@ -466,8 +472,20 @@ namespace MUNEEMJI.Controllers
 
 
         #endregion
+
+        [HttpGet]
+        public async Task<IActionResult> GetGstRates(string? stateOfSupply = null)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var gstOptions = await _gstTaxService.GetGstRateOptionsAsync(companyId, stateOfSupply);
+                bool isSameState = await _gstTaxService.IsSameStateAsync(companyId, stateOfSupply);
+                return Json(new { success = true, isSameState, taxType = isSameState ? "CGST_SGST" : "IGST", options = gstOptions.Select(o => new { value = o.TaxPercentage.ToString("0.##"), text = o.DisplayText, taxType = o.TaxType, cgstRate = o.CgstRate, sgstRate = o.SgstRate, igstRate = o.IgstRate, isSameState = o.IsSameState }) });
+            }
+            catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+        }
     }
 
 
 }
-

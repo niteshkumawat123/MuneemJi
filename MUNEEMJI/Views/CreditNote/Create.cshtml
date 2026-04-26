@@ -1,4 +1,4 @@
-﻿@model PurchaseBillViewModel
+@model PurchaseBillViewModel
 
 @{
     ViewData["Title"] = "Create Bill";
@@ -872,7 +872,7 @@
                             </div>
 
                             <div class="floating-label-container">
-                                <select asp-for="Bill.StateOfSupply" class="floating-select">
+                                <select asp-for="Bill.StateOfSupply" class="floating-select" id="stateOfSupplyDropdown" onchange="onStateOfSupplyChanged(this.value)">
                                     <option value="">Select State</option>
                                     @foreach (var state in Model.StateOptions)
                                     {
@@ -1216,13 +1216,23 @@
                                         @if (Model.Bill.itemSettings != null && Model.Bill.itemSettings.ItemWiseTax)
                                         {
                                             <td class="col-tax">
-                                                <select asp-for="Bill.BillItems[i].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount(@i)">
-                                                    <option value="0" selected="@(Model.Bill.BillItems[i].TaxPercentage == null)">Select</option>
-                                                    <option value="0" selected="@(Model.Bill.BillItems[i].TaxPercentage == 0)">0%</option>
-                                                    <option value="5" selected="@(Model.Bill.BillItems[i].TaxPercentage == 5)">5%</option>
-                                                    <option value="12" selected="@(Model.Bill.BillItems[i].TaxPercentage == 12)">12%</option>
-                                                    <option value="18" selected="@(Model.Bill.BillItems[i].TaxPercentage == 18)">18%</option>
-                                                    <option value="28" selected="@(Model.Bill.BillItems[i].TaxPercentage == 28)">28%</option>
+                                                <select name="Bill.BillItems[@i].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount(@i)">
+                                                    @if (ViewBag.GstRateOptions != null)
+                                                    {
+                                                        foreach (var gstOpt in (List<MUNEEMJI.Services.GstRateOption>)ViewBag.GstRateOptions)
+                                                        {
+                                                            var isSelected = Model.Bill.BillItems[i].TaxPercentage == gstOpt.TaxPercentage;
+                                                            <option value="@gstOpt.TaxPercentage.ToString("0.##")" data-taxtype="@gstOpt.TaxType" data-cgst="@gstOpt.CgstRate" data-sgst="@gstOpt.SgstRate" data-igst="@gstOpt.IgstRate" selected="@isSelected">@gstOpt.DisplayText</option>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="0">NONE</option>
+                                                        <option value="5" selected="@(Model.Bill.BillItems[i].TaxPercentage == 5)">5%</option>
+                                                        <option value="12" selected="@(Model.Bill.BillItems[i].TaxPercentage == 12)">12%</option>
+                                                        <option value="18" selected="@(Model.Bill.BillItems[i].TaxPercentage == 18)">18%</option>
+                                                        <option value="28" selected="@(Model.Bill.BillItems[i].TaxPercentage == 28)">28%</option>
+                                                    }
                                                 </select>
                                             </td>
                                         }
@@ -1488,12 +1498,22 @@
                                             <label>Tax</label>
                                         </div>
                                         <div class="" style="width: 79px;">
-                                            <select class="form-control form-control-sm" name=" Bill.TaxPercentage">
-                                                <option value="0">NONE</option>
-                                                <option value="5">5%</option>
-                                                <option value="12">12%</option>
-                                                <option value="18">18%</option>
-                                                <option value="28">28%</option>
+                                            <select class="form-control form-control-sm" name=" Bill.TaxPercentage" id="summaryTaxDropdown" onchange="updateGrandTotal()">
+                                                @if (ViewBag.GstRateOptions != null)
+                                                {
+                                                    foreach (var gstOpt in (List<MUNEEMJI.Services.GstRateOption>)ViewBag.GstRateOptions)
+                                                    {
+                                                        <option value="@gstOpt.TaxPercentage.ToString("0.##")" data-taxtype="@gstOpt.TaxType">@gstOpt.DisplayText</option>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <option value="0">NONE</option>
+                                                    <option value="5">5%</option>
+                                                    <option value="12">12%</option>
+                                                    <option value="18">18%</option>
+                                                    <option value="28">28%</option>
+                                                }
                                             </select>
                                         </div>
                                         <div class="" style="width: 97px;text-align: right;">
@@ -1832,20 +1852,7 @@
             rowHTML += `<td class="col-amount1"><input name="Bill.BillItems[${itemIndex}].DiscountAmount" type="number" step="0.01" class="form-control-sm discount-amount" readonly /></td>`;
 
             if (itemSettings.itemWiseTax) {
-
-                        let existingElement = document.querySelector(`[name="Bill.BillItems[${itemIndex}].TaxPercentage"]`);
-                        let currentTax = existingElement?.value || null;
-                        if (currentTax === "") currentTax = null;
-
-                        let taxDropdown = `<select name="Bill.BillItems[${itemIndex}].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount(${itemIndex})">`;
-                        taxDropdown += `<option value="0" ${currentTax == null ? "selected" : ""}>Select</option>`;
-                        taxDropdown += `<option value="0" ${currentTax == "0" ? "selected" : ""}>0%</option>`;
-                        taxDropdown += `<option value="5" ${currentTax == "5" ? "selected" : ""}>5%</option>`;
-                        taxDropdown += `<option value="12" ${currentTax == "12" ? "selected" : ""}>12%</option>`;
-                        taxDropdown += `<option value="18" ${currentTax == "18" ? "selected" : ""}>18%</option>`;
-                        taxDropdown += `<option value="28" ${currentTax == "28" ? "selected" : ""}>28%</option>`;
-                        taxDropdown += `</select>`;
-                        rowHTML += `<td class="col-tax">${taxDropdown}</td>`;
+                rowHTML += `<td class="col-tax">${buildTaxDropdownHtml(itemIndex)}</td>`;
             }
 
             rowHTML += `
@@ -2850,6 +2857,17 @@
         }
 
     </script>
+
+<script>
+window.gstRatesAjaxUrl = '/Web/CreditNote/GetGstRates';
+let currentGstOptions = [];
+let currentIsSameState = @(ViewBag.IsSameState != null ? ViewBag.IsSameState.ToString().ToLower() : "true");
+function initGstOptionsFromDom() { const s = document.querySelector('.tax-select'); if (!s) return; currentGstOptions = Array.from(s.options).map(o => ({ value: o.value, text: o.textContent.trim(), taxType: o.dataset.taxtype||'NONE', cgstRate: parseFloat(o.dataset.cgst||'0'), sgstRate: parseFloat(o.dataset.sgst||'0'), igstRate: parseFloat(o.dataset.igst||'0') })); }
+function onStateOfSupplyChanged(v) { if (!v) return; document.querySelectorAll('.tax-select').forEach(s=>s.disabled=true); const st=document.getElementById('summaryTaxDropdown'); if(st)st.disabled=true; fetch(window.gstRatesAjaxUrl+'?stateOfSupply='+encodeURIComponent(v)).then(r=>r.json()).then(d=>{ if(!d.success)return; currentGstOptions=d.options; currentIsSameState=d.isSameState; document.querySelectorAll('.tax-select').forEach(s=>rebuildTaxSelectOptions(s,d.options,s.value)); if(st)rebuildTaxSelectOptions(st,d.options,st.value); document.querySelectorAll('.item-row').forEach(r=>calculateItemAmount(parseInt(r.dataset.index))); }).catch(e=>console.error('[GST]',e)).finally(()=>{ document.querySelectorAll('.tax-select').forEach(s=>s.disabled=false); if(st)st.disabled=false; }); }
+function rebuildTaxSelectOptions(el,opts,pv) { if(!el||!opts)return; el.innerHTML=''; opts.forEach(o=>{ const op=document.createElement('option'); op.value=o.value; op.textContent=o.text; op.dataset.taxtype=o.taxType||'NONE'; op.dataset.cgst=o.cgstRate||0; op.dataset.sgst=o.sgstRate||0; op.dataset.igst=o.igstRate||0; if(pv!==undefined&&o.value.toString()===pv.toString())op.selected=true; el.appendChild(op); }); }
+function buildTaxDropdownHtml(idx) { if(!currentGstOptions||currentGstOptions.length===0) return '<select name="Bill.BillItems['+idx+'].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount('+idx+')"><option value="0">NONE</option><option value="5">5%</option><option value="12">12%</option><option value="18">18%</option><option value="28">28%</option></select>'; let h='<select name="Bill.BillItems['+idx+'].TaxPercentage" class="form-control-sm tax-select" onchange="calculateItemAmount('+idx+')">'; currentGstOptions.forEach(o=>{h+='<option value="'+o.value+'" data-taxtype="'+(o.taxType||'NONE')+'" data-cgst="'+(o.cgstRate||0)+'" data-sgst="'+(o.sgstRate||0)+'" data-igst="'+(o.igstRate||0)+'">'+o.text+'</option>';}); return h+'</select>'; }
+document.addEventListener('DOMContentLoaded', function() { initGstOptionsFromDom(); });
+</script>
 
 <script src="/js/party-autofill.js"></script>
 </body>

@@ -23,14 +23,24 @@ namespace MUNEEMJI.Controllers
         private readonly IGodownService _godownService;
         private readonly IUser _user;
         private readonly IOtherIncomeRepository _otherIncome;
+        private readonly IDropdownService _dropdownService;
 
-        public ReportController(ICompanyTenancy compayTenancy, IParty party, IGodownService godownService, IUser user, IOtherIncomeRepository otherIncome)
+        public ReportController(ICompanyTenancy compayTenancy, IParty party, IGodownService godownService, IUser user, IOtherIncomeRepository otherIncome, IDropdownService dropdownService)
         {
             _CompayTenancy = compayTenancy;
             partyController = party;
             _godownService = godownService;
             _user = user;
             _otherIncome = otherIncome;
+            _dropdownService = dropdownService;
+        }
+
+        private async Task PopulateFilterDropdowns()
+        {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            ViewBag.GodownDropdown = await _dropdownService.GetGodownsAsync(companyId);
+            ViewBag.UserDropdown = await _dropdownService.GetUsersAsync(companyId);
+            ViewBag.CategoryDropdown = await _dropdownService.GetCategoriesAsync();
         }
 
         public IActionResult Index()
@@ -415,9 +425,9 @@ namespace MUNEEMJI.Controllers
         }
 
         // Sale Aging Report - Returns Partial View
-        public IActionResult SaleAging()
+        public async Task<IActionResult> SaleAging()
         {
-
+            await PopulateFilterDropdowns();
             return PartialView("Sale_Aging_Report");
         }
 
@@ -528,6 +538,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return PartialView("Party_Report_by_Item", reportByItemModels);
         }
 
@@ -572,6 +583,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return PartialView("Sale_Purchase_by_Party", reportByItemModels);
         }
 
@@ -617,10 +629,11 @@ namespace MUNEEMJI.Controllers
 
             }
 
+            await PopulateFilterDropdowns();
             return PartialView("_SalePurchaseByPartyGroup", reportByItemModels);
         }
 
-        // GSTR 3 B Report - Returns Partial View
+        // GSTR 3 B Report
         public IActionResult GSTR3B()
         {
             ViewBag.ReportTitle = "GSTR 3 B";
@@ -666,6 +679,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return PartialView("OtherIncome_Report", Model);
 
         }
@@ -690,6 +704,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return PartialView("OtherIncome_Category_Report", Model);
 
         }
@@ -713,6 +728,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return PartialView("OtherIncome_item_Report", Model);
 
         }
@@ -766,6 +782,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return PartialView("Sale_Purchase_Order_report", Model);
         }
 
@@ -846,12 +863,14 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return View(itemTransections);
 
 
         }
         public async Task<IActionResult> ExpenseCategoryReport()
         {
+            await PopulateFilterDropdowns();
             return View();
         }
 
@@ -873,6 +892,7 @@ namespace MUNEEMJI.Controllers
             {
                 
             }
+            await PopulateFilterDropdowns();
             return View(itemTransections);
         }
 
@@ -886,20 +906,24 @@ namespace MUNEEMJI.Controllers
         }
         public async Task<IActionResult> Form27EQ()
         {
+            await PopulateFilterDropdowns();
             return View();
         }
 
         public async Task<IActionResult> TCSReceivable()
         {
+            await PopulateFilterDropdowns();
             return View();
         }
 
         public async Task<IActionResult> TDSPayable()
         {
+            await PopulateFilterDropdowns();
             return View();
         }
         public async Task<IActionResult> TDSReceivable()
         {
+            await PopulateFilterDropdowns();
             return View();
         }
 
@@ -961,6 +985,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return View(bills);
         }
 
@@ -1017,6 +1042,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return View(bills);
         }
 
@@ -1073,6 +1099,7 @@ namespace MUNEEMJI.Controllers
             {
 
             }
+            await PopulateFilterDropdowns();
             return View(bills);
         }
     }

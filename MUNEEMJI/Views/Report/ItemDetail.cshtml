@@ -404,9 +404,13 @@
 
                 <select class="form-select" id="godownFilter">
                     <option value="all">All Godown</option>
-                    <option value="godown1">Godown 1</option>
-                    <option value="godown2">Godown 2</option>
-                    <option value="godown3">Godown 3</option>
+                    @if (ViewBag.GodownDropdown != null)
+                    {
+                        foreach (var g in (List<MUNEEMJI.Services.DropdownItem>)ViewBag.GodownDropdown)
+                        {
+                            <option value="@g.Id">@g.Name</option>
+                        }
+                    }
                 </select>
             </div>
         </div>

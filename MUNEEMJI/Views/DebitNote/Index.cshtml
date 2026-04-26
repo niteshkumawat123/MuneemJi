@@ -255,10 +255,8 @@
             <input type="date" class="date-input" value="2025-07-01" id="startDate">
             <span class="to-label">To</span>
             <input type="date" class="date-input" value="2025-07-31" id="endDate">
-            <select class="firm-select" id="firmSelect">
+            <select class="firm-select" id="firmSelect" data-dropdown-source="Users">
                 <option value="all">ALL FIRMS</option>
-                <option value="firm1">Firm 1</option>
-                <option value="firm2">Firm 2</option>
             </select>
         </div>
         <div class="action-buttons">
@@ -420,3 +418,4 @@
         console.log('Transaction page loaded');
     });
 </script>
+<script src="/js/dropdown-loader.js"></script>

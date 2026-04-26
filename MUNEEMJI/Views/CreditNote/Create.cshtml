@@ -797,7 +797,7 @@
                             </div>
 
                             <div class="floating-label-container">
-                                <input asp-for="Bill.BillingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
+                                <textarea asp-for="Bill.BillingAddress" class="floating-input" style="padding-top:31px; padding-bottom:5px; resize:none; word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;" rows="2" placeholder=" "></textarea>
                                 <label class="floating-label">Billing Address</label>
                             </div>
                         </div>
@@ -810,7 +810,7 @@
                             </div>
 
                             <div class="floating-label-container">
-                                <input asp-for="Bill.ShippingAddress" class="floating-input" style="padding-top:31px; padding-bottom:31px" placeholder=" " />
+                                <textarea asp-for="Bill.ShippingAddress" class="floating-input" style="padding-top:31px; padding-bottom:5px; resize:none; word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;" rows="2" placeholder=" "></textarea>
                                 <label class="floating-label">Shipping Address</label>
                             </div>
                         </div>
@@ -2851,5 +2851,6 @@
 
     </script>
 
+<script src="/js/party-autofill.js"></script>
 </body>
 </html>

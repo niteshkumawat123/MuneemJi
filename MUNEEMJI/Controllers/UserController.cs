@@ -222,6 +222,34 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> UpdateRole([FromBody] UpdateRoleRequest request)
+        {
+            try
+            {
+                using var connection = new NpgsqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                var updateQuery = @"
+                    UPDATE businesses 
+                    SET roleid = @roleId, updated_at = @updatedAt 
+                    WHERE id = @userId";
+
+                using var command = new NpgsqlCommand(updateQuery, connection);
+                command.Parameters.AddWithValue("roleId", request.RoleId);
+                command.Parameters.AddWithValue("updatedAt", DateTime.Now);
+                command.Parameters.AddWithValue("userId", request.UserId);
+
+                await command.ExecuteNonQueryAsync();
+
+                return Json(new { success = true, message = "Role updated successfully!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Error updating role: {ex.Message}" });
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> RestoreUser(int userId)
         {
             using var connection = new NpgsqlConnection(_connectionString);
@@ -332,7 +360,7 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditUser(int id)
+        public async Task<IActionResult> EditUser(int id)
         {
             var model = new AddUserViewModel();
             try
@@ -374,8 +402,44 @@ namespace MUNEEMJI.Controllers
                 return RedirectToAction("Index");
             }
 
+            model.AvailableRoles = await GetAvailableRoles();
+            model.ModulePermissions = await GetRolePermissions(model.SelectedRoleId);
+
             return View(model);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(AddUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                model.AvailableRoles = await GetAvailableRoles();
+                model.ModulePermissions = await GetRolePermissions(model.SelectedRoleId);
+                return View(model);
+            }
+
+            using var connection = new NpgsqlConnection(_connectionString);
+            await connection.OpenAsync();
+
+            var updateQuery = @"
+                UPDATE businesses 
+                SET username = @username, 
+                    roleid = @roleid, 
+                    updated_at = @updatedAt 
+                WHERE id = @id";
+
+            using var command = new NpgsqlCommand(updateQuery, connection);
+            command.Parameters.AddWithValue("id", model.Id);
+            command.Parameters.AddWithValue("username", model.FullName ?? "");
+            command.Parameters.AddWithValue("roleid", model.SelectedRoleId);
+            command.Parameters.AddWithValue("updatedAt", DateTime.Now);
+
+            await command.ExecuteNonQueryAsync();
+
+            TempData["SuccessMessage"] = "User updated successfully!";
+            return RedirectToAction("Index");
+        }
+
         public async Task<List<MUNEEMJI.Models.Business>> GetUserDropdown()
         {
             var users = new List<MUNEEMJI.Models.Business>();

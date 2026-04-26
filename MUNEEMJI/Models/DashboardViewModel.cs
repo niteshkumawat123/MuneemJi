@@ -11,17 +11,47 @@
             public decimal TotalReceivable { get; set; }
             public decimal TotalPayable { get; set; }
             public int PayablePartyCount { get; set; }
+            public int ReceivablePartyCount { get; set; }
             public bool HasReceivables { get; set; }
             public decimal TotalSalesThisMonth { get; set; }
             public SalesChartData SalesChartData { get; set; }
             public List<ReportViewModel> MostUsedReports { get; set; }
             public List<WidgetViewModel> Widgets { get; set; }
-            public string ReceivableMessage => HasReceivables ? $"From {PayablePartyCount} Parties" : "You don't have any receivables as of now.";
-            public string PayableMessage => $"From {PayablePartyCount} Party";
+            public string ReceivableMessage => HasReceivables ? $"From {ReceivablePartyCount} Parties" : "You don't have any receivables as of now.";
+            public string PayableMessage => PayablePartyCount > 0 ? $"From {PayablePartyCount} Party" : "No payables";
             public decimal ExpenseAmount { get; set; }
             public decimal CashInHand  { get; set; }
             public decimal BanckAmount { get; set; }
             public decimal StockAmount { get; set; }
+
+            // Dynamic chart data
+            public List<string> ChartLabels { get; set; } = new();
+            public List<decimal> ChartValues { get; set; } = new();
+
+            // Slider counts
+            public int TodayInvoices { get; set; }
+            public decimal TodayRevenue { get; set; }
+            public int TodayPending { get; set; }
+            public int TodayParties { get; set; }
+
+            public int WeekInvoices { get; set; }
+            public decimal WeekRevenue { get; set; }
+            public int WeekPending { get; set; }
+            public int WeekParties { get; set; }
+
+            public int MonthInvoices { get; set; }
+            public decimal MonthRevenue { get; set; }
+            public int MonthPending { get; set; }
+            public int MonthParties { get; set; }
+
+            // Low stock items
+            public List<LowStockItem> LowStockItems { get; set; } = new();
+        }
+
+        public class LowStockItem
+        {
+            public string Name { get; set; } = string.Empty;
+            public decimal Quantity { get; set; }
         }
 
         // Sales Chart Data

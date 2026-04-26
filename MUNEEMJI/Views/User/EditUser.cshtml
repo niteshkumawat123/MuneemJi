@@ -309,7 +309,7 @@
                     <label>User Role <span class="edituser-required">*</span></label>
                     <div class="edituser-custom-dropdown">
                         <div class="edituser-dropdown-trigger" onclick="edituserToggleDropdown()" id="edituserDropdownTrigger">
-                            <span id="edituserSelectedRole">@Model.AvailableRoles</span>
+                            <span id="edituserSelectedRole">@(Model.AvailableRoles?.FirstOrDefault(r => r.RoleId == Model.SelectedRoleId)?.RoleName ?? "Select Role")</span>
                             <span>▼</span>
                         </div>
                         <div class="edituser-dropdown-list" id="edituserRoleDropdown">
@@ -336,7 +336,7 @@
             </div>
 
             <div class="edituser-permissions-panel" id="edituserPermissionsPanel">
-                <div class="edituser-permissions-header" id="edituserPermissionsHeader">@Model.AvailableRoles Permissions</div>
+                <div class="edituser-permissions-header" id="edituserPermissionsHeader">@(Model.AvailableRoles?.FirstOrDefault(r => r.RoleId == Model.SelectedRoleId)?.RoleName ?? "") Permissions</div>
 
                 <table class="edituser-permissions-grid">
                     <thead>
@@ -426,7 +426,7 @@
 
         <div class="edituser-modal-footer">
             <button type="button" class="edituser-btn edituser-delete-btn" onclick="edituserConfirmDelete()">Delete User</button>
-            <button type="submit" class="edituser-btn edituser-submit-btn">Save Changes</button>
+            <button type="submit" class="edituser-btn edituser-submit-btn">Update User</button>
         </div>
     </form>
 </div>

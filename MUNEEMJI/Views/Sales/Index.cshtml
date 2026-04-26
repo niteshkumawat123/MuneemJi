@@ -15,7 +15,7 @@
             <i class="bi bi-chevron-down text-muted"></i>
         </div>
         <div>
-            <button class="btn btn-danger" onclick="window.location.href='/Web/Sales/Create'">
+            <button class="btn btn-danger" data-permission-module="Sales Invoice" data-permission-action="create" onclick="window.location.href='/Web/Sales/Create'">
                 <i class="bi bi-plus"></i> Add Sale
             </button>
 
@@ -200,10 +200,10 @@
                                             </button>
                                             <ul class="dropdown-menu">
                                                 <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)">View</a></li>
-                                                <li><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
+                                                <li data-permission-module="Sales Invoice" data-permission-action="edit"><a class="dropdown-item" href="/Web/Sales/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)">Edit</a></li>
                                                 <li><a class="dropdown-item" href="/Web/Sales/DownloadInvoicePdf?id=@bill.Id" target="_blank"><i class="bi bi-download"></i> Download PDF</a></li>
                                                 @*                                                 <li><a class="dropdown-item" href="/Web/Sales/DeleteConfirmed?id=@(bill.Id)">Delete</a></li>
- *@                                                <li>
+ *@                                                <li data-permission-module="Sales Invoice" data-permission-action="delete">
                                                     <a class="dropdown-item" href="javascript:void(0)" onclick="showDeleteConfirmation(@bill.Id)">
                                                         Delete
                                                     </a>

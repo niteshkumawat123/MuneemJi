@@ -1,447 +1,361 @@
-﻿@{
-    ViewData["Title"] = "Settings";
+@{
+    ViewData["Title"] = "Plans & Pricing";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+    .pp-page { padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+    /* Header */
+    .pp-hero { text-align: center; padding: 32px 16px 24px; }
+    .pp-hero h1 { font-size: 28px; font-weight: 700; color: #1f2937; margin-bottom: 6px; }
+    .pp-hero p { color: #6b7280; font-size: 15px; }
 
-        .settings-container {
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            animation: fadeInUp 0.6s ease-out;
-        }
+    /* Toggle Pills */
+    .pp-toggles { display: flex; justify-content: center; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
+    .pp-pill { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 20px; border: 1px solid #d1d5db; background: #fff; font-size: 13px; font-weight: 500; color: #374151; cursor: pointer; transition: all .15s; position: relative; }
+    .pp-pill.active { background: #eef2ff; border-color: #6366f1; color: #4338ca; }
+    .pp-pill:hover { border-color: #9ca3af; }
+    .pp-pill i { font-size: 10px; }
+    .pp-pill-menu { display: none; position: absolute; top: 42px; left: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.1); min-width: 180px; z-index: 50; overflow: hidden; }
+    .pp-pill-menu.open { display: block; }
+    .pp-pill-opt { padding: 10px 16px; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+    .pp-pill-opt:hover { background: #f9fafb; }
+    .pp-pill-opt.sel { color: #4338ca; font-weight: 600; }
+    .pp-pill-opt.sel::after { content: '?'; color: #4338ca; }
 
-        @@keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
+    /* Plans Grid */
+    .pp-plans { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; margin-bottom: 32px; max-width: 860px; margin-left: auto; margin-right: auto; }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+    /* Plan Card */
+    .pp-card { flex: 1; min-width: 280px; max-width: 400px; border: 2px solid #e5e7eb; border-radius: 14px; padding: 28px 24px; position: relative; background: #fff; transition: all .2s; }
+    .pp-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,.08); }
+    .pp-card.gold { border-color: #f59e0b; background: linear-gradient(180deg, #fffbeb 0%, #fff 60%); }
+    .pp-card .popular-tag { position: absolute; top: -1px; right: 20px; background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; padding: 4px 14px; border-radius: 0 0 8px 8px; font-size: 11px; font-weight: 600; letter-spacing: .3px; }
+    .pp-plan-icon { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; margin-right: 8px; }
+    .pp-plan-icon.silver-icon { background: #e5e7eb; color: #6b7280; }
+    .pp-plan-icon.gold-icon { background: #fde68a; color: #d97706; }
+    .pp-plan-name { font-size: 22px; font-weight: 700; color: #1f2937; display: flex; align-items: center; margin-bottom: 16px; }
+    .pp-price-row { margin-bottom: 4px; }
+    .pp-old-price { text-decoration: line-through; color: #9ca3af; font-size: 16px; margin-right: 6px; }
+    .pp-price { font-size: 36px; font-weight: 800; color: #1f2937; }
+    .pp-price-sub { font-size: 13px; color: #6b7280; margin-bottom: 18px; }
+    .pp-cta { display: block; width: 100%; padding: 12px; border-radius: 24px; font-size: 15px; font-weight: 600; text-align: center; cursor: pointer; transition: all .2s; border: 2px solid; text-decoration: none; margin-bottom: 20px; }
+    .pp-cta.silver-cta { background: #fff; color: #ef4444; border-color: #ef4444; }
+    .pp-cta.silver-cta:hover { background: #fef2f2; }
+    .pp-cta.gold-cta { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border-color: transparent; }
+    .pp-cta.gold-cta:hover { opacity: .9; transform: translateY(-1px); }
 
-        .header {
-            padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
+    /* Feature List inside card */
+    .pp-features { list-style: none; padding: 0; margin: 0; }
+    .pp-features li { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13px; color: #374151; line-height: 1.4; }
+    .pp-features .fi { flex-shrink: 0; width: 18px; text-align: center; font-size: 14px; margin-top: 1px; }
+    .pp-features .fi.yes { color: #16a34a; }
+    .pp-features .fi.no { color: #d1d5db; }
+    .pp-more-features { margin-top: 12px; font-size: 13px; color: #6366f1; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .pp-more-features:hover { text-decoration: underline; }
 
-            .header h1 {
-                font-size: 32px;
-                font-weight: 600;
-                margin-bottom: 8px;
-            }
+    /* Compare All link */
+    .pp-compare-link { text-align: center; margin-bottom: 32px; }
+    .pp-compare-btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 24px; background: #fff; border: 1px solid #d1d5db; border-radius: 24px; font-size: 14px; font-weight: 600; color: #4338ca; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.06); transition: all .15s; }
+    .pp-compare-btn:hover { border-color: #6366f1; background: #eef2ff; }
 
-            .header p {
-                opacity: 0.9;
-                font-size: 16px;
-            }
+    /* Feature Comparison Table */
+    .pp-compare-section { max-width: 960px; margin: 0 auto 40px; display: none; }
+    .pp-compare-section.show { display: block; }
+    .pp-compare-table { width: 100%; border-collapse: collapse; }
+    .pp-compare-table thead { position: sticky; top: 0; z-index: 5; }
+    .pp-compare-table th { padding: 14px 16px; background: #f9fafb; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: .4px; border-bottom: 2px solid #e5e7eb; text-align: center; }
+    .pp-compare-table th:first-child { text-align: left; width: 45%; }
+    .pp-compare-table td { padding: 12px 16px; font-size: 13px; color: #374151; border-bottom: 1px solid #f3f4f6; text-align: center; }
+    .pp-compare-table td:first-child { text-align: left; font-weight: 500; }
+    .pp-compare-table tbody tr:nth-child(even) { background: #fafbfc; }
+    .pp-compare-table tbody tr:hover { background: #f0f4ff; }
+    .pp-compare-table .ct-yes { color: #16a34a; font-size: 16px; }
+    .pp-compare-table .ct-no { color: #d1d5db; font-size: 16px; }
+    .pp-compare-table .ct-val { color: #374151; font-size: 12px; font-style: italic; }
+    .pp-compare-table .th-silver { color: #6b7280; }
+    .pp-compare-table .th-gold { color: #d97706; }
 
-        .nav-tabs {
-            display: flex;
-            background: #f8f9fb;
-            border-bottom: 1px solid #e9ecef;
-            margin: 0;
-            padding: 0 30px;
-        }
+    /* Back to Plans */
+    .pp-back-plans { text-align: center; margin-top: 20px; }
+    .pp-back-plans a { display: inline-flex; align-items: center; gap: 6px; color: #6366f1; font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none; }
+    .pp-back-plans a:hover { text-decoration: underline; }
 
-        .nav-tab {
-            padding: 16px 24px;
-            color: #6c757d;
-            text-decoration: none;
-            border-bottom: 3px solid transparent;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+    /* FAQ */
+    .pp-faq { max-width: 720px; margin: 0 auto 40px; }
+    .pp-faq h3 { text-align: center; font-size: 22px; font-weight: 700; color: #1f2937; margin-bottom: 20px; }
+    .pp-faq-item { border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+    .pp-faq-q { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; cursor: pointer; font-size: 14px; font-weight: 500; color: #1f2937; background: #fff; transition: background .15s; }
+    .pp-faq-q:hover { background: #f9fafb; }
+    .pp-faq-q i { transition: transform .2s; font-size: 12px; color: #9ca3af; }
+    .pp-faq-item.open .pp-faq-q i { transform: rotate(180deg); }
+    .pp-faq-a { display: none; padding: 0 18px 14px; font-size: 13px; color: #6b7280; line-height: 1.6; }
+    .pp-faq-item.open .pp-faq-a { display: block; }
 
-            .nav-tab:hover {
-                color: #495057;
-                background: rgba(102, 126, 234, 0.1);
-            }
+    @@media (max-width: 640px) {
+        .pp-plans { flex-direction: column; align-items: center; }
+        .pp-card { max-width: 100%; }
+    }
+</style>
 
-            .nav-tab.active {
-                color: #667eea;
-                border-bottom-color: #667eea;
-                background: white;
-            }
+<div class="pp-page">
 
-        .content {
-            padding: 40px;
-        }
+    <!-- Hero -->
+    <div class="pp-hero">
+        <h1>Choose the Right Plan for Your Business</h1>
+        <p>Start free. Upgrade when you need more power.</p>
+    </div>
 
-        .section-title {
-            display: flex;
-            align-items: center;
-            margin-bottom: 30px;
-            color: #2c3e50;
-        }
-
-            .section-title i {
-                font-size: 24px;
-                margin-right: 12px;
-                color: #667eea;
-            }
-
-            .section-title h2 {
-                font-size: 22px;
-                font-weight: 600;
-            }
-
-        .section-subtitle {
-            color: #6c757d;
-            font-size: 14px;
-            margin-left: 36px;
-            margin-top: -20px;
-            margin-bottom: 30px;
-        }
-
-        .plan-card {
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-            .plan-card:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            }
-
-            .plan-card.current {
-                border-color: #28a745;
-                background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-            }
-
-            .plan-card.pro {
-                border-color: #007bff;
-                background: linear-gradient(135deg, #f8f9ff 0%, #e8ebff 100%);
-                position: relative;
-            }
-
-                .plan-card.pro::before {
-                    content: '';
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    right: 0;
-                    height: 4px;
-                    background: linear-gradient(90deg, #667eea, #007bff);
-                }
-
-        .plan-header {
-            display: flex;
-            justify-content: between;
-            align-items: flex-start;
-            margin-bottom: 20px;
-        }
-
-        .plan-info h3 {
-            font-size: 18px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-        }
-
-            .plan-info h3 i {
-                margin-right: 10px;
-                font-size: 20px;
-            }
-
-        .free-icon {
-            color: #28a745;
-        }
-
-        .pro-icon {
-            color: #667eea;
-        }
-
-        .plan-info p {
-            color: #6c757d;
-            font-size: 14px;
-        }
-
-        .current-badge {
-            background: #28a745;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-left: auto;
-        }
-
-        .price {
-            color: #007bff;
-            font-size: 28px;
-            font-weight: 700;
-            margin-left: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-            .price .currency {
-                font-size: 20px;
-            }
-
-            .price .period {
-                font-size: 12px;
-                color: #6c757d;
-                font-weight: 400;
-            }
-
-        .features {
-            list-style: none;
-            margin-bottom: 24px;
-        }
-
-            .features li {
-                display: flex;
-                align-items: center;
-                margin-bottom: 12px;
-                color: #495057;
-                font-size: 14px;
-            }
-
-                .features li i {
-                    margin-right: 12px;
-                    width: 16px;
-                    text-align: center;
-                }
-
-        .feature-check {
-            color: #28a745;
-        }
-
-        .feature-info {
-            color: #17a2b8;
-        }
-
-        .feature-support {
-            color: #ffc107;
-        }
-
-        .feature-priority {
-            color: #dc3545;
-        }
-
-        .upgrade-btn {
-            width: 100%;
-            padding: 14px 24px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-            .upgrade-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-            }
-
-            .upgrade-btn:active {
-                transform: translateY(0);
-            }
-
-        @@media (max-width: 768px) {
-            .settings-container {
-                margin: 10px;
-                border-radius: 12px;
-            }
-
-            .header, .content {
-                padding: 20px;
-            }
-
-            .nav-tabs {
-                padding: 0 20px;
-                overflow-x: auto;
-            }
-
-            .plan-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .price {
-                margin-left: 0;
-                align-items: flex-start;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="settings-container">
-
-
-
-
-        <div class="content">
-            <div class="section-title">
-                <i class="fas fa-credit-card"></i>
-                <h2>Subscription Plan</h2>
+    <!-- Toggles -->
+    <div class="pp-toggles">
+        <div class="pp-pill active" id="platformPill" onclick="toggleMenu('platformMenu')">
+            <span id="platformLabel">Desktop + Mobile</span> <i class="bi bi-chevron-down"></i>
+            <div class="pp-pill-menu" id="platformMenu">
+                <div class="pp-pill-opt sel" data-val="Desktop + Mobile" onclick="selectPill('platform',this)">Desktop + Mobile</div>
+                <div class="pp-pill-opt" data-val="Desktop" onclick="selectPill('platform',this)">Desktop Only</div>
+                <div class="pp-pill-opt" data-val="Mobile" onclick="selectPill('platform',this)">Mobile Only</div>
             </div>
-            <p class="section-subtitle">Manage your subscription and billing</p>
-
-            <!-- Free Plan -->
-            <div class="plan-card current">
-                <div class="plan-header">
-                    <div class="plan-info">
-                        <h3><i class="fas fa-gift free-icon"></i>Free Trial Plan – 7 Days</h3>
-                        <p>Perfect for getting started</p>
-                    </div>
-                    <div class="current-badge">Current Plan</div>
-                </div>
-
-                <ul class="features">
-                    <li>7 days free</li>
-                    <li>Create and manage invoices</li>
-                    <li>Add and save customer & product details</li>
-                    <li>Limited entries (e.g., up to 100 invoices)</li>
-                </ul>
-            </div>
-
-            <!-- Pro Plan -->
-            <div class="plan-card pro">
-                <div class="plan-header">
-                    <div class="plan-info">
-                        <h3><i class="fas fa-crown pro-icon"></i>Pro Plan</h3>
-                        <p>For growing businesses</p>
-                    </div>
-                    <div class="price">
-                        <span><span class="currency">₹</span>399</span>
-                        <span class="period">+ GST / Month</span>
-                    </div>
-                </div>
-
-                <ul class="features">
-                    <li>All features unlocked</li>
-                    <li>Unlimited Invoices & Billing</li>
-                    <li>GST Auto Calculation & Detailed Reports</li>
-                    <li>Share/Download Invoices</li>
-                    <li>Priority Customer Support</li>
-                    <li><b>Perfect for small businesses, retailers, wholesalers & kirana stores.</b></li>
-                </ul>
-
-                <form method="post" asp-action="UpgradeToPro">
-                    <button type="submit" class="upgrade-btn">
-                        <i class="fas fa-rocket"></i> Upgrade to Pro
-                    </button>
-                </form>
+        </div>
+        <div class="pp-pill active" id="durationPill" onclick="toggleMenu('durationMenu')">
+            <span id="durationLabel">1 Year</span> <i class="bi bi-chevron-down"></i>
+            <div class="pp-pill-menu" id="durationMenu">
+                <div class="pp-pill-opt" data-val="1 Month" onclick="selectPill('duration',this)">1 Month</div>
+                <div class="pp-pill-opt" data-val="6 Months" onclick="selectPill('duration',this)">6 Months</div>
+                <div class="pp-pill-opt sel" data-val="1 Year" onclick="selectPill('duration',this)">1 Year</div>
+                <div class="pp-pill-opt" data-val="3 Years" onclick="selectPill('duration',this)">3 Years</div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Add smooth transitions and interactions
-        document.addEventListener('DOMContentLoaded', function() {
-            // Animate cards on scroll
-            const cards = document.querySelectorAll('.plan-card');
+    <!-- Plan Cards -->
+    <div class="pp-plans">
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
-                });
-            });
+        <!-- SILVER -->
+        <div class="pp-card">
+            <div class="pp-plan-name"><span class="pp-plan-icon silver-icon"><i class="bi bi-shield-fill"></i></span> Silver</div>
+            <div class="pp-price-row">
+                <span class="pp-old-price">?7,499</span>
+                <span class="pp-price">?4,399</span>
+            </div>
+            <div class="pp-price-sub">Only ?366.58 per month</div>
+            <a href="#" class="pp-cta silver-cta" onclick="getplan('silver')">Get MuneemJi Silver</a>
+            <ul class="pp-features" id="silverFeaturesList">
+                <li><span class="fi yes">?</span> Sync data across devices</li>
+                <li><span class="fi yes">?</span> Create 3 companies</li>
+                <li><span class="fi yes">?</span> Unlimited invoices & billing</li>
+                <li><span class="fi yes">?</span> GST auto-calculation & reports</li>
+                <li><span class="fi yes">?</span> Generate E-way Bills (10/month)</li>
+                <li><span class="fi yes">?</span> Remove ads on invoices</li>
+                <li><span class="fi yes">?</span> Set multiple pricing for items</li>
+                <li><span class="fi yes">?</span> Update items in bulk</li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Export data to Tally</span></li>
+                <li><span class="fi yes">?</span> Restore deleted transactions (2)</li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Combine orders/challans into one sale</span></li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Accounting Module</span></li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Partywise Profit & Loss Report</span></li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">WhatsApp Connect</span></li>
+            </ul>
+            <div class="pp-more-features" onclick="toggleExtra('silver')">
+                <span id="silverMoreText">+ 16 More Features</span> <i class="bi bi-arrow-down-short"></i>
+            </div>
+            <ul class="pp-features" id="silverExtra" style="display:none; margin-top:8px;">
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Set credit limit for parties</span></li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Add Fixed Assets</span></li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">TDS / TCS support</span></li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Multi-user access</span></li>
+                <li><span class="fi yes">?</span> Email support</li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Priority phone support</span></li>
+                <li><span class="fi yes">?</span> Share invoices via WhatsApp</li>
+                <li><span class="fi yes">?</span> Barcode scanning</li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Custom invoice templates</span></li>
+                <li><span class="fi yes">?</span> Stock management</li>
+                <li><span class="fi yes">?</span> Purchase bill management</li>
+                <li><span class="fi yes">?</span> Payment In / Out tracking</li>
+                <li><span class="fi yes">?</span> Expense tracking</li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Loan management</span></li>
+                <li><span class="fi no">?</span> <span style="color:#9ca3af;">Enquiry management</span></li>
+                <li><span class="fi yes">?</span> Delivery challan</li>
+            </ul>
+        </div>
 
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                observer.observe(card);
-            });
+        <!-- GOLD -->
+        <div class="pp-card gold">
+            <div class="popular-tag">Most Popular</div>
+            <div class="pp-plan-name"><span class="pp-plan-icon gold-icon"><i class="bi bi-shield-fill-check"></i></span> Gold</div>
+            <div class="pp-price-row">
+                <span class="pp-old-price">?9,099</span>
+                <span class="pp-price">?4,799</span>
+            </div>
+            <div class="pp-price-sub">Only ?399.92 per month</div>
+            <a href="#" class="pp-cta gold-cta" onclick="getplan('gold')">Get MuneemJi Gold</a>
+            <ul class="pp-features" id="goldFeaturesList">
+                <li><span class="fi yes">?</span> Sync data across devices</li>
+                <li><span class="fi yes">?</span> Create 5 companies</li>
+                <li><span class="fi yes">?</span> Unlimited invoices & billing</li>
+                <li><span class="fi yes">?</span> GST auto-calculation & reports</li>
+                <li><span class="fi yes">?</span> Generate E-way Bills (unlimited)</li>
+                <li><span class="fi yes">?</span> Remove ads on invoices</li>
+                <li><span class="fi yes">?</span> Set multiple pricing for items</li>
+                <li><span class="fi yes">?</span> Update items in bulk</li>
+                <li><span class="fi yes">?</span> Export data to Tally</li>
+                <li><span class="fi yes">?</span> Restore deleted transactions (unlimited)</li>
+                <li><span class="fi yes">?</span> Combine orders/challans into one sale</li>
+                <li><span class="fi yes">?</span> Accounting Module</li>
+                <li><span class="fi yes">?</span> Partywise Profit & Loss Report</li>
+                <li><span class="fi yes">?</span> WhatsApp Connect</li>
+            </ul>
+            <div class="pp-more-features" onclick="toggleExtra('gold')">
+                <span id="goldMoreText">+ 16 More Features</span> <i class="bi bi-arrow-down-short"></i>
+            </div>
+            <ul class="pp-features" id="goldExtra" style="display:none; margin-top:8px;">
+                <li><span class="fi yes">?</span> Set credit limit for parties</li>
+                <li><span class="fi yes">?</span> Add Fixed Assets</li>
+                <li><span class="fi yes">?</span> TDS / TCS support</li>
+                <li><span class="fi yes">?</span> Multi-user access</li>
+                <li><span class="fi yes">?</span> Email support</li>
+                <li><span class="fi yes">?</span> Priority phone support</li>
+                <li><span class="fi yes">?</span> Share invoices via WhatsApp</li>
+                <li><span class="fi yes">?</span> Barcode scanning</li>
+                <li><span class="fi yes">?</span> Custom invoice templates</li>
+                <li><span class="fi yes">?</span> Stock management</li>
+                <li><span class="fi yes">?</span> Purchase bill management</li>
+                <li><span class="fi yes">?</span> Payment In / Out tracking</li>
+                <li><span class="fi yes">?</span> Expense tracking</li>
+                <li><span class="fi yes">?</span> Loan management</li>
+                <li><span class="fi yes">?</span> Enquiry management</li>
+                <li><span class="fi yes">?</span> Delivery challan</li>
+            </ul>
+        </div>
+    </div>
 
-            // Add click effects to nav tabs
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
+    <!-- Compare All -->
+    <div class="pp-compare-link">
+        <button class="pp-compare-btn" onclick="toggleCompare()">
+            <i class="bi bi-arrows-expand"></i> <span id="compareBtnText">Compare All Features</span>
+        </button>
+    </div>
 
-            // Add ripple effect to upgrade button
-            const upgradeBtn = document.querySelector('.upgrade-btn');
-            upgradeBtn.addEventListener('click', function(e) {
-                const ripple = document.createElement('span');
-                const rect = this.getBoundingClientRect();
-                const size = Math.max(rect.width, rect.height);
-                const x = e.clientX - rect.left - size / 2;
-                const y = e.clientY - rect.top - size / 2;
+    <!-- Feature Comparison Table -->
+    <div class="pp-compare-section" id="compareSection">
+        <table class="pp-compare-table">
+            <thead>
+                <tr>
+                    <th>Features</th>
+                    <th class="th-silver"><i class="bi bi-shield-fill"></i> Silver</th>
+                    <th class="th-gold"><i class="bi bi-shield-fill-check"></i> Gold</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Sync data across devices</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Create multiple companies</td><td class="ct-val">3 companies</td><td class="ct-val">5 companies</td></tr>
+                <tr><td>Unlimited invoices & billing</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>GST auto-calculation & reports</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Generate E-way Bills</td><td class="ct-val">10 per month</td><td class="ct-val">Unlimited</td></tr>
+                <tr><td>Remove ads on invoices</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Set multiple pricing for items</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Update items in bulk</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Export data to Tally</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Restore deleted transactions</td><td class="ct-val">2 transactions</td><td class="ct-val">Unlimited</td></tr>
+                <tr><td>Combine orders/challans into one sale</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Set credit limit for parties</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Add Fixed Assets</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>TDS / TCS support</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Multi-user access</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Accounting Module</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Partywise Profit & Loss Report</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>WhatsApp Connect</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Custom invoice templates</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Loan management</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Enquiry management</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Priority phone support</td><td class="ct-no">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Email support</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Share invoices via WhatsApp</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Barcode scanning</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Stock management</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Purchase bill management</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Payment In / Out tracking</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Expense tracking</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+                <tr><td>Delivery challan</td><td class="ct-yes">?</td><td class="ct-yes">?</td></tr>
+            </tbody>
+        </table>
+        <div class="pp-back-plans"><a href="#" onclick="toggleCompare(); window.scrollTo({top:0,behavior:'smooth'}); return false;"><i class="bi bi-arrow-up"></i> Back To Plans</a></div>
+    </div>
 
-                ripple.style.cssText = `
-                    position: absolute;
-                    width: ${size}px;
-                    height: ${size}px;
-                    background: rgba(255,255,255,0.3);
-                    border-radius: 50%;
-                    left: ${x}px;
-                    top: ${y}px;
-                    transform: scale(0);
-                    animation: ripple 0.6s linear;
-                `;
+    <!-- FAQ -->
+    <div class="pp-faq">
+        <h3>Frequently Asked Questions</h3>
+        <div class="pp-faq-item">
+            <div class="pp-faq-q" onclick="toggleFaq(this)">What is included in the Free Trial? <i class="bi bi-chevron-down"></i></div>
+            <div class="pp-faq-a">The 7-day free trial gives you access to all Silver features so you can experience the full power of MuneemJi. No credit card required to start.</div>
+        </div>
+        <div class="pp-faq-item">
+            <div class="pp-faq-q" onclick="toggleFaq(this)">Can I switch between Silver and Gold later? <i class="bi bi-chevron-down"></i></div>
+            <div class="pp-faq-a">Yes! You can upgrade from Silver to Gold anytime. The remaining balance from your Silver plan will be adjusted in your Gold upgrade.</div>
+        </div>
+        <div class="pp-faq-item">
+            <div class="pp-faq-q" onclick="toggleFaq(this)">Is GST included in the price? <i class="bi bi-chevron-down"></i></div>
+            <div class="pp-faq-a">The displayed prices are exclusive of GST. 18% GST will be added at checkout as per government regulations.</div>
+        </div>
+        <div class="pp-faq-item">
+            <div class="pp-faq-q" onclick="toggleFaq(this)">What payment methods do you accept? <i class="bi bi-chevron-down"></i></div>
+            <div class="pp-faq-a">We accept UPI, debit/credit cards, net banking, and wallets through our secure payment gateway.</div>
+        </div>
+        <div class="pp-faq-item">
+            <div class="pp-faq-q" onclick="toggleFaq(this)">Can I get a refund? <i class="bi bi-chevron-down"></i></div>
+            <div class="pp-faq-a">We offer a 7-day money-back guarantee from the date of purchase. If you're not satisfied, contact our support team for a full refund.</div>
+        </div>
+        <div class="pp-faq-item">
+            <div class="pp-faq-q" onclick="toggleFaq(this)">How many users can access one account? <i class="bi bi-chevron-down"></i></div>
+            <div class="pp-faq-a">Silver plan supports a single user. Gold plan includes multi-user access � you can add team members with role-based permissions.</div>
+        </div>
+    </div>
 
-                this.appendChild(ripple);
+</div>
 
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-            });
-        });
+@section Scripts {
+<script>
+// Pill menus
+function toggleMenu(id) {
+    event.stopPropagation();
+    document.querySelectorAll('.pp-pill-menu').forEach(m => { if (m.id !== id) m.classList.remove('open'); });
+    document.getElementById(id).classList.toggle('open');
+}
+function selectPill(type, el) {
+    event.stopPropagation();
+    const menu = el.parentElement;
+    menu.querySelectorAll('.pp-pill-opt').forEach(o => o.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById(type + 'Label').textContent = el.dataset.val;
+    menu.classList.remove('open');
+}
+document.addEventListener('click', () => document.querySelectorAll('.pp-pill-menu').forEach(m => m.classList.remove('open')));
 
-        // Add ripple animation
-        const style = document.createElement('style');
-        style.textContent = `
-        @@keyframes ripple {
-                to {
-                    transform: scale(4);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
-</body>
-</html>
+// More features toggle
+function toggleExtra(plan) {
+    const el = document.getElementById(plan + 'Extra');
+    const txt = document.getElementById(plan + 'MoreText');
+    if (el.style.display === 'none') { el.style.display = 'block'; txt.textContent = '? Hide Features'; }
+    else { el.style.display = 'none'; txt.textContent = '+ 16 More Features'; }
+}
+
+// Compare toggle
+function toggleCompare() {
+    const s = document.getElementById('compareSection');
+    const t = document.getElementById('compareBtnText');
+    s.classList.toggle('show');
+    t.textContent = s.classList.contains('show') ? 'Hide Comparison' : 'Compare All Features';
+    if (s.classList.contains('show')) s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// FAQ
+function toggleFaq(el) { el.parentElement.classList.toggle('open'); }
+
+// CTA
+function getplan(plan) {
+    event.preventDefault();
+    alert('Redirecting to payment for ' + plan.toUpperCase() + ' plan...');
+    // TODO: integrate payment gateway
+}
+</script>
+}

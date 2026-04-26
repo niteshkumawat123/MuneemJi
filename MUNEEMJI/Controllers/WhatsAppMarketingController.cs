@@ -470,6 +470,178 @@ namespace MUNEEMJI.Controllers
                 new TemplateViewModel { Id = 10, Title = "Good Morning", ImageUrl = "/images/template10.jpg", Category = "Good Morning", Type = "Greetings" }
             };
         }
+
+        // ===== CRUD: CREATE TEMPLATE =====
+        [HttpGet]
+        public IActionResult CreateTemplate()
+        {
+            return View(new TemplateCrudModel());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateTemplate(TemplateCrudModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    model.ImageUrl = await SaveUploadedImage(model.ImageFile);
+
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                var query = @"INSERT INTO templates 
+                    (title, description, image_url, category, type, is_active, created_date, view_count, download_count, tabid, categoryid)
+                    VALUES (@title, @description, @imageUrl, @category, @type, @isActive, NOW(), 0, 0, @tabid, @categoryid)";
+
+                using var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@title", model.Title);
+                cmd.Parameters.AddWithValue("@description", (object?)model.Description ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@imageUrl", (object?)model.ImageUrl ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@category", model.Category ?? "");
+                cmd.Parameters.AddWithValue("@type", model.Type);
+                cmd.Parameters.AddWithValue("@isActive", model.IsActive);
+                cmd.Parameters.AddWithValue("@tabid", model.TabId);
+                cmd.Parameters.AddWithValue("@categoryid", model.CategoryId);
+                await cmd.ExecuteNonQueryAsync();
+
+                TempData["SuccessMessage"] = "Template created successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Error: {ex.Message}");
+                return View(model);
+            }
+        }
+
+        // ===== CRUD: EDIT TEMPLATE =====
+        [HttpGet]
+        public async Task<IActionResult> EditTemplate(int id)
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                var query = @"SELECT id, title, description, image_url, category, type, is_active, tabid, categoryid
+                              FROM templates WHERE id = @id";
+
+                using var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                using var reader = await cmd.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var model = new TemplateCrudModel
+                    {
+                        Id = reader.GetInt32("id"),
+                        Title = reader.IsDBNull(reader.GetOrdinal("title")) ? "" : reader.GetString("title"),
+                        Description = reader.IsDBNull(reader.GetOrdinal("description")) ? null : reader.GetString("description"),
+                        ImageUrl = reader.IsDBNull(reader.GetOrdinal("image_url")) ? null : reader.GetString("image_url"),
+                        Category = reader.IsDBNull(reader.GetOrdinal("category")) ? "" : reader.GetString("category"),
+                        Type = reader.IsDBNull(reader.GetOrdinal("type")) ? "Greetings" : reader.GetString("type"),
+                        IsActive = !reader.IsDBNull(reader.GetOrdinal("is_active")) && reader.GetBoolean("is_active"),
+                        TabId = reader.IsDBNull(reader.GetOrdinal("tabid")) ? 0 : reader.GetInt32("tabid"),
+                        CategoryId = reader.IsDBNull(reader.GetOrdinal("categoryid")) ? 0 : reader.GetInt32("categoryid")
+                    };
+                    return View(model);
+                }
+
+                TempData["ErrorMessage"] = "Template not found.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error: {ex.Message}";
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditTemplate(TemplateCrudModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    model.ImageUrl = await SaveUploadedImage(model.ImageFile);
+
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                var query = @"UPDATE templates SET
+                    title = @title, description = @description, image_url = @imageUrl,
+                    category = @category, type = @type, is_active = @isActive,
+                    tabid = @tabid, categoryid = @categoryid
+                    WHERE id = @id";
+
+                using var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", model.Id);
+                cmd.Parameters.AddWithValue("@title", model.Title);
+                cmd.Parameters.AddWithValue("@description", (object?)model.Description ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@imageUrl", (object?)model.ImageUrl ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@category", model.Category ?? "");
+                cmd.Parameters.AddWithValue("@type", model.Type);
+                cmd.Parameters.AddWithValue("@isActive", model.IsActive);
+                cmd.Parameters.AddWithValue("@tabid", model.TabId);
+                cmd.Parameters.AddWithValue("@categoryid", model.CategoryId);
+                await cmd.ExecuteNonQueryAsync();
+
+                TempData["SuccessMessage"] = "Template updated successfully!";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Error: {ex.Message}");
+                return View(model);
+            }
+        }
+
+        // ===== CRUD: DELETE TEMPLATE (AJAX) =====
+        [HttpPost]
+        public async Task<IActionResult> DeleteTemplate(int id)
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                var query = "UPDATE templates SET is_active = false WHERE id = @id";
+                using var cmd = new NpgsqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@id", id);
+                await cmd.ExecuteNonQueryAsync();
+
+                return Json(new { success = true, message = "Template deleted." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        // ===== IMAGE UPLOAD HELPER =====
+        private async Task<string> SaveUploadedImage(IFormFile file)
+        {
+            var uploadDir = Path.Combine(_environment.WebRootPath, "uploads", "whatsapp_templates");
+            if (!Directory.Exists(uploadDir))
+                Directory.CreateDirectory(uploadDir);
+
+            var ext = Path.GetExtension(file.FileName).ToLower();
+            var fileName = $"tpl_{DateTime.Now:yyyyMMddHHmmss}_{Guid.NewGuid():N}{ext}";
+            var fullPath = Path.Combine(uploadDir, fileName);
+
+            using var stream = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return $"/uploads/whatsapp_templates/{fileName}";
+        }
     }
 
     // Extension method for rounded rectangles

@@ -126,9 +126,11 @@ namespace MUNEEMJI.Controllers
                     using var connection = new NpgsqlConnection(_connectionString);
                     await connection.OpenAsync();
                     var query = @"
-                SELECT id, business_name, phone, email, created_at, updated_at ,isowner , companyid
+                SELECT id, business_name, phone, email, created_at, updated_at ,isowner , companyid, roleid
                 FROM businesses 
-                WHERE email = @Email";
+                WHERE email = @Email
+                ORDER BY isowner DESC, id ASC
+                LIMIT 1";
                     using var command = new NpgsqlCommand(query, connection);
                     command.Parameters.AddWithValue("@Email", email);
                     using var reader = await command.ExecuteReaderAsync();
@@ -144,7 +146,8 @@ namespace MUNEEMJI.Controllers
                             CreatedAt = reader.GetDateTime("created_at"),
                             UpdatedAt = reader.GetDateTime("updated_at"),
                             isowner = reader.GetBoolean("isowner"),
-                            Companyid  =  reader.GetInt32("companyid")
+                            Companyid  =  reader.GetInt32("companyid"),
+                            RoleId = !reader.IsDBNull(reader.GetOrdinal("roleid")) ? reader.GetInt32("roleid") : 0
 
                         };
 
@@ -180,6 +183,8 @@ namespace MUNEEMJI.Controllers
                         HttpContext.Session.SetString("BusinessName", business.BusinessName);
                         HttpContext.Session.SetString("Phone", business.Phone);
                         HttpContext.Session.SetString("Email", business.Email);
+                        HttpContext.Session.SetString("RoleId", business.RoleId.ToString());
+                        HttpContext.Session.SetString("IsOwner", business.isowner.ToString());
 
                         // Clear OTP from session
                         HttpContext.Session.Remove("Otp");

@@ -595,8 +595,7 @@
                     </a>
                 </li>
 
-                <!-- Parties -->
-                <li class="nav-item">
+                <li class="nav-item" data-permission-module="Parties" data-permission-action="view">
                     @{
                         var isPartiesActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "party";
                     }
@@ -616,7 +615,7 @@
                 </li>
 
                 <!-- Items -->
-                <li class="nav-item">
+                <li class="nav-item" data-permission-module="Items" data-permission-action="view">
                     @{
                         var isItemsActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "items"
                         || ViewContext.RouteData.Values["Controller"]?.ToString() == "billitem"
@@ -658,14 +657,14 @@
                     </a>
                     <div class="collapse @(isSalesActive ? "show" : "")" id="saleMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
-                            <li><a href="/Web/Sales/Create" class="nav-link">New Invoice</a></li>
-                            <li><a href="/Web/Sales/index" class="nav-link">Sales Invoices</a></li>
-                            <li><a href="/Web/Estimate_Quotations/index" class="nav-link">Estimate/Quotation</a></li>
-                            <li><a href="/Web/PaymentIn/index" class="nav-link">Payment In</a></li>
-                            <li><a href="/Web/SalesOrder/index" class="nav-link">Sale Order</a></li>
-                            <li><a href="/Web/DeliveryChallan/index" class="nav-link">Delivery Challan</a></li>
-                            <li><a href="/Web/CreditNote/index" class="nav-link">Sale Return/Credit Note</a></li>
-                            <li><a href="/Web/OtherIncome/index" class="nav-link">Other Income</a></li>
+                            <li data-permission-module="Sales Invoice" data-permission-action="create"><a href="/Web/Sales/Create" class="nav-link">New Invoice</a></li>
+                            <li data-permission-module="Sales Invoice" data-permission-action="view"><a href="/Web/Sales/index" class="nav-link">Sales Invoices</a></li>
+                            <li data-permission-module="Estimation/Quotation" data-permission-action="view"><a href="/Web/Estimate_Quotations/index" class="nav-link">Estimate/Quotation</a></li>
+                            <li data-permission-module="Payment In" data-permission-action="view"><a href="/Web/PaymentIn/index" class="nav-link">Payment In</a></li>
+                            <li data-permission-module="Sale Order" data-permission-action="view"><a href="/Web/SalesOrder/index" class="nav-link">Sale Order</a></li>
+                            <li data-permission-module="Delivery Challan" data-permission-action="view"><a href="/Web/DeliveryChallan/index" class="nav-link">Delivery Challan</a></li>
+                            <li data-permission-module="Credit Note" data-permission-action="view"><a href="/Web/CreditNote/index" class="nav-link">Sale Return/Credit Note</a></li>
+                            <li data-permission-module="Other Income" data-permission-action="view"><a href="/Web/OtherIncome/index" class="nav-link">Other Income</a></li>
                         </ul>
                     </div>
                 </li>
@@ -688,11 +687,11 @@
                     </a>
                     <div class="collapse @(isPurchaseActive ? "show" : "")" id="purchaseMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
-                            <li><a href="/Web/PurchaseBill/Create" class="nav-link">New Purchase</a></li>
-                            <li><a href="/Web/PurchaseBill/index" class="nav-link">Purchase Bill</a></li>
-                            <li><a href="/Web/PaymentOut/index" class="nav-link">Payment Out</a></li>
-                            <li><a href="/Web/Expense/Index" class="nav-link">Expense</a></li>
-                            <li><a href="/Web/PurchaseOrder/index" class="nav-link">Purchase Order</a></li>
+                            <li data-permission-module="Purchase Bill" data-permission-action="create"><a href="/Web/PurchaseBill/Create" class="nav-link">New Purchase</a></li>
+                            <li data-permission-module="Purchase Bill" data-permission-action="view"><a href="/Web/PurchaseBill/index" class="nav-link">Purchase Bill</a></li>
+                            <li data-permission-module="Payment Out" data-permission-action="view"><a href="/Web/PaymentOut/index" class="nav-link">Payment Out</a></li>
+                            <li data-permission-module="Expense" data-permission-action="view"><a href="/Web/Expense/Index" class="nav-link">Expense</a></li>
+                            <li data-permission-module="Purchase Order" data-permission-action="view"><a href="/Web/PurchaseOrder/index" class="nav-link">Purchase Order</a></li>
                             <li><a href="/Web/DebitNote/index" class="nav-link">Purchase Return/Dr. Note</a></li>
                         </ul>
                     </div>
@@ -740,11 +739,32 @@
                 </li>
 
                 <!-- Reports -->
-                <li class="nav-item">
+                <li class="nav-item" data-permission-module="Reports" data-permission-action="view">
                     <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Report" ? "active" : "")"
                        href="/Web/Report/Index">
                         <i class="bi bi-bar-chart"></i> Reports
                     </a>
+                </li>
+
+                <!-- Enquiry & Support -->
+                <li class="nav-item">
+                    @{
+                        var isEnquiryActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "Enquiry"
+                            || ViewContext.RouteData.Values["Controller"]?.ToString() == "Support";
+                    }
+                    <a class="nav-link @(isEnquiryActive ? "active" : "")"
+                       data-bs-toggle="collapse" href="#enquiryMenu"
+                       role="button" aria-expanded="@(isEnquiryActive ? "true" : "false")"
+                       aria-controls="enquiryMenu">
+                        <i class="bi bi-envelope-paper"></i> Enquiry & Support
+                        <i class="bi bi-chevron-down float-end"></i>
+                    </a>
+                    <div class="collapse @(isEnquiryActive ? "show" : "")" id="enquiryMenu">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal">
+                            <li><a href="/Web/Enquiry/Index" class="nav-link">Enquiry Management</a></li>
+                            <li><a href="/Web/Support/Index" class="nav-link">Support Enquiries</a></li>
+                        </ul>
+                    </div>
                 </li>
 
                 <!-- Sync, Share & Backup -->
@@ -767,7 +787,7 @@
                 </li>
 
                 <!-- Settings -->
-                <li class="nav-item">
+                <li class="nav-item" data-permission-module="Settings" data-permission-action="view">
                     <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Settings" ? "active" : "")"
                        onclick="window.location.href='/Web/Settings/General/Index?returnUrl=' + encodeURIComponent(window.location.href)" style="cursor: pointer";>
                         <i class="bi bi-gear"></i> Settings
@@ -877,6 +897,11 @@
 
         function proceedCall() {
             closeCallModal();
+            // Log support enquiry before making the call
+            fetch('/Web/Support/QuickAdd', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+                .then(r => r.json())
+                .then(res => { console.log('Support enquiry logged:', res); })
+                .catch(err => { console.error('Failed to log support enquiry:', err); });
             window.location.href = 'tel:+918690562456';
         }
 
@@ -908,5 +933,6 @@
     </script>
 
     @RenderSection("Scripts", required: false)
+    @await Component.InvokeAsync("UserPermission")
 </body>
 </html>

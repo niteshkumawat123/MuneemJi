@@ -977,8 +977,8 @@
                         <span class="stat-title">Total Receivable</span>
                         <div class="stat-icon icon-down">↓</div>
                     </div>
-                    <div class="stat-value">₹ @Model.TotalReceivable</div>
-                    <div class="stat-subtitle">From 1 Party</div>
+                    <div class="stat-value">₹ @Model.TotalReceivable.ToString("N2")</div>
+                    <div class="stat-subtitle">@Model.ReceivableMessage</div>
                 </div>
 
                 <div class="stat-card">
@@ -986,8 +986,8 @@
                         <span class="stat-title">Total Payable</span>
                         <div class="stat-icon icon-up">↑</div>
                     </div>
-                    <div class="stat-value">₹ @Model.TotalPayable</div>
-                    <div class="stat-subtitle">From 1 Party</div>
+                    <div class="stat-value">₹ @Model.TotalPayable.ToString("N2")</div>
+                    <div class="stat-subtitle">@Model.PayableMessage</div>
                 </div>
             </div>
 
@@ -1001,7 +1001,7 @@
                     </select>
                 </div>
                 <div style="margin-bottom: 12px;">
-                    <div class="stat-value">₹ @Model.TotalReceivable</div>
+                    <div class="stat-value">₹ @Model.TotalSalesThisMonth.ToString("N2")</div>
                 </div>
                 <div class="chart-container" style="height: 250px;">
                     <div id="salesChart"></div>
@@ -1015,19 +1015,19 @@
                             <h4>Today's Overview</h4>
                             <div class="widget-stats">
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">5</div>
+                                    <div class="widget-stat-value">@Model.TodayInvoices</div>
                                     <div class="widget-stat-label">Invoices</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">₹12K</div>
+                                    <div class="widget-stat-value">₹@(Model.TodayRevenue >= 100000 ? (Model.TodayRevenue / 100000).ToString("0.#") + "L" : Model.TodayRevenue >= 1000 ? (Model.TodayRevenue / 1000).ToString("0.#") + "K" : Model.TodayRevenue.ToString("0"))</div>
                                     <div class="widget-stat-label">Revenue</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">3</div>
+                                    <div class="widget-stat-value">@Model.TodayPending</div>
                                     <div class="widget-stat-label">Pending</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">8</div>
+                                    <div class="widget-stat-value">@Model.TodayParties</div>
                                     <div class="widget-stat-label">Parties</div>
                                 </div>
                             </div>
@@ -1036,19 +1036,19 @@
                             <h4>This Week</h4>
                             <div class="widget-stats">
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">28</div>
+                                    <div class="widget-stat-value">@Model.WeekInvoices</div>
                                     <div class="widget-stat-label">Invoices</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">₹85K</div>
+                                    <div class="widget-stat-value">₹@(Model.WeekRevenue >= 100000 ? (Model.WeekRevenue / 100000).ToString("0.#") + "L" : Model.WeekRevenue >= 1000 ? (Model.WeekRevenue / 1000).ToString("0.#") + "K" : Model.WeekRevenue.ToString("0"))</div>
                                     <div class="widget-stat-label">Revenue</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">12</div>
+                                    <div class="widget-stat-value">@Model.WeekPending</div>
                                     <div class="widget-stat-label">Pending</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">45</div>
+                                    <div class="widget-stat-value">@Model.WeekParties</div>
                                     <div class="widget-stat-label">Parties</div>
                                 </div>
                             </div>
@@ -1057,19 +1057,19 @@
                             <h4>This Month</h4>
                             <div class="widget-stats">
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">156</div>
+                                    <div class="widget-stat-value">@Model.MonthInvoices</div>
                                     <div class="widget-stat-label">Invoices</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">₹3.2L</div>
+                                    <div class="widget-stat-value">₹@(Model.MonthRevenue >= 100000 ? (Model.MonthRevenue / 100000).ToString("0.#") + "L" : Model.MonthRevenue >= 1000 ? (Model.MonthRevenue / 1000).ToString("0.#") + "K" : Model.MonthRevenue.ToString("0"))</div>
                                     <div class="widget-stat-label">Revenue</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">24</div>
+                                    <div class="widget-stat-value">@Model.MonthPending</div>
                                     <div class="widget-stat-label">Pending</div>
                                 </div>
                                 <div class="widget-stat">
-                                    <div class="widget-stat-value">128</div>
+                                    <div class="widget-stat-value">@Model.MonthParties</div>
                                     <div class="widget-stat-label">Parties</div>
                                 </div>
                             </div>
@@ -1185,11 +1185,7 @@
                 title: 'Low Stocks Items',
                 subtitle: 'As of Now',
                 visible: true,
-                items: [
-                    { name: '2, 4 D Ethyl Ester 38% EC', quantity: 0 },
-                    { name: 'Acephate 75% SP', quantity: 0 },
-                    { name: 'Atrazine 50% WP', quantity: 0 }
-                ]
+                items: @if(Model.LowStockItems.Any()){<text>[@Html.Raw(string.Join(",", Model.LowStockItems.Select(i => $"{{ name: '{i.Name.Replace("'", "\\'")}', quantity: {i.Quantity} }}")))]</text>}else{<text>[{ name: 'No low stock items', quantity: 0 }]</text>}
             },
             {
                 id: 'expiringStocks',
@@ -1374,10 +1370,12 @@
                 apexChartInstance.destroy();
             }
 
+            var chartData = [@Html.Raw(string.Join(",", Model.ChartValues))];
+            var chartLabels = [@Html.Raw(string.Join(",", Model.ChartLabels.Select(l => $"'{l}'")))];  
             var options = {
                 series: [{
                     name: 'Sales',
-                    data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 180, 0]
+                    data: chartData
                 }],
                 chart: {
                     type: 'area',
@@ -1406,7 +1404,7 @@
                     width: 3
                 },
                 xaxis: {
-                    categories: ['1 Dec', '4 Dec', '7 Dec', '10 Dec', '13 Dec', '16 Dec', '19 Dec', '22 Dec', '25 Dec', '28 Dec', '31 Dec'],
+                    categories: chartLabels,
                     axisBorder: { show: false },
                     axisTicks: { show: false },
                     labels: {
@@ -1437,9 +1435,9 @@
                     }
                 },
                 annotations: {
-                    points: [{
-                        x: '28 Dec',
-                        y: 180,
+                    points: chartData.length > 0 && Math.max(...chartData) > 0 ? [{
+                        x: chartLabels[chartData.indexOf(Math.max(...chartData))],
+                        y: Math.max(...chartData),
                         marker: {
                             size: 6,
                             fillColor: '#667eea',
@@ -1456,9 +1454,9 @@
                                 fontWeight: 'bold',
                                 padding: { left: 8, right: 8, top: 4, bottom: 4 }
                             },
-                            text: '₹ @Model.TotalReceivable'
+                            text: '₹ ' + Math.max(...chartData).toLocaleString('en-IN')
                         }
-                    }]
+                    }] : []
                 }
             };
 

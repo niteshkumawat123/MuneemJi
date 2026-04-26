@@ -682,6 +682,18 @@
 
         console.log('All functions loaded successfully');
         console.log('restoreUser is defined:', typeof window.restoreUser);
+
+        // Show toast from TempData on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <text>showToast('Success', '@TempData["SuccessMessage"]', 'success');</text>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <text>showToast('Error', '@TempData["ErrorMessage"]', 'error');</text>
+            }
+        });
     </script>
 </body>
 </html>

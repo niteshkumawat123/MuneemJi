@@ -6,7 +6,7 @@ using MUNEEMJI.PdfServices;
 namespace MUNEEMJI.Controllers
 {
     [Authorize]
-    [Route("Web/[controller]")]
+    [Route("[controller]")]
     public class PdfDownloadController : Controller
     {
         private readonly IWebHostEnvironment _env;

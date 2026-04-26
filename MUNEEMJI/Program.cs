@@ -11,7 +11,11 @@ MUNEEMJI.DbConfig.ConnectionString = builder.Configuration.GetConnectionString("
 // Add services to the container.
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<MUNEEMJI.Filters.GlobalPermissionFilter>();
+});
+builder.Services.AddScoped<MUNEEMJI.Filters.GlobalPermissionFilter>();
 builder.Services.AddScoped<IPurchaseBillService, PurchaseBillService>();
 builder.Services.AddScoped<IBillItemService, BillItemService>();
 builder.Services.AddScoped<IGodownService, GodownService>();
@@ -26,6 +30,9 @@ builder.Services.AddScoped<IOtherIncomeRepository, OtherIncomeRepository>();
 builder.Services.AddScoped<ICompanyTenancy, CompanyTenancyService>();
 builder.Services.AddScoped<IParty, PartyRepository>();
 builder.Services.AddScoped<IUser, UserRepository>();
+builder.Services.AddScoped<IPermissionService, PermissionService>();
+builder.Services.AddScoped<IEnquiryService, EnquiryService>();
+builder.Services.AddMemoryCache();
 builder.Services.AddScoped<MUNEEMJI.Services.IGstSettingsService, MUNEEMJI.Services.GstSettingsService>();
 builder.Services.AddScoped<ISalesInvoicesPdf, SalesInvoicesPdf>();
 builder.Services.AddScoped<IEstimationQuotationPdf, EstimationQuotationPdf>();

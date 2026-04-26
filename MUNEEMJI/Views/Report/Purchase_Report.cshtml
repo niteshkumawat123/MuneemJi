@@ -1,796 +1,198 @@
-﻿@model List<PurchaseBill>
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background-color: #f5f5f5;
-        padding: 20px;
-    }
-
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        background-color: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
-
-        .header h1 {
-            font-size: 28px;
-            font-weight: 600;
-            color: #333;
-        }
-
-    .header-buttons {
-        display: flex;
-        gap: 15px;
-    }
-
-    .btn-upload {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 20px;
-        background-color: white;
-        color: #e91e63;
-        border: 2px solid #e91e63;
-        border-radius: 25px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-        .btn-upload:hover {
-            background-color: #fce4ec;
-        }
-
-    .btn-add {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 25px;
-        background-color: #e91e63;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-        .btn-add:hover {
-            background-color: #c2185b;
-        }
-
-    .filter-section {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 25px;
-        flex-wrap: wrap;
-    }
-
-    .between-label {
-        padding: 8px 15px;
-        background-color: #9e9e9e;
-        color: white;
-        border-radius: 4px;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .date-input {
-        padding: 8px 12px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-        color: #333;
-    }
-
-    .to-label {
-        font-size: 14px;
-        color: #666;
-        font-weight: 500;
-    }
-
-    select {
-        padding: 8px 8px 8px 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-        color: #333;
-        background-color: white;
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 10px center;
-    }
-
-    .action-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 20px;
-    }
-
-    .search-box {
-        width: 300px;
-        padding: 10px 15px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 15px;
-    }
-
-    .icon-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-        padding: 10px 15px;
-        background-color: white;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.3s;
-    }
-
-        .icon-btn:hover {
-            background-color: #f5f5f5;
-        }
-
-        .icon-btn span {
-            font-size: 12px;
-            color: #666;
-        }
-
-    .summary-cards {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        margin-bottom: 30px;
-    }
-
-    .summary-card {
-        flex: 1;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-        .summary-card.paid {
-            background-color: #b2dfdb;
-        }
-
-        .summary-card.unpaid {
-            background-color: #bbdefb;
-        }
-
-        .summary-card.overdue {
-            background-color: #ffccbc;
-        }
-
-        .summary-card.total {
-            background-color: #ffe0b2;
-        }
-
-        .summary-card h3 {
-            font-size: 14px;
-            font-weight: 500;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .summary-card .amount {
-            font-size: 24px;
-            font-weight: 600;
-            color: #333;
-        }
-
-    .operator {
-        font-size: 28px;
-        font-weight: 300;
-        color: #999;
-    }
-
-    .equals {
-        font-size: 28px;
-        font-weight: 300;
-        color: #999;
-    }
-
-    .search-results-info {
-        display: none;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 16px;
-        margin-bottom: 16px;
-        background-color: #dbeafe;
-        border: 1px solid #93c5fd;
-        border-radius: 6px;
-        font-size: 14px;
-        color: #1e40af;
-    }
-
-    .btn-clear-search {
-        padding: 4px 12px;
-        background-color: #3b82f6;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 12px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
-        .btn-clear-search:hover {
-            background-color: #2563eb;
-        }
-
-    .table-container {
-        overflow-x: auto;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        background-color: white;
-    }
-
-    thead {
-        background-color: #fafafa;
-    }
-
-    th {
-        padding: 12px 15px;
-        text-align: left;
-        font-size: 13px;
-        font-weight: 600;
-        color: #666;
-        text-transform: uppercase;
-        border-bottom: 2px solid #e0e0e0;
-        white-space: nowrap;
-        cursor: pointer;
-    }
-
-        th .sort-icon {
-            margin-left: 5px;
-            color: #999;
-            font-size: 10px;
-        }
-
-    tbody {
-        background-color: white;
-    }
-
-        tbody tr {
-            border-bottom: 1px solid #e0e0e0;
-            transition: all 0.2s ease;
-        }
-
-            tbody tr:hover {
-                background-color: #f9fafb;
-            }
-
-            tbody tr.hidden {
-                display: none;
-            }
-
-            tbody tr:last-child {
-                border-bottom: none;
-            }
-
-    td {
-        padding: 16px;
-        font-size: 14px;
-        color: #374151;
-    }
-
-    .status-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 12px;
-        font-weight: 500;
-        text-transform: capitalize;
-    }
-
-    .status-paid {
-        background-color: #c8e6c9;
-        color: #2e7d32;
-    }
-
-    .status-unpaid {
-        background-color: #bbdefb;
-        color: #1565c0;
-    }
-
-    .status-overdue {
-        background-color: #ffcdd2;
-        color: #c62828;
-    }
-
-    .btn-icon {
-        padding: 6px 10px;
-        background-color: transparent;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: all 0.2s;
-        color: #666;
-    }
-
-        .btn-icon:hover {
-            background-color: #f5f5f5;
-            color: #333;
-        }
-
-    .empty-state {
-        text-align: center;
-        padding: 80px 20px;
-        color: #999;
-        font-size: 15px;
-    }
-
-    .empty-icon {
-        font-size: 48px;
-        margin-bottom: 16px;
-        color: #ccc;
-    }
-
-    .highlight {
-        background-color: #fef08a;
-        font-weight: 600;
-    }
-
-    @@media (max-width: 1024px) {
-        .summary-cards
-
-    {
-        flex-wrap: wrap;
-    }
-
-    .summary-card {
-        min-width: calc(50% - 10px);
-    }
-
-    .operator, .equals {
-        display: none;
-    }
-
-    }
-
-    @@media (max-width: 768px) {
-        .header
-
-    {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .filter-section {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .summary-card {
-        min-width: 100%;
-    }
-
-    .action-bar {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .search-box {
-        width: 100%;
-    }
-
-    }
-</style>
-
-<div class="container">
-    <div class="header">
-        <h1>Purchase Bills</h1>
-        <div class="header-buttons">
-            <button class="btn-upload">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="17 8 12 3 7 8"></polyline>
-                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                </svg>
-                Upload Bill
-            </button>
-            <button class="btn-add" onclick="window.location.href='/Web/PurchaseBill/Create'">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Add Purchase
-            </button>
+@model List<PurchaseBill>
+
+<div class="rpt-wrapper">
+    <div class="rpt-container">
+
+        <!-- Header -->
+        <div class="rpt-header">
+            <h2>Purchase Report</h2>
+            <div class="rpt-header-actions">
+                <button class="rpt-btn rpt-btn-outline"><i class="fas fa-upload"></i> Upload Bill</button>
+                <button class="rpt-btn rpt-btn-primary" onclick="window.location.href='/Web/PurchaseBill/Create'"><i class="fas fa-plus"></i> Add Purchase</button>
+            </div>
         </div>
-    </div>
 
-    <div class="filter-section">
-        <select id="filterBySelect">
-            <option value="">Custom</option>
-            <option value="thisMonth">This Month</option>
-            <option value="lastMonth">Last Month</option>
-            <option value="thisQuarter">This Quarter</option>
-            <option value="thisYear">This Year</option>
-        </select>
-        <span class="between-label">Between</span>
-        <input type="date" class="date-input" id="startDate">
-        <span class="to-label">To</span>
-        <input type="date" class="date-input" id="endDate">
-        <select id="firmFilter" style="width: 128px;">
-            <option value="">ALL FIRMS</option>
-            @if (ViewBag.PartyList != null)
-            {
-                @foreach (var item in ViewBag.PartyList)
-                {
-                    <option value="@item.id">@item.partyname</option>
-                }
-            }
-        </select>
-        <select id="godownFilter">
-            <option value="">All Godown</option>
-            @if (ViewBag.GodawonList != null)
-            {
-                @foreach (var item in ViewBag.GodawonList)
-                {
-                    <option value="@item.Id">@item.GodownName</option>
-                }
-            }
-        </select>
-        <select id="userFilter" style="width: 105px;">
-            <option value="">ALL USERS</option>
-            @if (ViewBag.UserList != null)
-            {
-                @foreach (var item in ViewBag.UserList)
-                {
-                    <option value="@item.Id">@item.Username</option>
-                }
-            }
-        </select>
-    </div>
-
-    <div class="action-bar">
-        <input type="text" class="search-box" id="searchInput" placeholder="Search transactions...">
-        <div class="action-buttons">
-            <button class="icon-btn" onclick="exportToExcel()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                <span>Excel Report</span>
-            </button>
-            <button class="icon-btn" onclick="printReport()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
-                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                    <rect x="6" y="14" width="12" height="8"></rect>
-                </svg>
-                <span>Print</span>
-            </button>
+        <!-- Filters -->
+        <div class="rpt-filters">
+            <div class="rpt-filter-group">
+                <label>Filter By</label>
+                <select id="filterBySelect">
+                    <option value="">Custom</option>
+                    <option value="thisMonth">This Month</option>
+                    <option value="lastMonth">Last Month</option>
+                    <option value="thisQuarter">This Quarter</option>
+                    <option value="thisYear">This Year</option>
+                </select>
+            </div>
+            <div class="rpt-filter-group">
+                <label>Date Range</label>
+                <div class="rpt-date-range">
+                    <input type="date" id="startDate" value="@DateTime.Now.ToString("yyyy-MM-01")" />
+                    <span>to</span>
+                    <input type="date" id="endDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+            <div class="rpt-filter-group">
+                <label>Party</label>
+                <select id="firmFilter">
+                    <option value="">All Parties</option>
+                    @if (ViewBag.PartyList != null) { foreach (var item in ViewBag.PartyList) { <option value="@item.id">@item.partyname</option> } }
+                </select>
+            </div>
+            <div class="rpt-filter-group">
+                <label>User</label>
+                <select id="userFilter">
+                    <option value="">All Users</option>
+                    @if (ViewBag.UserList != null) { foreach (var item in ViewBag.UserList) { <option value="@item.Id">@item.Username</option> } }
+                </select>
+            </div>
+            <div class="rpt-filter-group">
+                <label>Godown</label>
+                <select id="godownFilter">
+                    <option value="">All</option>
+                    @if (ViewBag.GodawonList != null) { foreach (var item in ViewBag.GodawonList) { <option value="@item.Id">@item.GodownName</option> } }
+                </select>
+            </div>
         </div>
-    </div>
 
-    <div id="searchResultsInfo" class="search-results-info">
-        <span><span id="resultsCount">0</span> results found</span>
-        <button class="btn-clear-search" onclick="clearSearch()">Clear Search</button>
-    </div>
-
-    <div class="summary-cards">
-        <div class="summary-card paid">
-            <h3>Paid</h3>
-            <div class="amount" id="paidAmount">₹ 0.00</div>
+        <!-- Summary -->
+        @{
+            decimal grandTotal = Model?.Sum(x => x.Total) ?? 0;
+            decimal paidTotal = Model?.Where(x => x.orderstatusid == 1).Sum(x => x.Total) ?? 0;
+            decimal unpaidTotal = grandTotal - paidTotal;
+        }
+        <div class="rpt-summary">
+            <div class="rpt-summary-card green">
+                <div class="rpt-summary-label">Paid</div>
+                <p class="rpt-summary-value">? @paidTotal.ToString("N2")</p>
+            </div>
+            <div class="rpt-summary-card blue">
+                <div class="rpt-summary-label">Unpaid</div>
+                <p class="rpt-summary-value">? @unpaidTotal.ToString("N2")</p>
+            </div>
+            <div class="rpt-summary-card">
+                <div class="rpt-summary-label">Total Purchase</div>
+                <p class="rpt-summary-value">? @grandTotal.ToString("N2")</p>
+                <div class="rpt-summary-footer">
+                    <span>Invoices: <strong>@(Model?.Count ?? 0)</strong></span>
+                </div>
+            </div>
         </div>
-        <span class="operator">+</span>
-        <div class="summary-card unpaid">
-            <h3>Unpaid</h3>
-            <div class="amount" id="unpaidAmount">₹ 0.00</div>
-        </div>
-        <span class="operator">+</span>
-        <div class="summary-card overdue">
-            <h3>Overdue</h3>
-            <div class="amount" id="overdueAmount">₹ 0.00</div>
-        </div>
-        <span class="equals">=</span>
-        <div class="summary-card total">
-            <h3>Total</h3>
-            <div class="amount" id="totalAmount">₹ 0.00</div>
-        </div>
-    </div>
 
-    <div class="table-container">
-        <table id="transactionsTable">
-            <thead>
-                <tr>
-                    <th>Date <i class="fas fa-sort"></i></th>
-                    <th>Invoice no <i class="fas fa-sort"></i></th>
-                    <th>Party Name <i class="fas fa-sort"></i></th>
-                    <th>Transaction <i class="fas fa-sort"></i></th>
-                    <th>Payment Type <i class="fas fa-sort"></i></th>
-                    <th>Amount <i class="fas fa-sort"></i></th>
-                    <th>Balance <i class="fas fa-sort"></i></th>
-                    <th>Due date <i class="fas fa-sort"></i></th>
-                    <th>Status <i class="fas fa-sort"></i></th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="tableBody">
-                @if (Model != null && Model.Count() > 0)
-                {
-                    @foreach (var bill in Model)
-                    {
-                        
+        <!-- Table -->
+        <div class="rpt-table-section">
+            <div class="rpt-table-header">
+                <h4>Transactions</h4>
+                <div class="rpt-table-actions">
+                    <div class="rpt-search">
+                        <input type="text" id="searchInput" placeholder="Search..." />
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <button class="rpt-btn-icon" title="Excel" onclick="exportTable()"><i class="fas fa-file-excel"></i></button>
+                    <button class="rpt-btn-icon" title="Print" onclick="window.print()"><i class="fas fa-print"></i></button>
+                </div>
+            </div>
 
-                  
+            <div id="searchResultsInfo" class="rpt-search-info" style="display:none;">
+                <span>Found <strong id="resultsCount">0</strong> results</span>
+                <button class="rpt-search-clear" onclick="clearSearch()">Clear</button>
+            </div>
 
-                        <tr class="data-row">
-                            <td class="date-cell">@bill.CreatedDate.ToString("dd/MM/yyyy")</td>
-                            <td class="invoice-cell">@bill.InvoiceNumber</td>
-                            <td class="party-cell">@bill.PartyName</td>
-                            <td class="transaction-cell">Purchase</td>
-                            <td class="payment-cell">@bill.PaymentType</td>
-                            <td class="amount-cell">₹ @bill.Total.ToString("N2")</td>
-                            <td class="balance-cell">₹ @bill.FinalAmount.ToString("N2")</td>
-                            <td class="duedate-cell">@bill.DueDate.ToString("dd/MM/yyyy")</td>
-                            <td class="status-cell">
-                                <span class="status-badge statusClass">statusText</span>
-                            </td>
-                            <td>
-                                <button class="btn-icon" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </td>
+            <div class="rpt-table-wrap">
+                <table class="rpt-table" id="transactionsTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Invoice No</th>
+                            <th>Party Name</th>
+                            <th>Payment Type</th>
+                            <th class="amt">Amount</th>
+                            <th class="amt">Balance</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
-                    }
-                }
-                else
-                {
-                    <tr class="no-data-row">
-                        <td colspan="10">
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <i class="fas fa-inbox"></i>
-                                </div>
-                                <h5>No Data Found</h5>
-                                <p>No purchase bills available for the selected criteria.</p>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                    </thead>
+                    <tbody id="tableBody">
+                        @if (Model != null && Model.Any())
+                        {
+                            int idx = 0;
+                            foreach (var bill in Model)
+                            {
+                                idx++;
+                                var sc = bill.orderstatusid == 1 ? "rpt-badge rpt-badge-paid" : bill.orderstatusid == 2 ? "rpt-badge rpt-badge-partial" : "rpt-badge rpt-badge-unpaid";
+                                var st = bill.orderstatusid == 1 ? "Paid" : bill.orderstatusid == 2 ? "Partial" : "Unpaid";
+                                <tr class="data-row" data-firm-id="@bill.PartyId" data-date="@(bill.InvoiceDate?.ToString("yyyy-MM-dd") ?? "")">
+                                    <td>@idx</td>
+                                    <td>@bill.CreatedDate.ToString("dd MMM yyyy")</td>
+                                    <td><strong>@bill.InvoiceNumber</strong></td>
+                                    <td>@bill.PartyName</td>
+                                    <td>@bill.PaymentType</td>
+                                    <td class="amt">? @bill.Total.ToString("N2")</td>
+                                    <td class="amt">? @bill.FinalAmount.ToString("N2")</td>
+                                    <td>@bill.DueDate.ToString("dd MMM yyyy")</td>
+                                    <td><span class="@sc">@st</span></td>
+                                    <td><button class="rpt-btn-icon" title="View" onclick="window.location.href='/Web/PurchaseBill/GetById?id=@(bill.Id)&typeid=1'"><i class="fas fa-eye"></i></button></td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr class="no-data-row">
+                                <td colspan="10">
+                                    <div class="rpt-empty">
+                                        <div class="rpt-empty-icon"><i class="fas fa-file-invoice"></i></div>
+                                        <h5>No Purchase Bills</h5>
+                                        <p>No purchase bills found for the selected period. Add your first purchase to get started.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <script>
-    const searchInput = document.getElementById('searchInput');
-    const tableBody = document.getElementById('tableBody');
-    const searchResultsInfo = document.getElementById('searchResultsInfo');
-    const resultsCount = document.getElementById('resultsCount');
-    const firmFilter = document.getElementById('firmFilter');
-    const godownFilter = document.getElementById('godownFilter');
-    const userFilter = document.getElementById('userFilter');
-    const startDate = document.getElementById('startDate');
-    const endDate = document.getElementById('endDate');
-    const filterBySelect = document.getElementById('filterBySelect');
-    let allRows = [];
+(function() {
+    const si = document.getElementById('searchInput'), tb = document.getElementById('tableBody');
+    const sri = document.getElementById('searchResultsInfo'), rc = document.getElementById('resultsCount');
+    const ff = document.getElementById('firmFilter'), sd = document.getElementById('startDate'), ed = document.getElementById('endDate');
+    const fbs = document.getElementById('filterBySelect');
+    const rows = Array.from(tb.querySelectorAll('tr.data-row'));
 
-    function initializeDates() {
-        const today = new Date();
-        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    [ff,sd,ed].forEach(e => { if(e) e.addEventListener('change', filter); });
+    if(fbs) fbs.addEventListener('change', preset);
+    if(si) si.addEventListener('keyup', filter);
 
-        startDate.valueAsDate = firstDay;
-        endDate.valueAsDate = lastDay;
+    function preset(e) {
+        const v=e.target.value, d=new Date(), y=d.getFullYear(), m=d.getMonth();
+        if(v==='thisMonth'){set(new Date(y,m,1),new Date(y,m+1,0))}
+        else if(v==='lastMonth'){set(new Date(y,m-1,1),new Date(y,m,0))}
+        else if(v==='thisQuarter'){const q=Math.floor(m/3)*3;set(new Date(y,q,1),new Date(y,q+3,0))}
+        else if(v==='thisYear'){set(new Date(y,0,1),new Date(y,11,31))}
+        filter();
     }
-
-    function updateAllRows() {
-        allRows = Array.from(tableBody.querySelectorAll('tr.data-row'));
-        applyFilters();
-    }
-
-    firmFilter.addEventListener('change', applyFilters);
-    godownFilter.addEventListener('change', applyFilters);
-    userFilter.addEventListener('change', applyFilters);
-    startDate.addEventListener('change', applyFilters);
-    endDate.addEventListener('change', applyFilters);
-    filterBySelect.addEventListener('change', handlePresetFilter);
-    searchInput.addEventListener('keyup', applyFilters);
-
-    function handlePresetFilter(e) {
-        const selectedOption = e.target.value;
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-
-        if (selectedOption === 'thisMonth') {
-            startDate.value = `${year}-${month}-01`;
-            endDate.value = `${year}-${month}-${new Date(year, parseInt(month), 0).getDate()}`;
-        } else if (selectedOption === 'lastMonth') {
-            const lastMonth = new Date(year, parseInt(month) - 2, 1);
-            const lastMonthYear = lastMonth.getFullYear();
-            const lastMonthNum = String(lastMonth.getMonth() + 1).padStart(2, '0');
-            startDate.value = `${lastMonthYear}-${lastMonthNum}-01`;
-            endDate.value = `${lastMonthYear}-${lastMonthNum}-${new Date(lastMonthYear, lastMonth.getMonth() + 1, 0).getDate()}`;
-        } else if (selectedOption === 'thisQuarter') {
-            const quarter = Math.floor((parseInt(month) - 1) / 3);
-            const quarterStart = quarter * 3 + 1;
-            startDate.value = `${year}-${String(quarterStart).padStart(2, '0')}-01`;
-            endDate.value = `${year}-${String(quarterStart + 2).padStart(2, '0')}-${new Date(year, quarterStart + 2, 0).getDate()}`;
-        } else if (selectedOption === 'thisYear') {
-            startDate.value = `${year}-01-01`;
-            endDate.value = `${year}-12-31`;
-        }
-        applyFilters();
-    }
-
-    function applyFilters() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
-        const selectedFirm = firmFilter.value;
-        const selectedGodown = godownFilter.value;
-        const selectedUser = userFilter.value;
-        const start = startDate.value ? new Date(startDate.value) : null;
-        const end = endDate.value ? new Date(endDate.value) : null;
-        let visibleCount = 0;
-        let paidTotal = 0, unpaidTotal = 0, overdueTotal = 0, grandTotal = 0;
-
-        allRows.forEach(row => {
-            const firmId = row.getAttribute('data-firm-id');
-            const godownId = row.getAttribute('data-godown-id');
-            const userId = row.getAttribute('data-user-id');
-            const rowDate = new Date(row.getAttribute('data-date'));
-            const rowText = row.innerText.toLowerCase();
-            const status = row.getAttribute('data-status');
-            const amount = parseFloat(row.getAttribute('data-amount')) || 0;
-
-            const firmMatch = !selectedFirm || firmId === selectedFirm;
-            const godownMatch = !selectedGodown || godownId === selectedGodown;
-            const userMatch = !selectedUser || userId === selectedUser;
-            const dateMatch = (!start || !end) || (rowDate >= start && rowDate <= end);
-            const searchMatch = !searchTerm || rowText.includes(searchTerm);
-
-            if (firmMatch && godownMatch && userMatch && dateMatch && searchMatch) {
-                row.classList.remove('hidden');
-                if (searchTerm) {
-                    highlightMatches(row, searchTerm);
-                } else {
-                    removeHighlights(row);
-                }
-                visibleCount++;
-
-                grandTotal += amount;
-                if (status === 'paid') paidTotal += amount;
-                else if (status === 'unpaid') unpaidTotal += amount;
-                else if (status === 'overdue') overdueTotal += amount;
-            } else {
-                row.classList.add('hidden');
-            }
+    function set(s,e){sd.value=s.toISOString().split('T')[0];ed.value=e.toISOString().split('T')[0];}
+    function filter(){
+        const t=(si.value||'').toLowerCase().trim(), f=ff.value, s=new Date(sd.value), e=new Date(ed.value);
+        let c=0;
+        rows.forEach(r=>{
+            const ok=(!f||r.dataset.firmId===f)&&(new Date(r.dataset.date)>=s&&new Date(r.dataset.date)<=e)&&(!t||r.innerText.toLowerCase().includes(t));
+            r.classList.toggle('hidden',!ok); if(ok)c++;
         });
-
-        updateSummary(paidTotal, unpaidTotal, overdueTotal, grandTotal);
-
-        if (searchTerm) {
-            resultsCount.innerText = visibleCount;
-            searchResultsInfo.style.display = 'flex';
-        } else {
-            searchResultsInfo.style.display = 'none';
-        }
-
-        if (visibleCount === 0 && allRows.length > 0) {
-            showEmptyState();
-        } else if (visibleCount > 0) {
-            hideEmptyState();
-        }
+        sri.style.display=t?'flex':'none'; rc.innerText=c;
     }
-
-    function highlightMatches(row, searchTerm) {
-        row.querySelectorAll('td').forEach(cell => {
-            if (cell.querySelector('.status-badge')) return;
-            const text = cell.textContent;
-            if (text.toLowerCase().includes(searchTerm)) {
-                const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
-                cell.innerHTML = text.replace(regex, '<span class="highlight">$1</span>');
-            }
+    window.clearSearch=function(){si.value='';filter();si.focus();};
+    window.exportTable=function(){
+        let csv=[];document.querySelectorAll('#transactionsTable tr:not(.hidden):not(.no-data-row)').forEach(r=>{
+            csv.push(Array.from(r.querySelectorAll('th,td')).map(c=>'"'+c.textContent.trim().replace(/"/g,'""')+'"').join(','));
         });
-    }
-
-    function escapeRegex(string) {
-        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    function removeHighlights(row) {
-        row.querySelectorAll('td').forEach(cell => {
-            if (cell.querySelector('.status-badge')) return;
-            const highlights = cell.querySelectorAll('.highlight');
-            highlights.forEach(highlight => {
-                const text = highlight.textContent;
-                highlight.replaceWith(text);
-            });
-        });
-    }
-
-    function updateSummary(paid, unpaid, overdue, total) {
-        document.getElementById('paidAmount').innerText = '₹ ' + paid.toFixed(2);
-        document.getElementById('unpaidAmount').innerText = '₹ ' + unpaid.toFixed(2);
-        document.getElementById('overdueAmount').innerText = '₹ ' + overdue.toFixed(2);
-        document.getElementById('totalAmount').innerText = '₹ ' + total.toFixed(2);
-    }
-
-    function showEmptyState() {
-        let emptyRow = document.querySelector('.filter-empty-state');
-        if (!emptyRow) {
-            emptyRow = document.createElement('tr');
-            emptyRow.className = 'filter-empty-state';
-            emptyRow.innerHTML = '<td colspan="10"><div class="empty-state">No matching transactions found</div></td>';
-            tableBody.appendChild(emptyRow);
-        }
-    }
-
-    function hideEmptyState() {
-        const emptyRow = document.querySelector('.filter-empty-state');
-        if (emptyRow) {
-            emptyRow.remove();
-        }
-    }
-
-    function clearSearch() {
-        searchInput.value = '';
-        applyFilters();
-        searchInput.focus();
-    }
-
-    function exportToExcel() {
-        console.log('Exporting to Excel...');
-        alert('Excel export functionality');
-    }
-
-    function printReport() {
-        window.print();
-    }
-
-    document.querySelectorAll('th').forEach(header => {
-        header.addEventListener('click', function() {
-            console.log('Sorting by:', this.textContent);
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        initializeDates();
-        updateAllRows();
-    });
-
-    const observer = new MutationObserver(updateAllRows);
-    observer.observe(tableBody, { childList: true });
+        const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv.join('\n')],{type:'text/csv'}));a.download='purchase_report.csv';a.click();
+    };
+})();
 </script>

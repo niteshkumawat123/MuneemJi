@@ -308,69 +308,171 @@ namespace MUNEEMJI.Controllers
         // Private helper methods
         private async Task<DashboardViewModel> GetDashboardDataAsync(int CompanyId)
         {
-            // Simulate async data loading
-            await Task.Delay(100);
-            decimal TotalReceivable = 0;
-            decimal TotalPayable = 0;
-            decimal ExpenseAmount = 0;
-            decimal CashInHand = 0;
-            decimal BanckAmount = 0;
-            decimal StockAmount = 0;
+            decimal TotalReceivable = 0, TotalPayable = 0, ExpenseAmount = 0, CashInHand = 0, BanckAmount = 0, StockAmount = 0;
+            int receivablePartyCount = 0, payablePartyCount = 0;
+            // Slider data
+            int todayInvoices = 0, weekInvoices = 0, monthInvoices = 0;
+            decimal todayRevenue = 0, weekRevenue = 0, monthRevenue = 0;
+            int todayPending = 0, weekPending = 0, monthPending = 0;
+            int todayParties = 0, weekParties = 0, monthParties = 0;
+            // Chart data
+            var chartLabels = new List<string>();
+            var chartValues = new List<decimal>();
+            // Low stock
+            var lowStockItems = new List<LowStockItem>();
 
             using (var conn = new NpgsqlConnection(_connectionString))
             {
+                await conn.OpenAsync();
 
-                string QueryString = "SELECT SUM(CAST(final_amount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid and companyid = @p_companyid ";
+                // Total Receivable (Sales)
+                TotalReceivable = conn.QuerySql<decimal?>(
+                    "SELECT SUM(CAST(final_amount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid AND companyid = @p_companyid",
+                    new { P_typeid = (int)TradeDocumentTypes.SalesChallan, p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
-                 TotalReceivable = conn.QuerySql<decimal?>(QueryString, new { P_typeid = (int)TradeDocumentTypes.SalesChallan , p_companyid  = CompanyId}).FirstOrDefault() ?? 0;
+                // Total Payable (Purchases)
+                TotalPayable = conn.QuerySql<decimal?>(
+                    "SELECT SUM(CAST(final_amount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid AND companyid = @p_companyid",
+                    new { P_typeid = (int)TradeDocumentTypes.PurchaseChallan, p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
-                string QueryString1 = "SELECT SUM(CAST(final_amount AS DECIMAL(18,2))) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid and companyid = @p_companyid ";
+                // Party counts
+                receivablePartyCount = conn.QuerySql<int?>(
+                    "SELECT COUNT(DISTINCT party_id) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid AND companyid = @p_companyid AND CAST(final_amount AS DECIMAL(18,2)) > 0",
+                    new { P_typeid = (int)TradeDocumentTypes.SalesChallan, p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
-                 TotalPayable = conn.QuerySql<decimal?>(QueryString1, new { P_typeid = (int)TradeDocumentTypes.PurchaseChallan, p_companyid = CompanyId }).FirstOrDefault() ?? 0;
+                payablePartyCount = conn.QuerySql<int?>(
+                    "SELECT COUNT(DISTINCT party_id) FROM TradeDocuments WHERE TradeDocumentTypesId = @P_typeid AND companyid = @p_companyid AND CAST(final_amount AS DECIMAL(18,2)) > 0",
+                    new { P_typeid = (int)TradeDocumentTypes.PurchaseChallan, p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
-                string QueryString2 = " SELECT SUM(CAST(amount AS DECIMAL(18,2))) FROM expenseitemtransection  ";
+                // Expenses
+                ExpenseAmount = conn.QuerySql<decimal?>("SELECT SUM(CAST(amount AS DECIMAL(18,2))) FROM expenseitemtransection WHERE companyid = @p_companyid",
+                    new { p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
-                ExpenseAmount = conn.QuerySql<decimal?>(QueryString2).FirstOrDefault() ?? 0;
+                // Cash in hand
+                CashInHand = conn.QuerySql<decimal?>(
+                    @"SELECT COALESCE(SUM(CASE WHEN adjusttypeid = 1 THEN CAST(amount AS DECIMAL(18,2))
+                                                WHEN adjusttypeid = 2 THEN -CAST(amount AS DECIMAL(18,2)) ELSE 0 END), 0)
+                      FROM public.bank_cash WHERE companyid = @p_companyid",
+                    new { p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
-                string QueryString3 = @" SELECT
-                                                COALESCE(SUM(
-                                                    CASE 
-                                                        WHEN adjusttypeid = 1 THEN CAST(amount AS DECIMAL(18,2))
-                                                        WHEN adjusttypeid = 2 THEN -CAST(amount AS DECIMAL(18,2))
-                                                        ELSE 0
-                                                    END
-                                                ), 0) AS balance
-                                        FROM public.bank_cash ; " ;
+                // Bank balance
+                BanckAmount = conn.QuerySql<decimal?>(
+                    "SELECT SUM(CAST(opening_balance AS DECIMAL(18,2))) FROM extended_bank_accounts WHERE companyid = @p_companyid",
+                    new { p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
-                CashInHand = conn.QuerySql<decimal?>(QueryString3).FirstOrDefault() ?? 0;
+                // Stock value
+                StockAmount = conn.QuerySql<decimal?>(
+                    "SELECT COALESCE(SUM(CAST((opening_quantity * sale_price) AS DECIMAL(18,2))), 0) FROM billitem WHERE item_type = 'product' AND companyid = @p_companyid",
+                    new { p_companyid = CompanyId }).FirstOrDefault() ?? 0;
 
+                // === TODAY stats ===
+                var todayStart = DateTime.UtcNow.Date;
+                todayInvoices = conn.QuerySql<int?>(
+                    "SELECT COUNT(*) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = todayStart }).FirstOrDefault() ?? 0;
+                todayRevenue = conn.QuerySql<decimal?>(
+                    "SELECT COALESCE(SUM(CAST(final_amount AS DECIMAL(18,2))), 0) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = todayStart }).FirstOrDefault() ?? 0;
+                todayPending = conn.QuerySql<int?>(
+                    "SELECT COUNT(*) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d AND orderstatusid != 1",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = todayStart }).FirstOrDefault() ?? 0;
+                todayParties = conn.QuerySql<int?>(
+                    "SELECT COUNT(DISTINCT party_id) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = todayStart }).FirstOrDefault() ?? 0;
 
-                string QueryString4 = " select sum(cast(opening_balance as decimal(18,2))) from extended_bank_accounts ";
-                BanckAmount = conn.QuerySql<decimal?>(QueryString4).FirstOrDefault() ?? 0;
+                // === THIS WEEK stats ===
+                var weekStart = todayStart.AddDays(-(int)todayStart.DayOfWeek);
+                weekInvoices = conn.QuerySql<int?>(
+                    "SELECT COUNT(*) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = weekStart }).FirstOrDefault() ?? 0;
+                weekRevenue = conn.QuerySql<decimal?>(
+                    "SELECT COALESCE(SUM(CAST(final_amount AS DECIMAL(18,2))), 0) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = weekStart }).FirstOrDefault() ?? 0;
+                weekPending = conn.QuerySql<int?>(
+                    "SELECT COUNT(*) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d AND orderstatusid != 1",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = weekStart }).FirstOrDefault() ?? 0;
+                weekParties = conn.QuerySql<int?>(
+                    "SELECT COUNT(DISTINCT party_id) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = weekStart }).FirstOrDefault() ?? 0;
 
-                string QueryString5 = " select coalesce(sum(cast((opening_quantity*sale_price)as decimal(18,2) )),0) from  billitem where  item_type = 'product' " +
-                                        " and companyid = @p_companyid";
-                StockAmount = conn.QuerySql<decimal?>(QueryString5,new { p_companyid  = CompanyId}).FirstOrDefault() ?? 0;
+                // === THIS MONTH stats ===
+                var monthStart = new DateTime(todayStart.Year, todayStart.Month, 1);
+                monthInvoices = conn.QuerySql<int?>(
+                    "SELECT COUNT(*) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = monthStart }).FirstOrDefault() ?? 0;
+                monthRevenue = conn.QuerySql<decimal?>(
+                    "SELECT COALESCE(SUM(CAST(final_amount AS DECIMAL(18,2))), 0) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = monthStart }).FirstOrDefault() ?? 0;
+                monthPending = conn.QuerySql<int?>(
+                    "SELECT COUNT(*) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d AND orderstatusid != 1",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = monthStart }).FirstOrDefault() ?? 0;
+                monthParties = conn.QuerySql<int?>(
+                    "SELECT COUNT(DISTINCT party_id) FROM TradeDocuments WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @d",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, d = monthStart }).FirstOrDefault() ?? 0;
 
+                // === CHART: daily sales for current month ===
+                var daysInMonth = DateTime.DaysInMonth(todayStart.Year, todayStart.Month);
+                var dailySales = conn.QuerySql<DailyChartRow>(
+                    @"SELECT DATE(invoice_date) AS day, COALESCE(SUM(CAST(final_amount AS DECIMAL(18,2))), 0) AS total
+                      FROM TradeDocuments
+                      WHERE companyid = @cid AND TradeDocumentTypesId = @tid AND invoice_date >= @ms AND invoice_date < @me
+                      GROUP BY DATE(invoice_date) ORDER BY DATE(invoice_date)",
+                    new { cid = CompanyId, tid = (int)TradeDocumentTypes.SalesChallan, ms = monthStart, me = monthStart.AddMonths(1) }).ToList();
 
+                var salesByDay = dailySales.ToDictionary(d => d.Day.Date, d => d.Total);
+                // Build ~10 data points spread across the month
+                int step = Math.Max(daysInMonth / 10, 1);
+                for (int day = 1; day <= daysInMonth; day += step)
+                {
+                    var dt = new DateTime(todayStart.Year, todayStart.Month, Math.Min(day, daysInMonth));
+                    // Sum from this day to next step
+                    decimal sum = 0;
+                    for (int d = day; d < day + step && d <= daysInMonth; d++)
+                    {
+                        var dd = new DateTime(todayStart.Year, todayStart.Month, d);
+                        if (salesByDay.TryGetValue(dd, out var v)) sum += v;
+                    }
+                    chartLabels.Add(dt.ToString("d MMM"));
+                    chartValues.Add(sum);
+                }
+
+                // === LOW STOCK items ===
+                lowStockItems = conn.QuerySql<LowStockItem>(
+                    @"SELECT item_name AS Name, COALESCE(opening_quantity, 0) AS Quantity
+                      FROM billitem WHERE item_type = 'product' AND companyid = @cid AND COALESCE(opening_quantity, 0) <= 5
+                      ORDER BY opening_quantity ASC LIMIT 10",
+                    new { cid = CompanyId }).ToList();
             }
 
             return new DashboardViewModel
             {
                 TotalReceivable = TotalReceivable,
                 TotalPayable = TotalPayable,
-                PayablePartyCount = 1,
-                HasReceivables = false,
-                TotalSalesThisMonth = 0,
+                ReceivablePartyCount = receivablePartyCount,
+                PayablePartyCount = payablePartyCount,
+                HasReceivables = TotalReceivable > 0,
+                TotalSalesThisMonth = monthRevenue,
                 SalesChartData = GetSampleChartData(),
                 MostUsedReports = GetMostUsedReports(),
                 Widgets = new List<WidgetViewModel>(),
                 ExpenseAmount = ExpenseAmount,
                 BanckAmount = BanckAmount,
                 CashInHand = CashInHand,
-                StockAmount= StockAmount,
-
+                StockAmount = StockAmount,
+                ChartLabels = chartLabels,
+                ChartValues = chartValues,
+                TodayInvoices = todayInvoices, TodayRevenue = todayRevenue, TodayPending = todayPending, TodayParties = todayParties,
+                WeekInvoices = weekInvoices, WeekRevenue = weekRevenue, WeekPending = weekPending, WeekParties = weekParties,
+                MonthInvoices = monthInvoices, MonthRevenue = monthRevenue, MonthPending = monthPending, MonthParties = monthParties,
+                LowStockItems = lowStockItems,
             };
+        }
+
+        // Helper class for chart query
+        private class DailyChartRow
+        {
+            public DateTime Day { get; set; }
+            public decimal Total { get; set; }
         }
 
         private async Task<List<TransactionSearchResult>> SearchTransactionsAsync(string query)
@@ -498,6 +600,31 @@ namespace MUNEEMJI.Controllers
         public IActionResult Error()
         {
             return View(new Models.ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult CheckPermissions()
+        {
+            var roleId = HttpContext.Session.GetString("RoleId");
+            var isOwner = HttpContext.Session.GetString("IsOwner");
+            var businessId = HttpContext.Session.GetString("BusinessId");
+            var email = HttpContext.Session.GetString("Email");
+
+            return Json(new
+            {
+                sessionRoleId = roleId,
+                sessionIsOwner = isOwner,
+                sessionBusinessId = businessId,
+                sessionEmail = email,
+                isAuthenticated = User.Identity?.IsAuthenticated,
+                message = "If IsOwner is 'True', permissions are bypassed. Log in as a non-owner user to test."
+            });
         }
     }
 }

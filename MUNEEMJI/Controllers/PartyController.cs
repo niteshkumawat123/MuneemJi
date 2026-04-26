@@ -518,6 +518,52 @@ namespace MUNEEMJI.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult GetPartyDetailsById(int id)
+        {
+            try
+            {
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = @"SELECT ps.party_name, ps.billing_address, ps.shipping_address, ps.phone_number, ps.gstin,
+                                            ps.stateid, ss.name as state_name, ss.code as state_code
+                                     FROM parties ps
+                                     LEFT JOIN states ss ON ss.id = ps.stateid
+                                     WHERE ps.id = @p_id";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_id", id);
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return Json(new
+                                {
+                                    success = true,
+                                    partyName = reader["party_name"]?.ToString() ?? "",
+                                    billingAddress = reader["billing_address"]?.ToString() ?? "",
+                                    shippingAddress = reader["shipping_address"]?.ToString() ?? "",
+                                    phoneNumber = reader["phone_number"]?.ToString() ?? "",
+                                    gstin = reader["gstin"]?.ToString() ?? "",
+                                    stateId = reader["stateid"] != DBNull.Value ? Convert.ToInt32(reader["stateid"]) : 0,
+                                    stateName = reader["state_name"]?.ToString() ?? "",
+                                    stateCode = reader["state_code"]?.ToString() ?? "",
+                                    stateOfSupply = (reader["state_code"]?.ToString() ?? "") + "-" + (reader["state_name"]?.ToString() ?? "")
+                                });
+                            }
+                        }
+                    }
+                }
+                return Json(new { success = false, message = "Party not found" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
 
 
         public void DeleteParty(int id = 0)

@@ -35,4 +35,10 @@
         public string ShareText => CanShare ? "✓" : "NA";
         public string DeleteText => CanDelete ? "✓" : "NA";
     }
+
+    public class UpdateRoleRequest
+    {
+        public int UserId { get; set; }
+        public int RoleId { get; set; }
+    }
 }

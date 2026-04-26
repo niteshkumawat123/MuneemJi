@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace MUNEEMJI.Models
 {
@@ -75,5 +77,30 @@ namespace MUNEEMJI.Models
             "Business",
             "Offers"
         };
+    }
+
+    public class TemplateCrudModel
+    {
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Title is required")]
+        [MaxLength(200)]
+        public string Title { get; set; } = string.Empty;
+
+        public string? Description { get; set; }
+
+        [Required(ErrorMessage = "Category (Tab) is required")]
+        public string Type { get; set; } = "Greetings";
+
+        public string Category { get; set; } = string.Empty;
+
+        public string? ImageUrl { get; set; }
+
+        public int TabId { get; set; }
+        public int CategoryId { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public IFormFile? ImageFile { get; set; }
     }
 }

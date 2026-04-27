@@ -617,6 +617,149 @@ namespace MUNEEMJI.Controllers
             return Json(new { success = true });
         }
 
+        // ?? GSTIN Lookup: check cache first, then call external API ??
+        [HttpGet]
+        public async Task<IActionResult> LookupGstin(string gstin)
+        {
+            if (string.IsNullOrWhiteSpace(gstin) || gstin.Length != 15)
+                return Json(new { success = false, message = "Invalid GSTIN format. Must be 15 characters." });
+
+            gstin = gstin.Trim().ToUpper();
+
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                // Step 1: Check cache
+                var cacheQuery = @"SELECT legal_name, trade_name, status, full_address, state_name, city, pincode, district
+                                   FROM gstin_cache WHERE gstin = @gstin LIMIT 1";
+                using var cacheCmd = new NpgsqlCommand(cacheQuery, conn);
+                cacheCmd.Parameters.AddWithValue("gstin", gstin);
+
+                using var reader = await cacheCmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    var cached = new
+                    {
+                        success = true,
+                        source = "cache",
+                        legalName = reader["legal_name"]?.ToString() ?? "",
+                        tradeName = reader["trade_name"]?.ToString() ?? "",
+                        status = reader["status"]?.ToString() ?? "",
+                        address = reader["full_address"]?.ToString() ?? "",
+                        state = reader["state_name"]?.ToString() ?? "",
+                        city = reader["city"]?.ToString() ?? "",
+                        pincode = reader["pincode"]?.ToString() ?? "",
+                        district = reader["district"]?.ToString() ?? ""
+                    };
+                    return Json(cached);
+                }
+                await reader.CloseAsync();
+
+                // Step 2: Call external API
+                const string apiKey = "73f5a33eed9cb2a47923eea0b07cb354";
+                var apiUrl = $"http://sheet.gstincheck.co.in/check/{apiKey}/{gstin}";
+
+                using var http = new System.Net.Http.HttpClient();
+                http.Timeout = TimeSpan.FromSeconds(15);
+                var response = await http.GetStringAsync(apiUrl);
+
+                var json = System.Text.Json.JsonDocument.Parse(response);
+                var root = json.RootElement;
+
+                var flag = root.GetProperty("flag").GetBoolean();
+                if (!flag)
+                {
+                    var msg = root.TryGetProperty("message", out var m) ? m.GetString() : "GSTIN not found";
+                    return Json(new { success = false, message = msg });
+                }
+
+                var data = root.GetProperty("data");
+                var legalName = data.TryGetProperty("lgnm", out var ln) ? ln.GetString() ?? "" : "";
+                var tradeName = data.TryGetProperty("tradeNam", out var tn) ? tn.GetString() ?? "" : "";
+                var sts = data.TryGetProperty("sts", out var s) ? s.GetString() ?? "" : "";
+                var dty = data.TryGetProperty("dty", out var dt) ? dt.GetString() ?? "" : "";
+                var ctb = data.TryGetProperty("ctb", out var cb) ? cb.GetString() ?? "" : "";
+                var rgdt = data.TryGetProperty("rgdt", out var rd) ? rd.GetString() ?? "" : "";
+                var cxdt = data.TryGetProperty("cxdt", out var cd) ? cd.GetString() ?? "" : "";
+                var einv = data.TryGetProperty("einvoiceStatus", out var ei) ? ei.GetString() ?? "" : "";
+
+                var fullAddress = "";
+                var floorNo = ""; var bldgName = ""; var bldgNo = "";
+                var street = ""; var city = ""; var district = ""; var stateName = ""; var pincode = "";
+
+                if (data.TryGetProperty("pradr", out var pradr))
+                {
+                    fullAddress = pradr.TryGetProperty("adr", out var adr) ? adr.GetString() ?? "" : "";
+                    if (pradr.TryGetProperty("addr", out var addr))
+                    {
+                        floorNo = addr.TryGetProperty("flno", out var f) ? f.GetString() ?? "" : "";
+                        bldgName = addr.TryGetProperty("bnm", out var b) ? b.GetString() ?? "" : "";
+                        bldgNo = addr.TryGetProperty("bno", out var bn) ? bn.GetString() ?? "" : "";
+                        street = addr.TryGetProperty("st", out var st) ? st.GetString() ?? "" : "";
+                        city = addr.TryGetProperty("loc", out var l) ? l.GetString() ?? "" : "";
+                        district = addr.TryGetProperty("dst", out var d) ? d.GetString() ?? "" : "";
+                        stateName = addr.TryGetProperty("stcd", out var sc) ? sc.GetString() ?? "" : "";
+                        pincode = addr.TryGetProperty("pncd", out var p) ? p.GetString() ?? "" : "";
+                    }
+                }
+
+                // Step 3: Save to cache
+                var insertCache = @"INSERT INTO gstin_cache 
+                    (gstin, legal_name, trade_name, status, dealer_type, constitution, reg_date, cancel_date,
+                     full_address, floor_no, building_name, building_no, street, city, district, state_name, pincode, 
+                     einvoice_status, raw_json)
+                    VALUES (@gstin, @legal_name, @trade_name, @status, @dealer_type, @constitution, @reg_date, @cancel_date,
+                     @full_address, @floor_no, @building_name, @building_no, @street, @city, @district, @state_name, @pincode,
+                     @einvoice_status, @raw_json)
+                    ON CONFLICT (gstin) DO UPDATE SET
+                     legal_name=EXCLUDED.legal_name, trade_name=EXCLUDED.trade_name, status=EXCLUDED.status,
+                     full_address=EXCLUDED.full_address, state_name=EXCLUDED.state_name, city=EXCLUDED.city,
+                     pincode=EXCLUDED.pincode, district=EXCLUDED.district, raw_json=EXCLUDED.raw_json, updated_at=NOW()";
+
+                using var insCmd = new NpgsqlCommand(insertCache, conn);
+                insCmd.Parameters.AddWithValue("gstin", gstin);
+                insCmd.Parameters.AddWithValue("legal_name", legalName);
+                insCmd.Parameters.AddWithValue("trade_name", tradeName);
+                insCmd.Parameters.AddWithValue("status", sts);
+                insCmd.Parameters.AddWithValue("dealer_type", dty);
+                insCmd.Parameters.AddWithValue("constitution", ctb);
+                insCmd.Parameters.AddWithValue("reg_date", rgdt);
+                insCmd.Parameters.AddWithValue("cancel_date", cxdt);
+                insCmd.Parameters.AddWithValue("full_address", fullAddress);
+                insCmd.Parameters.AddWithValue("floor_no", floorNo);
+                insCmd.Parameters.AddWithValue("building_name", bldgName);
+                insCmd.Parameters.AddWithValue("building_no", bldgNo);
+                insCmd.Parameters.AddWithValue("street", street);
+                insCmd.Parameters.AddWithValue("city", city);
+                insCmd.Parameters.AddWithValue("district", district);
+                insCmd.Parameters.AddWithValue("state_name", stateName);
+                insCmd.Parameters.AddWithValue("pincode", pincode);
+                insCmd.Parameters.AddWithValue("einvoice_status", einv);
+                insCmd.Parameters.AddWithValue("raw_json", response);
+                await insCmd.ExecuteNonQueryAsync();
+
+                return Json(new
+                {
+                    success = true,
+                    source = "api",
+                    legalName,
+                    tradeName,
+                    status = sts,
+                    address = fullAddress,
+                    state = stateName,
+                    city,
+                    pincode,
+                    district
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error looking up GSTIN: " + ex.Message });
+            }
+        }
+
     }
 
 }

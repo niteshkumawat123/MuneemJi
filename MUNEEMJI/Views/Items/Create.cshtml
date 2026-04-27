@@ -1,6 +1,7 @@
 ﻿@model BillItemViewModel
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    if (Model.BillItem == null) { Model.BillItem = new BillItem(); }
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -453,12 +454,11 @@
             <div class="header-left">
                 <h1 class="page-title">Add Item</h1>
                 <div class="header-toggle">
-                    @if (!string.IsNullOrEmpty(Model.BillItem?.ItemType))
-                    {
-                        Model.BillItem.ItemType = "product";
+                    @{
+                        var itemType = Model.BillItem?.ItemType ?? "product";
                     }
-                    <button type="button" class="toggle-option @(Model.BillItem.ItemType == "product" ? "active" : "")" onclick="switchType('product')">Product</button>
-                    <button type="button" class="toggle-option @(Model.BillItem.ItemType == "service" ? "active" : "")" onclick="switchType('service')">Service</button>
+                    <button type="button" class="toggle-option @(itemType == "product" ? "active" : "")" onclick="switchType('product')">Product</button>
+                    <button type="button" class="toggle-option @(itemType == "service" ? "active" : "")" onclick="switchType('service')">Service</button>
                 </div>
             </div>
             <div class="header-right">
@@ -480,7 +480,7 @@
 
 
                 <!-- Product Form -->
-                <div id="productForm" class="item-form" style="display:@(Model.BillItem.ItemType == "product" ? "block" : "none");">
+                <div id="productForm" class="item-form" style="display:@(itemType == "product" ? "block" : "none");">
                     <!-- Basic Info Row -->
 
                     <div class="form-row">
@@ -495,8 +495,9 @@
                         </div>
                         <div class="form-group input-with-icon">
                             <label class="form-label">Item Code</label>
-                            <input type="text" name="ItemCode" class="form-input" style="padding-right: 100px;" value="@Model.BillItem.ItemCode">
-                            <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
+                            <input type="text" name="ItemCode" id="productItemCode" class="form-input" style="padding-right: 100px;" autocomplete="off" placeholder="Enter item code or click Assign Code" value="@(Model.BillItem.Id > 0 ? Model.BillItem.ItemCode : "")">
+                            <button type="button" id="assignProductCode" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;" onclick="assignItemCode('product')">Assign Code</button>
+                            <div id="productCodeMessage" style="display:none; font-size:11px; position:absolute; bottom:-18px; left:0; white-space:nowrap;"></div>
                         </div>
 
                         <div class="form-group small">
@@ -561,6 +562,38 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Fields Row 1: Colour, Material, Mfg. Date -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Colour</label>
+                            <input type="text" name="Colour" class="form-input" placeholder="Colour" value="@Model.BillItem.Colour">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Material</label>
+                            <input type="text" name="Material" class="form-input" placeholder="Material" value="@Model.BillItem.Material">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mfg. Date</label>
+                            <input type="date" name="MfgDate" class="form-input" value="@(Model.BillItem.MfgDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                    </div>
+
+                    <!-- Additional Fields Row 2: Exp. Date, Size, Brand -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Exp. Date</label>
+                            <input type="date" name="ExpDate" class="form-input" value="@(Model.BillItem.ExpDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Size</label>
+                            <input type="text" name="Size" class="form-input" placeholder="Size" value="@Model.BillItem.Size">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Brand</label>
+                            <input type="text" name="Brand" class="form-input" placeholder="Brand" value="@Model.BillItem.Brand">
                         </div>
                     </div>
 
@@ -818,7 +851,7 @@
                 </div>
 
                 <!-- Service Form -->
-                <div id="serviceForm" class="item-form" style="display:@(Model.BillItem.ItemType == "service" ? "block" : "none");">
+                <div id="serviceForm" class="item-form" style="display:@(itemType == "service" ? "block" : "none");">
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Service Name *</label>
@@ -831,8 +864,9 @@
                         </div>
                         <div class="form-group input-with-icon">
                             <label class="form-label">Service Code</label>
-                            <input type="text" name="ServiceCode" class="form-input" style="padding-right: 100px;" value="@Model.BillItem.ItemCode">
-                            <button type="button" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;">Assign Code</button>
+                            <input type="text" name="ServiceCode" id="serviceItemCode" class="form-input" style="padding-right: 100px;" autocomplete="off" placeholder="Enter service code or click Assign Code" value="@(Model.BillItem.Id > 0 ? Model.BillItem.ServiceCode : "")">
+                            <button type="button" id="assignServiceCode" class="btn-link" style="position: absolute; right: 8px; top: 70%; transform: translateY(-50%); padding: 4px 8px; font-size: 12px;" onclick="assignItemCode('service')">Assign Code</button>
+                            <div id="serviceCodeMessage" style="display:none; font-size:11px; position:absolute; bottom:-18px; left:0; white-space:nowrap;"></div>
                         </div>
                         <div class="form-group small">
                             <label class="form-label">Unit</label>
@@ -897,6 +931,37 @@
                         </div>
                     </div>
 
+                    <!-- Additional Fields Row 1: Colour, Material, Mfg. Date -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Colour</label>
+                            <input type="text" name="ServiceColour" class="form-input" placeholder="Colour" value="@Model.BillItem.Colour">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Material</label>
+                            <input type="text" name="ServiceMaterial" class="form-input" placeholder="Material" value="@Model.BillItem.Material">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Mfg. Date</label>
+                            <input type="date" name="ServiceMfgDate" class="form-input" value="@(Model.BillItem.MfgDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                    </div>
+
+                    <!-- Additional Fields Row 2: Exp. Date, Size, Brand -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Exp. Date</label>
+                            <input type="date" name="ServiceExpDate" class="form-input" value="@(Model.BillItem.ExpDate?.ToString("yyyy-MM-dd"))">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Size</label>
+                            <input type="text" name="ServiceSize" class="form-input" placeholder="Size" value="@Model.BillItem.Size">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Brand</label>
+                            <input type="text" name="ServiceBrand" class="form-input" placeholder="Brand" value="@Model.BillItem.Brand">
+                        </div>
+                    </div>
 
 
                     <!-- Tabs -->
@@ -1041,7 +1106,7 @@
                     </div>
                 </div>
 
-                <input type="hidden" name="ItemType" id="itemTypeInput" value="@Model.BillItem.ItemType" />
+                <input type="hidden" name="ItemType" id="itemTypeInput" value="@itemType" />
             </form>
         </div>
 
@@ -1051,17 +1116,16 @@
                 <a href="#" class="video-link">▶️ Watch Video</a>
             </div>
             <div>
-                @if (@Model.IsView == false)
+                @if (Model.IsView == false)
                 {
                     <button type="button" class="btn-secondary" onclick="history.back()">Cancel</button>
-                    @if (Model.BillItem.Id > 0)
+                    if (Model.BillItem.Id > 0)
                     {
                         <button type="button" class="btn-primary" onclick="submitFormAsJSON()">Update</button>
                     }
                     else
                     {
                         <button type="button" class="btn-primary" onclick="submitFormAsJSON()">Save</button>
-
                     }
                 }
 
@@ -1192,6 +1256,14 @@
                 jsonData.OnlineStorePrice = parseFloat(formData.get('OnlineStorePrice')) || null;
                 jsonData.Description = formData.get('Description') || '';
 
+                // Additional fields
+                jsonData.Colour = formData.get('Colour') || '';
+                jsonData.Material = formData.get('Material') || '';
+                jsonData.MfgDate = formData.get('MfgDate') || null;
+                jsonData.ExpDate = formData.get('ExpDate') || null;
+                jsonData.Size = formData.get('Size') || '';
+                jsonData.Brand = formData.get('Brand') || '';
+
                 // Manufacturing/Raw Materials Array
                 jsonData.Manufacturing = [];
 
@@ -1245,6 +1317,15 @@
 
                  jsonData.OnlineStorePrice = parseFloat(formData.get('ServiceOnlineStorePrice')) || null;
                 jsonData.Description = formData.get('ServiceDescription') || '';
+
+                // Additional fields
+                jsonData.Colour = formData.get('ServiceColour') || '';
+                jsonData.Material = formData.get('ServiceMaterial') || '';
+                jsonData.MfgDate = formData.get('ServiceMfgDate') || null;
+                jsonData.ExpDate = formData.get('ServiceExpDate') || null;
+                jsonData.Size = formData.get('ServiceSize') || '';
+                jsonData.Brand = formData.get('ServiceBrand') || '';
+
                 jsonData.ItemType='service';
                 jsonData.Manufacturing = [];
             }
@@ -1644,6 +1725,115 @@
                 }
             });
         }
+
+    // ══════════════════════════════════════════════════
+    // ITEM CODE — Duplicate Check & Assign Code Logic
+    // ══════════════════════════════════════════════════
+    (function () {
+        const currentItemId = parseInt(document.querySelector('input[name="Id"]')?.value) || 0;
+        let productCodeTimer = null;
+        let serviceCodeTimer = null;
+        let productCodeValid = true;
+        let serviceCodeValid = true;
+
+        // Get references
+        const productInput = document.getElementById('productItemCode');
+        const serviceInput = document.getElementById('serviceItemCode');
+
+        function getInputAndMsg(type) {
+            if (type === 'product') return { input: productInput, msgEl: document.getElementById('productCodeMessage') };
+            return { input: serviceInput, msgEl: document.getElementById('serviceCodeMessage') };
+        }
+
+        function showCodeMessage(type, message, isValid) {
+            const { input, msgEl } = getInputAndMsg(type);
+            if (!msgEl) return;
+            msgEl.style.display = message ? 'block' : 'none';
+            if (message) {
+                var icon = isValid ? '&#10003; ' : '&#9888; ';
+                msgEl.innerHTML = icon + message;
+            } else {
+                msgEl.innerHTML = '';
+            }
+            msgEl.style.color = isValid ? '#28a745' : '#dc3545';
+            if (input) {
+                input.style.borderColor = message ? (isValid ? '#28a745' : '#dc3545') : '';
+            }
+            if (type === 'product') productCodeValid = isValid;
+            else serviceCodeValid = isValid;
+            updateSaveButton();
+        }
+
+        function updateSaveButton() {
+            // Find which form is visible
+            const productForm = document.getElementById('productForm');
+            const serviceForm = document.getElementById('serviceForm');
+            const saveButtons = document.querySelectorAll('button.btn-primary');
+            const isProductVisible = productForm && productForm.style.display !== 'none';
+            const valid = isProductVisible ? productCodeValid : serviceCodeValid;
+            saveButtons.forEach(btn => {
+                if (btn.textContent.trim() === 'Save' || btn.textContent.trim() === 'Update') {
+                    btn.disabled = !valid;
+                    btn.style.opacity = valid ? '1' : '0.5';
+                }
+            });
+        }
+
+        function verifyItemCode(code, type) {
+            const { input, msgEl } = getInputAndMsg(type);
+            if (!code || code.trim().length < 3) {
+                showCodeMessage(type, '', true);
+                return;
+            }
+            const url = '/Web/Items/CheckItemCode?code=' + encodeURIComponent(code.trim()) + '&excludeId=' + currentItemId;
+            fetch(url)
+                .then(r => r.json())
+                .then(data => {
+                    showCodeMessage(type, data.message, data.isAvailable);
+                })
+                .catch(() => showCodeMessage(type, '', true));
+        }
+
+        // Debounced input listeners
+        if (productInput) {
+            productInput.addEventListener('input', function () {
+                clearTimeout(productCodeTimer);
+                const val = this.value;
+                if (!val || val.trim().length < 3) { showCodeMessage('product', '', true); return; }
+                productCodeTimer = setTimeout(() => verifyItemCode(val, 'product'), 600);
+            });
+        }
+        if (serviceInput) {
+            serviceInput.addEventListener('input', function () {
+                clearTimeout(serviceCodeTimer);
+                const val = this.value;
+                if (!val || val.trim().length < 3) { showCodeMessage('service', '', true); return; }
+                serviceCodeTimer = setTimeout(() => verifyItemCode(val, 'service'), 600);
+            });
+        }
+
+        // Assign Code (generate unique code from server)
+        window.assignItemCode = function (type) {
+            const { input } = getInputAndMsg(type);
+            const btn = type === 'product' ? document.getElementById('assignProductCode') : document.getElementById('assignServiceCode');
+            if (btn) { btn.disabled = true; btn.textContent = 'Generating...'; }
+
+            fetch('/Web/Items/GenerateItemCode')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success && input) {
+                        input.value = data.code;
+                        verifyItemCode(data.code, type);
+                    } else {
+                        showCodeMessage(type, data.message || 'Failed to generate code.', false);
+                    }
+                })
+                .catch(() => showCodeMessage(type, 'Error generating code. Please try again.', false))
+                .finally(() => {
+                    if (btn) { btn.disabled = false; btn.textContent = 'Assign Code'; }
+                });
+        };
+    })();
 
     </script>
 </body>

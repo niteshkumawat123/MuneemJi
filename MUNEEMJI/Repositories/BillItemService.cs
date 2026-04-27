@@ -52,6 +52,7 @@ namespace MUNEEMJI.Repositories
                 opening_quantity, at_price, as_of_date, location, min_stock_to_maintain,
                 online_store_price, description, total_estimated_cost,
                 service_name, service_hsn, service_code,
+                colour, material, mfg_date, exp_date, size, brand,
                 created_at, updated_at,companyid
             )
             VALUES (
@@ -61,6 +62,7 @@ namespace MUNEEMJI.Repositories
                 @opening_quantity, @at_price, @as_of_date, @location, @min_stock_to_maintain,
                 @online_store_price, @description, @total_estimated_cost,
                 @service_name, @service_hsn, @service_code,
+                @colour, @material, @mfg_date, @exp_date, @size, @brand,
                 @created_at, @updated_at,@p_companyid
             )
             RETURNING id;";
@@ -100,6 +102,12 @@ namespace MUNEEMJI.Repositories
                 service_name = @service_name,
                 service_hsn = @service_hsn,
                 service_code = @service_code,
+                colour = @colour,
+                material = @material,
+                mfg_date = @mfg_date,
+                exp_date = @exp_date,
+                size = @size,
+                brand = @brand,
                 updated_at = @updated_at
             WHERE id = @id;";
 
@@ -178,7 +186,13 @@ namespace MUNEEMJI.Repositories
             command.Parameters.AddWithValue("@service_name", (object?)model.ServiceName ?? DBNull.Value);
             command.Parameters.AddWithValue("@service_hsn", (object?)model.ServiceHsn ?? DBNull.Value);
             command.Parameters.AddWithValue("@service_code", (object?)model.ServiceCode ?? DBNull.Value);
-            command.Parameters.AddWithValue("@created_at", DateTime.UtcNow); // safe to reuse for insert
+            command.Parameters.AddWithValue("@colour", (object?)model.Colour ?? DBNull.Value);
+            command.Parameters.AddWithValue("@material", (object?)model.Material ?? DBNull.Value);
+            command.Parameters.AddWithValue("@mfg_date", (object?)model.MfgDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@exp_date", (object?)model.ExpDate ?? DBNull.Value);
+            command.Parameters.AddWithValue("@size", (object?)model.Size ?? DBNull.Value);
+            command.Parameters.AddWithValue("@brand", (object?)model.Brand ?? DBNull.Value);
+            command.Parameters.AddWithValue("@created_at", DateTime.UtcNow);
             command.Parameters.AddWithValue("@updated_at", DateTime.UtcNow);
             command.Parameters.AddWithValue("@p_companyid", CompanyId);
         }
@@ -285,6 +299,12 @@ namespace MUNEEMJI.Repositories
                                    service_name AS ""ServiceName"",
                                    service_hsn AS ""ServiceHsn"",
                                    service_code AS ""ServiceCode"",
+                                   colour AS ""Colour"",
+                                   material AS ""Material"",
+                                   mfg_date AS ""MfgDate"",
+                                   exp_date AS ""ExpDate"",
+                                   size AS ""Size"",
+                                   brand AS ""Brand"",
                                    created_at AS ""CreatedAt"",
                                    updated_at AS ""UpdatedAt"",
                                    mrp

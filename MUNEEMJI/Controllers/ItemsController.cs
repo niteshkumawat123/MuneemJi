@@ -124,8 +124,6 @@ namespace MUNEEMJI.Controllers
                 }
                 else
                 {
-                    var itemcoed = GetItemCode(companyId);
-
                     model = new BillItemViewModel
                     {
 
@@ -137,7 +135,7 @@ namespace MUNEEMJI.Controllers
                             PurchasePriceTaxType = "Without Tax",
                             DiscountType = "Percentage",
                             TaxRate = "None",
-                            ItemCode = Convert.ToString(itemcoed)
+                            ItemCode = ""
                         },
                         Categories = await _billItemService.GetCategoriesAsync(),
                         Units = await _billItemService.GetUnitsAsync(),
@@ -172,7 +170,7 @@ namespace MUNEEMJI.Controllers
                 if (ModelState.IsValid)
                 {
                     // Set service-specific fields based on item type
-                    if (model.ItemType == "Service")
+                    if (string.Equals(model.ItemType, "service", StringComparison.OrdinalIgnoreCase))
                     {
                         model.ServiceName = model.ItemName;
                         model.ServiceHsn = model.ItemHsn;
@@ -275,6 +273,12 @@ namespace MUNEEMJI.Controllers
                                         service_name AS ""ServiceName"",
                                         service_hsn AS ""ServiceHsn"",
                                         service_code AS ""ServiceCode"",
+                                        colour AS ""Colour"",
+                                        material AS ""Material"",
+                                        mfg_date AS ""MfgDate"",
+                                        exp_date AS ""ExpDate"",
+                                        size AS ""Size"",
+                                        brand AS ""Brand"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
                                     FROM billitem where  item_type = @p_itemtype and companyid = @p_companyid
@@ -602,6 +606,12 @@ namespace MUNEEMJI.Controllers
                                         service_name AS ""ServiceName"",
                                         service_hsn AS ""ServiceHsn"",
                                         service_code AS ""ServiceCode"",
+                                        colour AS ""Colour"",
+                                        material AS ""Material"",
+                                        mfg_date AS ""MfgDate"",
+                                        exp_date AS ""ExpDate"",
+                                        size AS ""Size"",
+                                        brand AS ""Brand"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
                                     FROM billitem where item_type = @p_itemtye
@@ -782,6 +792,83 @@ namespace MUNEEMJI.Controllers
             {
             }
             return itemcode;
+        }
+
+        // ?? Check if item code already exists ??
+        [HttpGet]
+        public async Task<IActionResult> CheckItemCode(string code, int excludeId = 0)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                return Json(new { isAvailable = true, message = "" });
+
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                string query;
+                NpgsqlCommand cmd;
+
+                if (excludeId > 0)
+                {
+                    query = "SELECT COUNT(*) FROM billitem WHERE LOWER(TRIM(item_code)) = LOWER(TRIM(@code)) AND id != @excludeId";
+                    cmd = new NpgsqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("code", code.Trim());
+                    cmd.Parameters.AddWithValue("excludeId", excludeId);
+                }
+                else
+                {
+                    query = "SELECT COUNT(*) FROM billitem WHERE LOWER(TRIM(item_code)) = LOWER(TRIM(@code))";
+                    cmd = new NpgsqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("code", code.Trim());
+                }
+
+                var count = (long)(await cmd.ExecuteScalarAsync() ?? 0);
+
+                if (count > 0)
+                    return Json(new { isAvailable = false, message = "Item code already exists. Please use a different code." });
+
+                return Json(new { isAvailable = true, message = "Item code is available." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isAvailable = true, message = "" });
+            }
+        }
+
+        // ?? Generate a unique 11-digit item code ??
+        [HttpGet]
+        public async Task<IActionResult> GenerateItemCode()
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                var rand = new Random();
+                const long min = 10000000000L;
+                const long max = 99999999999L;
+
+                for (int attempt = 0; attempt < 10; attempt++)
+                {
+                    long code = (long)(rand.NextDouble() * (max - min)) + min;
+                    string codeStr = code.ToString();
+
+                    var query = "SELECT COUNT(*) FROM billitem WHERE item_code = @code";
+                    using var cmd = new NpgsqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("code", codeStr);
+
+                    var count = (long)(await cmd.ExecuteScalarAsync() ?? 0);
+                    if (count == 0)
+                        return Json(new { success = true, code = codeStr });
+                }
+
+                return Json(new { success = false, message = "Could not generate a unique code after 10 attempts. Please try again." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error generating code: " + ex.Message });
+            }
         }
     }
 }

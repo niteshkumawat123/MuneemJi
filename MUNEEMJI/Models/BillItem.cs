@@ -65,6 +65,14 @@ namespace MUNEEMJI.Models
         public string? ServiceHsn { get; set; }
         public string? ServiceCode { get; set; }
 
+        // Additional product/service fields
+        public string? Colour { get; set; }
+        public string? Material { get; set; }
+        public DateTime? MfgDate { get; set; }
+        public DateTime? ExpDate { get; set; }
+        public string? Size { get; set; }
+        public string? Brand { get; set; }
+
         // Audit fields
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

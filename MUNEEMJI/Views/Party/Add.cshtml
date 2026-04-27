@@ -97,12 +97,21 @@
             border-bottom: 1px solid #e9ecef;
         }
 
-            .add-group-link:hover {
-                background-color: #f0f6ff;
-                text-decoration: none;
+                    .add-group-link:hover {
+                        background-color: #f0f6ff;
+                        text-decoration: none;
+                    }
+
+                    #gstinStatus {
+                        display: block;
+                        font-size: 12px;
+                        margin-top: 4px;
+                    }
+                    #gstinStatus.text-success { color: #28a745 !important; }
+                    #gstinStatus.text-danger { color: #dc3545 !important; }
+                    #gstinStatus.text-info { color: #17a2b8 !important; }
+                </style>
             }
-    </style>
-}
 
 <div class="container-fluid mt-4">
     <h2>Add Party</h2>
@@ -117,8 +126,15 @@
             </div>
             <div class="col-md-4 field">
                 <label asp-for="GSTIN">GSTIN</label>
-                <input asp-for="GSTIN" class="form-control" />
+                <div class="input-group">
+                    <input asp-for="GSTIN" class="form-control" maxlength="15" style="text-transform:uppercase;" />
+                    <button type="button" class="btn btn-outline-primary" id="btnGstinLookup" title="Verify GSTIN" onclick="lookupGstin()">
+                        <i class="bi bi-search" id="gstinSearchIcon"></i>
+                        <span class="spinner-border spinner-border-sm d-none" id="gstinSpinner" role="status"></span>
+                    </button>
+                </div>
                 <span asp-validation-for="GSTIN" class="text-danger"></span>
+                <small id="gstinStatus" class="d-none mt-1"></small>
             </div>
             <div class="col-md-4 field">
                 <label asp-for="PhoneNumber">Phone Number</label>
@@ -619,6 +635,90 @@
                 clickedButton = this.value; // 'new' or 'save'
                 console.log('Button clicked:', clickedButton);
             });
+        });
+
+        // ── GSTIN Auto-Lookup ──
+        function lookupGstin() {
+            const gstinInput = document.getElementById('GSTIN');
+            const gstin = gstinInput.value.trim().toUpperCase();
+            const statusEl = document.getElementById('gstinStatus');
+            const spinner = document.getElementById('gstinSpinner');
+            const icon = document.getElementById('gstinSearchIcon');
+            const btn = document.getElementById('btnGstinLookup');
+
+            if (!gstin || gstin.length !== 15) {
+                statusEl.className = 'text-danger mt-1';
+                statusEl.textContent = 'GSTIN must be exactly 15 characters';
+                statusEl.classList.remove('d-none');
+                return;
+            }
+
+            // Show loading
+            spinner.classList.remove('d-none');
+            icon.classList.add('d-none');
+            btn.disabled = true;
+            statusEl.className = 'text-info mt-1';
+            statusEl.textContent = 'Verifying GSTIN...';
+            statusEl.classList.remove('d-none');
+
+            fetch('/Web/Party/LookupGstin?gstin=' + encodeURIComponent(gstin))
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        // Auto-fill fields
+                        const stateSelect = document.getElementById('State');
+                        if (stateSelect && data.state) {
+                            // Try to match state by name in dropdown
+                            const opts = stateSelect.options;
+                            for (let i = 0; i < opts.length; i++) {
+                                if (opts[i].text.toLowerCase().includes(data.state.toLowerCase())) {
+                                    stateSelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        const billingAddr = document.getElementById('BillingAddress');
+                        const shippingAddr = document.getElementById('ShippingAddress');
+                        if (billingAddr && data.address) billingAddr.value = data.address;
+                        if (shippingAddr && data.address) shippingAddr.value = data.address;
+
+                        // Auto-fill party name if empty
+                        const partyName = document.getElementById('PartyName');
+                        if (partyName && !partyName.value.trim()) {
+                            partyName.value = data.tradeName || data.legalName || '';
+                        }
+
+                        // Show status
+                        const src = data.source === 'cache' ? ' (cached)' : ' (verified)';
+                        statusEl.className = 'text-success mt-1';
+                        statusEl.innerHTML = '<i class="bi bi-patch-check-fill"></i> ' +
+                            (data.status || 'Active') + ' — ' + (data.legalName || data.tradeName) + src;
+                    } else {
+                        statusEl.className = 'text-danger mt-1';
+                        statusEl.textContent = data.message || 'GSTIN not found';
+                    }
+                })
+                .catch(err => {
+                    statusEl.className = 'text-danger mt-1';
+                    statusEl.textContent = 'Error verifying GSTIN. Please try again.';
+                })
+                .finally(() => {
+                    spinner.classList.add('d-none');
+                    icon.classList.remove('d-none');
+                    btn.disabled = false;
+                });
+        }
+
+        // Auto-trigger lookup when user finishes typing 15 chars
+        document.getElementById('GSTIN').addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+            if (this.value.trim().length === 15) {
+                lookupGstin();
+            } else {
+                const s = document.getElementById('gstinStatus');
+                s.classList.add('d-none');
+            }
         });
 
         document.getElementById('partyForm').addEventListener('submit', function(e) {

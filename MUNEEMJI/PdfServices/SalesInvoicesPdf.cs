@@ -366,8 +366,29 @@ namespace MUNEEMJI.PdfServices
 
                     doc.Add(summaryOuter);
 
-                    // Force bank details + acknowledgement onto a new page
-                    doc.NewPage();
+                    // ===== Attached Image (if any) =====
+                    if (!string.IsNullOrEmpty(Bill.ImagePath))
+                    {
+                        string attachFullPath = Bill.ImagePath.StartsWith("/")
+                            ? Path.Combine(_env.WebRootPath, Bill.ImagePath.TrimStart('/'))
+                            : Bill.ImagePath;
+
+                        if (File.Exists(attachFullPath))
+                        {
+                            try
+                            {
+                                iTextSharp.text.Image attachImg = iTextSharp.text.Image.GetInstance(attachFullPath);
+                                float maxW = doc.PageSize.Width - doc.LeftMargin - doc.RightMargin;
+                                float maxH = 200f;
+                                attachImg.ScaleToFit(maxW, maxH);
+                                attachImg.Alignment = Element.ALIGN_LEFT;
+                                attachImg.SpacingBefore = 10f;
+                                attachImg.SpacingAfter = 5f;
+                                doc.Add(attachImg);
+                            }
+                            catch { }
+                        }
+                    }
 
                     // ===== SECTION 5: Bank Details + Authorized Signatory =====
                     PdfPTable bankSection = new PdfPTable(2);

@@ -171,9 +171,9 @@
                 }
 
                 .btn-toggle-nav .nav-link.active {
-                    background: linear-gradient(135deg, #4dabf7, #339af0);
-                    color: #fff;
-                    box-shadow: 0 4px 15px rgba(77, 171, 247, 0.3);
+                    background: rgba(255, 255, 255, 0.08) !important;
+                    color: #fff !important;
+                    box-shadow: none !important;
                 }
 
         /* Sidebar Footer Enhanced */
@@ -505,10 +505,287 @@
                 color: #333;
             }
 
-            .dropdown-item:last-child {
-                border-bottom: none;
-            }
-    </style>
+                .dropdown-item:last-child {
+                        border-bottom: none;
+                    }
+
+                /* ── Sidebar Collapse/Expand ── */
+                .sidebar-transition { transition: width 0.3s ease !important; }
+                .content-area-transition { transition: margin-left 0.3s ease, left 0.3s ease !important; }
+
+                #sidebar.sidebar-collapsed {
+                    width: 65px;
+                }
+                #sidebar.sidebar-collapsed .sidebar-header h4 span,
+                #sidebar.sidebar-collapsed .nav-link span.nav-text,
+                #sidebar.sidebar-collapsed .nav-link .float-end,
+                #sidebar.sidebar-collapsed .btn-toggle-nav,
+                #sidebar.sidebar-collapsed .sidebar-footer span,
+                #sidebar.sidebar-collapsed .sidebar-footer .bi-chevron-right,
+                #sidebar.sidebar-collapsed .logout-btn span.logout-text,
+                #sidebar.sidebar-collapsed .search-bar-text,
+                #sidebar.sidebar-collapsed .search-bar-shortcut {
+                    display: none !important;
+                }
+                #sidebar.sidebar-collapsed .nav-link {
+                    text-align: center;
+                    padding: 0.75rem 0;
+                    margin: 0.2rem 0.25rem;
+                    justify-content: center;
+                }
+                #sidebar.sidebar-collapsed .nav-link i.bi {
+                    margin-right: 0;
+                    font-size: 1.25rem;
+                }
+                #sidebar.sidebar-collapsed .sidebar-header {
+                    padding: 1rem 0.5rem;
+                    text-align: center;
+                }
+                #sidebar.sidebar-collapsed .sidebar-header h4 {
+                    font-size: 0;
+                }
+                #sidebar.sidebar-collapsed .sidebar-header h4 i {
+                    font-size: 1.3rem;
+                    margin: 0;
+                }
+                #sidebar.sidebar-collapsed .sidebar-footer a {
+                    justify-content: center;
+                }
+                #sidebar.sidebar-collapsed .sidebar-footer a i.bi-building {
+                    margin-right: 0 !important;
+                }
+                #sidebar.sidebar-collapsed .logout-btn {
+                    padding: 0.75rem 0.5rem;
+                    text-align: center;
+                    font-size: 0;
+                }
+                #sidebar.sidebar-collapsed .logout-btn i {
+                    font-size: 1.1rem;
+                    margin-right: 0;
+                }
+                #sidebar.sidebar-collapsed .sidebar-search-bar {
+                    padding: 0.75rem 0.5rem;
+                }
+                #sidebar.sidebar-collapsed .sidebar-search-bar .search-bar-icon {
+                    margin-right: 0;
+                }
+
+                /* Toggle arrow button */
+                .sidebar-toggle-btn {
+                    position: absolute;
+                    top: 12px;
+                    right: -14px;
+                    width: 28px;
+                    height: 28px;
+                    border-radius: 50%;
+                    background: #fff;
+                    border: 1px solid #ccc;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+                    z-index: 1001;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #333;
+                    font-size: 14px;
+                    padding: 0;
+                }
+                .sidebar-toggle-btn:hover {
+                    background: #e9ecef;
+                }
+
+                /* Search bar in sidebar */
+                .sidebar-search-bar {
+                    display: flex;
+                    align-items: center;
+                    padding: 0.75rem 1rem;
+                    margin: 0.5rem;
+                    background: rgba(255,255,255,0.1);
+                    border-radius: 8px;
+                    cursor: pointer;
+                    color: #adb5bd;
+                    font-size: 14px;
+                    transition: background 0.2s;
+                }
+                .sidebar-search-bar:hover {
+                    background: rgba(255,255,255,0.18);
+                }
+                .sidebar-search-bar .search-bar-icon {
+                    margin-right: 10px;
+                    font-size: 16px;
+                }
+                .sidebar-search-bar .search-bar-shortcut {
+                    margin-left: auto;
+                    background: rgba(255,255,255,0.15);
+                    padding: 2px 8px;
+                    border-radius: 4px;
+                    font-size: 11px;
+                }
+
+                /* ── Search Modal ── */
+                .search-modal-overlay {
+                    display: none;
+                    position: fixed;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.45);
+                    z-index: 10000;
+                    align-items: center;
+                    justify-content: center;
+                    opacity: 0;
+                    transition: opacity 0.2s;
+                }
+                .search-modal-overlay.show { opacity: 1; }
+                .search-modal-box {
+                    background: #fff;
+                    border-radius: 12px;
+                    width: 90%;
+                    max-width: 600px;
+                    max-height: 70vh;
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+                    overflow: hidden;
+                }
+                .search-modal-header {
+                    display: flex;
+                    align-items: center;
+                    padding: 16px 20px;
+                    border-bottom: 1px solid #e9ecef;
+                    gap: 10px;
+                }
+                .search-modal-header i.bi-search {
+                    color: #6c757d;
+                    font-size: 18px;
+                }
+                .search-modal-header input {
+                    flex: 1;
+                    border: none;
+                    outline: none;
+                    font-size: 16px;
+                    background: transparent;
+                }
+                .search-modal-header .search-close-btn {
+                    background: none;
+                    border: none;
+                    font-size: 22px;
+                    color: #999;
+                    cursor: pointer;
+                    padding: 0 4px;
+                }
+                .search-modal-header .search-close-btn:hover { color: #333; }
+                .search-modal-body {
+                    overflow-y: auto;
+                    padding: 8px 0;
+                }
+                .search-section-title {
+                    padding: 8px 20px 4px;
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: #6c757d;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                }
+                .search-result-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 10px 20px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    color: #333;
+                    transition: background 0.15s;
+                }
+                .search-result-item:hover,
+                .search-result-item.highlighted {
+                    background: #e8f4fd;
+                }
+                .search-result-arrow {
+                    margin-left: auto;
+                    color: #adb5bd;
+                    font-size: 16px;
+                }
+                .search-no-results {
+                    padding: 20px;
+                    text-align: center;
+                    color: #999;
+                    font-size: 14px;
+                }
+
+                /* ── Combined Row (list + create in one row) ── */
+                .nav-item-combined {
+                    display: flex;
+                    align-items: stretch;
+                    margin: 0.2rem 0.5rem;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    position: relative;
+                }
+                .nav-item-combined .nav-link-left {
+                    flex: 1;
+                    display: flex;
+                    align-items: center;
+                    color: #e9ecef;
+                    padding: 0.75rem 1.5rem;
+                    text-decoration: none;
+                    font-weight: 500;
+                    border-radius: 8px;
+                    transition: all 0.3s ease;
+                    white-space: nowrap;
+                    overflow: visible;
+                }
+                .nav-item-combined .nav-link-left i {
+                    margin-right: 10px;
+                    width: 20px;
+                    text-align: center;
+                    font-size: 1.1rem;
+                    flex-shrink: 0;
+                }
+                .nav-item-combined .nav-link-left:hover {
+                    background: rgba(255,255,255,0.1);
+                    color: #fff;
+                }
+                .nav-item-combined .nav-link-left.active {
+                    background: linear-gradient(135deg, #4dabf7, #339af0);
+                    color: #fff;
+                    box-shadow: 0 4px 15px rgba(77, 171, 247, 0.3);
+                }
+                .nav-item-combined .nav-link-plus {
+                    position: absolute;
+                    right: 1.5rem;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #adb5bd;
+                    font-size: 16px;
+                    font-weight: 300;
+                    text-decoration: none;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    z-index: 2;
+                    padding: 4px;
+                    border-radius: 4px;
+                }
+                .nav-item-combined .nav-link-plus:hover {
+                    background: rgba(255,255,255,0.15);
+                    color: #fff;
+                }
+                /* Collapsed sidebar: hide plus icon */
+                #sidebar.sidebar-collapsed .nav-item-combined .nav-link-plus {
+                    display: none;
+                }
+                #sidebar.sidebar-collapsed .nav-item-combined .nav-link-left {
+                    justify-content: center;
+                    padding: 0.75rem 0;
+                    border-radius: 8px;
+                }
+                #sidebar.sidebar-collapsed .nav-item-combined .nav-link-left i {
+                    margin-right: 0;
+                }
+                #sidebar.sidebar-collapsed .nav-item-combined .nav-link-left .nav-text {
+                    display: none !important;
+                }
+            </style>
 </head>
 <body>
 
@@ -577,11 +854,35 @@
         </div>
     </div>
 
+    <!-- Search Modal -->
+    <div class="search-modal-overlay" id="searchModal">
+        <div class="search-modal-box">
+            <div class="search-modal-header">
+                <i class="bi bi-search"></i>
+                <input type="text" id="searchModalInput" placeholder="Open anything like invoices, reports..." autocomplete="off" />
+                <button class="search-close-btn" onclick="closeSearchModal()">&times;</button>
+            </div>
+            <div class="search-modal-body" id="searchResultsList"></div>
+        </div>
+    </div>
+
     <!-- Sidebar -->
-    <nav id="sidebar">
+    <nav id="sidebar" class="sidebar-expanded">
+        <!-- Toggle Button -->
+        <button type="button" class="sidebar-toggle-btn" id="sidebarCollapseBtn" onclick="toggleSidebar()">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
         <!-- Sidebar Header -->
         <div class="sidebar-header">
-            <h4><i class="bi bi-speedometer2 me-2"></i>MuneemJi</h4>
+            <h4><i class="bi bi-speedometer2 me-2"></i><span>MuneemJi</span></h4>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="sidebar-search-bar" onclick="openSearchModal()">
+            <i class="bi bi-search search-bar-icon"></i>
+            <span class="search-bar-text">Open Anything</span>
+            <span class="search-bar-shortcut">Ctrl+F</span>
         </div>
 
         <!-- Sidebar Navigation Menu -->
@@ -589,9 +890,9 @@
             <ul class="nav nav-pills flex-column">
                 <!-- Home -->
                 <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")"
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")" data-bs-title="Home"
                        href="/Web/Home/index">
-                        <i class="bi bi-house-door"></i> Home
+                        <i class="bi bi-house-door"></i> <span class="nav-text">Home</span>
                     </a>
                 </li>
 
@@ -599,18 +900,13 @@
                     @{
                         var isPartiesActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "party";
                     }
-                    <a class="nav-link @(isPartiesActive ? "active" : "")"
-                       data-bs-toggle="collapse" href="#partiesMenu"
-                       role="button" aria-expanded="@(isPartiesActive ? "true" : "false")"
-                       aria-controls="partiesMenu">
-                        <i class="bi bi-people"></i> Parties
-                        <i class="bi bi-chevron-down float-end"></i>
-                    </a>
-                    <div class="collapse @(isPartiesActive ? "show" : "")" id="partiesMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal">
-                            <li><a href="/Web/party/index" class="nav-link">All Parties</a></li>
-                            <li><a href="/Web/party/add" class="nav-link">Add Party</a></li>
-                        </ul>
+                    <div class="nav-item-combined">
+                        <a href="/Web/party/index" class="nav-link-left @(isPartiesActive ? "active" : "")" data-bs-title="Parties">
+                            <i class="bi bi-people"></i> <span class="nav-text">Parties</span>
+                        </a>
+                        <a href="/Web/party/add" class="nav-link-plus" onclick="event.stopPropagation();" title="Add Party">
+                            <i class="bi bi-plus"></i>
+                        </a>
                     </div>
                 </li>
 
@@ -618,23 +914,24 @@
                 <li class="nav-item" data-permission-module="Items" data-permission-action="view">
                     @{
                         var isItemsActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "items"
-                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "billitem"
-                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "godown";
+                        || ViewContext.RouteData.Values["Controller"]?.ToString() == "billitem";
                     }
-                    <a class="nav-link @(isItemsActive ? "active" : "")"
-                       data-bs-toggle="collapse" href="#ItemMenu"
-                       role="button" aria-expanded="@(isItemsActive ? "true" : "false")"
-                       aria-controls="ItemMenu">
-                        <i class="bi bi-box-seam"></i> Items
-                        <i class="bi bi-chevron-down float-end"></i>
-                    </a>
-                    <div class="collapse @(isItemsActive ? "show" : "")" id="ItemMenu">
-                        <ul class="btn-toggle-nav list-unstyled fw-normal">
-                            <li><a href="/Web/items/Products" class="nav-link">All Items</a></li>
-                            <li><a href="/Web/Items/create" class="nav-link">Add Item</a></li>
-                            <li><a href="/Web/godown/index" class="nav-link">Godown Management</a></li>
-                        </ul>
+                    <div class="nav-item-combined">
+                        <a href="/Web/items/Products" class="nav-link-left @(isItemsActive ? "active" : "")" data-bs-title="Items">
+                            <i class="bi bi-box-seam"></i> <span class="nav-text">Items</span>
+                        </a>
+                        <a href="/Web/Items/create" class="nav-link-plus" onclick="event.stopPropagation();" title="Add Item">
+                            <i class="bi bi-plus"></i>
+                        </a>
                     </div>
+                </li>
+
+                <!-- Godown Management -->
+                <li class="nav-item" data-permission-module="Items" data-permission-action="view">
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "godown" ? "active" : "")" data-bs-title="Godown"
+                       href="/Web/godown/index">
+                        <i class="bi bi-building"></i> <span class="nav-text">Godown</span>
+                    </a>
                 </li>
 
                 <!-- Sale -->
@@ -648,11 +945,11 @@
                         || ViewContext.RouteData.Values["Controller"]?.ToString() == "CreditNote"
                         || ViewContext.RouteData.Values["Controller"]?.ToString() == "OtherIncome";
                     }
-                    <a class="nav-link @(isSalesActive ? "active" : "")"
+                    <a class="nav-link @(isSalesActive ? "active" : "")" data-bs-title="Sale"
                        data-bs-toggle="collapse" href="#saleMenu"
                        role="button" aria-expanded="@(isSalesActive ? "true" : "false")"
                        aria-controls="saleMenu">
-                        <i class="bi bi-receipt"></i> Sale
+                        <i class="bi bi-receipt"></i> <span class="nav-text">Sale</span>
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse @(isSalesActive ? "show" : "")" id="saleMenu">
@@ -678,11 +975,11 @@
                         || ViewContext.RouteData.Values["Controller"]?.ToString() == "PurchaseOrder"
                         || ViewContext.RouteData.Values["Controller"]?.ToString() == "DebitNote";
                     }
-                    <a class="nav-link @(isPurchaseActive ? "active" : "")"
+                    <a class="nav-link @(isPurchaseActive ? "active" : "")" data-bs-title="Purchase & Expense"
                        data-bs-toggle="collapse" href="#purchaseMenu"
                        role="button" aria-expanded="@(isPurchaseActive ? "true" : "false")"
                        aria-controls="purchaseMenu">
-                        <i class="bi bi-cart3"></i> Purchase & Expense
+                        <i class="bi bi-cart3"></i> <span class="nav-text">Purchase & Expense</span>
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse @(isPurchaseActive ? "show" : "")" id="purchaseMenu">
@@ -702,11 +999,11 @@
                     @{
                         var isGrowActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "WhatsAppMarketing";
                     }
-                    <a class="nav-link @(isGrowActive ? "active" : "")"
+                    <a class="nav-link @(isGrowActive ? "active" : "")" data-bs-title="Grow Your Business"
                        data-bs-toggle="collapse" href="#growMenu"
                        role="button" aria-expanded="@(isGrowActive ? "true" : "false")"
                        aria-controls="growMenu">
-                        <i class="bi bi-graph-up-arrow"></i> Grow Your Business
+                        <i class="bi bi-graph-up-arrow"></i> <span class="nav-text">Grow Your Business</span>
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse @(isGrowActive ? "show" : "")" id="growMenu">
@@ -722,11 +1019,11 @@
                         var isCashBankActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "bank"
                         || ViewContext.RouteData.Values["Controller"]?.ToString() == "Loan";
                     }
-                    <a class="nav-link @(isCashBankActive ? "active" : "")"
+                    <a class="nav-link @(isCashBankActive ? "active" : "")" data-bs-title="Cash & Bank"
                        data-bs-toggle="collapse" href="#cashMenu"
                        role="button" aria-expanded="@(isCashBankActive ? "true" : "false")"
                        aria-controls="cashMenu">
-                        <i class="bi bi-bank"></i> Cash & Bank
+                        <i class="bi bi-bank"></i> <span class="nav-text">Cash & Bank</span>
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse @(isCashBankActive ? "show" : "")" id="cashMenu">
@@ -740,9 +1037,9 @@
 
                 <!-- Reports -->
                 <li class="nav-item" data-permission-module="Reports" data-permission-action="view">
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Report" ? "active" : "")"
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Report" ? "active" : "")" data-bs-title="Reports"
                        href="/Web/Report/Index">
-                        <i class="bi bi-bar-chart"></i> Reports
+                        <i class="bi bi-bar-chart"></i> <span class="nav-text">Reports</span>
                     </a>
                 </li>
 
@@ -752,11 +1049,11 @@
                         var isEnquiryActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "Enquiry"
                             || ViewContext.RouteData.Values["Controller"]?.ToString() == "Support";
                     }
-                    <a class="nav-link @(isEnquiryActive ? "active" : "")"
+                    <a class="nav-link @(isEnquiryActive ? "active" : "")" data-bs-title="Enquiry & Support"
                        data-bs-toggle="collapse" href="#enquiryMenu"
                        role="button" aria-expanded="@(isEnquiryActive ? "true" : "false")"
                        aria-controls="enquiryMenu">
-                        <i class="bi bi-envelope-paper"></i> Enquiry & Support
+                        <i class="bi bi-envelope-paper"></i> <span class="nav-text">Enquiry & Support</span>
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse @(isEnquiryActive ? "show" : "")" id="enquiryMenu">
@@ -772,11 +1069,11 @@
                     @{
                         var isSyncActive = ViewContext.RouteData.Values["Controller"]?.ToString() == "User";
                     }
-                    <a class="nav-link @(isSyncActive ? "active" : "")"
+                    <a class="nav-link @(isSyncActive ? "active" : "")" data-bs-title="Sync & Share"
                        data-bs-toggle="collapse" href="#syncMenu"
                        role="button" aria-expanded="@(isSyncActive ? "true" : "false")"
                        aria-controls="syncMenu">
-                        <i class="bi bi-cloud-arrow-up"></i> Sync & Share
+                        <i class="bi bi-cloud-arrow-up"></i> <span class="nav-text">Sync & Share</span>
                         <i class="bi bi-chevron-down float-end"></i>
                     </a>
                     <div class="collapse @(isSyncActive ? "show" : "")" id="syncMenu">
@@ -788,17 +1085,17 @@
 
                 <!-- Settings -->
                 <li class="nav-item" data-permission-module="Settings" data-permission-action="view">
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Settings" ? "active" : "")"
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "Settings" ? "active" : "")" data-bs-title="Settings"
                        onclick="window.location.href='/Web/Settings/General/Index?returnUrl=' + encodeURIComponent(window.location.href)" style="cursor: pointer";>
-                        <i class="bi bi-gear"></i> Settings
+                        <i class="bi bi-gear"></i> <span class="nav-text">Settings</span>
                     </a>
                 </li>
 
                 <!-- Plans & Pricing -->
                 <li class="nav-item">
-                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PlansAndPricing" ? "active" : "")"
+                    <a class="nav-link @(ViewContext.RouteData.Values["Controller"]?.ToString() == "PlansAndPricing" ? "active" : "")" data-bs-title="Plans & Pricing"
                        href="/Web/PlansAndPricing/index">
-                        <i class="bi bi-trophy"></i> Plans & Pricing
+                        <i class="bi bi-trophy"></i> <span class="nav-text">Plans & Pricing</span>
                     </a>
                 </li>
             </ul>
@@ -819,7 +1116,7 @@
 
         <!-- Logout Button -->
         <button onclick="logout()" class="logout-btn">
-            <i class="bi bi-box-arrow-right"></i>Logout
+            <i class="bi bi-box-arrow-right"></i><span class="logout-text">Logout</span>
         </button>
     </nav>
 
@@ -932,6 +1229,7 @@
         });
     </script>
 
+    <script src="~/js/sidebar.js"></script>
     @RenderSection("Scripts", required: false)
     @await Component.InvokeAsync("UserPermission")
 </body>

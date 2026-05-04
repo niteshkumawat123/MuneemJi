@@ -1,0 +1,313 @@
+@model List<MUNEEMJI.Models.Enquiry>
+@{
+    ViewData["Title"] = "Support Enquiries";
+    string sectionType = "support";
+    string controllerName = "Support";
+    string pageTitle = "Support Enquiries";
+    string addBtnText = "Add Support Enquiry";
+}
+
+<div class="container-fluid px-3 py-2">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+        <h4 class="fw-bold mb-0"><i class="bi bi-headset text-success me-2"></i>@pageTitle</h4>
+        <button class="btn btn-success btn-sm" onclick="openAddModal()">
+            <i class="bi bi-plus-lg me-1"></i>@addBtnText
+        </button>
+    </div>
+
+    <!-- Summary Cards -->
+    @{
+        int totalNew = Model?.Count(e => e.Status == "new") ?? 0;
+        int totalVerified = Model?.Count(e => e.Status == "verified") ?? 0;
+        int totalUnverified = Model?.Count(e => e.Status == "unverified") ?? 0;
+        int totalClosed = Model?.Count(e => e.Status == "closed") ?? 0;
+    }
+    <div class="row g-2 mb-3">
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm" style="border-left:3px solid #3b82f6!important;">
+                <div class="card-body p-2 text-center">
+                    <div class="text-muted small">New</div>
+                    <h5 class="fw-bold mb-0 text-primary">@totalNew</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm" style="border-left:3px solid #16a34a!important;">
+                <div class="card-body p-2 text-center">
+                    <div class="text-muted small">Verified</div>
+                    <h5 class="fw-bold mb-0 text-success">@totalVerified</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm" style="border-left:3px solid #f59e0b!important;">
+                <div class="card-body p-2 text-center">
+                    <div class="text-muted small">Unverified</div>
+                    <h5 class="fw-bold mb-0 text-warning">@totalUnverified</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card border-0 shadow-sm" style="border-left:3px solid #ef4444!important;">
+                <div class="card-body p-2 text-center">
+                    <div class="text-muted small">Closed</div>
+                    <h5 class="fw-bold mb-0 text-danger">@totalClosed</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="enquiryTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width:50px;">#</th>
+                            <th>Customer</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Subject</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th style="width:140px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            int idx = 0;
+                            foreach (var e in Model)
+                            {
+                                idx++;
+                                var badgeClass = e.Status switch { "new" => "bg-primary", "verified" => "bg-success", "unverified" => "bg-warning text-dark", "closed" => "bg-danger", _ => "bg-secondary" };
+                                var sourceLabel = e.EnquirySource switch { "website_form" => "Website", "phone" => "Phone", "support_button" => "Support Btn", "manual" => "Manual", _ => e.EnquirySource };
+                                <tr>
+                                    <td>@idx</td>
+                                    <td class="fw-semibold">@e.CustomerName</td>
+                                    <td>@e.CustomerPhone</td>
+                                    <td>@(e.CustomerEmail ?? "—")</td>
+                                    <td>@e.Subject</td>
+                                    <td><span class="badge bg-light text-dark border">@sourceLabel</span></td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm @badgeClass dropdown-toggle" data-bs-toggle="dropdown" style="font-size:11px;min-width:90px;">@e.Status.ToUpper()</button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus(@e.EnquiryId,'new')"><span class="badge bg-primary me-1">&nbsp;</span> New</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus(@e.EnquiryId,'verified')"><span class="badge bg-success me-1">&nbsp;</span> Verified</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus(@e.EnquiryId,'unverified')"><span class="badge bg-warning me-1">&nbsp;</span> Unverified</a></li>
+                                                <li><a class="dropdown-item" href="#" onclick="changeStatus(@e.EnquiryId,'closed')"><span class="badge bg-danger me-1">&nbsp;</span> Closed</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                    <td class="text-muted small">@e.CreatedAt.ToString("dd MMM yyyy")</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" onclick="editEnquiry(@e.EnquiryId)" title="Edit"><i class="bi bi-pencil"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@e.EnquiryId,'@e.CustomerName.Replace("'","\\'")') " title="Delete"><i class="bi bi-trash"></i></button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center py-5">
+                                    <i class="bi bi-headset" style="font-size:48px;color:#d1d5db;"></i>
+                                    <p class="text-muted mt-2 mb-0">No support enquiries yet.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal fade" id="enquiryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="modalTitle">Add Support Enquiry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="frmEnquiryId" value="0" />
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Customer Name <span class="text-danger">*</span></label>
+                        <input type="text" id="frmCustomerName" class="form-control" maxlength="200" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Phone <span class="text-danger">*</span></label>
+                        <input type="text" id="frmCustomerPhone" class="form-control" maxlength="20" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Email</label>
+                        <input type="email" id="frmCustomerEmail" class="form-control" maxlength="200" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Source</label>
+                        <select id="frmSource" class="form-select">
+                            <option value="manual">Manual</option>
+                            <option value="phone">Phone</option>
+                            <option value="support_button">Support Button</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Subject <span class="text-danger">*</span></label>
+                        <input type="text" id="frmSubject" class="form-control" maxlength="300" required />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">Description</label>
+                        <textarea id="frmMessage" class="form-control" rows="3" maxlength="2000"></textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Assign To</label>
+                        <select id="frmAssignedTo" class="form-select">
+                            <option value="">— None —</option>
+                            @if (ViewBag.Users != null)
+                            {
+                                foreach (var u in (List<MUNEEMJI.Models.Business>)ViewBag.Users)
+                                {
+                                    <option value="@u.Id">@u.Username</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-success" id="btnSaveEnquiry" onclick="saveEnquiry()"><i class="bi bi-check-lg me-1"></i>Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- REASON MODAL -->
+<div class="modal fade" id="reasonModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0">
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-chat-left-text" style="font-size:36px;color:#f59e0b;"></i>
+                <h6 class="fw-bold mt-2" id="reasonModalTitle">Reason Required</h6>
+                <textarea id="reasonText" class="form-control mt-2" rows="3" placeholder="Enter reason..."></textarea>
+                <input type="hidden" id="reasonEnquiryId" /><input type="hidden" id="reasonStatus" />
+                <div class="d-flex gap-2 justify-content-center mt-3">
+                    <button class="btn btn-primary btn-sm px-4" onclick="submitStatusWithReason()">Submit</button>
+                    <button class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0">
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-exclamation-triangle" style="font-size:40px;color:#ef4444;"></i>
+                <h6 class="fw-bold mt-2">Delete Enquiry?</h6>
+                <p class="text-muted small" id="deleteEnquiryName"></p>
+                <input type="hidden" id="deleteEnquiryId" />
+                <div class="d-flex gap-2 justify-content-center">
+                    <button class="btn btn-danger btn-sm px-4" onclick="doDelete()"><i class="bi bi-trash me-1"></i>Delete</button>
+                    <button class="btn btn-secondary btn-sm px-4" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const CTRL = '@controllerName';
+const baseUrl = `/Web/${CTRL}`;
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Add Support Enquiry';
+    clearForm();
+    new bootstrap.Modal(document.getElementById('enquiryModal')).show();
+}
+function clearForm() {
+    ['frmEnquiryId','frmCustomerName','frmCustomerPhone','frmCustomerEmail','frmSubject','frmMessage'].forEach(id => {
+        const el = document.getElementById(id); if(el) el.value = id==='frmEnquiryId'?'0':'';
+    });
+    document.getElementById('frmSource').value='manual';
+    document.getElementById('frmAssignedTo').value='';
+}
+function editEnquiry(id) {
+    fetch(`${baseUrl}/GetById?id=${id}`).then(r=>r.json()).then(res=>{
+        if(!res.success){alert(res.message);return;}
+        const d=res.data;
+        document.getElementById('frmEnquiryId').value=d.enquiryId;
+        document.getElementById('frmCustomerName').value=d.customerName;
+        document.getElementById('frmCustomerPhone').value=d.customerPhone;
+        document.getElementById('frmCustomerEmail').value=d.customerEmail||'';
+        document.getElementById('frmSubject').value=d.subject;
+        document.getElementById('frmMessage').value=d.message||'';
+        document.getElementById('frmSource').value=d.enquirySource;
+        document.getElementById('frmAssignedTo').value=d.assignedTo||'';
+        document.getElementById('modalTitle').textContent='Edit Support Enquiry';
+        new bootstrap.Modal(document.getElementById('enquiryModal')).show();
+    });
+}
+function saveEnquiry() {
+    const name=document.getElementById('frmCustomerName').value.trim();
+    const phone=document.getElementById('frmCustomerPhone').value.trim();
+    const subject=document.getElementById('frmSubject').value.trim();
+    if(!name||!phone||!subject){alert('Please fill required fields.');return;}
+    const id=parseInt(document.getElementById('frmEnquiryId').value);
+    const payload={enquiryId:id,customerName:name,customerPhone:phone,
+        customerEmail:document.getElementById('frmCustomerEmail').value.trim()||null,
+        subject:subject,message:document.getElementById('frmMessage').value.trim()||null,
+        enquirySource:document.getElementById('frmSource').value,
+        assignedTo:document.getElementById('frmAssignedTo').value||null,
+        sectionType:'@sectionType'};
+    const url=id>0?`${baseUrl}/Edit`:`${baseUrl}/Create`;
+    const btn=document.getElementById('btnSaveEnquiry');btn.disabled=true;
+    btn.innerHTML='<span class="spinner-border spinner-border-sm"></span> Saving...';
+    fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+        .then(r=>r.json()).then(res=>{btn.disabled=false;btn.innerHTML='<i class="bi bi-check-lg me-1"></i>Save';
+        if(res.success)location.reload();else alert(res.message);})
+        .catch(()=>{btn.disabled=false;btn.innerHTML='<i class="bi bi-check-lg me-1"></i>Save';alert('Network error');});
+}
+function changeStatus(enquiryId,status){
+    if(status==='unverified'||status==='closed'){
+        document.getElementById('reasonEnquiryId').value=enquiryId;
+        document.getElementById('reasonStatus').value=status;
+        document.getElementById('reasonText').value='';
+        document.getElementById('reasonModalTitle').textContent=status==='closed'?'Close Reason':'Unverified Reason';
+        new bootstrap.Modal(document.getElementById('reasonModal')).show();return;
+    }
+    postStatus(enquiryId,status,null);
+}
+function submitStatusWithReason(){
+    const reason=document.getElementById('reasonText').value.trim();
+    if(!reason){alert('Reason is required.');return;}
+    postStatus(parseInt(document.getElementById('reasonEnquiryId').value),document.getElementById('reasonStatus').value,reason);
+}
+function postStatus(enquiryId,status,reason){
+    fetch(`${baseUrl}/UpdateStatus`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({enquiryId,status,reason})})
+        .then(r=>r.json()).then(res=>{if(res.success)location.reload();else alert(res.message);}).catch(()=>alert('Network error'));
+}
+function confirmDelete(id,name){
+    document.getElementById('deleteEnquiryId').value=id;
+    document.getElementById('deleteEnquiryName').textContent=name;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+function doDelete(){
+    const id=document.getElementById('deleteEnquiryId').value;
+    fetch(`${baseUrl}/Delete`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`id=${id}`})
+        .then(r=>r.json()).then(res=>{bootstrap.Modal.getInstance(document.getElementById('deleteModal')).hide();
+        if(res.success)location.reload();else alert(res.message);});
+}
+</script>
+}

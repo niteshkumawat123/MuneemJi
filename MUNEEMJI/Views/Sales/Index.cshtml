@@ -1,4 +1,4 @@
-﻿@model List<PurchaseBill>
+@model List<PurchaseBill>
 @{
     ViewData["Title"] = "Sale Invoices";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -62,17 +62,17 @@
                 <div class="summary-header">
                     <span class="summary-title">Total Sales Amount</span>
                     <div class="summary-trend">
-                        <span class="trend-percentage">100% ↗</span>
+                        <span class="trend-percentage">100% ?</span>
                         <small class="trend-text">vs last month</small>
                     </div>
                 </div>
                 <div class="summary-amount">
-                    <span class="currency">₹</span> @ViewBag.GrandTotal?.ToString("N0")
+                    <span class="currency">?</span> @ViewBag.GrandTotal?.ToString("N0")
                 </div>
                 <div class="summary-breakdown">
-                    <span class="received-text">Received: ₹ @ViewBag.PaidTotal?.ToString("N0") </span>
+                    <span class="received-text">Received: ? @ViewBag.PaidTotal?.ToString("N0") </span>
                     <span class="separator">|</span>
-                    <span class="balance-text">Balance: ₹ @ViewBag.UnpaidTotal?.ToString("N0") </span>
+                    <span class="balance-text">Balance: ? @ViewBag.UnpaidTotal?.ToString("N0") </span>
                 </div>
             </div>
         </div>
@@ -155,8 +155,8 @@
                                 <td>@(bill.PartyName ?? "NA")</td>
                                 <td>Sale</td>
                                 <td>@(bill.IsCredit == true ? "Credit" : "Cash")</td>
-                                <td>₹ @(bill.Total != null ? ((decimal)bill.Total).ToString("N0") : "0")</td>
-                                <td>₹ @(bill.FinalAmount != null ? ((decimal)bill.FinalAmount).ToString("N0") : "0")</td>
+                                <td>? @(bill.Total != null ? ((decimal)bill.Total).ToString("N0") : "0")</td>
+                                <td>? @(bill.FinalAmount != null ? ((decimal)bill.FinalAmount).ToString("N0") : "0")</td>
                                 <td>@(bill.DueDate != null ? ((DateTime)bill.DueDate).ToString("dd/MM/yyyy") : "-")</td>
                                 <td>
                                     <span class="badge bg-success">@((bill.Total - bill.FinalAmount) == 0 ? "Paid" : "Partial Paid")</span>
@@ -499,4 +499,4 @@
     }
 
 </script>
-<script src="/js/dropdown-loader.js"></script>
+<script src="~/js/dropdown-loader.js"></script>

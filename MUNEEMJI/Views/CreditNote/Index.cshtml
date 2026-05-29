@@ -1,4 +1,4 @@
-﻿@{
+@{
 
     ViewData["Title"] = "Transactions";
 }
@@ -249,7 +249,7 @@
     <div class="header-section">
         <div class="date-filter-section">
             <button class="dropdown-button" onclick="toggleDateFilter()">
-                This Month <span>▼</span>
+                This Month <span>?</span>
             </button>
             <span class="between-label">Between</span>
             <input type="date" class="date-input" value="2025-07-01" id="startDate">
@@ -261,10 +261,10 @@
         </div>
         <div class="action-buttons">
             <button class="excel-btn" onclick="exportToExcel()">
-                📊 Excel Report
+                ?? Excel Report
             </button>
             <button class="print-btn" onclick="printReport()">
-                🖨️ Print
+                ??? Print
             </button>
         </div>
     </div>
@@ -273,13 +273,13 @@
         <div class="transactions-header">
             <h2 class="transactions-title">TRANSACTIONS</h2>
             <div class="search-actions">
-                <input type="text" class="search-input" placeholder="🔍 Search transactions..." id="searchInput">
+                <input type="text" class="search-input" placeholder="?? Search transactions..." id="searchInput">
                 <div class="bulk-actions">
                     <button class="bulk-convert-btn" onclick="bulkConvertToSale()">
                         Bulk Convert To Sale
                     </button>
                     <button class="add-delivery-btn" onclick="addDeliveryChallen()">
-                        ➕ Add Credit Note
+                        ? Add Credit Note
                     </button>
                 </div>
             </div>
@@ -288,12 +288,12 @@
         <table class="transactions-table">
             <thead>
                 <tr>
-                    <th>DATE <span class="filter-icon">⇅</span></th>
-                    <th>PARTY <span class="filter-icon">⇅</span></th>
-                    <th>CHALLAN NO. <span class="filter-icon">⇅</span></th>
-                    <th>DUE DATE <span class="filter-icon">⇅</span></th>
-                    <th>TOTAL AMOUNT <span class="filter-icon">⇅</span></th>
-                    <th>STATUS <span class="filter-icon">⇅</span></th>
+                    <th>DATE <span class="filter-icon">?</span></th>
+                    <th>PARTY <span class="filter-icon">?</span></th>
+                    <th>CHALLAN NO. <span class="filter-icon">?</span></th>
+                    <th>DUE DATE <span class="filter-icon">?</span></th>
+                    <th>TOTAL AMOUNT <span class="filter-icon">?</span></th>
+                    <th>STATUS <span class="filter-icon">?</span></th>
                     <th>ACTION</th>
                 </tr>
             </thead>
@@ -351,7 +351,7 @@
             party: 'dummy',
             challan: '145345',
             dueDate: '18/07/2025',
-            amount: '₹ 6,54,32,345.00',
+            amount: '? 6,54,32,345.00',
             status: 'Closed',
             statusDate: '18/07/2025',
             converted: 'Converted To Invoice No.2'
@@ -426,4 +426,4 @@
         console.log('Transaction page loaded');
     });
 </script>
-<script src="/js/dropdown-loader.js"></script>
+<script src="~/js/dropdown-loader.js"></script>

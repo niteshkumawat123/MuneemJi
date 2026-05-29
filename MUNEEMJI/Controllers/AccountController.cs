@@ -9,6 +9,8 @@ using System.Net;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
+using MailKit.Net.Smtp;
+using MimeKit;
 
 namespace MUNEEMJI.Controllers
 {
@@ -71,7 +73,22 @@ namespace MUNEEMJI.Controllers
                     HttpContext.Session.SetString("OtpGeneratedAt", DateTime.Now.ToString());
 
                     // Send OTP to email
-                    await SendEmailAsync(model.Email, "Your OTP Code", $"Your OTP is: {otp}");
+                    var emailBody = $@"
+<!DOCTYPE html>
+<html>
+<head><meta charset='UTF-8'></head>
+<body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>
+    <div style='background: #f8f9fa; border-radius: 8px; padding: 30px; text-align: center;'>
+        <h2 style='color: #333; margin-bottom: 10px;'>MuneemJi - Login Verification</h2>
+        <p style='color: #666; font-size: 16px;'>Your One-Time Password (OTP) for login is:</p>
+        <div style='background: #007bff; color: white; font-size: 32px; font-weight: bold; letter-spacing: 8px; padding: 15px 30px; border-radius: 8px; display: inline-block; margin: 20px 0;'>{otp}</div>
+        <p style='color: #999; font-size: 13px; margin-top: 20px;'>This OTP is valid for 5 minutes. Do not share it with anyone.</p>
+        <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+        <p style='color: #aaa; font-size: 12px;'>If you did not request this, please ignore this email.<br>&copy; MuneemJi - Business Management App</p>
+    </div>
+</body>
+</html>";
+                    await SendEmailAsync(model.Email, "MuneemJi - Your Login OTP Code", emailBody);
 
                     // Redirect to login with OTP sent flag and email
                     return RedirectToAction("Login", new { otpSent = true, email = model.Email });
@@ -388,34 +405,24 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
-                MailMessage mail = new MailMessage
-                {
-                    Subject = subject,
-                    Body = body,
-                    From = new MailAddress("noreplymuneemjii@gmail.com", "MuneemJiApp"),
-                    IsBodyHtml = true
-                };
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("MuneemJiApp", "noreplymuneemjii@gmail.com"));
+                message.To.Add(new MailboxAddress("", to));
+                message.Subject = subject;
+                message.Body = new TextPart("html") { Text = body };
 
-                mail.To.Add(to);
+                using var client = new MailKit.Net.Smtp.SmtpClient();
+                client.Timeout = 30000; // 30 seconds
 
-                NetworkCredential networkCredential = new NetworkCredential("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre");
-
-                SmtpClient smtpClient = new SmtpClient
-                {
-                    Host = "smtp.gmail.com",
-                    Port = 587,
-                    EnableSsl = true,
-                    UseDefaultCredentials = false,
-                    Credentials = networkCredential
-                };
-
-                mail.BodyEncoding = Encoding.Default;
-                await smtpClient.SendMailAsync(mail);
+                // Connect using STARTTLS on port 587
+                await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre");
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it as needed
-                throw new Exception("Failed to send email", ex);
+                throw new Exception($"Failed to send email: {ex.Message}", ex);
             }
         }
     }

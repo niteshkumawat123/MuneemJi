@@ -66,7 +66,7 @@ builder.Services.AddSession(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login"; // Change this to your login controller/action
+        options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
         options.SlidingExpiration = false;
         options.ExpireTimeSpan = TimeSpan.FromDays(365 * 10); 
@@ -76,13 +76,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UsePathBase("/Web");
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
-app.UsePathBase("/Web"); 
 
 app.UseStaticFiles();
 app.UseRouting();

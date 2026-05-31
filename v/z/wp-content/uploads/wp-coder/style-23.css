@@ -1,0 +1,156 @@
+        /* Basic styling, you can customize this according to your needs */
+        .tab-container {
+            display: flex;
+            overflow: hidden;
+            width: 80%; /* Adjust the width as needed */
+            margin: 3rem auto; /* Center the tab container */
+						height:460px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+		color:inherit;
+        }
+
+        .tab-list {
+            width: 45%;
+            overflow-y:scroll;
+					    font-size: 18px;	
+	}
+				
+        .tab {
+            padding: 12.5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+					height:75px;
+						padding-left:20px;
+					display:flex;
+					align-items:center;
+					font-weight:400;
+        }
+
+        .tab:hover {
+            background-color: #f0f0f0;
+					border-radius:10px;
+        }
+
+        .tab.selected {
+					border: 1px solid #238DF6;
+					border-left: 10px solid #238DF6;
+            background: linear-gradient(90deg, #F5FAFF 0%, rgba(223, 239, 255, 0) 76.11%);
+					border-radius:10px;
+					font-weight:600;
+					
+        }
+
+        .tab-content {
+					width:55%;
+            padding: 0 20px;
+					    line-height: 2;
+					overflow-y: scroll;
+        }
+	.tab-content-text{
+		color:inherit;
+	}
+	.heading-vertical-tab{
+		text-align:center;
+		padding:1rem;
+		font-size:26px;
+		color: inherit;
+	}
+	
+	.tab-list::-webkit-scrollbar {
+    -webkit-appearance: none;
+		width:11px
+}
+
+.tab-list::-webkit-scrollbar:horizontal {
+    height: 5px;
+}
+
+.tab-list::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    background-color: #D9D9D9;
+}
+.tab-list::-webkit-scrollbar-track { 
+    background-color: #fff; 
+    border-radius: 8px; 
+}
+	.tab-content::-webkit-scrollbar {
+			display:none;
+		width:11px
+}
+.tab-content::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    background-color: #D9D9D9;
+}
+
+	@media only screen
+		and (max-width : 576px)  {
+			.heading{
+				margin-bottom:1.5rem;
+			}
+			.tab-container {
+				flex-direction:column;
+            overflow: hidden;
+            width: 100% !important; /* Adjust the width as needed */
+            margin: 2rem auto; /* Center the tab container */
+						height:auto;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+					color:inherit;
+				padding:0 1rem;
+				gap:1rem;
+        }
+			.tab-list {
+				display:block;
+            overflow-x: scroll;
+				overflow-y: auto;
+				width:100% !important;
+				height:95px;
+	}
+			.tab-list-inner{
+				display:block;
+				width:600%;
+			}
+			.tab-content {
+				
+					width:100% !important;
+					    line-height: 1.5;
+					overflow-y: scroll;
+				overflow-x: scroll;
+				padding:0;
+				font-size: 12px;
+				height:275px;
+        }
+			.tab-content p {
+			font-size: 12px;
+				
+			}
+			 .tab {
+				 display:inline-block;
+            cursor: pointer;
+            transition: background-color 0.3s;
+					font-weight:400;
+				     height: 2.5rem;
+    padding: 0.4rem;
+				 border: 1px solid #E2E2E2;
+				 					border-radius:10px;
+margin:2px;
+        }
+
+        .tab:hover {
+            background-color: #f0f0f0;
+					border-radius:10px;
+        }
+
+        .tab.selected {
+					border: 1px solid #238DF6;
+					border-left: 10px solid #238DF6;
+            background: linear-gradient(90deg, #F5FAFF 0%, rgba(223, 239, 255, 0) 76.11%);
+					border-radius:10px;
+					font-weight:600;
+        }
+	}

@@ -1,0 +1,43 @@
+/* vyapar landing modal after download */
+
+.modal {
+    height: 100vh;
+    width: 100vw;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    top: 0% !important;
+    /* border: 1px solid white; */
+}
+
+#chrome_dialog {
+    width: 15%;
+    bottom: 0vh;
+    position: absolute;
+    box-sizing: border-box;
+    /* border: 1px solid yellow; */
+}
+
+#mozila_dialog {
+    width: 15%;
+    top: 0vh;
+    right: 0vw;
+    position: absolute;
+    box-sizing: border-box;
+    /* border: 1px solid yellowgreen; */
+}
+
+#mozila {
+    position: absolute;
+    width: 150px;
+    height: 100px;
+    top: 0vh;
+    right: 2vw;
+}
+
+#chrome {
+    position: absolute;
+    width: 155px;
+    height: 100px;
+    bottom: 0vh;
+    left: 1vw;
+}

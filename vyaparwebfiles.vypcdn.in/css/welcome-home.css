@@ -1,0 +1,1253 @@
+* {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.active>div {
+    display: none
+}
+
+.active>div:first-child {
+    display: block
+}
+
+.accordion-section .panel-default>.panel-heading {
+    border: 0;
+    background: #e8f6fb;
+    padding: 1em, 0, 1em, 0;
+    border-bottom: .5px solid #ddd
+}
+
+.accordion-section {
+    margin-top: 5em
+}
+
+.accordion-section .panel-default {
+    border-radius: 8px
+}
+
+.panel.panel-default {
+    margin-top: 1em !important
+}
+
+.accordion-section .panel-default .panel-body {
+    font-size: 16px;
+    font-family: Arial, Helvetica, sans-serif
+}
+
+.panel-group .panel-heading+.panel-collapse>.panel-body {
+    border-top: none
+}
+
+.view-more-faqs-btn {
+    margin: auto;
+    width: 40%;
+    height: 50px;
+    display: flex;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: #1789fc;
+    z-index: 1;
+    border-radius: 8px
+}
+
+.sale-banner-20 {
+    width: 100%;
+    position: relative;
+    margin-bottom: 25px
+}
+
+.sale-banner-20>img {
+    width: 100%
+}
+
+.main-content {
+    padding: 0 !important
+}
+
+.modal {
+    height: 100vh;
+    width: 100vw;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    top: 0% !important
+}
+
+.p-l-4em-m {
+    padding-left: 4em;
+    margin-top: -50px !important;
+}
+
+.features-point-2 {
+    font-size: 16px;
+    padding-left: 10px;
+}
+
+.w-30 {
+    width: 30% !important;
+}
+
+.h-80 {
+    height: 80%;
+}
+
+.w-80-m-100 {
+    width: 80% !important;
+}
+
+.w-15 {
+    width: 15%;
+}
+
+.w-10 {
+    width: 10% !important;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+.p-l-15px {
+    padding-left: 15px
+}
+
+.features {
+    padding: 4em !important;
+    padding-left: 0em !important
+}
+
+.features-point {
+    font-size: 24px;
+    padding-left: 15px;
+}
+
+.features-point-2 {
+    font-size: 16px;
+    padding-left: 10px;
+}
+
+.list-group-item.mobile {
+    width: 250px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.list-group-item {
+    border: none;
+    border-radius: 10px !important;
+    background-color: #fff;
+    color: #585F64 !important;
+    padding: 2em 2em;
+    margin-top: 15px;
+    box-shadow: 0px 0px 20px #00000029;
+    height: unset !important;
+}
+
+.list-group-item.active {
+    background-color: #EBF4FF !important;
+    color: #2A353D !important;
+    border-radius: 16px;
+}
+
+.para-p {
+    margin-top: 20px;
+    color: #2A353D;
+}
+
+.heading-left {
+    font-weight: 700;
+    padding-top: 1em;
+    color: #3b3a3a
+}
+
+.smooth-goto {
+    margin-top: 1em;
+}
+
+.blue-para {
+    color: #3D7DDA;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+/* common paddings */
+
+.px-4em {
+    padding-left: 4em;
+    padding-right: 4em;
+}
+
+.py-4em {
+    padding-bottom: 4em;
+    padding-top: 4em;
+}
+
+.pt-30px {
+    padding-top: 30px;
+}
+
+.mt-30px {
+    margin-top: 30px;
+}
+
+.mt-99px {
+    margin-top: 99px;
+}
+
+.pb-4em {
+    padding-bottom: 4em;
+}
+
+.pb-1em {
+    padding-bottom: 1em !important;
+}
+
+.pt-4em {
+    padding-top: 4em;
+}
+
+.pt-1em {
+    padding-top: 1em !important;
+}
+
+.pl-4em {
+    padding-left: 4em;
+}
+
+.pr-4em {
+    padding-right: 4em;
+}
+
+.pl-0em {
+    padding-left: 0em !important;
+}
+
+/* common margins */
+
+.mx-4em {
+    margin-left: 4em;
+    margin-right: 4em;
+}
+
+.my-4em {
+    margin-bottom: 4em !important;
+    margin-top: 4em !important;
+}
+
+.mb-4em {
+    margin-bottom: 4em;
+}
+
+.mt-4em {
+    margin-top: 4em;
+}
+
+.ml-4em {
+    margin-left: 4em;
+}
+
+.mr-4em {
+    margin-right: 4em;
+}
+
+.mt-2em {
+    margin-top: 2em !important;
+}
+
+.mb-2em {
+    margin-bottom: 2em !important;
+}
+
+.mt-1em {
+    margin-top: 1em !important;
+}
+
+.benefits-header {
+    margin: 2em 2em;
+    font: normal normal 600 44px/54px Poppins;
+    color: #314259;
+}
+
+.benefits-header-div {
+    padding-left: 6em;
+    padding-right: 6em;
+}
+
+.benefit-item {
+    font: normal normal 600 18px/22px Poppins;
+    color: #314259;
+}
+
+.build-for-industry-header {
+    font: normal normal 600 44px/65px Poppins;
+    color: #314259;
+}
+
+.build-for-industry-item-header {
+    font: normal normal 600 22px/22px Poppins;
+    color: #314259;
+}
+
+.features-item-header {
+    font: normal normal 600 22px/22px Poppins;
+    color: #314259;
+}
+
+.features-item-btn-header {
+    text-align: left;
+    font: normal normal 600 22px/22px Poppins;
+    color: #314259;
+    letter-spacing: 0px;
+    opacity: 1;
+}
+
+.bg-eeeeee {
+    background-color: #EEEEEE;
+}
+
+.bg-ffe8eb {
+    background-color: #FFE8EB;
+}
+
+.bg-ffffff {
+    background-color: #FFFFFF !important;
+}
+
+.bg-fafafa {
+    background-color: #fafafa;
+}
+
+.bg-ffe6eb {
+    background-color: #ffe6eb !important;
+}
+
+.bg-314259 {
+    background-color: #314259;
+}
+
+.bg-f9efef {
+    background-color: #F9EFEF;
+}
+
+.border-none {
+    border: none;
+}
+
+.mt-0 {
+    margin-top: 0px !important;
+}
+
+.panel-group .panel-default {
+    margin-top: 0px !important;
+}
+
+div.scrollmenu {
+    overflow: scroll !important;
+    white-space: nowrap;
+}
+
+div.scrollmenu button {
+    display: inline-block;
+    color: #585F64;
+    text-align: center;
+    text-decoration: none;
+    margin-right: 20px;
+}
+
+div.scrollmenu button.active {
+    background-color: #EBF4FF;
+}
+
+.navBtnsCarouselPrev {
+    margin: 3em 3em;
+    padding: 4px;
+    border-radius: 50%;
+    background-color: #91b9b9;
+    color: white;
+    font-weight: bold;
+    width: 30px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.navBtnsCarouselNext {
+    margin: 3em 5em 3em 0em;
+    padding: 4px;
+    width: 30px;
+    border-radius: 50%;
+    background-color: #91b9b9;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.retail-stores-div,
+.supermarkets-chains-div,
+.medical-shops-and-pharmacies-div,
+.freelance-professionals-div,
+.startups-and-smes-div,
+.construction-business-div,
+.lifestyle-and-fashion-div {
+    width: 100%;
+}
+
+.build-for-industry-item>.col-md-2 {
+    padding: 0px;
+}
+
+.retail-stores-div>img,
+.supermarkets-chains-div>img,
+.medical-shops-and-pharmacies-div>img,
+.freelance-professionals-div>img,
+.startups-and-smes-div>img,
+.construction-business-div>img,
+.lifestyle-and-fashion-div>img {
+    height: 100%;
+    width: 100%;
+    object-fit: contain
+}
+
+.bg-ed1a3b {
+    background-color: #ED1A3B !important;
+}
+
+.border-ed1a3b {
+    border: #ED1A3B !important;
+}
+
+.text-ed1a3b {
+    color: #ED1A3B !important;
+}
+
+#myVyaparNav a {
+    font-weight: normal !important;
+}
+
+.mb-0 {
+    margin-bottom: 0px !important;
+}
+
+#contact_form label {
+    padding-bottom: 5px !important;
+}
+
+.addr-group .fa-phone,
+.addr-group .fa-whatsapp {
+    color: red !important;
+    margin-right: 10px;
+}
+
+.block-wrapper-container .responsive-img {
+    width: 430px !important;
+}
+
+.read-more__link {
+    color: red;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.fa {
+    font-size: 20px !important;
+    font: normal normal normal 14px/1 FontAwesome !important;
+}
+
+#fa-windows-font {
+    font-size: 20px !important;
+}
+
+#fa-android-font {
+    font-size: 25px !important;
+}
+
+.features-dots-mobile {
+    width: 10px;
+    height: 10px;
+    margin: 5px 7px;
+    background: #D6D6D6;
+    display: block;
+    -webkit-backface-visibility: visible;
+    transition: opacity .2s ease;
+    border-radius: 30px;
+    opacity: 100%;
+    background-color: #314259;
+}
+
+.features-dots-mobile.active {
+    background-color: #ED1A3B;
+}
+
+.features-mobile-btns {
+    display: none !important;
+}
+
+.desktop-img {
+    max-width: 100%;
+    min-height: 100%;
+    height: auto;
+    width: auto;
+}
+
+.caouselNavDiv {
+    display: flex;
+    align-items: center;
+    color: black
+}
+
+#send-estimate-and-quotations-btn-mobile {
+    margin-left: 15px;
+}
+
+.accordion-section .panel-default .panel-title a {
+    display: block;
+    font-weight: 700;
+    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+    padding: 8px 0;
+    text-align: left;
+    font: normal normal 600 18px/22px Poppins;
+    letter-spacing: 0px;
+    color: #314259;
+    opacity: 1;
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+}
+
+.accordion-section .panel-default .panel-title a:after {
+    font-family: fontawesome;
+    font-style: normal;
+    font-size: 2rem;
+    content: "\f106";
+    float: right;
+    margin-top: -6px;
+    color: #314259 !important;
+}
+
+.accordion-section .panel-default .panel-title a.collapsed:after {
+    content: "\f107";
+    color: #ED1A3B !important;
+}
+
+.p-info {
+    text-align: left;
+    font: normal normal normal 18px/30px Poppins;
+    letter-spacing: 0px;
+    color: #314259;
+    opacity: 1;
+}
+
+.accordion-section .panel-default>.panel-heading,
+.accordion-section .panel,
+.accordion-section .panel-default {
+    border-radius: none !important;
+}
+
+.border-radius-top-10px {
+    border-top-left-radius: 10px !important;
+    border-top-right-radius: 10px !important;
+}
+
+.border-radius-bottom-10px {
+    border-bottom-left-radius: 10px !important;
+    border-bottom-right-radius: 10px !important;
+}
+
+.border-radius-bottom-10px>.bg-ffffff {
+    border-bottom: none !important;
+}
+
+.make-gst-bills-header,
+.check-inventory-header,
+.remind-to-recover-header,
+.gst-billing-made-simpler-header {
+    text-align: left;
+    font: normal normal 600 44px/54px Poppins;
+    letter-spacing: 0px;
+    color: #314259;
+    opacity: 1;
+}
+
+.pt-2em {
+    padding-top: 2em !important;
+}
+
+.pl-0px {
+    padding-left: 0px !important;
+}
+
+.pr-0px {
+    padding-right: 0px !important;
+}
+
+.footer-main-wrapper .footer .copyright {
+    border-top: 1px solid #C2D5EE !important;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.anchor-css-none {
+    text-decoration: none;
+}
+
+.header-main-wrapper .navbar .container-fluid #myVyaparNav {
+    width: 100%;
+    padding: 0px;
+}
+
+#homepage-desktop-download-btn {
+    border-radius: 8px !important;
+}
+
+.material-icons {
+    font-family: 'Material Icons' !important;
+}
+
+.legend_content {
+    font-size: 12px !important;
+}
+
+@media(min-width:576px) {
+    .d-sm-block {
+        display: block !important
+    }
+}
+
+@media screen and (min-width: 767.98px) {
+    .d-desktop-flex {
+        display: flex;
+    }
+    .align-self-desktop-center {
+        align-self: center;
+    }
+    .p-l-13percent {
+        padding-left: 13%;
+    }
+    .p-r-13percent {
+        padding-right: 13%;
+    }
+    .features {
+        padding-top: 0px !important;
+    }
+    .header-main-wrapper {
+        box-shadow: none !important;
+    }
+    .footer,
+    .footer-lins-section {
+        display: flex;
+        flex-direction: row;
+    }
+    .footer-lins-section {
+        width: 100%;
+    }
+    .footer-lins-section>.mobile-footer-row {
+        width: 100%;
+    }
+    .footer-lins-section>.mobile-footer-row.tools {
+        width: 50%;
+    }
+    .mobile-footer-row {
+        display: flex;
+        flex-direction: row;
+    }
+    .terms-policy {
+        /* width: 100%; */
+        display: flex;
+        flex-direction: row;
+        /* margin-top: 20px; */
+    }
+    .copyright {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+    .terms-policy>div {
+        width: 180px;
+    }
+    .features-of-gst-bs-header {
+        font: normal normal 600 44px/54px Poppins;
+        margin-left: 2em;
+        margin-right: 2em;
+        padding-right: 2em;
+        padding-left: 2em;
+        color: #314259;
+    }
+    #online-store-btn {
+        margin-bottom: 15px !important;
+    }
+    .header-home {
+        text-align: left;
+        font: normal normal bold 54px/70px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+    }
+    .header-para-desktop {
+        text-align: left;
+        font-weight: normal !important;
+        font-size: 16px !important;
+        font-family: Poppins !important;
+        letter-spacing: 0px;
+        color: #787878;
+        opacity: 1;
+        margin-right: 85px;
+    }
+    .our-trac-rec-card-header {
+        text-align: left;
+        font: normal normal medium 25px/38px Poppins;
+        font-weight: 500;
+        font-size: 25px;
+        line-height: 38px;
+        letter-spacing: 0px;
+        color: #314259;
+        margin: 10px 0;
+    }
+    .our-trac-rec-card-text {
+        font: normal normal medium 15px/21px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+        opacity: 1;
+    }
+    .faqs-header {
+        text-align: center;
+        font: normal normal 600 44px/65px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+    }
+    .contact-us-header {
+        font: normal normal 600 44px/65px Poppins;
+    }
+    .contact-us-address-header {
+        font: normal normal 600 18px/27px Poppins;
+    }
+    .contact-us-submit-btn {
+        text-align: center;
+        font: normal normal medium 18px/20px Poppins !important;
+        letter-spacing: 0px;
+        color: #FFFFFF;
+        opacity: 1;
+    }
+    .contact-us-name {
+        margin-top: 34px !important;
+    }
+    .contact-us-input-refs {
+        text-align: left;
+        font: normal normal normal 18px/27px Poppins;
+        letter-spacing: 0px;
+        opacity: 1;
+    }
+    #feedback_submit {
+        text-align: center;
+        font: normal normal medium 18px/20px Poppins;
+        letter-spacing: 0px;
+        color: #FFFFFF;
+        opacity: 1;
+    }
+    .contact-main-wrapper {
+        display: flex;
+    }
+    .footer-main-wrapper .footer ul li a {
+        text-align: left;
+        font: normal normal normal 14px/17px Poppins;
+        letter-spacing: 0px;
+        color: #C2D5EE !important;
+        opacity: 1;
+    }
+    #contact-with-us-footer-header,
+    #let-us-help-footer-header,
+    #feature-footer-header,
+    #quick-links-footer-header,
+    #tools-footer-header {
+        text-align: left;
+        font: normal normal 600 18px/27px Poppins;
+        letter-spacing: 0px;
+        color: #FFFFFF;
+        opacity: 1;
+    }
+    .footer-main-wrapper .footer .copyright .copyright-txt>*,
+    .footer-main-wrapper .footer .copyright .terms-policy a {
+        font: normal normal normal 14px/17px Poppins;
+        letter-spacing: 0px;
+        color: #C2D5EE;
+        opacity: 1;
+    }
+    .navbar-right {
+        margin-right: 0px !important;
+    }
+    .d-md-none {
+        display: none !important
+    }
+    .d-md-block {
+        display: block !important
+    }
+}
+
+@media(min-width:768px) and (max-width:991px) {
+    .active>div:first-child+div {
+        display: block
+    }
+}
+
+@media(min-width:800px) and (max-width:1000px) {
+    .mobilehide {
+        display: none !important
+    }
+}
+
+@media(min-width:992px) and (max-width:1199px) {
+    .active>div:first-child+div {
+        display: block
+    }
+    .active>div:first-child+div+div {
+        display: block
+    }
+}
+
+@media(min-width:1200px) {
+    .active>div:first-child+div {
+        display: block
+    }
+    .active>div:first-child+div+div {
+        display: block
+    }
+    .active>div:first-child+div+div+div {
+        display: block
+    }
+    .d-xl-block {
+        display: block !important
+    }
+}
+
+@media(max-width:767.98px) {
+    .list-group {
+        display: none;
+    }
+    .heading-left {
+        font-weight: 700;
+        padding-top: 1em;
+        text-align: justify
+    }
+    .features {
+        padding: 0em !important;
+    }
+    .our-trac-rec {
+        overflow-x: scroll;
+        white-space: nowrap;
+        padding-bottom: 10px;
+    }
+    .our-trac-rec::-webkit-scrollbar {
+        margin-top: 10px;
+        height: 5px;
+        width: 12px !important;
+    }
+    .our-trac-rec::-webkit-scrollbar-thumb {
+        background-color: #ED1A3B !important;
+        border-radius: 15px;
+    }
+    .our-trac-rec>div {
+        display: inline-block;
+        float: none;
+        margin-right: 20px;
+    }
+    .our-trac-rec:first-child {
+        margin-left: 20px;
+    }
+    .benefits-header {
+        margin: 2em 0em;
+        text-align: left;
+        font: normal normal 600 25px/35px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+        opacity: 1;
+    }
+    .benefits-header-div {
+        padding-left: 0em;
+        padding-right: 0em;
+    }
+    .benefits-row {
+        margin-top: 2em;
+    }
+    .benefits-row>.d-sm-block {
+        padding-top: 0.75em;
+    }
+    .benefits-row .col-sm-10 {
+        text-align: left !important;
+    }
+    div.scrollmenu {
+        padding-bottom: 1em;
+    }
+    /* common paddings for mobile */
+    .px-4em {
+        padding-left: 2em;
+        padding-right: 2em;
+    }
+    .py-4em {
+        padding-bottom: 2em;
+        padding-top: 2em;
+    }
+    .pb-4em {
+        padding-bottom: 2em;
+    }
+    .pt-4em {
+        padding-top: 2em;
+    }
+    .pl-4em {
+        padding-left: 2em;
+    }
+    .pr-4em {
+        padding-right: 2em;
+    }
+    .pr-mobile-0em {
+        padding-right: 0em !important;
+    }
+    /* common margins for mobile */
+    .mx-4em {
+        margin-left: 2em;
+        margin-right: 2em;
+    }
+    .my-4em {
+        margin-bottom: 2em;
+        margin-top: 2em;
+    }
+    .mb-4em {
+        margin-bottom: 2em;
+    }
+    .mt-4em {
+        margin-top: 2em;
+    }
+    .ml-4em {
+        margin-left: 2em;
+    }
+    .mr-4em {
+        margin-right: 2em;
+    }
+    .mt-mobile-2em {
+        margin-top: 2em;
+    }
+    .mb-mobile-25px {
+        margin-bottom: 25px !important;
+    }
+    .retail-stores-div,
+    .supermarkets-chains-div,
+    .medical-shops-and-pharmacies-div,
+    .freelance-professionals-div,
+    .startups-and-smes-div,
+    .construction-business-div,
+    .lifestyle-and-fashion-div {
+        width: 100%;
+        height: 100%;
+    }
+    .build-for-industry-item {
+        min-height: 100%;
+    }
+    .owl-stage {
+        display: flex;
+    }
+    .w-80-m-100 {
+        width: 100% !important;
+    }
+    .owl-item {
+        box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+        margin-bottom: 40px;
+        margin-top: 10px;
+        margin-right: 20px !important;
+        border-radius: 5px !important;
+    }
+    .d-block-mobile {
+        display: block !important;
+    }
+    .block-wrapper-container .responsive-img {
+        width: 75% !important;
+        object-fit: contain;
+    }
+    .pl-mobile-0 {
+        padding-left: 0px !important;
+    }
+    .pr-mobile-0 {
+        padding-right: 0px !important;
+    }
+    .owl-dot {
+        margin: 4px;
+        border: none;
+    }
+    .owl-dot>button {
+        border-radius: 18px;
+        padding: 8px 13px;
+        background-color: #F2F2F2;
+        border: none;
+        text-align: left;
+        font: normal normal normal 14px/19px Poppins;
+        letter-spacing: 0px;
+        color: #000000;
+    }
+    .owl-dot.active>button {
+        background-color: #CCCCCC !important;
+    }
+    .owl-dots {
+        position: absolute;
+        top: 0px;
+        text-align: justify !important;
+        margin: 7px !important;
+    }
+    .owl-stage {
+        margin-top: 80px !important;
+    }
+    .pb-mobile-0em {
+        padding-bottom: 0em !important
+    }
+    .features-mobile-btns {
+        display: flex !important;
+        margin-top: 20px;
+        justify-content: center;
+    }
+    .footer {
+        width: 90% !important;
+        display: block;
+    }
+    .mobile-footer-row {
+        display: flex;
+        flex-direction: row;
+    }
+    .footer-main-wrapper .footer ul li {
+        font-size: 9px !important;
+        font-weight: 300 !important;
+    }
+    #contact-with-us-footer-header,
+    #let-us-help-footer-header,
+    #feature-footer-header,
+    #quick-links-footer-header,
+    #tools-footer-header {
+        text-align: left;
+        font: normal normal 600 11px/15px Poppins;
+        letter-spacing: 0px;
+        color: #FFFFFF;
+        opacity: 1;
+    }
+    .copyright {
+        display: flex !important;
+        flex-direction: column-reverse !important;
+        padding-right: 0px !important;
+        padding-left: 0px !important;
+        font-size: 9px !important;
+        font-weight: 300 !important;
+        align-items: self-start !important;
+    }
+    .copyright>span {
+        font-size: 9px;
+    }
+    .terms-policy {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        margin-top: 20px;
+    }
+    .terms-policy>div {
+        width: 50%;
+    }
+    .features-of-gst-bs-header {
+        text-align: left !important;
+        font: normal normal 600 34px/50px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+    }
+    .benefits-header {
+        font: normal normal 600 34px/50px Poppins;
+        text-align: left !important;
+    }
+    .build-for-industry-header {
+        font: normal normal 600 34px/50px Poppins;
+        text-align: left !important;
+        color: #314259;
+    }
+    #homepage-mobile-download-btn {
+        display: flex;
+        -ms-flex-pack: distribute;
+        justify-content: space-around;
+        -ms-flex-align: center;
+        align-items: center;
+        cursor: pointer;
+        border-radius: 10px;
+        background: #ee3e3c;
+        font-size: 1rem;
+        height: 55px;
+        margin: 30px 0;
+    }
+    .mobile-text {
+        font-size: 17px;
+        font-weight: bold;
+    }
+    .header-para-mobile-p {
+        text-align: left;
+        font: normal normal normal 16px/32px Poppins !important;
+        letter-spacing: 0px;
+        color: #787878;
+        opacity: 1;
+    }
+    .p-info {
+        text-align: left;
+        font: normal normal normal 16px/25px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+        opacity: 1;
+    }
+    .header-home {
+        text-align: left;
+        font: normal normal bold 46px/60px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+        opacity: 1;
+    }
+    .accordion-section .panel-default .panel-title a {
+        text-align: left;
+        font: normal normal 600 14px/19px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+        opacity: 1;
+    }
+    .contact-us-header {
+        font: normal normal 600 25px/38px Poppins;
+    }
+    .contact-us-address-header {
+        font: normal normal 600 18px/27px Poppins;
+    }
+    .contact-us-submit-btn {
+        text-align: center;
+        font: normal normal medium 16px/20px Poppins !important;
+        letter-spacing: 0px;
+        color: #FFFFFF;
+        opacity: 1;
+    }
+    .navbar-collapse {
+        padding-top: -11px;
+    }
+    .make-gst-bills-header,
+    .check-inventory-header,
+    .remind-to-recover-header,
+    .gst-billing-made-simpler-header {
+        text-align: left;
+        font: normal normal 600 25px/35px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+        opacity: 1;
+    }
+    .features-item-btn-header-mobile {
+        text-align: left;
+        font: normal normal 600 18px/21px Poppins;
+        letter-spacing: 0px;
+        color: #314259;
+        opacity: 1;
+    }
+    .contact-us-name {
+        margin-top: 41px !important;
+    }
+    .contact-us-input-refs {
+        text-align: left;
+        font: normal normal normal 14px/21px Poppins;
+        letter-spacing: 0px;
+        color: #333333;
+    }
+    .contact-us-required-txt {
+        text-align: left;
+        font: italic normal normal 14px/21px Poppins;
+        letter-spacing: 0px;
+        color: #333333;
+        opacity: 1;
+    }
+    #feedback_submit {
+        text-align: center;
+        font: normal normal medium 16px/20px Poppins;
+        letter-spacing: 0px;
+        color: #FFFFFF;
+        opacity: 1;
+    }
+    .contact-main-wrapper {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    .footer-main-wrapper .footer ul li a {
+        text-align: left;
+        font: normal normal normal 9px/15px Poppins;
+        letter-spacing: 0px;
+        color: #C2D5EE !important;
+        opacity: 1;
+    }
+    .footer-main-wrapper .footer .copyright .copyright-txt>*,
+    .footer-main-wrapper .footer .copyright .terms-policy a {
+        text-align: left;
+        font: normal normal normal 9px/13px Poppins;
+        letter-spacing: 0px;
+        color: #C2D5EE !important;
+        opacity: 1;
+    }
+    #myVyaparNav {
+        margin-top: -11px;
+    }
+    .navbar-nav {
+        padding-left: 10px;
+    }
+    .our-trac-rec-card-header {
+        font-size: 18px;
+        margin: 10px 0;
+    }
+    .active>div:first-child+div {
+        display: block
+    }
+}
+
+@media(max-width:757px) {
+    .owl-stage {
+        margin-top: 132px !important;
+    }
+}
+
+@media(max-width:443px) {
+    .owl-stage {
+        margin-top: 185px !important;
+    }
+}
+
+@media(max-width:326px) {
+    .owl-stage {
+        margin-top: 239px !important;
+    }
+}
+
+#chrome_dialog {
+    width: 15%;
+    bottom: 0;
+    position: absolute;
+    box-sizing: border-box
+}
+
+#mozila_dialog {
+    width: 15%;
+    top: 0;
+    right: 0;
+    position: absolute;
+    box-sizing: border-box
+}
+
+#mozila {
+    position: absolute;
+    width: 150px;
+    height: 100px;
+    top: 0;
+    right: 2vw
+}
+
+#chrome {
+    position: absolute;
+    width: 155px;
+    height: 100px;
+    bottom: 0;
+    left: 1vw
+}

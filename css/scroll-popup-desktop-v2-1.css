@@ -1,0 +1,101 @@
+@import url('../css2-1');
+
+#scroll-btn-modal-container-desktop {
+    top: 40%;
+    left: 55%;
+    position: absolute;
+    width: 500px !important;
+    transform: translate(-50%, -60%);
+    min-height: 450px !important;
+    min-width: 950px !important;
+    background: url(../scroll-popup-step-2-1.webp);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    margin-left: -50px;
+    margin-top: 70px;
+    border-radius: 8px;
+    border-bottom: none;
+    pointer-events: all;
+    font-family: poppins, sans-serif !important
+}
+
+.no-border-header {
+    border-bottom: none !important;
+}
+
+.black-text {
+    color: #333;
+    font-size: 50px !important;
+    font-weight: bold;
+    font-family: poppins, sans-serif !important;
+}
+
+.red-text {
+    color: #ed1a3b;
+    font-size: 60px !important;
+    font-weight: bold;
+    font-family: poppins, sans-serif !important
+}
+
+.success-container {
+    margin-top: 125px;
+    width: 60% !important;
+    margin-left: 0;
+    display: none;
+    text-align: center;
+}
+
+.success-text {
+    font-size: 24px !important;
+    color: #ff0
+}
+
+.desktop-popup-input {
+    border: 1px solid #000 !important;
+    border-radius: 5px !important;
+    color: #000 !important;
+    font-weight: 500 !important;
+    background-color: #fff !important;
+    font-family: poppins, sans-serif !important;
+}
+
+.call-button {
+    background: #ed1a3b;
+    margin-top: 28px;
+    color: #fff;
+    border-radius: 5px;
+    width: 280px !important;
+    border: none;
+    font-size: 20px;
+    padding: 10px !important;
+    font-family: poppins, sans-serif !important;
+}
+
+.phone-desktop {
+    color: #000 !important;
+    font-family: poppins, sans-serif !important;
+		margin-top: 5px;
+    margin-bottom: 15px;
+}
+
+#error_message_desktop_popup {
+    color: #ed1a3b
+}
+
+.scroll-popup-para {
+    font-size: 22px !important;
+    font-weight: 400;
+    color: #4d4d4d;
+    font-family: poppins, sans-serif !important;
+}
+.close-btn-new {
+    position: absolute;
+    right: 15px;
+    top: 5px;
+		background-color: white !important;
+		font-size: 30px !important;
+		padding: 0 !important;
+}
+.close-btn-new span {
+		color: black !important;
+}

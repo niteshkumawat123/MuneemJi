@@ -1,4 +1,4 @@
-@model List<MUNEEMJI.Models.ReportModel.DayBookReportModel>
+﻿@model List<MUNEEMJI.Models.ReportModel.DayBookReportModel>
 
 @{
     decimal moneyIn = Model?.Sum(x => x.MoneyIn) ?? 0;
@@ -27,15 +27,15 @@
         <div class="rpt-summary">
             <div class="rpt-summary-card green">
                 <div class="rpt-summary-label">Total Money In</div>
-                <p class="rpt-summary-value">? @moneyIn.ToString("N2")</p>
+                <p class="rpt-summary-value">&#8377; @moneyIn.ToString("N2")</p>
             </div>
             <div class="rpt-summary-card red">
                 <div class="rpt-summary-label">Total Money Out</div>
-                <p class="rpt-summary-value">? @moneyOut.ToString("N2")</p>
+                <p class="rpt-summary-value">&#8377; @moneyOut.ToString("N2")</p>
             </div>
             <div class="rpt-summary-card blue">
                 <div class="rpt-summary-label">Net (In - Out)</div>
-                <p class="rpt-summary-value">? @((moneyIn - moneyOut).ToString("N2"))</p>
+                <p class="rpt-summary-value">&#8377; @((moneyIn - moneyOut).ToString("N2"))</p>
             </div>
         </div>
 
@@ -74,9 +74,9 @@
                                     <td>@item.PartyName</td>
                                     <td><strong>@item.invoicenumber</strong></td>
                                     <td>Sale</td>
-                                    <td class="amt">? @item.Total.ToString("N2")</td>
-                                    <td class="amt" style="color:#16a34a;">? @item.MoneyIn.ToString("N2")</td>
-                                    <td class="amt" style="color:#dc2626;">? @item.MoneyOut.ToString("N2")</td>
+                                    <td class="amt">&#8377; @item.Total.ToString("N2")</td>
+                                    <td class="amt" style="color:#16a34a;">&#8377; @item.MoneyIn.ToString("N2")</td>
+                                    <td class="amt" style="color:#dc2626;">&#8377; @item.MoneyOut.ToString("N2")</td>
                                 </tr>
                                 i++;
                             }

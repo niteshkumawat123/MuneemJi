@@ -1,4 +1,4 @@
-@model List<PurchaseBill>
+﻿@model List<PurchaseBill>
 
 <div class="rpt-wrapper">
     <div class="rpt-container">
@@ -64,15 +64,15 @@
         <div class="rpt-summary">
             <div class="rpt-summary-card green">
                 <div class="rpt-summary-label">Paid</div>
-                <p class="rpt-summary-value">? @paidTotal.ToString("N2")</p>
+                <p class="rpt-summary-value">&#8377; @paidTotal.ToString("N2")</p>
             </div>
             <div class="rpt-summary-card blue">
                 <div class="rpt-summary-label">Unpaid</div>
-                <p class="rpt-summary-value">? @unpaidTotal.ToString("N2")</p>
+                <p class="rpt-summary-value">&#8377; @unpaidTotal.ToString("N2")</p>
             </div>
             <div class="rpt-summary-card">
                 <div class="rpt-summary-label">Total Purchase</div>
-                <p class="rpt-summary-value">? @grandTotal.ToString("N2")</p>
+                <p class="rpt-summary-value">&#8377; @grandTotal.ToString("N2")</p>
                 <div class="rpt-summary-footer">
                     <span>Invoices: <strong>@(Model?.Count ?? 0)</strong></span>
                 </div>
@@ -129,8 +129,8 @@
                                     <td><strong>@bill.InvoiceNumber</strong></td>
                                     <td>@bill.PartyName</td>
                                     <td>@bill.PaymentType</td>
-                                    <td class="amt">? @bill.Total.ToString("N2")</td>
-                                    <td class="amt">? @bill.FinalAmount.ToString("N2")</td>
+                                    <td class="amt">&#8377; @bill.Total.ToString("N2")</td>
+                                    <td class="amt">&#8377; @bill.FinalAmount.ToString("N2")</td>
                                     <td>@bill.DueDate.ToString("dd MMM yyyy")</td>
                                     <td><span class="@sc">@st</span></td>
                                     <td><button class="rpt-btn-icon" title="View" onclick="window.location.href='/Web/PurchaseBill/GetById?id=@(bill.Id)&typeid=1'"><i class="fas fa-eye"></i></button></td>

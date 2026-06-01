@@ -658,7 +658,11 @@ namespace MUNEEMJI.Controllers
                 await reader.CloseAsync();
 
                 // Step 2: Call external API
-                const string apiKey = "73f5a33eed9cb2a47923eea0b07cb354";
+                //  https://sheet.gstincheck.co.in/user-dashboard
+                //  email :- niteshkumawat0004@gmail.com
+                // password:-  Nitesh@123
+
+                const string apiKey = "750dd0eec74dcc8a48fea526ccb1239a";
                 var apiUrl = $"http://sheet.gstincheck.co.in/check/{apiKey}/{gstin}";
 
                 using var http = new System.Net.Http.HttpClient();

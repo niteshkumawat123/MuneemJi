@@ -1,4 +1,4 @@
-@model ItemViewModel
+﻿@model ItemViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -662,7 +662,7 @@
                                 data-bs-html="true"
                                 data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'
                                 style="border: none; background: none; outline: none; cursor: pointer;">
-                            <span style="font-size: 16px; color: #6c757d;">?</span>
+                            <i class="bi bi-three-dots-vertical" style="font-size:16px;color:#6c757d;"></i>
                         </button>
                     </div>
                 }
@@ -684,11 +684,11 @@
                 <div class="products-info-grid">
                     <div class="products-info-item">
                         <div class="products-info-label">Sale Price</div>
-                        <div class="products-info-value">? @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
+                        <div class="products-info-value">&#8377; @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
                     </div>
                     <div class="products-info-item">
                         <div class="products-info-label">Purchase Price</div>
-                        <div class="products-info-value">? @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
+                        <div class="products-info-value">&#8377; @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
                     </div>
                     <div class="products-info-item">
                         <div class="products-info-label products-stock-warning">Stock Quantity</div>
@@ -696,7 +696,7 @@
                     </div>
                     <div class="products-info-item">
                         <div class="products-info-label">Stock Value</div>
-                        <div class="products-info-value products-stock-success">? @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
+                        <div class="products-info-value products-stock-success">&#8377; @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
                     </div>
                 </div>
 
@@ -735,7 +735,7 @@
                                         <td>test</td>
                                         <td>14/06/2025</td>
                                         <td>1 Btl</td>
-                                        <td>? 1,233.00</td>
+                                        <td>&#8377; 1,233.00</td>
                                         <td>
                                             <span class="products-status-label products-status-partial">Partial</span>
                                         </td>
@@ -893,7 +893,7 @@
                     <td>${transaction.name || '-'}</td>
                     <td>${transaction.date || '-'}</td>
                     <td>${transaction.quantity || '-'}</td>
-                    <td>? ${(transaction.pricePerUnit || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td>&#8377; ${(transaction.pricePerUnit || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
                     <td>
                         <span class="products-status-label products-status-${transaction.status?.toLowerCase()}">${transaction.status || 'N/A'}</span>
                     </td>
@@ -913,7 +913,7 @@
                     <td>test</td>
                     <td>14/06/2025</td>
                     <td>1 Btl</td>
-                    <td>? 1,233.00</td>
+                    <td>&#8377; 1,233.00</td>
                     <td>
                         <span class="products-status-label products-status-partial">Partial</span>
                     </td>
@@ -943,11 +943,11 @@
             <div class="products-info-grid">
                 <div class="products-info-item">
                     <div class="products-info-label">Sale Price</div>
-                    <div class="products-info-value">? ${salePrice} (excl)</div>
+                    <div class="products-info-value">&#8377; ${salePrice} (excl)</div>
                 </div>
                 <div class="products-info-item">
                     <div class="products-info-label">Purchase Price</div>
-                    <div class="products-info-value">? ${purchasePrice} (excl)</div>
+                    <div class="products-info-value">&#8377; ${purchasePrice} (excl)</div>
                 </div>
                 <div class="products-info-item">
                     <div class="products-info-label products-stock-warning">Stock Quantity</div>
@@ -955,7 +955,7 @@
                 </div>
                 <div class="products-info-item">
                     <div class="products-info-label">Stock Value</div>
-                    <div class="products-info-value products-stock-success">? ${stockValue}</div>
+                    <div class="products-info-value products-stock-success">&#8377; ${stockValue}</div>
                 </div>
             </div>
 

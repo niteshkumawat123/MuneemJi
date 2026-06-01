@@ -1,4 +1,4 @@
-@using MUNEEMJI.Controllers
+﻿@using MUNEEMJI.Controllers
 @model List<PaymentInOutViewModel>
 @{
     ViewData["Title"] = "Payment-In";
@@ -65,15 +65,15 @@
                 <div class="summary-header">
                     <span class="summary-title">Total Payment Amount</span>
                     <div class="summary-trend">
-                        <span class="trend-percentage">100% ?</span>
+                        <span class="trend-percentage">100% &#8593;</span>
                         <small class="trend-text">vs last month</small>
                     </div>
                 </div>
                 <div class="summary-amount">
-                    <span class="currency">?</span> @totalAmount.ToString("N0")
+                    <span class="currency">&#8377;</span> @totalAmount.ToString("N0")
                 </div>
                 <div class="summary-breakdown">
-                    <span class="received-text">Received: ? @Model?.Sum(x => x.Total).ToString("N0") </span>
+                    <span class="received-text">Received: &#8377; @Model?.Sum(x => x.Total).ToString("N0") </span>
                 </div>
             </div>
         </div>
@@ -153,8 +153,8 @@
                                 <td>@(item.Date != null ? ((DateTime)item.Date).ToString("dd/MM/yyyy") : "-")</td>
                                 <td>@(item.RefNo ?? "NA")</td>
                                 <td>@(item.PartyName ?? "NA")</td>
-                                <td>? @(item.ReceivedPaid.ToString("N2") ?? "0.00")</td>
-                                <td>? @(item.Total.ToString("N2") ?? "0.00")</td>
+                                <td>&#8377; @(item.ReceivedPaid.ToString("N2") ?? "0.00")</td>
+                                <td>&#8377; @(item.Total.ToString("N2") ?? "0.00")</td>
                                 <td> @item.paymenttype</td>
                                 <td>UnUsed</td>
                                 <td onclick="event.stopPropagation();">
@@ -190,7 +190,7 @@
                     {
                         <tr>
                             <td colspan="10" class="text-center py-4 text-muted">
-                                <div style="font-size: 60px; margin-bottom: 20px;">??</div>
+                                <div style="font-size: 60px; margin-bottom: 20px;">&#128203;</div>
                                 <h5>No data is available for Payment-In.</h5>
                                 <p>Please try again after making relevant changes.</p>
                             </td>

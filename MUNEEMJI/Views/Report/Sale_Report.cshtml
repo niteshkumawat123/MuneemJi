@@ -1,4 +1,4 @@
-@model List<PurchaseBill>
+﻿@model List<PurchaseBill>
 
 <div class="rpt-wrapper">
     <div class="rpt-container">
@@ -77,10 +77,10 @@
         <div class="rpt-summary">
             <div class="rpt-summary-card">
                 <div class="rpt-summary-label">Total Sales Amount</div>
-                <p class="rpt-summary-value">? @(ViewBag.GrandTotal ?? "0.00")</p>
+                <p class="rpt-summary-value">&#8377; @(ViewBag.GrandTotal ?? "0.00")</p>
                 <div class="rpt-summary-footer">
-                    <span>Received: <strong>? @(ViewBag.PaidTotal ?? "0.00")</strong></span>
-                    <span>Balance: <strong>? @(ViewBag.UnpaidTotal ?? "0.00")</strong></span>
+                    <span>Received: <strong>&#8377; @(ViewBag.PaidTotal ?? "0.00")</strong></span>
+                    <span>Balance: <strong>&#8377; @(ViewBag.UnpaidTotal ?? "0.00")</strong></span>
                 </div>
             </div>
             <div class="rpt-summary-card blue">
@@ -139,8 +139,8 @@
                                     <td><strong>@bill.InvoiceNumber</strong></td>
                                     <td>@bill.PartyName</td>
                                     <td>@bill.PaymentType</td>
-                                    <td class="amt">? @bill.Total</td>
-                                    <td class="amt">? @bill.FinalAmount</td>
+                                    <td class="amt">&#8377; @bill.Total</td>
+                                    <td class="amt">&#8377; @bill.FinalAmount</td>
                                     <td>@bill.DueDate.ToString("dd MMM yyyy")</td>
                                     <td>
                                         @{

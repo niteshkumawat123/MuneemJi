@@ -745,119 +745,112 @@
 
                 <!-- Search Section -->
                 <div class="search-section">
-                    <div class="row" style="display: flex; flex-wrap: wrap;">
-                        <!-- Column 1 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;">
-                            <div class="floating-label-container">
-                                <select class="floating-select" id="partyDropdown" name="Bill.PartyId">
-                                    <option value="">Select</option>
-                                    @if (ViewBag.PartyList != null)
-                                    {
-                                        <!-- Header Option (disabled and styled) -->
-                                        <option disabled class="dropdown-header">
-                                            <span class="header-item">Party Name</span>
-                                            <span class="header-item">Mobile Number</span>
-                                            <span class="header-item">Balance</span>
-                                        </option>
+                    <div class="row g-3">
+                        <div class="col-lg-8">
+                            <div class="row g-3">
+                                <div class="col-md-3">
+                                    <div class="floating-label-container">
+                                        <select class="floating-select" id="partyDropdown" name="Bill.PartyId">
+                                            <option value="">Select</option>
+                                            @if (ViewBag.PartyList != null)
+                                            {
+                                                <option disabled class="dropdown-header">
+                                                    <span class="header-item">Party Name</span>
+                                                    <span class="header-item">Mobile Number</span>
+                                                    <span class="header-item">Balance</span>
+                                                </option>
 
-                                        @foreach (var party in ViewBag.PartyList)
+                                                @foreach (var party in ViewBag.PartyList)
+                                                {
+                                                    @if (Model.Bill.PartyId == party.id)
+                                                    {
+                                                        <option value="@party.id" data-phone="@party.phonenumber" data-balance="@party.balance" class="party-option" selected>@party.partyname</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@party.id" data-phone="@party.phonenumber" data-balance="@party.balance" class="party-option">@party.partyname</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                        <label class="floating-label">Search by Name/Phone</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="floating-label-container">
+                                        <input asp-for="Bill.BillingName" class="floating-input" placeholder=" " />
+                                        <label class="floating-label">Billing Name</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-3">
+                                    <div class="floating-label-container">
+                                        <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
+                                        <label class="floating-label">Phone No.</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="floating-label-container">
+                                                <textarea asp-for="Bill.BillingAddress" class="floating-input" style="padding-top:31px; padding-bottom:5px; resize:none;" rows="2" placeholder=" "></textarea>
+                                                <label class="floating-label">Billing Address</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="floating-label-container">
+                                                <textarea asp-for="Bill.ShippingAddress" class="floating-input" style="padding-top:31px; padding-bottom:5px; resize:none;" rows="2" placeholder=" "></textarea>
+                                                <label class="floating-label">Shipping Address</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 ms-auto">
+                            <div class="d-flex flex-column gap-3">
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
+                                {
+                                    <div class="floating-label-container">
+                                        <input asp-for="Bill.InvoiceNumber" type="number" class="floating-input" placeholder=" " />
+                                        <label class="floating-label">Order  Number</label>
+                                    </div>
+                                }
+
+                                <div class="floating-label-container">
+                                    <input asp-for="Bill.InvoiceDate" type="date" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">Order  Date</label>
+                                </div>
+
+                                @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.AddTimeOnTransactions == true)
+                                {
+                                    <div class="floating-label-container">
+                                        <input asp-for="Bill.Time" type="time" class="floating-input" placeholder=" " />
+                                        <label class="floating-label">Time</label>
+                                    </div>
+                                }
+
+                                <div class="floating-label-container" id="dueDateContainer">
+                                    <input asp-for="Bill.DueDate" type="date" class="floating-input" placeholder=" " />
+                                    <label class="floating-label">Due Date</label>
+                                </div>
+
+                                <div class="floating-label-container">
+                                    <select asp-for="Bill.StateOfSupply" class="floating-select" id="stateOfSupplyDropdown" onchange="onStateOfSupplyChanged(this.value)">
+                                        <option value="">Select State</option>
+                                        @foreach (var state in Model.StateOptions)
                                         {
-                                            @if (Model.Bill.PartyId == party.id)
-                                            {
-                                                <option value="@party.id"
-                                                        data-phone="@party.phonenumber"
-                                                        data-balance="@party.balance"
-                                                        class="party-option"
-                                                        selected="selected">
-                                                    <span class="party-name">@party.partyname</span>
-                                                    <span class="party-phone">@party.phonenumber</span>
-                                                    <span class="party-balance">@party.balance</span>
-                                                </option>
-                                            }
-                                            else
-                                            {
-                                                <option value="@party.id"
-                                                        data-phone="@party.phonenumber"
-                                                        data-balance="@party.balance"
-                                                        class="party-option">
-                                                    <span class="party-name">@party.partyname</span>
-                                                    <span class="party-phone">@party.phonenumber</span>
-                                                    <span class="party-balance">@party.balance</span>
-                                                </option>
-                                            }
+                                            <option value="@state">@state</option>
                                         }
-                                    }
-                                </select>
-                                <label class="floating-label">Search by Name/Phone</label>
-                            </div>
-
-                            <div class="floating-label-container">
-                                <textarea asp-for="Bill.BillingAddress" class="floating-input" style="padding-top:31px; padding-bottom:5px; resize:none; word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;" rows="2" placeholder=" "></textarea>
-                                <label class="floating-label">Billing Address</label>
-                            </div>
-                        </div>
-
-                        <!-- Column 2 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 5px;">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.BillingName" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Billing Name</label>
-                            </div>
-
-                            <div class="floating-label-container">
-                                <textarea asp-for="Bill.ShippingAddress" class="floating-input" style="padding-top:31px; padding-bottom:5px; resize:none; word-wrap:break-word; overflow-wrap:break-word; white-space:pre-wrap;" rows="2" placeholder=" "></textarea>
-                                <label class="floating-label">Shipping Address</label>
-                            </div>
-                        </div>
-
-                        <!-- Column 3 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;margin-right: 482px;">
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Phone No.</label>
-                            </div>                       
-
-                        </div>
-
-                        <!-- Column 5 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 0px;">
-                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
-                            {
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.InvoiceNumber" type="number" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Order  Number</label>
+                                    </select>
+                                    <label class="floating-label">State of Supply</label>
                                 </div>
-                            }
-
-                            <div class="floating-label-container">
-                                <input asp-for="Bill.InvoiceDate" type="date" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Order  Date</label>
-                            </div>
-
-                            @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.AddTimeOnTransactions == true)
-                            {
-                                <div class="floating-label-container">
-                                    <input asp-for="Bill.Time" type="time" class="floating-input" placeholder=" " />
-                                    <label class="floating-label">Time</label>
-                                </div>
-                            }
-
-                            <div class="floating-label-container" id="dueDateContainer">
-                                <input asp-for="Bill.DueDate" type="date" class="floating-input" placeholder=" " />
-                                <label class="floating-label">Due Date</label>
-                            </div>
-
-                            <div class="floating-label-container">
-                                <select asp-for="Bill.StateOfSupply" class="floating-select" id="stateOfSupplyDropdown" onchange="onStateOfSupplyChanged(this.value)">
-                                    <option value="">Select State</option>
-                                    @foreach (var state in Model.StateOptions)
-                                    {
-                                        <option value="@state">@state</option>
-                                    }
-                                </select>
-                                <label class="floating-label">State of Supply</label>
                             </div>
                         </div>
+                    </div>
                 </div>
 
                 <div class="table-header-controls">

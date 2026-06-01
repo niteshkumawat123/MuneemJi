@@ -749,9 +749,9 @@
 
                 <!-- Search Section -->
                 <div class="search-section">
-                    <div class="row" style="display: flex; flex-wrap: wrap;">
+                    <div class="row g-3 align-items-start" style="display: flex; flex-wrap: wrap;">
                         <!-- Column 1 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="col-xl-2 col-md-3" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="floating-label-container">
                                 <select class="floating-select" id="partyDropdown" name="Bill.PartyId">
                                     <option value="">Select</option>
@@ -799,7 +799,7 @@
                         </div>
 
                         <!-- Column 2 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 755px;">
+                        <div class="col-xl-2 col-md-3" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="floating-label-container">
                                 <input asp-for="Bill.BillingName" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Billing Name</label>
@@ -808,7 +808,7 @@
 
                         
                         <!-- Column 5 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 0px;">
+                        <div class="col-xl-4 col-md-12 ms-auto" style="display: flex; flex-direction: column; gap: 0px;">
                             @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
                             {
                                 <div class="floating-label-container">

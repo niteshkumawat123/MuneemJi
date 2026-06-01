@@ -1,4 +1,4 @@
-@{
+﻿@{
 
     ViewData["Title"] = "Transactions";
 }
@@ -249,7 +249,7 @@
     <div class="header-section">
         <div class="date-filter-section">
             <button class="dropdown-button" onclick="toggleDateFilter()">
-                This Month <span>?</span>
+                This Month <i class="bi bi-chevron-down"></i>
             </button>
             <span class="between-label">Between</span>
             <input type="date" class="date-input" value="2025-07-01" id="startDate">
@@ -261,10 +261,10 @@
         </div>
         <div class="action-buttons">
             <button class="excel-btn" onclick="exportToExcel()">
-                ?? Excel Report
+                <i class="bi bi-file-earmark-excel"></i> Excel Report
             </button>
             <button class="print-btn" onclick="printReport()">
-                ??? Print
+                <i class="bi bi-printer"></i> Print
             </button>
         </div>
     </div>
@@ -273,13 +273,13 @@
         <div class="transactions-header">
             <h2 class="transactions-title">TRANSACTIONS</h2>
             <div class="search-actions">
-                <input type="text" class="search-input" placeholder="?? Search transactions..." id="searchInput">
+                <input type="text" class="search-input" placeholder="Search transactions..." id="searchInput">
                 <div class="bulk-actions">
                     <button class="bulk-convert-btn" onclick="bulkConvertToSale()">
                         Bulk Convert To Sale
                     </button>
                     <button class="add-delivery-btn" onclick="addDeliveryChallen()">
-                        ? Add Debit Note
+                        <i class="bi bi-plus-lg"></i> Add Debit Note
                     </button>
                 </div>
             </div>
@@ -324,7 +324,7 @@
                         </td>
                         <td class="actions-cell">
                             <a href="/Web/DebitNote/Edit?id=@item.Id" class="converted-link">@(item.orderstatusid == 3 ? "CONVERT TO SALE" : "Convert To Invoice")</a>
-                            <button class="menu-dots" onclick="showActionMenu(this)">?</button>
+                            <button class="menu-dots" onclick="showActionMenu(this)">&#8377;</button>
                         </td>
                     </tr>
                 }

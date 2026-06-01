@@ -1,4 +1,4 @@
-@model List<MUNEEMJI.Models.PurchaseBill>
+﻿@model List<MUNEEMJI.Models.PurchaseBill>
 
 @{
     decimal totalSale = Model?.Sum(x => x.Total) ?? 0;
@@ -34,11 +34,11 @@
         <div class="rpt-summary">
             <div class="rpt-summary-card">
                 <div class="rpt-summary-label">Total Sale Amount</div>
-                <p class="rpt-summary-value" id="totalSaleAmount">? @totalSale.ToString("N2")</p>
+                <p class="rpt-summary-value" id="totalSaleAmount">&#8377; @totalSale.ToString("N2")</p>
             </div>
             <div class="rpt-summary-card green">
                 <div class="rpt-summary-label">Total Profit (+) / Loss (-)</div>
-                <p class="rpt-summary-value" id="totalProfit">? @totalProfit.ToString("N2")</p>
+                <p class="rpt-summary-value" id="totalProfit">&#8377; @totalProfit.ToString("N2")</p>
             </div>
         </div>
 
@@ -76,8 +76,8 @@
                                     <td>@(item.InvoiceDate?.ToString("dd MMM yyyy") ?? "-")</td>
                                     <td><strong>@item.InvoiceNumber</strong></td>
                                     <td>@item.PartyName</td>
-                                    <td class="amt">? @item.Total.ToString("N2")</td>
-                                    <td class="amt" style="color:@(profit >= 0 ? "#16a34a" : "#dc2626"); font-weight:600;">? @profit.ToString("N2")</td>
+                                    <td class="amt">&#8377; @item.Total.ToString("N2")</td>
+                                    <td class="amt" style="color:@(profit >= 0 ? "#16a34a" : "#dc2626"); font-weight:600;">&#8377; @profit.ToString("N2")</td>
                                 </tr>
                                 i++;
                             }

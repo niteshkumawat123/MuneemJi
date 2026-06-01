@@ -1,4 +1,4 @@
-@model List<MUNEEMJI.Models.PurchaseBill>
+﻿@model List<MUNEEMJI.Models.PurchaseBill>
 
 <div class="rpt-wrapper">
     <div class="rpt-container">
@@ -59,15 +59,15 @@
         <div class="rpt-summary">
             <div class="rpt-summary-card">
                 <div class="rpt-summary-label">Total Amount</div>
-                <p class="rpt-summary-value">? @total.ToString("N2")</p>
+                <p class="rpt-summary-value">&#8377; @total.ToString("N2")</p>
             </div>
             <div class="rpt-summary-card green">
                 <div class="rpt-summary-label">Received</div>
-                <p class="rpt-summary-value">? @received.ToString("N2")</p>
+                <p class="rpt-summary-value">&#8377; @received.ToString("N2")</p>
             </div>
             <div class="rpt-summary-card red">
                 <div class="rpt-summary-label">Balance</div>
-                <p class="rpt-summary-value">? @balance.ToString("N2")</p>
+                <p class="rpt-summary-value">&#8377; @balance.ToString("N2")</p>
             </div>
         </div>
 
@@ -112,9 +112,9 @@
                                     <td>@item.PartyName</td>
                                     <td>@item.CategoryName</td>
                                     <td> Sale</td>
-                                    <td class="amt">? @item.Total.ToString("N2")</td>
-                                    <td class="amt">? @item.paidReciveamount.ToString("N2")</td>
-                                    <td class="amt">? @item.FinalAmount.ToString("N2")</td>
+                                    <td class="amt">&#8377; @item.Total.ToString("N2")</td>
+                                    <td class="amt">&#8377; @item.paidReciveamount.ToString("N2")</td>
+                                    <td class="amt">&#8377; @item.FinalAmount.ToString("N2")</td>
                                     <td>@item.DueDate.ToString("dd MMM yyyy")</td>
                                     <td>
                                         @{

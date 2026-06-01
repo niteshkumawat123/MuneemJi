@@ -106,8 +106,15 @@ namespace MUNEEMJI.Controllers
             catch (Exception ex)
             {
                 // Log error
+                ViewBag.PaidTotal = 0;
+                ViewBag.UnpaidTotal = 0;
+                ViewBag.GrandTotal = 0;
+                ViewBag.StartDate = DateTime.Now.ToString("dd/MM/yyyy");
+                ViewBag.EndDate = DateTime.Now.ToString("dd/MM/yyyy");
+                ViewBag.FirmFilter = "ALL FIRMS";
+                ViewBag.VendorFilter = (string)null;
                 ViewBag.Error = "An error occurred while loading purchase bills.";
-                return View(new List<dynamic>());
+                return View(new List<PurchaseBill>());
             }
         }
 

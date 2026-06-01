@@ -1,4 +1,4 @@
-@model List<PurchaseBill>
+﻿@model List<PurchaseBill>
 @{
     ViewData["Title"] = "Purchase Bills";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -67,7 +67,7 @@
             <div class="summary-card paid-card">
                 <div class="card-content">
                     <div class="card-label">Paid</div>
-                    <div class="card-amount">? @ViewBag.PaidTotal.ToString("N2")</div>
+                    <div class="card-amount">&#8377; @ViewBag.PaidTotal.ToString("N2")</div>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@
             <div class="summary-card unpaid-card">
                 <div class="card-content">
                     <div class="card-label">Unpaid</div>
-                    <div class="card-amount">? @ViewBag.UnpaidTotal.ToString("N2")</div>
+                    <div class="card-amount">&#8377; @ViewBag.UnpaidTotal.ToString("N2")</div>
                 </div>
             </div>
         </div>
@@ -92,7 +92,7 @@
             <div class="summary-card overdue-card">
                 <div class="card-content">
                     <div class="card-label">Overdue</div>
-                    <div class="card-amount">? 0.00</div>
+                    <div class="card-amount">&#8377; 0.00</div>
                 </div>
             </div>
         </div>
@@ -105,7 +105,7 @@
             <div class="summary-card total-card">
                 <div class="card-content">
                     <div class="card-label">Total</div>
-                    <div class="card-amount">? @ViewBag.GrandTotal.ToString("N2")</div>
+                    <div class="card-amount">&#8377; @ViewBag.GrandTotal.ToString("N2")</div>
                 </div>
             </div>
         </div>
@@ -179,8 +179,8 @@
                                 <td>@(bill.BillNumber ?? "mjoj")</td>
                                 <td>@(bill.PartyName ?? "-")</td>
                                 <td>@(bill.PaymentType ?? "Cash")</td>
-                                <td>? @(bill.Total != null ? ((decimal)bill.Total).ToString("N0") : "0")</td>
-                                <td>? @(bill.paidReciveamount != null ? ((decimal)bill.paidReciveamount).ToString("N0") : "0")</td>
+                                <td>&#8377; @(bill.Total != null ? ((decimal)bill.Total).ToString("N0") : "0")</td>
+                                <td>&#8377; @(bill.paidReciveamount != null ? ((decimal)bill.paidReciveamount).ToString("N0") : "0")</td>
                                 <td>-</td>
                                 <td>
                                     <span class="status-badge status-paid">Paid</span>

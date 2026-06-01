@@ -1,4 +1,4 @@
-@model ItemViewModel
+﻿@model ItemViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml"; // or your layout
@@ -519,7 +519,7 @@
                                     data-bs-html="true"
                                     data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'
                                     style="border: none; background: none; outline: none; cursor: pointer;">
-                                <span style="font-size: 16px; color: #6c757d;">?</span>
+                                <span style="font-size: 16px; color: #6c757d;">&#8377;</span>
                             </button>
                         </div>
                     }
@@ -543,11 +543,11 @@
             <div class="product-info">
                 <div class="info-card">
                     <div class="info-label">Sale Price</div>
-                    <div class="info-value">? @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
+                    <div class="info-value">&#8377; @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
                 </div>
                 <div class="info-card">
                     <div class="info-label">Purchase Price</div>
-                    <div class="info-value">? @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
+                    <div class="info-value">&#8377; @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
                 </div>
                 <div class="info-card">
                     <div class="info-label stock-warning">Stock Quantity</div>
@@ -555,7 +555,7 @@
                 </div>
                 <div class="info-card">
                     <div class="info-label">Stock Value</div>
-                    <div class="info-value stock-value">? @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
+                    <div class="info-value stock-value">&#8377; @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
                 </div>
             </div>
 
@@ -594,7 +594,7 @@
                                     <td>test</td>
                                     <td>14/06/2025</td>
                                     <td>1 Btl</td>
-                                    <td>? 1,233.00</td>
+                                    <td>&#8377; 1,233.00</td>
                                     <td>
                                         <span class="status-badge status-partial">Partial</span>
                                     </td>

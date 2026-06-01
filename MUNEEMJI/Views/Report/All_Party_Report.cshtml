@@ -1,4 +1,4 @@
-@model List<MUNEEMJI.Models.PartyModel>
+ï»¿@model List<MUNEEMJI.Models.PartyModel>
 
 <div class="rpt-wrapper">
     <div class="rpt-container">
@@ -25,11 +25,11 @@
             </div>
             <div class="rpt-summary-card green">
                 <div class="rpt-summary-label">Total Receivable</div>
-                <p class="rpt-summary-value" id="totalReceivable">? 0.00</p>
+                <p class="rpt-summary-value" id="totalReceivable">&#8377; 0.00</p>
             </div>
             <div class="rpt-summary-card red">
                 <div class="rpt-summary-label">Total Payable</div>
-                <p class="rpt-summary-value" id="totalPayable">? 0.00</p>
+                <p class="rpt-summary-value" id="totalPayable">&#8377; 0.00</p>
             </div>
         </div>
 
@@ -60,11 +60,11 @@
                                 <tr class="data-row">
                                     <td>@i</td>
                                     <td><strong>@item.PartyName</strong></td>
-                                    <td>@(item.Email ?? "—")</td>
-                                    <td>@(item.PhoneNumber ?? "—")</td>
-                                    <td class="amt" style="color:#16a34a;">? 0.00</td>
-                                    <td class="amt">—</td>
-                                    <td class="amt">—</td>
+                                    <td>@(item.Email ?? "ï¿½")</td>
+                                    <td>@(item.PhoneNumber ?? "ï¿½")</td>
+                                    <td class="amt" style="color:#16a34a;">&#8377; 0.00</td>
+                                    <td class="amt">ï¿½</td>
+                                    <td class="amt">ï¿½</td>
                                 </tr>
                                 i++;
                             }

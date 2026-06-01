@@ -1,4 +1,4 @@
-@model PurchaseBillViewModel
+ï»¿@model PurchaseBillViewModel
 
 @{
     ViewData["Title"] = "Create Bill";
@@ -465,7 +465,6 @@
             }
 
         .btn-close-custom {
-            content: "×";
             color: #007bff;
             font-size: 16px;
             font-weight: bold;
@@ -753,9 +752,9 @@
 
                 <!-- Search Section -->
                 <div class="search-section">
-                    <div class="row" style="display: flex; flex-wrap: wrap;">
+                    <div class="row g-3" style="display: flex; flex-wrap: wrap;">
                         <!-- Column 1 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;">
+                        <div class="col-xl-2 col-md-3" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="floating-label-container">
                                 <select class="floating-select" id="partyDropdown" name="Bill.PartyId">
                                     <option value="">Select</option>
@@ -806,7 +805,7 @@
                         </div>
 
                         <!-- Column 2 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 40px;">
+                        <div class="col-xl-2 col-md-3" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="floating-label-container">
                                 <input asp-for="Bill.BillingName" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Billing Name</label>
@@ -819,7 +818,7 @@
                         </div>
 
                         <!-- Column 3 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px;margin-right: 40px;">
+                        <div class="col-xl-2 col-md-3" style="display: flex; flex-direction: column; gap: 15px;">
                             <div class="floating-label-container">
                                 <input asp-for="Bill.PhoneNo" class="floating-input" placeholder=" " />
                                 <label class="floating-label">Phone No.</label>
@@ -840,7 +839,7 @@
                         </div>
 
                         <!-- Column 4 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 15px; margin-right: 142px;">
+                        <div class="col-xl-2 col-md-3" style="display: flex; flex-direction: column; gap: 15px;">
                             @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.EwayBillNo == true)
                             {
                                 <div class="floating-label-container">
@@ -853,7 +852,7 @@
                         </div>
 
                         <!-- Column 5 -->
-                        <div class="col-md-2" style="display: flex; flex-direction: column; gap: 0px;">
+                        <div class="col-xl-4 col-md-12" style="display: flex; flex-direction: column; gap: 0px;">
                             @if (Model.Bill.transactionSettings != null && Model.Bill.transactionSettings.InvoiceBillNo == true)
                             {
                                 <div class="floating-label-container">
@@ -1276,7 +1275,7 @@
                                         </td>
 
                                         <td class="col-action">
-                                            <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)">×</button>
+                                            <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(@i)"><i class="bi bi-trash"></i></button>
                                         </td>
                                     </tr>
                                 }
@@ -1713,7 +1712,7 @@
                 @if (Model.ViewTypeId == (int)ViewTypeEnum.Edit)
                 {
                     <div class="action-buttons">
-                        <button type="button" class="btn-share">Share ?</button>
+                        <button type="button" class="btn-share">Share <i class="bi bi-chevron-down"></i></button>
                         <button type="button" class="btn-save" onclick="showSaveConfirmation()">Edit</button>
                     </div>
                 }
@@ -1886,7 +1885,7 @@
 
                  <td class="col-Cess"> <input asp-for="Bill.BillItems[i].AddCessAmount" type="number"step="0.01"class="form-control-sm cess-input"onchange="calculateItemAmount(${itemIndex})" /> </td>
                  <td class="col-amount3"> <input asp-for="Bill.BillItems[i].TotalAmount" type="number" step="0.01" class="form-control-sm total-amount" readonly /></td>
-                <td class="col-action"><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${itemIndex})">×</button></td>`;
+                <td class="col-action"><button type="button" class="btn btn-sm btn-danger" onclick="removeRow(${itemIndex})"><i class="bi bi-trash"></i></button></td>`
 
             newRow.innerHTML = rowHTML;
             tbody.appendChild(newRow);
@@ -2516,7 +2515,7 @@
         <div class="calculatorContainer">
             <div class="calculatorHeader">
                 <h3>Calculator</h3>
-                <button class="calculatorCloseBtn" onclick="calculatorClose()">×</button>
+                <button class="calculatorCloseBtn" onclick="calculatorClose()">&times;</button>
             </div>
             <div class="calculatorBody">
                 <div class="calculatorDisplay">
@@ -2525,13 +2524,13 @@
                 <div class="calculatorButtons">
                     <button class="calculatorBtn calculatorClear" onclick="calculatorClearAll()">C</button>
                     <button class="calculatorBtn calculatorClear" onclick="calculatorClearEntry()">CE</button>
-                    <button class="calculatorBtn calculatorOperator" onclick="calculatorDeleteLast()">?</button>
+                    <button class="calculatorBtn calculatorOperator" onclick="calculatorDeleteLast()">&#9003;</button>
                     <button class="calculatorBtn calculatorOperator" onclick="calculatorAppendOperator('/')">/</button>
 
                     <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('7')">7</button>
                     <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('8')">8</button>
                     <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('9')">9</button>
-                    <button class="calculatorBtn calculatorOperator" onclick="calculatorAppendOperator('*')">×</button>
+                    <button class="calculatorBtn calculatorOperator" onclick="calculatorAppendOperator('*')">&times;</button>
 
                     <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('4')">4</button>
                     <button class="calculatorBtn calculatorNumber" onclick="calculatorAppendNumber('5')">5</button>
@@ -2886,7 +2885,7 @@
 
 <script>
 // ============================================================
-// DYNAMIC GST DROPDOWN — fires when State of Supply changes
+// DYNAMIC GST DROPDOWN - fires when State of Supply changes
 // ============================================================
 window.gstRatesAjaxUrl = '/Web/Sales/GetGstRates';
 

@@ -56,9 +56,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddDistributedMemoryCache(); // Required for session
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
+    options.IdleTimeout = TimeSpan.FromDays(365); // Session never expires on its own
     options.Cookie.HttpOnly = true; // Security
     options.Cookie.IsEssential = true; // Required for GDPR compliance
+    options.Cookie.MaxAge = TimeSpan.FromDays(365); // Cookie persists across browser restarts
 });
 
 // Add Authentication services

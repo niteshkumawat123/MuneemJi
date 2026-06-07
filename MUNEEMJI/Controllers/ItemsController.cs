@@ -129,7 +129,7 @@ namespace MUNEEMJI.Controllers
 
                         BillItem = new BillItem
                         {
-                            ItemType = "service",
+                            ItemType = "product",
                             AsOfDate = DateTime.Today,
                             SalePriceTaxType = "Without Tax",
                             PurchasePriceTaxType = "Without Tax",
@@ -251,7 +251,7 @@ namespace MUNEEMJI.Controllers
                                         item_code AS ""ItemCode"",
                                         category AS ""Category"",
                                         unit AS ""Unit"",
-                                        item_image_url AS ""ItemImageUrl"",
+                                        item_image_url AS ""ImageUrl"",
                                         sale_price AS ""SalePrice"",
                                         sale_price_tax_type AS ""SalePriceTaxType"",
                                         discount_on_sale_price AS ""DiscountOnSalePrice"",
@@ -584,7 +584,7 @@ namespace MUNEEMJI.Controllers
                                         item_code AS ""ItemCode"",
                                         category AS ""Category"",
                                         unit AS ""Unit"",
-                                        item_image_url AS ""ItemImageUrl"",
+                                        item_image_url AS ""ImageUrl"",
                                         sale_price AS ""SalePrice"",
                                         sale_price_tax_type AS ""SalePriceTaxType"",
                                         discount_on_sale_price AS ""DiscountOnSalePrice"",

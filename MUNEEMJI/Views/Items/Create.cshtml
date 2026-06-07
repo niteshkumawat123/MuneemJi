@@ -502,7 +502,11 @@
 
                         <div class="form-group small">
                             <label class="form-label">Unit</label>
-                            <select name="Unit" class="form-select">
+                            @{
+                                var unitValue = Model.BillItem.Unit ?? "";
+                            }
+                            <input type="hidden" id="currentUnitValue" value="@unitValue" />
+                            <select name="Unit" id="productUnitSelect" class="form-select">
                                 <option value="">--Select Unit--</option>
                                 <option value="pcs">Pieces (pcs)</option>
                                 <option value="kg">Kilogram (kg)</option>
@@ -546,19 +550,18 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="floating-label-container upload-area-imgshow-product" style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;" onclick="document.querySelector('input[name=\'ProductImageUrl\']').click()">
-                                <span class="upload-label-imgshow-product" style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">Add Image</span>
+                            <div class="floating-label-container upload-area-imgshow-product" style="border: 2px solid lightgray; border-radius: 8px; padding: 10px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative; width: 120px; height: 100px; display: flex; align-items: center; justify-content: center;" onclick="document.querySelector('input[name=\'ProductImageUrl\']').click()">
+                                <span class="upload-label-imgshow-product" style="position: absolute; top: -10px; left: 10px; background: white; padding: 0 6px; color: #6c757d; font-size: 12px;">Image</span>
                                 <input type="file" name="ProductImageUrl" class="floating-input" accept="image/*" onchange="productpreviewImage(this)" style="display: none;" />
-                                <div class="upload-content-imgshow-product">
-                                    <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
-                                    <div style="color: #007bff; font-weight: 500;">Upload</div>
+                                <div class="upload-content-imgshow-product" style="@(!string.IsNullOrEmpty(Model.BillItem.ImageUrl) ? "display:none;" : "")">
+                                    <i class="bi bi-cloud-upload" style="font-size: 20px; color: #007bff;"></i>
+                                    <div style="color: #007bff; font-weight: 500; font-size: 12px;">Upload</div>
                                 </div>
 
-                                <div class="image-preview-imgshow-product" style="display: none;">
-                                    <img id="preview-img-imgshow-product" src="" alt="Preview" style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
-                                    <div id="image-name-imgshow-product" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
-                                    <div style="margin-top: 8px;">
-                                        <button type="button" onclick="productremoveImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+                                <div class="image-preview-imgshow-product" style="@(!string.IsNullOrEmpty(Model.BillItem.ImageUrl) ? "display:block;" : "display:none;")">
+                                    <img id="preview-img-imgshow-product" src="@(string.IsNullOrEmpty(Model.BillItem.ImageUrl) ? "" : Url.Content("~" + Model.BillItem.ImageUrl))" alt="Preview" style="max-width: 90px; max-height: 60px; border: 1px solid #ddd; border-radius: 4px; object-fit: contain;" />
+                                    <div style="margin-top: 4px;">
+                                        <button type="button" onclick="productremoveImage(event)" style="padding: 2px 8px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">Remove</button>
                                     </div>
                                 </div>
                             </div>
@@ -870,7 +873,7 @@
                         </div>
                         <div class="form-group small">
                             <label class="form-label">Unit</label>
-                            <select name="ServiceUnit" class="form-select">
+                            <select name="ServiceUnit" id="serviceUnitSelect" class="form-select">
                                 <option value="">--Select Unit--</option>
                                 <option value="pcs">Pieces (pcs)</option>
                                 <option value="kg">Kilogram (kg)</option>
@@ -911,19 +914,18 @@
                             <input type="text" name="ServiceDescription" class="form-input" value="@Model.BillItem.Description">
                         </div>
                         <div class="form-group">
-                            <div class="floating-label-container upload-area-imgshow" style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;" onclick="document.querySelector('input[name=\'ServiceItemImageUrl\']').click()">
-                                <span class="upload-label-imgshow" style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">Add Image</span>
+                            <div class="floating-label-container upload-area-imgshow" style="border: 2px solid lightgray; border-radius: 8px; padding: 10px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative; width: 120px; height: 100px; display: flex; align-items: center; justify-content: center;" onclick="document.querySelector('input[name=\'ServiceItemImageUrl\']').click()">
+                                <span class="upload-label-imgshow" style="position: absolute; top: -10px; left: 10px; background: white; padding: 0 6px; color: #6c757d; font-size: 12px;">Image</span>
                                 <input type="file" name="ServiceItemImageUrl" class="floating-input" accept="image/*" onchange="previewImage(this)" style="display: none;" />
-                                <div class="upload-content-imgshow">
-                                    <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
-                                    <div style="color: #007bff; font-weight: 500;">Upload</div>
+                                <div class="upload-content-imgshow" style="@(!string.IsNullOrEmpty(Model.BillItem.ImageUrl) ? "display:none;" : "")">
+                                    <i class="bi bi-cloud-upload" style="font-size: 20px; color: #007bff;"></i>
+                                    <div style="color: #007bff; font-weight: 500; font-size: 12px;">Upload</div>
                                 </div>
 
-                                <div class="image-preview-imgshow" style="display: none;">
-                                    <img id="preview-img-imgshow" src="" alt="Preview" style="max-width: 200px; max-height: 85px; border: 1px solid #ddd; border-radius: 4px;" />
-                                    <div id="image-name-imgshow" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
-                                    <div style="margin-top: 8px;">
-                                        <button type="button" onclick="removeImage(event)" style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">Delete</button>
+                                <div class="image-preview-imgshow" style="@(!string.IsNullOrEmpty(Model.BillItem.ImageUrl) ? "display:block;" : "display:none;")">
+                                    <img id="preview-img-imgshow" src="@(string.IsNullOrEmpty(Model.BillItem.ImageUrl) ? "" : Url.Content("~" + Model.BillItem.ImageUrl))" alt="Preview" style="max-width: 90px; max-height: 60px; border: 1px solid #ddd; border-radius: 4px; object-fit: contain;" />
+                                    <div style="margin-top: 4px;">
+                                        <button type="button" onclick="removeImage(event)" style="padding: 2px 8px; background: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">Remove</button>
                                     </div>
                                 </div>
 
@@ -1235,6 +1237,14 @@
                 jsonData.ItemHsn = formData.get('ItemHSN') || '';
                 jsonData.Category = formData.get('Category') || '';
                 jsonData.ItemCode = formData.get('ItemCode') || '';
+                jsonData.Unit = formData.get('Unit') || '';
+
+                // Handle product image
+                const productImageFile = document.querySelector('input[name="ProductImageUrl"]').files[0];
+                if (productImageFile) {
+                    jsonData.ImageBase64 = await getFileAsBase64(productImageFile);
+                    jsonData.ImageFileName = productImageFile.name;
+                }
 
                 // Pricing information
                 jsonData.SalePrice = parseFloat(formData.get('SalePrice')) || null;
@@ -1500,8 +1510,7 @@
             const container = input.closest('.upload-area-imgshow');
             const uploadContent = container.querySelector('.upload-content-imgshow');
             const preview = container.querySelector('.image-preview-imgshow');
-            const img = document.getElementById('preview-img-imgshow');
-            const imageName = document.getElementById('image-name-imgshow');
+            const img = container.querySelector('#preview-img-imgshow');
             const label = container.querySelector('.upload-label-imgshow');
 
             if (input.files && input.files[0]) {
@@ -1509,10 +1518,9 @@
 
                 reader.onload = function(e) {
                     img.src = e.target.result;
-                    imageName.textContent = input.files[0].name; // Add this line
                     uploadContent.style.display = 'none';
                     preview.style.display = 'block';
-                    label.style.color = '#007bff';
+                    if (label) label.style.color = '#007bff';
                 }
 
                 reader.readAsDataURL(input.files[0]);
@@ -1542,7 +1550,6 @@
             const uploadContent = container.querySelector('.upload-content-imgshow-product');
             const preview = container.querySelector('.image-preview-imgshow-product');
             const img = container.querySelector('#preview-img-imgshow-product');
-            const imageName = container.querySelector('#image-name-imgshow-product');
             const label = container.querySelector('.upload-label-imgshow-product');
 
             if (input.files && input.files[0]) {
@@ -1550,10 +1557,9 @@
 
                 reader.onload = function(e) {
                     img.src = e.target.result;
-                    imageName.textContent = input.files[0].name;
                     uploadContent.style.display = 'none';
                     preview.style.display = 'block';
-                    label.style.color = '#007bff';
+                    if (label) label.style.color = '#007bff';
                 }
 
                 reader.readAsDataURL(input.files[0]);
@@ -1833,6 +1839,17 @@
                     if (btn) { btn.disabled = false; btn.textContent = 'Assign Code'; }
                 });
         };
+    })();
+
+    // Set unit dropdown values on page load
+    (function() {
+        var unitVal = document.getElementById('currentUnitValue');
+        if (unitVal && unitVal.value) {
+            var productSelect = document.getElementById('productUnitSelect');
+            var serviceSelect = document.getElementById('serviceUnitSelect');
+            if (productSelect) productSelect.value = unitVal.value;
+            if (serviceSelect) serviceSelect.value = unitVal.value;
+        }
     })();
 
     </script>

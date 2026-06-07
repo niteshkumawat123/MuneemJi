@@ -18,10 +18,12 @@
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.7" />
     <PackageReference Include="SkiaSharp" Version="3.119.0" />
     <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
+    <PackageReference Include="System.Formats.Asn1" Version="8.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\DataContainer\GeneratedInvoices\" />
     <Folder Include="wwwroot\uploads\logos\" />
     <Folder Include="wwwroot\uploads\Item\" />
     <Folder Include="wwwroot\uploads\transaction\" />

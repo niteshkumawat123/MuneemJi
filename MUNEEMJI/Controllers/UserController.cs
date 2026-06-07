@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
 using Npgsql;
 using System.Data;
 using System.Net.Mail;
 using System.Net;
+using System.Net.Sockets;
 using MUNEEMJI.Services;
 using Insight.Database;
 using Microsoft.Data.SqlClient;
 using System.IO;
 using MUNEEMJI.Repositories;
+using MimeKit;
 
 namespace MUNEEMJI.Controllers
 {
@@ -17,12 +20,14 @@ namespace MUNEEMJI.Controllers
         private readonly string _connectionString;
         private ICompanyTenancy _companyTenancy;
         public IUser _iuser;
+        private readonly IErrorLogService _errorLogService;
 
-        public UserController(IConfiguration configuration, ICompanyTenancy companyTenancy, IUser user)
+        public UserController(IConfiguration configuration, ICompanyTenancy companyTenancy, IUser user, IErrorLogService errorLogService)
         {
             _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             _companyTenancy = companyTenancy;
             _iuser = user;
+            _errorLogService = errorLogService;
         }
 
         public async Task<IActionResult> Index()
@@ -147,22 +152,50 @@ namespace MUNEEMJI.Controllers
                     emailBody = emailBody.Replace("{UserName}", model.FullName)
                                          .Replace("{BusinessName}", businessIdString);
 
-                    // Send email
-                    using var smtp = new SmtpClient("smtp.gmail.com")
+                    // Send email with retry
+                    int maxRetries = 3;
+                    for (int attempt = 1; attempt <= maxRetries; attempt++)
                     {
-                        Port = 587,
-                        Credentials = new NetworkCredential("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre"),
-                        EnableSsl = true,
-                    };
+                        try
+                        {
+                            var message = new MimeMessage();
+                            message.From.Add(new MailboxAddress("MuneemJiApp", "noreplymuneemjii@gmail.com"));
+                            message.To.Add(new MailboxAddress("", model.PhoneOrEmail));
+                            message.Subject = "You have been invited to join MunnemJi";
+                            message.Body = new TextPart("html") { Text = emailBody };
 
-                    var mail = new MailMessage("noreplymuneemjii@gmail.com", model.PhoneOrEmail)
-                    {
-                        Subject = "You have been invited to join MunnemJi",
-                        Body = emailBody,
-                        IsBodyHtml = true
-                    };
+                            using var smtpClient = new MailKit.Net.Smtp.SmtpClient();
+                            smtpClient.Timeout = 30000;
 
-                    await smtp.SendMailAsync(mail);
+                            // Resolve DNS and force IPv4 to avoid IPv6 timeout on Linux
+                            var addresses = await Dns.GetHostAddressesAsync("smtp.gmail.com");
+                            var ipv4 = addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+
+                            if (ipv4 != null)
+                            {
+                                // Create TCP socket to IPv4 address, then hand to MailKit with hostname for SSL validation
+                                var socket = new System.Net.Sockets.Socket(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+                                await socket.ConnectAsync(ipv4, 465);
+                                await smtpClient.ConnectAsync(socket, "smtp.gmail.com", 465, MailKit.Security.SecureSocketOptions.SslOnConnect);
+                            }
+                            else
+                            {
+                                await smtpClient.ConnectAsync("smtp.gmail.com", 465, MailKit.Security.SecureSocketOptions.SslOnConnect);
+                            }
+
+                            await smtpClient.AuthenticateAsync("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre");
+                            await smtpClient.SendAsync(message);
+                            await smtpClient.DisconnectAsync(true);
+                            break; // success
+                        }
+                        catch (Exception emailEx)
+                        {
+                            await _errorLogService.LogErrorAsync(
+                                $"User invite email attempt {attempt}/{maxRetries} failed for: {model.PhoneOrEmail} - {emailEx.Message}", emailEx.StackTrace);
+                            if (attempt < maxRetries)
+                                await Task.Delay(2000 * attempt);
+                        }
+                    }
                 }
             }
 
@@ -245,6 +278,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"User UpdateRole Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = $"Error updating role: {ex.Message}" });
             }
         }
@@ -283,7 +317,7 @@ namespace MUNEEMJI.Controllers
             }
             catch(Exception ex)
             {
-
+                await _errorLogService.LogErrorAsync($"User GetAvailableRoles Error: {ex.Message}", ex.StackTrace);
             }
                 return roles;
         }
@@ -318,7 +352,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                
+                await _errorLogService.LogErrorAsync($"User DeleteBusiness Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = true, message = $"Error deleting business: {ex.Message}" });
 
             }
@@ -353,7 +387,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-
+                await _errorLogService.LogErrorAsync($"User RestoreBusiness Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = true, message = $"Error deleting business: {ex.Message}" });
 
             }
@@ -399,6 +433,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"User EditUser GET Error: {ex.Message}", ex.StackTrace);
                 return RedirectToAction("Index");
             }
 

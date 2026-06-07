@@ -94,299 +94,170 @@ namespace MUNEEMJI.PdfServices
                     doc.Open();
                     doc.NewPage();
 
-                    // ===== SECTION 1: "Payment Receipt" Title =====
-                    var titlePhrase = new Phrase();
-                    titlePhrase.Add(new Chunk("Payment Receipt", new Font(bfArial, 14f, Font.BOLD, darkBrown)));
-                    var titlePara = new Paragraph(titlePhrase);
+                    // ===== Title: "Payment Receipt" =====
+                    var titlePara = new Paragraph(new Chunk("Payment Receipt", new Font(bfArial, 14f, Font.BOLD, darkBrown)));
                     titlePara.Alignment = Element.ALIGN_CENTER;
                     titlePara.SpacingAfter = 8f;
                     doc.Add(titlePara);
 
-                    // ===== SECTION 2: Info Grid (Bill To / Ship To / Transport / Invoice Details) =====
-                    PdfPTable infoGrid = new PdfPTable(4);
+                    // ===== Received From + Receipt Details (2 columns) =====
+                    PdfPTable infoGrid = new PdfPTable(2);
                     infoGrid.WidthPercentage = 100;
-                    infoGrid.SetWidths(new float[] { 25f, 25f, 25f, 25f });
+                    infoGrid.SetWidths(new float[] { 60f, 40f });
+
+                    Font fWhiteSmallBold = new Font(bfArial, 7f, Font.BOLD, BaseColor.WHITE);
 
                     // Header row
-                    AddHeaderCell(infoGrid, "Bill To", fSmallBold, grayBg, borderClr);
-                    AddHeaderCell(infoGrid, "Ship To", fSmallBold, grayBg, borderClr);
-                    AddHeaderCell(infoGrid, "Transportation Details", fSmallBold, grayBg, borderClr);
-                    AddHeaderCell(infoGrid, "Invoice Details", fSmallBold, grayBg, borderClr);
+                    var recFromHdr = new PdfPCell(new Phrase("Received From", fWhiteSmallBold));
+                    recFromHdr.BackgroundColor = darkBrown;
+                    recFromHdr.BorderColor = darkBrown;
+                    recFromHdr.Padding = 5f;
+                    infoGrid.AddCell(recFromHdr);
 
-                    // Bill To content
-                    var billToPhrase = new Phrase(12f);
-                    billToPhrase.Add(new Chunk((partydetail?.PartyName ?? "N/A") + "\n", fBold));
-                    billToPhrase.Add(new Chunk((partydetail?.BillingAddress ?? "") + "\n", fSmall));
-                    billToPhrase.Add(new Chunk("State: " + (partydetail?.StateCode ?? "") + "-" + (partydetail?.StateName ?? ""), fSmall));
-                    AddContentCell(infoGrid, billToPhrase, borderClr);
+                    var recDetHdr = new PdfPCell(new Phrase("Receipt Details", fWhiteSmallBold));
+                    recDetHdr.BackgroundColor = darkBrown;
+                    recDetHdr.BorderColor = darkBrown;
+                    recDetHdr.Padding = 5f;
+                    recDetHdr.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    infoGrid.AddCell(recDetHdr);
 
-                    // Ship To content
-                    string shipAddr = !string.IsNullOrEmpty(Bill.ShippingAddress) ? Bill.ShippingAddress : (partydetail?.ShippingAddress ?? "");
-                    var shipToPhrase = new Phrase(12f);
-                    shipToPhrase.Add(new Chunk(shipAddr, fSmall));
-                    AddContentCell(infoGrid, shipToPhrase, borderClr);
+                    // Received From content
+                    var recFromPhrase = new Phrase(14f);
+                    recFromPhrase.Add(new Chunk((partydetail?.PartyName ?? "N/A") + "\n", fBold));
+                    recFromPhrase.Add(new Chunk((partydetail?.BillingAddress ?? "") + "\n", fSmall));
+                    if (!string.IsNullOrEmpty(partydetail?.PhoneNumber))
+                        recFromPhrase.Add(new Chunk("Contact No. : " + partydetail.PhoneNumber + "\n", fSmall));
+                    if (!string.IsNullOrEmpty(partydetail?.GSTIN))
+                        recFromPhrase.Add(new Chunk("GSTIN : " + partydetail.GSTIN + "\n", fSmall));
+                    recFromPhrase.Add(new Chunk("State: " + (partydetail?.StateCode ?? "") + "-" + (partydetail?.StateName ?? ""), fSmall));
+                    var recFromCell = new PdfPCell(recFromPhrase);
+                    recFromCell.BorderColor = borderClr;
+                    recFromCell.Padding = 5f;
+                    recFromCell.MinimumHeight = 80f;
+                    infoGrid.AddCell(recFromCell);
 
-                    // Transportation Details content
-                    string deliveryDateStr = Bill.DeliveryDate.HasValue && Bill.DeliveryDate.Value != DateTime.MinValue
-                        ? Bill.DeliveryDate.Value.ToString("dd-MM-yyyy") : "";
-                    var transportPhrase = new Phrase(12f);
-                    transportPhrase.Add(new Chunk("Transport Name: " + (Bill.TransportName ?? "") + "\n", fSmall));
-                    transportPhrase.Add(new Chunk("Vehicle Number: " + (Bill.VehicleNumber ?? "") + "\n", fSmall));
-                    transportPhrase.Add(new Chunk("Delivery Date: " + deliveryDateStr + "\n", fSmall));
-                    transportPhrase.Add(new Chunk("Delivery Location: " + (Bill.DeliveryLocation ?? "") + "\n", fSmall));
-                    transportPhrase.Add(new Chunk("Field 5: " + (Bill.Field5 ?? "") + "\n", fSmall));
-                    transportPhrase.Add(new Chunk("Field 6: " + (Bill.Field6 ?? ""), fSmall));
-                    AddContentCell(infoGrid, transportPhrase, borderClr);
-
-                    // Invoice Details content
-                    string invDateStr = Bill.InvoiceDate.HasValue && Bill.InvoiceDate.Value != DateTime.MinValue
-                        ? Bill.InvoiceDate.Value.ToString("dd-MM-yyyy") : "";
+                    // Receipt Details content
+                    string billDateStr = Bill.BillDate != DateTime.MinValue ? Bill.BillDate.ToString("dd-MM-yyyy") : "";
                     string timeStr = Bill.Time.HasValue && Bill.Time.Value != TimeSpan.MinValue
                         ? Bill.Time.Value.ToString(@"hh\:mm") + " " + (Bill.Time.Value.Hours >= 12 ? "PM" : "AM") : "";
-                    var invPhrase = new Phrase(12f);
-                    invPhrase.Add(new Chunk("Invoice No. : " + (Bill.InvoiceNumber?.ToString() ?? "") + "\n", fSmall));
-                    invPhrase.Add(new Chunk("Date : " + invDateStr + "\n", fSmall));
-                    invPhrase.Add(new Chunk("Time : " + timeStr + "\n", fSmall));
-                    invPhrase.Add(new Chunk("Place of supply: " + (Bill.StateOfSupply ?? ""), fSmall));
-                    var invCell = new PdfPCell(invPhrase);
-                    invCell.BorderColor = borderClr;
-                    invCell.Padding = 5f;
-                    invCell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    invCell.VerticalAlignment = Element.ALIGN_TOP;
-                    infoGrid.AddCell(invCell);
+                    var recDetPhrase = new Phrase(14f);
+                    recDetPhrase.Add(new Chunk("Receipt No. : " + (Bill.BillNumber ?? "") + "\n", fSmall));
+                    recDetPhrase.Add(new Chunk("Date : " + billDateStr + "\n", fSmall));
+                    recDetPhrase.Add(new Chunk("Time : " + timeStr, fSmall));
+                    var recDetCell = new PdfPCell(recDetPhrase);
+                    recDetCell.BorderColor = borderClr;
+                    recDetCell.Padding = 5f;
+                    recDetCell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    recDetCell.VerticalAlignment = Element.ALIGN_TOP;
+                    infoGrid.AddCell(recDetCell);
 
                     doc.Add(infoGrid);
 
-                    // ===== SECTION 3: Items Table =====
-                    var validItems = Bill.BillItems?.Where(x => x.PricePerUnit > 0).ToList() ?? new List<PurchaseBillItem>();
+                    // ===== Amounts section (two-column: left empty, right amounts) =====
+                    PdfPTable amtOuter = new PdfPTable(2);
+                    amtOuter.WidthPercentage = 100;
+                    amtOuter.SetWidths(new float[] { 50f, 50f });
+                    amtOuter.SpacingBefore = 5f;
 
-                    float[] itemWidths = { 3f, 10f, 6f, 6f, 5f, 4f, 7f, 7f, 7f, 8f, 7f, 7f };
-                    PdfPTable itemsTable = new PdfPTable(itemWidths);
-                    itemsTable.WidthPercentage = 100;
-                    itemsTable.SpacingBefore = 5f;
+                    // Left empty cell
+                    var emptyCell = new PdfPCell(new Phrase(""));
+                    emptyCell.Border = Rectangle.NO_BORDER;
+                    emptyCell.MinimumHeight = 10f;
+                    amtOuter.AddCell(emptyCell);
 
-                    string[] headers = { "#", "Item name", "Item\nCode", "HSN/\nSAC", "Quantity", "Unit", "Price/\nUnit", "Taxable\nPrice/\nUnit", "Taxable\namount", "GST", "Final\nRate", "Amount" };
-                    foreach (var h in headers)
-                    {
-                        var hCell = new PdfPCell(new Phrase(h, fSmallBold));
-                        hCell.BackgroundColor = darkBrown;
-                        hCell.BorderColor = darkBrown;
-                        hCell.Padding = 4f;
-                        hCell.HorizontalAlignment = Element.ALIGN_CENTER;
-                        hCell.VerticalAlignment = Element.ALIGN_MIDDLE;
-                        // white text on dark brown
-                        hCell.Phrase = new Phrase(h, new Font(bfArial, 7f, Font.BOLD, BaseColor.WHITE));
-                        itemsTable.AddCell(hCell);
-                    }
+                    // Right: Amounts table
+                    PdfPTable amtTbl = new PdfPTable(2);
+                    amtTbl.SetWidths(new float[] { 50f, 50f });
 
-                    decimal totalQty = 0, totalTaxableAmt = 0, totalGstAmt = 0, totalAmount = 0;
-                    int rowNum = 1;
-                    foreach (var item in validItems)
-                    {
-                        decimal taxableAmt = item.PricePerUnit * item.Quantity - item.DiscountAmount;
-                        decimal taxPerUnit = item.Quantity != 0 ? item.TaxAmount / item.Quantity : 0;
-                        decimal finalRate = item.PricePerUnit + taxPerUnit;
+                    // "Amounts" header
+                    var amtHdr = new PdfPCell(new Phrase("Amounts", fWhiteSmallBold));
+                    amtHdr.Colspan = 2;
+                    amtHdr.BackgroundColor = darkBrown;
+                    amtHdr.BorderColor = darkBrown;
+                    amtHdr.Padding = 4f;
+                    amtHdr.HorizontalAlignment = Element.ALIGN_CENTER;
+                    amtTbl.AddCell(amtHdr);
 
-                        totalQty += item.Quantity;
-                        totalTaxableAmt += taxableAmt;
-                        totalGstAmt += item.TaxAmount;
-                        totalAmount += item.TotalAmount ?? 0;
+                    AddSummaryRow(amtTbl, "Received", "\u20B9 " + Bill.paidReciveamount.ToString("N2"), fSmall, fRupeeSmall, borderClr, false);
+                    AddSummaryRow(amtTbl, "Discount", "\u20B9 " + Bill.DiscountAmount.ToString("N2"), fSmall, fRupeeSmall, borderClr, false);
 
-                        AddItemCell(itemsTable, rowNum.ToString(), fSmall, borderClr, Element.ALIGN_CENTER);
-                        AddItemCell(itemsTable, item.Item ?? "", fSmall, borderClr, Element.ALIGN_LEFT);
-                        AddItemCell(itemsTable, item.ItemCode ?? "", fSmall, borderClr, Element.ALIGN_LEFT);
-                        AddItemCell(itemsTable, item.HSNCode ?? "", fSmall, borderClr, Element.ALIGN_LEFT);
-                        AddItemCell(itemsTable, item.Quantity.ToString("0.##"), fSmall, borderClr, Element.ALIGN_CENTER);
-                        AddItemCell(itemsTable, item.Unit ?? "", fSmall, borderClr, Element.ALIGN_CENTER);
-                        AddRupeeCell(itemsTable, item.PricePerUnit.ToString("0.00"), fRupeeSmall, borderClr);
-                        AddRupeeCell(itemsTable, item.PricePerUnit.ToString("0.00"), fRupeeSmall, borderClr);
-                        AddRupeeCell(itemsTable, taxableAmt.ToString("0.00"), fRupeeSmall, borderClr);
-                        // GST cell: amount + percentage
-                        var gstPhrase = new Phrase();
-                        gstPhrase.Add(new Chunk("\u20B9 " + item.TaxAmount.ToString("0.00") + "\n", fRupeeSmall));
-                        gstPhrase.Add(new Chunk("(" + item.TaxPercentage.ToString("0.##") + "%)", fSmall));
-                        var gstCell = new PdfPCell(gstPhrase);
-                        gstCell.BorderColor = borderClr;
-                        gstCell.Padding = 3f;
-                        gstCell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                        itemsTable.AddCell(gstCell);
-
-                        AddRupeeCell(itemsTable, finalRate.ToString("0.00"), fRupeeSmall, borderClr);
-                        AddRupeeCell(itemsTable, (item.TotalAmount ?? 0).ToString("0.00"), fRupeeSmall, borderClr);
-                        rowNum++;
-                    }
-
-                    // Total row
-                    var totLabelCell = new PdfPCell(new Phrase("Total", fBold));
-                    totLabelCell.Colspan = 4;
-                    totLabelCell.BackgroundColor = darkBrown;
-                    totLabelCell.BorderColor = darkBrown;
-                    totLabelCell.Padding = 4f;
-                    totLabelCell.Phrase = new Phrase("Total", new Font(bfArial, 8f, Font.BOLD, BaseColor.WHITE));
-                    itemsTable.AddCell(totLabelCell);
-
-                    var totQtyCell = new PdfPCell(new Phrase(totalQty.ToString("0.##"), new Font(bfArial, 7f, Font.BOLD, BaseColor.WHITE)));
-                    totQtyCell.BackgroundColor = darkBrown;
-                    totQtyCell.BorderColor = darkBrown;
-                    totQtyCell.Padding = 4f;
-                    totQtyCell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    itemsTable.AddCell(totQtyCell);
-
-                    // blank cells for Unit, Price/Unit, Taxable Price/Unit
-                    for (int i = 0; i < 3; i++)
-                    {
-                        var blankCell = new PdfPCell(new Phrase("", fSmall));
-                        blankCell.BackgroundColor = darkBrown;
-                        blankCell.BorderColor = darkBrown;
-                        blankCell.Padding = 4f;
-                        itemsTable.AddCell(blankCell);
-                    }
-
-                    var totTaxableCell = new PdfPCell(new Phrase("\u20B9 " + totalTaxableAmt.ToString("0.00"), new Font(bfRupee, 7f, Font.BOLD, BaseColor.WHITE)));
-                    totTaxableCell.BackgroundColor = darkBrown;
-                    totTaxableCell.BorderColor = darkBrown;
-                    totTaxableCell.Padding = 4f;
-                    totTaxableCell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    itemsTable.AddCell(totTaxableCell);
-
-                    var totGstCell = new PdfPCell(new Phrase("\u20B9 " + totalGstAmt.ToString("0.00"), new Font(bfRupee, 7f, Font.BOLD, BaseColor.WHITE)));
-                    totGstCell.BackgroundColor = darkBrown;
-                    totGstCell.BorderColor = darkBrown;
-                    totGstCell.Padding = 4f;
-                    totGstCell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    itemsTable.AddCell(totGstCell);
-
-                    // blank for Final Rate
-                    var blankFR = new PdfPCell(new Phrase("", fSmall));
-                    blankFR.BackgroundColor = darkBrown;
-                    blankFR.BorderColor = darkBrown;
-                    blankFR.Padding = 4f;
-                    itemsTable.AddCell(blankFR);
-
-                    var totAmtCell = new PdfPCell(new Phrase("\u20B9 " + totalAmount.ToString("0.00"), new Font(bfRupee, 7f, Font.BOLD, BaseColor.WHITE)));
-                    totAmtCell.BackgroundColor = darkBrown;
-                    totAmtCell.BorderColor = darkBrown;
-                    totAmtCell.Padding = 4f;
-                    totAmtCell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    itemsTable.AddCell(totAmtCell);
-
-                    doc.Add(itemsTable);
-
-                    // ===== SECTION 4: Summary + Words/Terms (two-column layout) =====
-                    PdfPTable summaryOuter = new PdfPTable(2);
-                    summaryOuter.WidthPercentage = 100;
-                    summaryOuter.SetWidths(new float[] { 50f, 50f });
-                    summaryOuter.SpacingBefore = 5f;
-                    summaryOuter.KeepTogether = true;
-
-                    // LEFT: Invoice Amount In Words + Terms
-                    var leftPhrase = new Phrase();
-                    leftPhrase.Add(new Chunk("Invoice Amount In Words\n", fBold));
-                    leftPhrase.Add(new Chunk(ConfigControls.ConvertAmountToWords(Bill.FinalAmount) + "\n\n", fSmall));
-                    leftPhrase.Add(new Chunk("Terms and Conditions\n", fBold));
-                    leftPhrase.Add(new Chunk(Bill.Description ?? "", fSmall));
-                    var leftCell = new PdfPCell(leftPhrase);
-                    leftCell.Border = Rectangle.NO_BORDER;
-                    leftCell.Padding = 5f;
-                    summaryOuter.AddCell(leftCell);
-
-                    // RIGHT: Summary rows
-                    PdfPTable summaryTbl = new PdfPTable(2);
-                    summaryTbl.SetWidths(new float[] { 55f, 45f });
-
-                    decimal subTotal = totalTaxableAmt;
-                    AddSummaryRow(summaryTbl, "Sub Total", "\u20B9 " + subTotal.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-
-                    if (isDomestic)
-                    {
-                        decimal halfTax = Bill.TaxAmount / 2;
-                        string taxRate = Bill.TaxPercentage > 0 ? (Bill.TaxPercentage / 2).ToString("0.##") : "0";
-                        AddSummaryRow(summaryTbl, "SGST@" + taxRate + "%", "\u20B9 " + halfTax.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                        AddSummaryRow(summaryTbl, "CGST@" + taxRate + "%", "\u20B9 " + halfTax.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    }
-                    else
-                    {
-                        string taxRate = Bill.TaxPercentage > 0 ? Bill.TaxPercentage.ToString("0.##") : "0";
-                        AddSummaryRow(summaryTbl, "IGST@" + taxRate + "%", "\u20B9 " + Bill.TaxAmount.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    }
-
-                    if (Bill.DiscountAmount > 0)
-                        AddSummaryRow(summaryTbl, "Discount (" + Bill.DiscountPercent.ToString("0.##") + "%)", "\u20B9 " + Bill.DiscountAmount.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    if (Bill.ShippingAmount != 0)
-                        AddSummaryRow(summaryTbl, "Shipping:", "\u20B9 " + Bill.ShippingAmount.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    if (Bill.PackingAmount != 0)
-                        AddSummaryRow(summaryTbl, "Packaging:", "\u20B9 " + Bill.PackingAmount.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    if (Bill.AdjustmentAmount != 0)
-                        AddSummaryRow(summaryTbl, "Adjustment:", "\u20B9 " + Bill.AdjustmentAmount.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    if (Bill.RoundOffValue != 0)
-                        AddSummaryRow(summaryTbl, "Round off", "\u20B9 " + Bill.RoundOffValue.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-
-                    // Total row (highlighted)
+                    // Total row (bold)
                     var totLbl = new PdfPCell(new Phrase("Total", fBold));
                     totLbl.BackgroundColor = totalRowBg;
                     totLbl.BorderColor = borderClr;
                     totLbl.Padding = 4f;
-                    summaryTbl.AddCell(totLbl);
-                    var totVal = new PdfPCell(new Phrase("\u20B9 " + Bill.FinalAmount.ToString("0.00"), fRupeeBold));
+                    amtTbl.AddCell(totLbl);
+                    var totVal = new PdfPCell(new Phrase("\u20B9 " + Bill.FinalAmount.ToString("N2"), fRupeeBold));
                     totVal.BackgroundColor = totalRowBg;
                     totVal.BorderColor = borderClr;
                     totVal.Padding = 4f;
                     totVal.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    summaryTbl.AddCell(totVal);
+                    amtTbl.AddCell(totVal);
 
-                    AddSummaryRow(summaryTbl, "Received", "\u20B9 " + Bill.paidReciveamount.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    AddSummaryRow(summaryTbl, "Balance", "\u20B9 " + (Bill.FinalAmount - Bill.paidReciveamount).ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    AddSummaryRow(summaryTbl, "Payment mode", Bill.PaymentType ?? "", fSmall, fSmall, borderClr, false);
-                    AddSummaryRow(summaryTbl, "Previous Balance", "\u20B9 " + Bill.ReturnNo.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    AddSummaryRow(summaryTbl, "Current Balance", "\u20B9 " + Bill.ReturnNo.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
-                    AddSummaryRow(summaryTbl, "", "", fSmall, fSmall, borderClr, false); // spacer
-                    AddSummaryRow(summaryTbl, "You Saved", "\u20B9 " + Bill.DiscountAmount.ToString("0.00"), fSmall, fRupeeSmall, borderClr, false);
+                    AddSummaryRow(amtTbl, "Previous Balance", "\u20B9 " + Bill.ReturnNo.ToString("N2"), fSmall, fRupeeSmall, borderClr, false);
+                    decimal currentBalance = Bill.ReturnNo - Bill.FinalAmount;
+                    AddSummaryRow(amtTbl, "Current Balance", "\u20B9 " + currentBalance.ToString("N2"), fSmall, fRupeeSmall, borderClr, false);
 
-                    var rightCell = new PdfPCell(summaryTbl);
-                    rightCell.Border = Rectangle.NO_BORDER;
-                    rightCell.Padding = 0f;
-                    summaryOuter.AddCell(rightCell);
+                    var amtRightCell = new PdfPCell(amtTbl);
+                    amtRightCell.Border = Rectangle.NO_BORDER;
+                    amtRightCell.Padding = 0f;
+                    amtOuter.AddCell(amtRightCell);
 
-                    doc.Add(summaryOuter);
+                    doc.Add(amtOuter);
 
-                    // Force bank details + acknowledgement onto a new page
-                    doc.NewPage();
+                    // ===== Amount in words =====
+                    PdfPTable wordsTable = new PdfPTable(1);
+                    wordsTable.WidthPercentage = 100;
+                    wordsTable.SpacingBefore = 5f;
 
-                    // ===== SECTION 5: Bank Details + Authorized Signatory =====
-                    PdfPTable bankSection = new PdfPTable(2);
-                    bankSection.WidthPercentage = 100;
-                    bankSection.SetWidths(new float[] { 55f, 45f });
-                    bankSection.SpacingBefore = 10f;
+                    var wordsHdr = new PdfPCell(new Phrase("Amount in words", fWhiteSmallBold));
+                    wordsHdr.BackgroundColor = darkBrown;
+                    wordsHdr.BorderColor = darkBrown;
+                    wordsHdr.Padding = 4f;
+                    wordsHdr.HorizontalAlignment = Element.ALIGN_CENTER;
+                    wordsTable.AddCell(wordsHdr);
 
-                    // Bank header
-                    var payToHeader = new PdfPCell(new Phrase("Pay To:", fBold));
-                    payToHeader.BackgroundColor = grayBg;
-                    payToHeader.BorderColor = borderClr;
-                    payToHeader.Padding = 4f;
-                    bankSection.AddCell(payToHeader);
+                    var wordsVal = new PdfPCell(new Phrase(ConfigControls.ConvertAmountToWords(Bill.FinalAmount), fSmall));
+                    wordsVal.BorderColor = borderClr;
+                    wordsVal.Padding = 5f;
+                    wordsVal.HorizontalAlignment = Element.ALIGN_CENTER;
+                    wordsTable.AddCell(wordsVal);
 
-                    var forHeader = new PdfPCell(new Phrase("For : " + (companydetail.BusinessName ?? ""), fBold));
-                    forHeader.BackgroundColor = grayBg;
-                    forHeader.BorderColor = borderClr;
-                    forHeader.Padding = 4f;
-                    forHeader.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    bankSection.AddCell(forHeader);
+                    doc.Add(wordsTable);
 
-                    // Bank details content
-                    var bankPhrase = new Phrase(14f);
-                    bankPhrase.Add(new Chunk("Bank Name : " + (BankDetail?.BankName ?? "N/A") + "\n", fSmall));
-                    bankPhrase.Add(new Chunk("Bank Account No. : " + (BankDetail?.AccountNumber ?? "N/A") + "\n", fSmall));
-                    bankPhrase.Add(new Chunk("Bank IFSC code : " + (BankDetail?.IFSCCode ?? "N/A") + "\n", fSmall));
-                    bankPhrase.Add(new Chunk("Account holder's name : " + (BankDetail?.AccountDisplayName ?? "N/A"), fSmall));
-                    var bankCell = new PdfPCell(bankPhrase);
-                    bankCell.BorderColor = borderClr;
-                    bankCell.Padding = 5f;
-                    bankCell.MinimumHeight = 60f;
-                    bankSection.AddCell(bankCell);
+                    // ===== Payment mode =====
+                    PdfPTable pmTable = new PdfPTable(1);
+                    pmTable.WidthPercentage = 100;
+                    pmTable.SpacingBefore = 5f;
 
-                    // Signature cell
-                    var sigPhrase = new Phrase();
-                    PdfPCell sigCell;
+                    var pmHdr = new PdfPCell(new Phrase("Payment mode", fWhiteSmallBold));
+                    pmHdr.BackgroundColor = darkBrown;
+                    pmHdr.BorderColor = darkBrown;
+                    pmHdr.Padding = 4f;
+                    pmHdr.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pmTable.AddCell(pmHdr);
+
+                    var pmVal = new PdfPCell(new Phrase(companydetail.BusinessName ?? "", fSmall));
+                    pmVal.BorderColor = borderClr;
+                    pmVal.Padding = 5f;
+                    pmVal.HorizontalAlignment = Element.ALIGN_CENTER;
+                    pmTable.AddCell(pmVal);
+
+                    doc.Add(pmTable);
+
+                    // ===== For: Company + Signature + Authorized Signatory =====
+                    PdfPTable sigSection = new PdfPTable(1);
+                    sigSection.WidthPercentage = 50;
+                    sigSection.HorizontalAlignment = Element.ALIGN_RIGHT;
+                    sigSection.SpacingBefore = 15f;
+
+                    var forCell = new PdfPCell(new Phrase("For : " + (companydetail.BusinessName ?? ""), fBold));
+                    forCell.Border = Rectangle.NO_BORDER;
+                    forCell.Padding = 4f;
+                    forCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    sigSection.AddCell(forCell);
+
+                    // Signature image
                     string sigPath = companydetail.SignaturePath;
                     if (!string.IsNullOrEmpty(sigPath))
                     {
@@ -397,108 +268,45 @@ namespace MUNEEMJI.PdfServices
                             {
                                 iTextSharp.text.Image sigImg = iTextSharp.text.Image.GetInstance(fullSigPath);
                                 sigImg.ScaleToFit(100f, 40f);
-                                sigCell = new PdfPCell();
-                                sigCell.AddElement(sigImg);
-                                var authLabel = new Paragraph("Authorized Signatory", fBold);
-                                authLabel.Alignment = Element.ALIGN_RIGHT;
-                                sigCell.AddElement(authLabel);
+                                sigImg.Alignment = Element.ALIGN_CENTER;
+                                var imgCell = new PdfPCell();
+                                imgCell.Border = Rectangle.NO_BORDER;
+                                imgCell.Padding = 4f;
+                                imgCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                                imgCell.AddElement(sigImg);
+                                sigSection.AddCell(imgCell);
                             }
                             catch
                             {
-                                sigPhrase.Add(new Chunk("\n\n\nAuthorized Signatory", fBold));
-                                sigCell = new PdfPCell(sigPhrase);
+                                var blankSig = new PdfPCell(new Phrase("\n\n", fSmall));
+                                blankSig.Border = Rectangle.NO_BORDER;
+                                blankSig.MinimumHeight = 40f;
+                                sigSection.AddCell(blankSig);
                             }
                         }
                         else
                         {
-                            sigPhrase.Add(new Chunk("\n\n\nAuthorized Signatory", fBold));
-                            sigCell = new PdfPCell(sigPhrase);
+                            var blankSig = new PdfPCell(new Phrase("\n\n", fSmall));
+                            blankSig.Border = Rectangle.NO_BORDER;
+                            blankSig.MinimumHeight = 40f;
+                            sigSection.AddCell(blankSig);
                         }
                     }
                     else
                     {
-                        sigPhrase.Add(new Chunk("\n\n\nAuthorized Signatory", fBold));
-                        sigCell = new PdfPCell(sigPhrase);
+                        var blankSig = new PdfPCell(new Phrase("\n\n", fSmall));
+                        blankSig.Border = Rectangle.NO_BORDER;
+                        blankSig.MinimumHeight = 40f;
+                        sigSection.AddCell(blankSig);
                     }
-                    sigCell.BorderColor = borderClr;
-                    sigCell.Padding = 5f;
-                    sigCell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                    sigCell.MinimumHeight = 60f;
-                    bankSection.AddCell(sigCell);
 
-                    doc.Add(bankSection);
+                    var authCell = new PdfPCell(new Phrase("Authorized Signatory", fBold));
+                    authCell.Border = Rectangle.NO_BORDER;
+                    authCell.Padding = 4f;
+                    authCell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    sigSection.AddCell(authCell);
 
-                    // ===== SECTION 6: Dashed Separator =====
-                    PdfPTable dashTable = new PdfPTable(1);
-                    dashTable.WidthPercentage = 100;
-                    dashTable.SpacingBefore = 10f;
-                    var dashCell = new PdfPCell(new Phrase(" "));
-                    dashCell.Border = Rectangle.NO_BORDER;
-                    dashCell.BorderWidthBottom = 1f;
-                    dashCell.BorderColorBottom = BaseColor.BLACK;
-                    dashCell.Padding = 2f;
-                    dashCell.CellEvent = new DashedBorderEvent();
-                    dashTable.AddCell(dashCell);
-                    doc.Add(dashTable);
-
-                    // ===== SECTION 7: Acknowledgement Slip =====
-                    PdfPTable ackSection = new PdfPTable(1);
-                    ackSection.WidthPercentage = 100;
-                    ackSection.SpacingBefore = 5f;
-
-                    // Acknowledgement heading
-                    var ackHeading = new PdfPCell(new Phrase("Acknowledgement", fBold));
-                    ackHeading.Border = Rectangle.NO_BORDER;
-                    ackHeading.HorizontalAlignment = Element.ALIGN_CENTER;
-                    ackHeading.PaddingBottom = 3f;
-                    ackSection.AddCell(ackHeading);
-
-                    // Company name
-                    var ackCompany = new PdfPCell(new Phrase(companydetail.BusinessName ?? "", fLargeBold));
-                    ackCompany.Border = Rectangle.NO_BORDER;
-                    ackCompany.HorizontalAlignment = Element.ALIGN_CENTER;
-                    ackCompany.PaddingBottom = 8f;
-                    ackSection.AddCell(ackCompany);
-
-                    // Two columns: Invoice To + Invoice Details + Receiver Seal
-                    PdfPTable ackInner = new PdfPTable(3);
-                    ackInner.SetWidths(new float[] { 35f, 35f, 30f });
-
-                    // Invoice To
-                    var invToPhrase = new Phrase(14f);
-                    invToPhrase.Add(new Chunk("Invoice To:\n", fBold));
-                    invToPhrase.Add(new Chunk((partydetail?.PartyName ?? "") + "\n", fBold));
-                    invToPhrase.Add(new Chunk(partydetail?.BillingAddress ?? "", fSmall));
-                    var invToCell = new PdfPCell(invToPhrase);
-                    invToCell.Border = Rectangle.NO_BORDER;
-                    invToCell.Padding = 4f;
-                    ackInner.AddCell(invToCell);
-
-                    // Invoice Details
-                    var invDetPhrase = new Phrase(14f);
-                    invDetPhrase.Add(new Chunk("Invoice Details:\n", fBold));
-                    invDetPhrase.Add(new Chunk("Invoice No. : " + (Bill.InvoiceNumber?.ToString() ?? "") + "\n", fSmall));
-                    invDetPhrase.Add(new Chunk("Invoice date : " + invDateStr + "\n", fSmall));
-                    invDetPhrase.Add(new Chunk("Invoice Amount : \u20B9 " + Bill.FinalAmount.ToString("0.00"), fRupeeSmall));
-                    var invDetCell = new PdfPCell(invDetPhrase);
-                    invDetCell.Border = Rectangle.NO_BORDER;
-                    invDetCell.Padding = 4f;
-                    ackInner.AddCell(invDetCell);
-
-                    // Receiver Seal
-                    var recPhrase = new Phrase(14f);
-                    recPhrase.Add(new Chunk("\n\n---------------------\nReceiver's Seal & Sign", fSmall));
-                    var recCell = new PdfPCell(recPhrase);
-                    recCell.Border = Rectangle.NO_BORDER;
-                    recCell.Padding = 4f;
-                    recCell.HorizontalAlignment = Element.ALIGN_CENTER;
-                    ackInner.AddCell(recCell);
-
-                    var ackInnerCell = new PdfPCell(ackInner);
-                    ackInnerCell.Border = Rectangle.NO_BORDER;
-                    ackSection.AddCell(ackInnerCell);
-
-                    doc.Add(ackSection);
+                    doc.Add(sigSection);
 
                     doc.Close();
 

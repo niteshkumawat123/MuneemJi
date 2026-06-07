@@ -11,16 +11,19 @@ using System.Security.Claims;
 using System.Text;
 using MailKit.Net.Smtp;
 using MimeKit;
+using MUNEEMJI.Services;
 
 namespace MUNEEMJI.Controllers
 {
     public class AccountController : Controller
     {
         private readonly string _connectionString;
+        private readonly IErrorLogService _errorLogService;
 
-        public AccountController(IConfiguration configuration)
+        public AccountController(IConfiguration configuration, IErrorLogService errorLogService)
         {
             _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+            _errorLogService = errorLogService;
         }
 
         [HttpGet]
@@ -102,6 +105,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"SendOtp failed for email: {model.Email} - {ex.Message}", ex.StackTrace);
                 ModelState.AddModelError("", "An error occurred while sending OTP. Please try again.");
                 return View("Login", model);
             }
@@ -212,6 +216,7 @@ namespace MUNEEMJI.Controllers
                 }
                 catch (Exception ex)
                 {
+                    await _errorLogService.LogErrorAsync($"VerifyOtp failed for email: {email} - {ex.Message}", ex.StackTrace);
                     ViewBag.OtpError = "An error occurred during login. Please try again.";
                     ViewBag.Email = email;
                     ViewBag.otpsent = true;
@@ -389,6 +394,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Register failed for email: {model.Email} - {ex.Message}", ex.StackTrace);
                 ModelState.AddModelError("", "An error occurred during registration. Please try again.");
                 //return View("Login", model);
                 return RedirectToAction("Login", "Account");
@@ -403,27 +409,60 @@ namespace MUNEEMJI.Controllers
 
         private async Task SendEmailAsync(string to, string subject, string body)
         {
-            try
-            {
-                var message = new MimeMessage();
-                message.From.Add(new MailboxAddress("MuneemJiApp", "noreplymuneemjii@gmail.com"));
-                message.To.Add(new MailboxAddress("", to));
-                message.Subject = subject;
-                message.Body = new TextPart("html") { Text = body };
+            int maxRetries = 3;
+            Exception lastException = null;
 
-                using var client = new MailKit.Net.Smtp.SmtpClient();
-                client.Timeout = 30000; // 30 seconds
-
-                // Connect using STARTTLS on port 587
-                await client.ConnectAsync("smtp.gmail.com", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                await client.AuthenticateAsync("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre");
-                await client.SendAsync(message);
-                await client.DisconnectAsync(true);
-            }
-            catch (Exception ex)
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
-                throw new Exception($"Failed to send email: {ex.Message}", ex);
+                try
+                {
+                    var message = new MimeMessage();
+                    message.From.Add(new MailboxAddress("MuneemJiApp", "noreplymuneemjii@gmail.com"));
+                    message.To.Add(new MailboxAddress("", to));
+                    message.Subject = subject;
+                    message.Body = new TextPart("html") { Text = body };
+
+                    using var client = new MailKit.Net.Smtp.SmtpClient();
+                    client.Timeout = 30000; // 30 seconds
+
+                    // Resolve DNS and force IPv4 to avoid IPv6 timeout on Linux
+                    var addresses = await System.Net.Dns.GetHostAddressesAsync("smtp.gmail.com");
+                    var ipv4 = addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+
+                    if (ipv4 != null)
+                    {
+                        // Create a TCP socket connected to the IPv4 address
+                        var socket = new System.Net.Sockets.Socket(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+                        await socket.ConnectAsync(ipv4, 465);
+
+                        // Pass the connected socket to MailKit with the hostname for SSL certificate validation
+                        await client.ConnectAsync(socket, "smtp.gmail.com", 465, MailKit.Security.SecureSocketOptions.SslOnConnect);
+                    }
+                    else
+                    {
+                        // Fallback: connect by hostname directly
+                        await client.ConnectAsync("smtp.gmail.com", 465, MailKit.Security.SecureSocketOptions.SslOnConnect);
+                    }
+
+                    await client.AuthenticateAsync("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre");
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                    return; // success
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    await _errorLogService.LogErrorAsync(
+                        $"SendEmailAsync attempt {attempt}/{maxRetries} failed for: {to} - {ex.Message}", ex.StackTrace);
+
+                    if (attempt < maxRetries)
+                    {
+                        await Task.Delay(2000 * attempt); // wait 2s, 4s before retry
+                    }
+                }
             }
+
+            throw new Exception($"Failed to send email after {maxRetries} attempts: {lastException?.Message}", lastException);
         }
     }
 }

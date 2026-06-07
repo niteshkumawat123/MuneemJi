@@ -3,9 +3,12 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
+using MUNEEMJI.Services;
 using Npgsql;
 using System.Net;
 using System.Net.Mail;
+using System.Net.Sockets;
 using System.Security.Claims;
 using System.Text;
 
@@ -13,6 +16,12 @@ namespace MUNEEMJI.Controllers
 {
     public class CompanyController : Controller
     {
+        private readonly IErrorLogService _errorLogService;
+
+        public CompanyController(IErrorLogService errorLogService)
+        {
+            _errorLogService = errorLogService;
+        }
         public async Task<IActionResult> Index()
         {
             var email = HttpContext.Session.GetString("Email");
@@ -94,7 +103,7 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeleteCompany(int Id)
+        public async Task<IActionResult> DeleteCompany(int Id)
         {
             try
             {
@@ -111,6 +120,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Company DeleteCompany Error: {ex.Message}", ex.StackTrace);
                 return StatusCode(500, new { success = false, message = ex.Message });
             }
         }
@@ -208,6 +218,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Company CreateCompany Error for email: {companyEmail} - {ex.Message}", ex.StackTrace);
                 ViewBag.Email = sessionEmail;
                 ViewBag.Error = "Failed to create company: " + ex.Message;
                 return View();
@@ -244,6 +255,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Company SendCompanyOtp Error for email: {request.Email} - {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = "Failed to send OTP: " + ex.Message });
             }
         }
@@ -297,26 +309,59 @@ namespace MUNEEMJI.Controllers
 
         private async Task SendEmailAsync(string to, string subject, string body)
         {
-            MailMessage mail = new MailMessage
-            {
-                Subject = subject,
-                Body = body,
-                From = new MailAddress("noreplymuneemjii@gmail.com", "MuneemJiApp"),
-                IsBodyHtml = true
-            };
-            mail.To.Add(to);
+            int maxRetries = 3;
+            Exception lastException = null;
 
-            NetworkCredential cred = new NetworkCredential("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre");
-            SmtpClient smtp = new SmtpClient
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
             {
-                Host = "smtp.gmail.com",
-                Port = 587,
-                EnableSsl = true,
-                UseDefaultCredentials = false,
-                Credentials = cred
-            };
-            mail.BodyEncoding = Encoding.Default;
-            await smtp.SendMailAsync(mail);
+                try
+                {
+                    var message = new MimeMessage();
+                    message.From.Add(new MailboxAddress("MuneemJiApp", "noreplymuneemjii@gmail.com"));
+                    message.To.Add(new MailboxAddress("", to));
+                    message.Subject = subject;
+                    message.Body = new TextPart("html") { Text = body };
+
+                    using var client = new MailKit.Net.Smtp.SmtpClient();
+                    client.Timeout = 30000; // 30 seconds
+
+                    // Resolve DNS and force IPv4 to avoid IPv6 timeout on Linux
+                    var addresses = await Dns.GetHostAddressesAsync("smtp.gmail.com");
+                    var ipv4 = addresses.FirstOrDefault(a => a.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
+
+                    if (ipv4 != null)
+                    {
+                        // Create a TCP socket connected to the IPv4 address
+                        var socket = new System.Net.Sockets.Socket(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
+                        await socket.ConnectAsync(ipv4, 465);
+
+                        // Pass the connected socket to MailKit with the hostname for SSL certificate validation
+                        await client.ConnectAsync(socket, "smtp.gmail.com", 465, MailKit.Security.SecureSocketOptions.SslOnConnect);
+                    }
+                    else
+                    {
+                        await client.ConnectAsync("smtp.gmail.com", 465, MailKit.Security.SecureSocketOptions.SslOnConnect);
+                    }
+
+                    await client.AuthenticateAsync("noreplymuneemjii@gmail.com", "bumd envm vjbn zqre");
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                    return; // success
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    await _errorLogService.LogErrorAsync(
+                        $"Company SendEmailAsync attempt {attempt}/{maxRetries} failed for: {to} - {ex.Message}", ex.StackTrace);
+
+                    if (attempt < maxRetries)
+                    {
+                        await Task.Delay(2000 * attempt);
+                    }
+                }
+            }
+
+            throw new Exception($"Failed to send email after {maxRetries} attempts: {lastException?.Message}", lastException);
         }
 
         // ?? Switch to a different company ??
@@ -386,8 +431,9 @@ namespace MUNEEMJI.Controllers
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Company SwitchCompany Error for companyId: {companyId} - {ex.Message}", ex.StackTrace);
                 return RedirectToAction("Index");
             }
         }

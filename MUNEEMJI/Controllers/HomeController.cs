@@ -16,11 +16,13 @@ namespace MUNEEMJI.Controllers
         private readonly ILogger<HomeController> _logger;
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly ICompanyTenancy _comapnytenancy;
+        private readonly IErrorLogService _errorLogService;
 
-        public HomeController(ILogger<HomeController> logger, ICompanyTenancy tenancy)
+        public HomeController(ILogger<HomeController> logger, ICompanyTenancy tenancy, IErrorLogService errorLogService)
         {
             _logger = logger;
             _comapnytenancy = tenancy;
+            _errorLogService = errorLogService;
         }
 
         // Main dashboard action
@@ -37,6 +39,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home Index Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error loading dashboard data");
                 return View(new DashboardViewModel());
             }
@@ -53,6 +56,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home AllTransection Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error loading dashboard data");
                 return View(new DashboardViewModel());
             }
@@ -74,6 +78,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home SearchTransactions Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error searching transactions for query: {Query}", query);
                 return Json(new { success = false, message = "Error occurred while searching transactions" });
             }
@@ -116,6 +121,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home AddSale Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error adding sale");
                 ModelState.AddModelError("", "An error occurred while adding the sale");
                 return View(model);
@@ -159,6 +165,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home AddPurchase Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error adding purchase");
                 ModelState.AddModelError("", "An error occurred while adding the purchase");
                 return View(model);
@@ -176,6 +183,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home GetSalesChartData Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error getting sales chart data for period: {Period}", period);
                 return Json(new { success = false, message = "Error loading chart data" });
             }
@@ -192,6 +200,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home SaleReport Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error loading sale report");
                 return View(new SaleReportViewModel());
             }
@@ -207,6 +216,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home AllTransactions Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error loading all transactions");
                 return View(new TransactionListViewModel());
             }
@@ -223,6 +233,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home DaybookReport Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error loading daybook report");
                 return View(new DaybookReportViewModel());
             }
@@ -238,6 +249,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home PartyStatement Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error loading party statement");
                 return View(new PartyStatementViewModel());
             }
@@ -262,6 +274,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home AddWidget Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error adding widget: {WidgetType}", widgetType);
                 return Json(new { success = false, message = "Error adding widget" });
             }
@@ -284,6 +297,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home RemoveWidget Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error removing widget: {WidgetId}", widgetId);
                 return Json(new { success = false, message = "Error removing widget" });
             }
@@ -300,6 +314,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Home GetDashboardSummary Error: {ex.Message}", ex.StackTrace);
                 _logger.LogError(ex, "Error getting dashboard summary");
                 return Json(new { success = false, message = "Error loading summary data" });
             }

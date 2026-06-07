@@ -23,10 +23,12 @@ namespace MUNEEMJI.Controllers
         private readonly string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly ICompanyTenancy _CompayTenancy;
         public IParty _party;
-        public PartyController(ICompanyTenancy companyTenancy, IParty party)
+        private readonly IErrorLogService _errorLogService;
+        public PartyController(ICompanyTenancy companyTenancy, IParty party, IErrorLogService errorLogService)
         {
             _CompayTenancy = companyTenancy;
             _party = party;
+            _errorLogService = errorLogService;
         }
 
         [HttpGet]
@@ -185,6 +187,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                _errorLogService.LogErrorAsync($"Party Add Error: {ex.Message}", ex.StackTrace).Wait();
                 // ? RETURN JSON ERROR
                 return Json(new
                 {
@@ -338,6 +341,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                _errorLogService.LogErrorAsync($"Party Edit Error: {ex.Message}", ex.StackTrace).Wait();
                 ModelState.AddModelError("", "Database error: " + ex.Message);
                 return View("Add", model);
             }

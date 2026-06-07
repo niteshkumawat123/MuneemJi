@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
+using MUNEEMJI.Services;
 using Npgsql;
 using System.Data;
 using System.Drawing;
@@ -18,11 +19,13 @@ namespace MUNEEMJI.Controllers
     {
         private readonly string _connectionString;
         private readonly IWebHostEnvironment _environment;
+        private readonly IErrorLogService _errorLogService;
 
-        public WhatsAppMarketingController(IConfiguration configuration, IWebHostEnvironment environment)
+        public WhatsAppMarketingController(IConfiguration configuration, IWebHostEnvironment environment, IErrorLogService errorLogService)
         {
             _connectionString = MUNEEMJI.DbConfig.ConnectionString; 
             _environment = environment;
+            _errorLogService = errorLogService;
         }
 
         public async Task<IActionResult> Index(string category = "Greetings", string filter = "All", string search = "")
@@ -72,6 +75,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"WhatsApp GenerateImage Error: {ex.Message}", ex.StackTrace);
                 return BadRequest($"Error generating image: {ex.Message}");
             }
         }
@@ -103,6 +107,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"WhatsApp SaveCustomization Error: {ex.Message}", ex.StackTrace);
                 return BadRequest($"Error saving customization: {ex.Message}");
             }
         }
@@ -124,6 +129,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"WhatsApp IncrementViewCount Error: {ex.Message}", ex.StackTrace);
                 return BadRequest($"Error updating view count: {ex.Message}");
             }
         }
@@ -184,8 +190,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                // Log error and return sample data for development
-                Console.WriteLine($"Database error: {ex.Message}");
+                await _errorLogService.LogErrorAsync($"WhatsApp GetTemplatesAsync Error: {ex.Message}", ex.StackTrace);
                 return GetSampleTemplates();
             }
 
@@ -243,8 +248,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                // Log error and return sample data for development
-                Console.WriteLine($"Database error: {ex.Message}");
+                await _errorLogService.LogErrorAsync($"WhatsApp GetTemplatesAsyncForFilter Error: {ex.Message}", ex.StackTrace);
                 return GetSampleTemplates();
             }
 
@@ -284,7 +288,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error getting template: {ex.Message}");
+                await _errorLogService.LogErrorAsync($"WhatsApp GetTemplateByIdAsync Error: {ex.Message}", ex.StackTrace);
             }
 
             return null;
@@ -317,7 +321,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving customization: {ex.Message}");
+                await _errorLogService.LogErrorAsync($"WhatsApp SaveCustomizationAsync Error: {ex.Message}", ex.StackTrace);
             }
         }
 
@@ -336,7 +340,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating download count: {ex.Message}");
+                await _errorLogService.LogErrorAsync($"WhatsApp UpdateDownloadCountAsync Error: {ex.Message}", ex.StackTrace);
             }
         }
 

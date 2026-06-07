@@ -18,10 +18,11 @@ namespace MUNEEMJI.Controllers
         private readonly ICompanyTenancy _CompayTenancy;
         private readonly IParty partyController;
         private readonly IGstTaxService _gstTaxService;
+        private readonly IErrorLogService _errorLogService;
 
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
-        public PurchaseBillController(IPurchaseBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy CompayTenancy, IParty partyController, IGstTaxService gstTaxService)
+        public PurchaseBillController(IPurchaseBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy CompayTenancy, IParty partyController, IGstTaxService gstTaxService, IErrorLogService errorLogService)
         {
             _billService = billService;
             _environment = environment;
@@ -29,6 +30,7 @@ namespace MUNEEMJI.Controllers
             _CompayTenancy = CompayTenancy;
             this.partyController = partyController;
             _gstTaxService = gstTaxService;
+            _errorLogService = errorLogService;
         }
 
         // GET: Bill
@@ -105,7 +107,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                // Log error
+                await _errorLogService.LogErrorAsync($"PurchaseBill Index Error: {ex.Message}", ex.StackTrace);
                 ViewBag.PaidTotal = 0;
                 ViewBag.UnpaidTotal = 0;
                 ViewBag.GrandTotal = 0;
@@ -157,23 +159,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                var errorQuery = @"
-                             INSERT INTO error_logs (error_message, stack_trace, created_at)
-                             VALUES (@message, @stack, NOW());";
-                using (var connection = new NpgsqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new NpgsqlCommand(errorQuery, connection))
-                    {
-                        command.Parameters.AddWithValue("@message", ex.Message);
-                        command.Parameters.AddWithValue("@stack", (object)ex.StackTrace ?? DBNull.Value);
-
-                        command.ExecuteNonQuery();
-                    }
-                }
-
-
-
+                await _errorLogService.LogErrorAsync($"PurchaseBill Create GET Error: {ex.Message}", ex.StackTrace);
                 return View(new PurchaseBillViewModel());
             }
         }
@@ -237,6 +223,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"PurchaseBill Create POST Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = "Error: " + ex.Message });
 
             }
@@ -323,6 +310,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"PurchaseBill Edit Error: {ex.Message}", ex.StackTrace);
                 TempData["ErrorMessage"] = $"Error updating bill: {ex.Message}";
             }
 
@@ -441,6 +429,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"PurchaseBill DeleteConfirmed Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = "Error: " + ex.Message });
 
             }
@@ -588,6 +577,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"PurchaseBill UpdateEntries Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = "Error: " + ex.Message });
 
             }
@@ -607,7 +597,7 @@ namespace MUNEEMJI.Controllers
                 bool isSameState = await _gstTaxService.IsSameStateAsync(companyId, stateOfSupply);
                 return Json(new { success = true, isSameState, taxType = isSameState ? "CGST_SGST" : "IGST", options = gstOptions.Select(o => new { value = o.TaxPercentage.ToString("0.##"), text = o.DisplayText, taxType = o.TaxType, cgstRate = o.CgstRate, sgstRate = o.SgstRate, igstRate = o.IgstRate, isSameState = o.IsSameState }) });
             }
-            catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+            catch (Exception ex) { await _errorLogService.LogErrorAsync($"PurchaseBill GetGstRates Error: {ex.Message}", ex.StackTrace); return Json(new { success = false, message = ex.Message }); }
         }
     }
 

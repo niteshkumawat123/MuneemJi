@@ -74,98 +74,98 @@ namespace MUNEEMJI.Controllers
         public async Task<IActionResult> SalesInvoice(int id)
         {
             try { return await DownloadHelper(await _salesPdf.GetContractPdfById(id, _env), $"Invoice_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("Estimation/{id}")]
         public async Task<IActionResult> Estimation(int id)
         {
             try { return await DownloadHelper(await _estimationPdf.GetEstimationPdfById(id, _env), $"Estimation_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("PaymentIn/{id}")]
         public async Task<IActionResult> PaymentIn(int id)
         {
             try { return await DownloadHelper(await _paymentInPdf.GetPaymentInPdfById(id, _env), $"PaymentIn_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("SaleOrder/{id}")]
         public async Task<IActionResult> SaleOrder(int id)
         {
             try { return await DownloadHelper(await _saleOrderPdf.GetSaleOrderPdfById(id, _env), $"SaleOrder_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("DeliveryChallan/{id}")]
         public async Task<IActionResult> DeliveryChallan(int id)
         {
             try { return await DownloadHelper(await _deliveryChallanPdf.GetDeliveryChallanPdfById(id, _env), $"DeliveryChallan_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("SaleReturn/{id}")]
         public async Task<IActionResult> SaleReturn(int id)
         {
             try { return await DownloadHelper(await _saleReturnPdf.GetSaleReturnPdfById(id, _env), $"SaleReturn_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("CreditNote/{id}")]
         public async Task<IActionResult> CreditNote(int id)
         {
             try { return await DownloadHelper(await _creditNotePdf.GetCreditNotePdfById(id, _env), $"CreditNote_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("OtherIncome/{id}")]
         public async Task<IActionResult> OtherIncome(int id)
         {
             try { return await DownloadHelper(await _otherIncomePdf.GetOtherIncomePdfById(id, _env), $"OtherIncome_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("PurchaseBill/{id}")]
         public async Task<IActionResult> PurchaseBill(int id)
         {
             try { return await DownloadHelper(await _purchaseBillPdf.GetPurchaseBillPdfById(id, _env), $"PurchaseBill_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("PaymentOut/{id}")]
         public async Task<IActionResult> PaymentOut(int id)
         {
             try { return await DownloadHelper(await _paymentOutPdf.GetPaymentOutPdfById(id, _env), $"PaymentOut_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("Expense/{id}")]
         public async Task<IActionResult> Expense(int id)
         {
             try { return await DownloadHelper(await _expensePdf.GetExpensePdfById(id, _env), $"Expense_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("PurchaseOrder/{id}")]
         public async Task<IActionResult> PurchaseOrder(int id)
         {
             try { return await DownloadHelper(await _purchaseOrderPdf.GetPurchaseOrderPdfById(id, _env), $"PurchaseOrder_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("PurchaseReturn/{id}")]
         public async Task<IActionResult> PurchaseReturn(int id)
         {
             try { return await DownloadHelper(await _purchaseReturnPdf.GetPurchaseReturnPdfById(id, _env), $"PurchaseReturn_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
 
         [HttpGet("DebitNote/{id}")]
         public async Task<IActionResult> DebitNote(int id)
         {
             try { return await DownloadHelper(await _drNotePdf.GetDrNotePdfById(id, _env), $"DebitNote_{id}.pdf"); }
-            catch { return StatusCode(500, "Error generating PDF."); }
+            catch (Exception ex) { return StatusCode(500, "Error generating PDF: " + ex.Message + " | " + ex.InnerException?.Message); }
         }
     }
 }

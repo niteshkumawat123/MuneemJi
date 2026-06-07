@@ -22,10 +22,11 @@ namespace MUNEEMJI.Controllers
         private readonly IParty partyController;
         private readonly ISalesInvoicesPdf _salesInvoicesPdf;
         private readonly IGstTaxService _gstTaxService;
+        private readonly IErrorLogService _errorLogService;
 
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         public SalesController(ISalesBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService,
-            ICompanyTenancy companyTenancy, IParty _partyController, ISalesInvoicesPdf salesInvoicesPdf, IGstTaxService gstTaxService)
+            ICompanyTenancy companyTenancy, IParty _partyController, ISalesInvoicesPdf salesInvoicesPdf, IGstTaxService gstTaxService, IErrorLogService errorLogService)
         {
             _billService = billService;
             _environment = environment;
@@ -34,6 +35,7 @@ namespace MUNEEMJI.Controllers
             partyController = _partyController;
             _salesInvoicesPdf = salesInvoicesPdf;
             _gstTaxService = gstTaxService;
+            _errorLogService = errorLogService;
         }
         public async Task<IActionResult> Index()
         {
@@ -116,8 +118,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                // Log error
-                Console.WriteLine($"Error: {ex.Message}");
+                await _errorLogService.LogErrorAsync($"Sales Index Error: {ex.Message}", ex.StackTrace);
 
                 ViewBag.PaidTotal = 0m;
                 ViewBag.UnpaidTotal = 0m;
@@ -171,23 +172,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
-                var errorQuery = @"
-                             INSERT INTO error_logs (error_message, stack_trace, created_at)
-                             VALUES (@message, @stack, NOW());";
-                using (var connection = new NpgsqlConnection(_connectionString))
-                {
-                    connection.Open();
-                    using (var command = new NpgsqlCommand(errorQuery, connection))
-                    {
-                        command.Parameters.AddWithValue("@message", ex.Message);
-                        command.Parameters.AddWithValue("@stack", (object)ex.StackTrace ?? DBNull.Value);
-
-                        command.ExecuteNonQuery();
-                    }
-                }
-
-
-
+                await _errorLogService.LogErrorAsync($"Sales Create GET Error: {ex.Message}", ex.StackTrace);
                 return View(new PurchaseBillViewModel());
             }
         }
@@ -257,6 +242,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Sales Create POST Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = "Error: " + ex.Message });
 
             }
@@ -372,6 +358,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Sales DeleteConfirmed Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = "Error: " + ex.Message });
 
             }
@@ -518,12 +505,12 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Sales UpdateEntries Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = "Error: " + ex.Message });
 
             }
 
         }
-
 
         #endregion
 
@@ -552,6 +539,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Sales DownloadInvoicePdf Error: {ex.Message}", ex.StackTrace);
                 return StatusCode(500, "An error occurred while generating the PDF.");
             }
         }
@@ -603,6 +591,7 @@ namespace MUNEEMJI.Controllers
             }
             catch (Exception ex)
             {
+                await _errorLogService.LogErrorAsync($"Sales GetGstRates Error: {ex.Message}", ex.StackTrace);
                 return Json(new { success = false, message = ex.Message });
             }
         }

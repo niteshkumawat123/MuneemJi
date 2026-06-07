@@ -1,6 +1,7 @@
 using Insight.Database;
 using Microsoft.AspNetCore.Mvc;
 using MUNEEMJI.Models;
+using MUNEEMJI.PdfServices;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 using Npgsql;
@@ -16,10 +17,11 @@ namespace MUNEEMJI.Controllers
         private readonly IParty partyController;
         private readonly ICompanyTenancy _CompayTenancy;
         private readonly IGstTaxService _gstTaxService;
+        private readonly ISaleOrderPdf _pdfService;
 
         // GET: Bill
 
-        public SalesOrderController(ISalesOrderService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, IParty partyController, ICompanyTenancy CompayTenancy, IGstTaxService gstTaxService)
+        public SalesOrderController(ISalesOrderService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, IParty partyController, ICompanyTenancy CompayTenancy, IGstTaxService gstTaxService, ISaleOrderPdf pdfService)
         {
             _billService = billService;
             _environment = environment;
@@ -27,6 +29,7 @@ namespace MUNEEMJI.Controllers
             this.partyController = partyController;
             _CompayTenancy = CompayTenancy;
             _gstTaxService = gstTaxService;
+            _pdfService = pdfService;
         }
         public async Task<IActionResult> Index()
         {
@@ -576,6 +579,21 @@ namespace MUNEEMJI.Controllers
                 return Json(new { success = true, isSameState, taxType = isSameState ? "CGST_SGST" : "IGST", options = gstOptions.Select(o => new { value = o.TaxPercentage.ToString("0.##"), text = o.DisplayText, taxType = o.TaxType, cgstRate = o.CgstRate, sgstRate = o.SgstRate, igstRate = o.IgstRate, isSameState = o.IsSameState }) });
             }
             catch (Exception ex) { return Json(new { success = false, message = ex.Message }); }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DownloadPdf(int id)
+        {
+            var relativePath = await _pdfService.GetSaleOrderPdfById(id, _environment);
+            if (string.IsNullOrEmpty(relativePath))
+                return NotFound();
+
+            var fullPath = Path.Combine(_environment.WebRootPath, relativePath.TrimStart('/'));
+            if (!System.IO.File.Exists(fullPath))
+                return NotFound();
+
+            var bytes = await System.IO.File.ReadAllBytesAsync(fullPath);
+            return File(bytes, "application/pdf", Path.GetFileName(fullPath));
         }
     }
 }

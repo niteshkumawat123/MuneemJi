@@ -620,7 +620,14 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('adjustmentDate').value = today;
             updateCalculatedCash();
-            console.log('Page loaded successfully');
+
+            // Show toast from sessionStorage (persists across reload)
+            const pendingToast = sessionStorage.getItem('toastMessage');
+            if (pendingToast) {
+                const toastData = JSON.parse(pendingToast);
+                showToast(toastData.message, toastData.type || 'success');
+                sessionStorage.removeItem('toastMessage');
+            }
         };
 
         // Format number to Indian currency
@@ -752,17 +759,14 @@
             deleteBtn.textContent = 'Deleting...';
 
             try {
-                const response = await fetch(`/web/Bank/DeleteCashConfirmed?id=${deleteTransactionId}`, {
+                const response = await fetch(`/Web/Bank/DeleteCashConfirmed?id=${deleteTransactionId}`, {
                     method: 'GET'
                 });
 
                 if (response.ok) {
-                    showToast('Transaction deleted successfully!');
+                    sessionStorage.setItem('toastMessage', JSON.stringify({ message: 'Transaction deleted successfully!', type: 'success' }));
                     hideDeleteModal();
-
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
+                    location.reload();
                 } else {
                     throw new Error('Delete failed');
                 }
@@ -890,14 +894,15 @@
                 });
 
                 if (response.ok) {
-                    // Show success message
-                    showToast(transactionId ? 'Transaction updated successfully!' : 'Cash adjusted successfully!');
+                    // Store success message and reload
+                    const msg = transactionId ? 'Transaction updated successfully!' : 'Cash adjusted successfully!';
+                    sessionStorage.setItem('toastMessage', JSON.stringify({ message: msg, type: 'success' }));
 
                     // Close modal
                     hideModal();
 
                     // Reload to show updated transactions
-                    setTimeout(() => location.reload(), 1500);
+                    location.reload();
                 } else {
                     throw new Error('Server error');
                 }

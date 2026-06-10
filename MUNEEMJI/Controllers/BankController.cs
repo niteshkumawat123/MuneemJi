@@ -56,8 +56,9 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public IActionResult AddBankAccount(BankAccountModel model)
         {
-            if (!ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(model.AccountNumber))
             {
+                ModelState.AddModelError("AccountNumber", "Account Number is required.");
                 return View(model);
             }
 

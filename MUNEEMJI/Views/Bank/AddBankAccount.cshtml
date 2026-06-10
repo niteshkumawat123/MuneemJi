@@ -6,6 +6,8 @@
 <div class="container-fluid">
     <h2 class="mb-4">Add Bank Account</h2>
     <form method="post">
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <input type="hidden" name="RequestTypeId" value="@Model.RequestTypeId" />
         <div class="row g-3 mb-3">
             <div class="col-12 col-md-4">
                 <label for="AccountDisplayName" class="form-label">Account Display Name</label>
@@ -23,11 +25,13 @@
 
         <div class="mb-3">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="PrintUPIQrCode" name="PrintUPIQrCode" @(Model.PrintUPIQrCode ? "checked" : "") />
+                <input class="form-check-input" type="checkbox" id="PrintUPIQrCode" name="PrintUPIQrCode" value="true" @(Model.PrintUPIQrCode ? "checked" : "") />
+                <input type="hidden" name="PrintUPIQrCode" value="false" />
                 <label class="form-check-label" for="PrintUPIQrCode">Print UPI QR Code on Invoices</label>
             </div>
             <div class="form-check mt-2">
-                <input class="form-check-input" type="checkbox" id="PrintBankDetails" name="PrintBankDetails" @(Model.PrintBankDetails ? "checked" : "") />
+                <input class="form-check-input" type="checkbox" id="PrintBankDetails" name="PrintBankDetails" value="true" @(Model.PrintBankDetails ? "checked" : "") />
+                <input type="hidden" name="PrintBankDetails" value="false" />
                 <label class="form-check-label" for="PrintBankDetails">Print bank details on invoices</label>
             </div>
         </div>

@@ -107,6 +107,15 @@ namespace MUNEEMJI.Controllers
                         billItem = data.Where(x => x.Id == id).FirstOrDefault();
                     }
 
+                    // If not found in products, search in services
+                    if (billItem == null || billItem.Id == 0)
+                    {
+                        var serviceData = GetServiceAsync(companyId);
+                        if (serviceData != null && serviceData.Count() > 0)
+                        {
+                            billItem = serviceData.Where(x => x.Id == id).FirstOrDefault();
+                        }
+                    }
 
                 }
                 if (billItem != null && billItem.Id > 0)
@@ -179,6 +188,22 @@ namespace MUNEEMJI.Controllers
                     if (!string.IsNullOrEmpty(model.ImageBase64) && !string.IsNullOrEmpty(model.ImageFileName))
                     {
                         model.ImageUrl = await SaveImageToServer(model.ImageBase64, model.ImageFileName, "Item");
+                    }
+                    else if (model.Id > 0 && string.IsNullOrEmpty(model.ImageUrl))
+                    {
+                        // Preserve existing image when editing without uploading a new one
+                        var existingItems = GetItemsAsync(companyId);
+                        var existingItem = existingItems.FirstOrDefault(x => x.Id == model.Id);
+                        if (existingItem == null)
+                        {
+                            // Also check service items
+                            var serviceItems = GetServiceAsync(companyId);
+                            existingItem = serviceItems.FirstOrDefault(x => x.Id == model.Id);
+                        }
+                        if (existingItem != null)
+                        {
+                            model.ImageUrl = existingItem.ImageUrl;
+                        }
                     }
 
                     bool result = await _billItemService.SaveBillItemAsync(model, companyId);
@@ -260,6 +285,10 @@ namespace MUNEEMJI.Controllers
                                         purchase_price_tax_type AS ""PurchasePriceTaxType"",
                                         tax_rate AS ""TaxRate"",
                                         wholesale_price AS ""WholesalePrice"",
+                                        wholesale_price_tax_type AS ""WholesalePriceTaxType"",
+                                        min_wholesale_qty AS ""MinWholesaleQty"",
+                                        disc_on_mrp_wholesale AS ""DiscOnMrpWholesale"",
+                                        additional_cess AS ""AdditionalCess"",
                                         opening_quantity AS ""OpeningQuantity"",
                                         at_price AS ""AtPrice"",
                                         as_of_date AS ""AsOfDate"",
@@ -448,6 +477,7 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         public IActionResult DeleteItem(int id)
         {
             try
@@ -541,7 +571,8 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetServicePartialView(int? id)
         {
-            var viewModel = GetServiceAsync();
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            var viewModel = GetServiceAsync(companyId);
 
             ItemViewModel itemViewModel = new ItemViewModel();
             itemViewModel.ItemView = viewModel;
@@ -563,7 +594,7 @@ namespace MUNEEMJI.Controllers
 
         }
 
-        public List<BillItem> GetServiceAsync()
+        public List<BillItem> GetServiceAsync(int CompanyId = 0)
         {
             var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
@@ -593,6 +624,10 @@ namespace MUNEEMJI.Controllers
                                         purchase_price_tax_type AS ""PurchasePriceTaxType"",
                                         tax_rate AS ""TaxRate"",
                                         wholesale_price AS ""WholesalePrice"",
+                                        wholesale_price_tax_type AS ""WholesalePriceTaxType"",
+                                        min_wholesale_qty AS ""MinWholesaleQty"",
+                                        disc_on_mrp_wholesale AS ""DiscOnMrpWholesale"",
+                                        additional_cess AS ""AdditionalCess"",
                                         opening_quantity AS ""OpeningQuantity"",
                                         at_price AS ""AtPrice"",
                                         as_of_date AS ""AsOfDate"",
@@ -614,12 +649,12 @@ namespace MUNEEMJI.Controllers
                                         brand AS ""Brand"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
-                                    FROM billitem where item_type = @p_itemtye
+                                    FROM billitem where item_type = @p_itemtype and (@p_companyid = 0 OR companyid = @p_companyid)
                                     ORDER BY id;
                                     ";
 
                     // ? Fetch bill items
-                    var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtye = "service" }).ToList();
+                    var billItems = connection.QuerySql<BillItem>(billItemSql, new { p_itemtype = "service", p_companyid = CompanyId }).ToList();
 
                     if (billItems != null && billItems.Count > 0)
                     {

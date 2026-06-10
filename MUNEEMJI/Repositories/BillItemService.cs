@@ -49,6 +49,7 @@ namespace MUNEEMJI.Repositories
                 item_type, item_name, item_hsn, item_code, category, unit, item_image_url,
                 sale_price, sale_price_tax_type, discount_on_sale_price, discount_type,
                 purchase_price, purchase_price_tax_type, tax_rate, wholesale_price,
+                wholesale_price_tax_type, min_wholesale_qty, disc_on_mrp_wholesale, additional_cess,
                 opening_quantity, at_price, as_of_date, location, min_stock_to_maintain,
                 online_store_price, description, total_estimated_cost,
                 service_name, service_hsn, service_code,
@@ -59,6 +60,7 @@ namespace MUNEEMJI.Repositories
                 @item_type, @item_name, @item_hsn, @item_code, @category, @unit, @item_image_url,
                 @sale_price, @sale_price_tax_type, @discount_on_sale_price, @discount_type,
                 @purchase_price, @purchase_price_tax_type, @tax_rate, @wholesale_price,
+                @wholesale_price_tax_type, @min_wholesale_qty, @disc_on_mrp_wholesale, @additional_cess,
                 @opening_quantity, @at_price, @as_of_date, @location, @min_stock_to_maintain,
                 @online_store_price, @description, @total_estimated_cost,
                 @service_name, @service_hsn, @service_code,
@@ -91,6 +93,10 @@ namespace MUNEEMJI.Repositories
                 purchase_price_tax_type = @purchase_price_tax_type,
                 tax_rate = @tax_rate,
                 wholesale_price = @wholesale_price,
+                wholesale_price_tax_type = @wholesale_price_tax_type,
+                min_wholesale_qty = @min_wholesale_qty,
+                disc_on_mrp_wholesale = @disc_on_mrp_wholesale,
+                additional_cess = @additional_cess,
                 opening_quantity = @opening_quantity,
                 at_price = @at_price,
                 as_of_date = @as_of_date,
@@ -175,6 +181,10 @@ namespace MUNEEMJI.Repositories
             command.Parameters.AddWithValue("@purchase_price_tax_type", model.PurchasePriceTaxType);
             command.Parameters.AddWithValue("@tax_rate", model.TaxRate);
             command.Parameters.AddWithValue("@wholesale_price", (object?)model.WholesalePrice ?? DBNull.Value);
+            command.Parameters.AddWithValue("@wholesale_price_tax_type", model.WholesalePriceTaxType ?? "Without Tax");
+            command.Parameters.AddWithValue("@min_wholesale_qty", model.MinWholesaleQty);
+            command.Parameters.AddWithValue("@disc_on_mrp_wholesale", (object?)model.DiscOnMrpWholesale ?? DBNull.Value);
+            command.Parameters.AddWithValue("@additional_cess", (object?)model.AdditionalCess ?? DBNull.Value);
             command.Parameters.AddWithValue("@opening_quantity", model.OpeningQuantity);
             command.Parameters.AddWithValue("@at_price", (object?)model.AtPrice ?? DBNull.Value);
             command.Parameters.AddWithValue("@as_of_date", (object?)model.AsOfDate ?? DBNull.Value);

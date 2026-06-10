@@ -696,6 +696,18 @@
             dropdown.classList.remove('show');
         }
 
+        function toggleActionDropdown(event, btn) {
+            event.stopPropagation();
+            document.querySelectorAll('.actions-cell .custom-dropdown-menu.show').forEach(function(menu) {
+                if (menu !== btn.nextElementSibling) {
+                    menu.classList.remove('show');
+                }
+            });
+            hideCustomDropdown();
+            var menu = btn.nextElementSibling;
+            menu.classList.toggle('show');
+        }
+
         // Close dropdown when clicking outside
         document.addEventListener('click', function(event) {
             const dropdown = document.getElementById('paymentCustomDropdown');
@@ -704,12 +716,21 @@
             if (dropdown && !dropdown.contains(event.target) && !button.contains(event.target)) {
                 dropdown.classList.remove('show');
             }
+
+            if (!event.target.closest('.custom-dropdown-wrapper')) {
+                document.querySelectorAll('.actions-cell .custom-dropdown-menu.show').forEach(function(menu) {
+                    menu.classList.remove('show');
+                });
+            }
         });
 
         // Close dropdown on ESC key
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 hideCustomDropdown();
+                document.querySelectorAll('.actions-cell .custom-dropdown-menu.show').forEach(function(menu) {
+                    menu.classList.remove('show');
+                });
             }
         });
 
@@ -803,8 +824,6 @@
                             var typeDisplay = transaction.transactionType;
                             var typeClass = '';
 
-                            debugger;
-
                             switch(transaction.transactionType) {
                                 case 'EMI Paid':
                                     typeClass = 'text-success';
@@ -823,15 +842,15 @@
                                 '<td class="amount-cell">₹ ' + parseFloat(transaction.interestAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
                                 '<td class="amount-cell amount-' + (transaction.transactionType === 'Payment' ? 'negative' : 'positive') + '">₹ ' + parseFloat(transaction.totalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
                                 '<td class="actions-cell">' +
-                                    '<div class="dropdown">' +
-                                        '<button class="actions-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">' +
+                                    '<div class="custom-dropdown-wrapper">' +
+                                        '<button class="actions-btn" type="button" onclick="toggleActionDropdown(event, this)">' +
                                             '<i class="fas fa-ellipsis-v"></i>' +
                                         '</button>' +
-                                        '<ul class="dropdown-menu dropdown-menu-end">' +
-                                            '<li><a class="dropdown-item" href="javascript:void(0);" onclick="viewTransactionDetails(' + transaction.id + ')">View Details</a></li>' +
-                                            '<li><a class="dropdown-item" href="javascript:void(0);" onclick="downloadReceipt(' + transaction.id + ')">Download Receipt</a></li>' +
-                                            '<li><a class="dropdown-item" href="javascript:void(0);" onclick="printTransaction(' + transaction.id + ')">Print</a></li>' +
-                                        '</ul>' +
+                                        '<div class="custom-dropdown-menu">' +
+                                            '<a class="custom-dropdown-item" href="javascript:void(0);" onclick="viewTransactionDetails(' + transaction.id + ')">View Details</a>' +
+                                            '<a class="custom-dropdown-item" href="javascript:void(0);" onclick="downloadReceipt(' + transaction.id + ')">Download Receipt</a>' +
+                                            '<a class="custom-dropdown-item" href="javascript:void(0);" onclick="printTransaction(' + transaction.id + ')">Print</a>' +
+                                        '</div>' +
                                     '</div>' +
                                 '</td>' +
                             '</tr>';
@@ -851,19 +870,116 @@
             });
         }
 
+        function getTransactionFromTable(transactionId) {
+            var row = null;
+            $('#transactionsTableBody tr').each(function() {
+                var btn = $(this).find('.actions-btn');
+                if (btn.length) {
+                    var onclick = $(this).find('.custom-dropdown-item').first().attr('onclick');
+                    if (onclick && onclick.indexOf('(' + transactionId + ')') > -1) {
+                        row = $(this);
+                        return false;
+                    }
+                }
+            });
+            if (!row) return null;
+            var cells = row.find('td');
+            return {
+                id: transactionId,
+                type: $(cells[0]).text().trim(),
+                date: $(cells[1]).text().trim(),
+                principal: $(cells[2]).text().trim(),
+                interest: $(cells[3]).text().trim(),
+                total: $(cells[4]).text().trim()
+            };
+        }
+
         function viewTransactionDetails(transactionId) {
-            console.log('View transaction details:', transactionId);
-            alert('View details for transaction ID: ' + transactionId);
+            var txn = getTransactionFromTable(transactionId);
+            if (!txn) return;
+
+            var existingModal = document.getElementById('transactionDetailModal');
+            if (existingModal) existingModal.remove();
+
+            var modalHtml = '<div class="modal fade" id="transactionDetailModal" tabindex="-1" aria-hidden="true">' +
+                '<div class="modal-dialog modal-dialog-centered">' +
+                    '<div class="modal-content">' +
+                        '<div class="modal-header">' +
+                            '<h5 class="modal-title">Transaction Details</h5>' +
+                            '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
+                        '</div>' +
+                        '<div class="modal-body">' +
+                            '<table class="table table-bordered">' +
+                                '<tr><th style="width:40%">Transaction ID</th><td>' + txn.id + '</td></tr>' +
+                                '<tr><th>Type</th><td>' + txn.type + '</td></tr>' +
+                                '<tr><th>Date</th><td>' + txn.date + '</td></tr>' +
+                                '<tr><th>Principal</th><td>' + txn.principal + '</td></tr>' +
+                                '<tr><th>Interest & Charges</th><td>' + txn.interest + '</td></tr>' +
+                                '<tr><th>Total Amount</th><td>' + txn.total + '</td></tr>' +
+                            '</table>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+
+            $('body').append(modalHtml);
+            var modal = new bootstrap.Modal(document.getElementById('transactionDetailModal'));
+            modal.show();
+        }
+
+        function buildReceiptHtml(txn, accountName) {
+            return '<html><head><title>Receipt</title>' +
+                '<style>' +
+                    'body { font-family: Arial, sans-serif; padding: 30px; color: #333; }' +
+                    '.receipt { max-width: 600px; margin: 0 auto; border: 1px solid #ccc; padding: 30px; }' +
+                    '.receipt-header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }' +
+                    '.receipt-header h2 { margin: 0 0 5px 0; }' +
+                    '.receipt-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }' +
+                    '.receipt-label { font-weight: 600; color: #555; }' +
+                    '.receipt-total { font-size: 18px; font-weight: 700; margin-top: 15px; text-align: right; color: #d32f2f; }' +
+                    '.receipt-footer { text-align: center; margin-top: 30px; font-size: 12px; color: #999; }' +
+                '</style>' +
+                '</head><body>' +
+                '<div class="receipt">' +
+                    '<div class="receipt-header"><h2>MuneemJI</h2><p>Loan Transaction Receipt</p></div>' +
+                    '<div class="receipt-row"><span class="receipt-label">Account</span><span>' + accountName + '</span></div>' +
+                    '<div class="receipt-row"><span class="receipt-label">Transaction ID</span><span>' + txn.id + '</span></div>' +
+                    '<div class="receipt-row"><span class="receipt-label">Type</span><span>' + txn.type + '</span></div>' +
+                    '<div class="receipt-row"><span class="receipt-label">Date</span><span>' + txn.date + '</span></div>' +
+                    '<div class="receipt-row"><span class="receipt-label">Principal</span><span>' + txn.principal + '</span></div>' +
+                    '<div class="receipt-row"><span class="receipt-label">Interest & Charges</span><span>' + txn.interest + '</span></div>' +
+                    '<div class="receipt-total">Total: ' + txn.total + '</div>' +
+                    '<div class="receipt-footer">Generated on ' + new Date().toLocaleDateString('en-IN') + '</div>' +
+                '</div>' +
+                '</body></html>';
         }
 
         function downloadReceipt(transactionId) {
-            console.log('Download receipt:', transactionId);
-            alert('Download receipt for transaction ID: ' + transactionId);
+            var txn = getTransactionFromTable(transactionId);
+            if (!txn) return;
+            var accountName = $('#selectedAccountName').text().trim();
+            var html = buildReceiptHtml(txn, accountName);
+            var blob = new Blob([html], { type: 'text/html' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'Receipt_' + transactionId + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         }
 
         function printTransaction(transactionId) {
-            console.log('Print transaction:', transactionId);
-            alert('Print transaction ID: ' + transactionId);
+            var txn = getTransactionFromTable(transactionId);
+            if (!txn) return;
+            var accountName = $('#selectedAccountName').text().trim();
+            var html = buildReceiptHtml(txn, accountName);
+            var printWin = window.open('', '_blank', 'width=700,height=600');
+            printWin.document.write(html);
+            printWin.document.close();
+            printWin.focus();
+            printWin.print();
         }
 
         function formatDate(dateString) {
@@ -945,7 +1061,6 @@
         function openMakePaymentModal() {
             console.log('Make Payment clicked');
             showLoading();
-             debugger;
 
             $.get('@Url.Action("MakePayment")')
                 .done(function(data) {
@@ -953,7 +1068,6 @@
                     $('#modalContainer').html(data);
                     var modalElement = $('#modalContainer').find('.modal').first();
                     if (modalElement.length) {
-                        debugger;
                         var modal = new bootstrap.Modal(modalElement[0]);
                         modal.show();
                     } else {

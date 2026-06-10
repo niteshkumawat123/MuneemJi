@@ -144,7 +144,7 @@ namespace MUNEEMJI.Controllers
                 await connection.OpenAsync();
 
                 var queryBuilder = new StringBuilder(@"
-                    SELECT id, title, image_url, category, type, is_active, created_date, view_count, download_count
+                    SELECT id, title, image_url, category, type, is_active, created_date, view_count, download_count, tabid, categoryid
                     FROM templates 
                     WHERE is_active = true");
 
@@ -184,7 +184,9 @@ namespace MUNEEMJI.Controllers
                         Category = reader.GetString("category"),
                         Type = reader.GetString("type"),
                         IsActive = reader.GetBoolean("is_active"),
-                        CreatedDate = reader.GetDateTime("created_date")
+                        CreatedDate = reader.GetDateTime("created_date"),
+                        TabId = reader.IsDBNull(reader.GetOrdinal("tabid")) ? 0 : reader.GetInt32("tabid"),
+                        CategoryId = reader.IsDBNull(reader.GetOrdinal("categoryid")) ? 0 : reader.GetInt32("categoryid")
                     });
                 }
             }
@@ -206,7 +208,7 @@ namespace MUNEEMJI.Controllers
                 await connection.OpenAsync();
 
                 var queryBuilder = new StringBuilder(@"
-                    SELECT id, title, image_url, category, type, is_active, created_date, view_count, download_count
+                    SELECT id, title, image_url, category, type, is_active, created_date, view_count, download_count, tabid, categoryid
                     FROM templates 
                     WHERE is_active = true");
 
@@ -224,7 +226,7 @@ namespace MUNEEMJI.Controllers
                     parameters.Add(new NpgsqlParameter("@categoryid", categoryid));
                 }
 
-               
+
 
                 queryBuilder.Append(" ORDER BY created_date DESC, view_count DESC");
 
@@ -242,7 +244,9 @@ namespace MUNEEMJI.Controllers
                         Category = reader.GetString("category"),
                         Type = reader.GetString("type"),
                         IsActive = reader.GetBoolean("is_active"),
-                        CreatedDate = reader.GetDateTime("created_date")
+                        CreatedDate = reader.GetDateTime("created_date"),
+                        TabId = reader.IsDBNull(reader.GetOrdinal("tabid")) ? 0 : reader.GetInt32("tabid"),
+                        CategoryId = reader.IsDBNull(reader.GetOrdinal("categoryid")) ? 0 : reader.GetInt32("categoryid")
                     });
                 }
             }
@@ -462,16 +466,16 @@ namespace MUNEEMJI.Controllers
         {
             return new List<TemplateViewModel>
             {
-                new TemplateViewModel { Id = 1, Title = "??? ?? ????", ImageUrl = "/images/template1.jpg", Category = "Motivation", Type = "Greetings" },
-                new TemplateViewModel { Id = 2, Title = "?????? ????? ????? ?? ????? ??", ImageUrl = "/images/template2.jpg", Category = "Motivation", Type = "Greetings" },
-                new TemplateViewModel { Id = 3, Title = "????? ?? ??? ???", ImageUrl = "/images/template3.jpg", Category = "Adventure", Type = "Greetings" },
-                new TemplateViewModel { Id = 4, Title = "??? ???? ?? ??? ???? ??? ??", ImageUrl = "/images/template4.jpg", Category = "Memory", Type = "Greetings" },
-                new TemplateViewModel { Id = 5, Title = "Good Night", ImageUrl = "/images/template5.jpg", Category = "Good Night", Type = "Greetings" },
-                new TemplateViewModel { Id = 6, Title = "ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE", ImageUrl = "/images/template6.jpg", Category = "Good Night", Type = "Greetings" },
-                new TemplateViewModel { Id = 7, Title = "Hard work beats TALENT", ImageUrl = "/images/template7.jpg", Category = "Motivation", Type = "Business" },
-                new TemplateViewModel { Id = 8, Title = "YOU DON'T HAVE TO BE GREAT TO START", ImageUrl = "/images/template8.jpg", Category = "Motivation", Type = "Business" },
-                new TemplateViewModel { Id = 9, Title = "Good Morning", ImageUrl = "/images/template9.jpg", Category = "Good Morning", Type = "Greetings" },
-                new TemplateViewModel { Id = 10, Title = "Good Morning", ImageUrl = "/images/template10.jpg", Category = "Good Morning", Type = "Greetings" }
+                new TemplateViewModel { Id = 1, Title = "Never Give Up", ImageUrl = "/uploads/whatsapp_templates/sample1.jpg", Category = "Motivation", Type = "Greetings", TabId = 1, CategoryId = 7 },
+                new TemplateViewModel { Id = 2, Title = "Life Changes With Thinking", ImageUrl = "/uploads/whatsapp_templates/sample2.jpg", Category = "Motivation", Type = "Greetings", TabId = 1, CategoryId = 7 },
+                new TemplateViewModel { Id = 3, Title = "Dare To Fly High", ImageUrl = "/uploads/whatsapp_templates/sample3.jpg", Category = "Motivation", Type = "Greetings", TabId = 1, CategoryId = 7 },
+                new TemplateViewModel { Id = 4, Title = "Tomorrow Never Comes", ImageUrl = "/uploads/whatsapp_templates/sample4.jpg", Category = "Motivation", Type = "Greetings", TabId = 1, CategoryId = 7 },
+                new TemplateViewModel { Id = 5, Title = "Good Night", ImageUrl = "/uploads/whatsapp_templates/sample5.jpg", Category = "Good Night", Type = "Greetings", TabId = 1, CategoryId = 6 },
+                new TemplateViewModel { Id = 6, Title = "ONE DAY, WE WILL NEVER HAVE TO SAY GOODBYE", ImageUrl = "/uploads/whatsapp_templates/sample6.jpg", Category = "Good Night", Type = "Greetings", TabId = 1, CategoryId = 6 },
+                new TemplateViewModel { Id = 7, Title = "Hard work beats TALENT", ImageUrl = "/uploads/whatsapp_templates/sample7.jpg", Category = "Motivation", Type = "Business", TabId = 3, CategoryId = 7 },
+                new TemplateViewModel { Id = 8, Title = "YOU DON'T HAVE TO BE GREAT TO START", ImageUrl = "/uploads/whatsapp_templates/sample8.jpg", Category = "Motivation", Type = "Business", TabId = 3, CategoryId = 7 },
+                new TemplateViewModel { Id = 9, Title = "Good Morning", ImageUrl = "/uploads/whatsapp_templates/sample9.jpg", Category = "Good Morning", Type = "Greetings", TabId = 1, CategoryId = 4 },
+                new TemplateViewModel { Id = 10, Title = "Good Morning", ImageUrl = "/uploads/whatsapp_templates/sample10.jpg", Category = "Good Morning", Type = "Greetings", TabId = 1, CategoryId = 4 }
             };
         }
 

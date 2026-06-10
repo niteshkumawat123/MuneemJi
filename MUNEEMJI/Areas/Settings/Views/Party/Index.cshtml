@@ -379,6 +379,16 @@
 <form id="partySettingsForm">
     <div class="party-settings-container">
 
+        <div style="display: flex; justify-content: flex-end;">
+            <button type="button" class="btn-close btn-close-custom"
+                    style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
+                   height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
+                   padding-right: 6px;"
+                    aria-label="Close"
+                    onclick="navigateBack(); return false;">
+            </button>
+        </div>
+
         <!-- Alert Messages -->
         <div id="alertContainer"></div>
 
@@ -488,22 +498,7 @@
                 </div>
             </div>
 
-            <!-- Enable Loyalty Point Section -->
-
-            <div class="settings-section" style="
-                 margin-left: 333px;>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <button type="button" class="btn-close btn-close-custom"
-                            style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
-                            height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
-                            padding-right: 6px;"
-                            aria-label="Close"
-                            onclick="navigateBack(); return false;">
-                    </button>
-                </div>
             </div>
-
-        </div>
 
         <!-- Save Button -->
         <button type="submit" class="save-btn" id="saveBtn">

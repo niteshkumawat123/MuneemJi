@@ -1,4 +1,5 @@
-﻿@{
+﻿@model MUNEEMJI.Models.TemplateListViewModel
+@{
     ViewData["Title"] = "WhatsApp Marketing";
 }
 
@@ -369,8 +370,8 @@
                             </button>
                         </div>
                         <div class="template-image-container">
-                            <img src="@template.ImageUrl" alt="@template.Title" class="template-image" />
-                        </div>
+                                <img src="@Url.Content("~" + template.ImageUrl)" alt="@template.Title" class="template-image" />
+                            </div>
                         <div class="template-overlay">
                             <div class="template-text">@template.Title</div>
                             <div class="template-arrow">
@@ -650,7 +651,6 @@
 
         // Tab filtering function
         function filterByTab(tabId) {
-            debugger;
             currentTabId = tabId;
 
             // Update active tab
@@ -685,7 +685,6 @@
 
         // Apply filters to visible templates
         function applyFilters() {
-            debugger;
             document.querySelectorAll('.template-card').forEach(card => {
                 const cardTabId = parseInt(card.dataset.tabId);
                 const cardCategoryId = parseInt(card.dataset.categoryId);
@@ -703,9 +702,8 @@
 
         // Load templates from server
         function loadTemplatesByFilter(tabId, categoryId) {
-            debugger;
             // You can call your controller here to fetch filtered data
-            fetch(`/Web/WhatsAppMarketing/GetTemplates?tabId=${tabId}&categoryId=${categoryId}`)
+            fetch(`/Web/WhatsAppMarketing/GetTemplates?tabid=${tabId}&categoryid=${categoryId}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Filtered templates:', data);
@@ -743,7 +741,7 @@
                         </button>
                     </div>
                     <div class="template-image-container">
-                        <img src="${template.imageUrl}" alt="${template.title}" class="template-image" />
+                        <img src="/Web${template.imageUrl}" alt="${template.title}" class="template-image" />
                     </div>
                     <div class="template-overlay">
                         <div class="template-text">${template.title}</div>
@@ -792,7 +790,7 @@
                 whatsappText: document.getElementById('whatsappText').value
             };
 
-            fetch('/WhatsAppMarketing/GenerateImage', {
+            fetch('/Web/WhatsAppMarketing/GenerateImage', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

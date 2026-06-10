@@ -108,7 +108,7 @@ namespace MUNEEMJI.Controllers
                 if (ModelState.IsValid)
                 {
                     // Set service-specific fields based on item type
-                    if (model.ItemType == "Service")
+                    if (string.Equals(model.ItemType, "service", StringComparison.OrdinalIgnoreCase))
                     {
                         model.ServiceName = model.ItemName;
                         model.ServiceHsn = model.ItemHsn;
@@ -117,6 +117,16 @@ namespace MUNEEMJI.Controllers
                     if (!string.IsNullOrEmpty(model.ImageBase64) && !string.IsNullOrEmpty(model.ImageFileName))
                     {
                         model.ImageUrl = await SaveImageToServer(model.ImageBase64, model.ImageFileName, "Item");
+                    }
+                    else if (model.Id > 0 && string.IsNullOrEmpty(model.ImageUrl))
+                    {
+                        // Preserve existing image when editing without uploading a new one
+                        var existingItems = GetItemsAsync(companyId);
+                        var existingItem = existingItems.FirstOrDefault(x => x.Id == model.Id);
+                        if (existingItem != null)
+                        {
+                            model.ImageUrl = existingItem.ImageUrl;
+                        }
                     }
 
                     bool result = await _billItemService.SaveBillItemAsync(model,companyId);
@@ -194,7 +204,7 @@ namespace MUNEEMJI.Controllers
                                         item_code AS ""ItemCode"",
                                         category AS ""Category"",
                                         unit AS ""Unit"",
-                                        item_image_url AS ""ItemImageUrl"",
+                                        item_image_url AS ""ImageUrl"",
                                         sale_price AS ""SalePrice"",
                                         sale_price_tax_type AS ""SalePriceTaxType"",
                                         discount_on_sale_price AS ""DiscountOnSalePrice"",
@@ -203,6 +213,10 @@ namespace MUNEEMJI.Controllers
                                         purchase_price_tax_type AS ""PurchasePriceTaxType"",
                                         tax_rate AS ""TaxRate"",
                                         wholesale_price AS ""WholesalePrice"",
+                                        wholesale_price_tax_type AS ""WholesalePriceTaxType"",
+                                        min_wholesale_qty AS ""MinWholesaleQty"",
+                                        disc_on_mrp_wholesale AS ""DiscOnMrpWholesale"",
+                                        additional_cess AS ""AdditionalCess"",
                                         opening_quantity AS ""OpeningQuantity"",
                                         at_price AS ""AtPrice"",
                                         as_of_date AS ""AsOfDate"",
@@ -216,6 +230,12 @@ namespace MUNEEMJI.Controllers
                                         service_name AS ""ServiceName"",
                                         service_hsn AS ""ServiceHsn"",
                                         service_code AS ""ServiceCode"",
+                                        colour AS ""Colour"",
+                                        material AS ""Material"",
+                                        mfg_date AS ""MfgDate"",
+                                        exp_date AS ""ExpDate"",
+                                        size AS ""Size"",
+                                        brand AS ""Brand"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
                                     FROM billitem where Companyid = @p_companyid
@@ -396,7 +416,7 @@ namespace MUNEEMJI.Controllers
                                         item_code AS ""ItemCode"",
                                         category AS ""Category"",
                                         unit AS ""Unit"",
-                                        item_image_url AS ""ItemImageUrl"",
+                                        item_image_url AS ""ImageUrl"",
                                         sale_price AS ""SalePrice"",
                                         sale_price_tax_type AS ""SalePriceTaxType"",
                                         discount_on_sale_price AS ""DiscountOnSalePrice"",
@@ -418,6 +438,12 @@ namespace MUNEEMJI.Controllers
                                         service_name AS ""ServiceName"",
                                         service_hsn AS ""ServiceHsn"",
                                         service_code AS ""ServiceCode"",
+                                        colour AS ""Colour"",
+                                        material AS ""Material"",
+                                        mfg_date AS ""MfgDate"",
+                                        exp_date AS ""ExpDate"",
+                                        size AS ""Size"",
+                                        brand AS ""Brand"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
                                     FROM billitem where item_type = @p_itemtye and companyid = @p_companyId
@@ -463,6 +489,7 @@ namespace MUNEEMJI.Controllers
             return items;
         }
         [HttpPost]
+        [IgnoreAntiforgeryToken]
         public IActionResult DeleteItem(int id)
         {
             var _connectionString = MUNEEMJI.DbConfig.ConnectionString;

@@ -12,7 +12,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
     <!-- Font Awesome (legacy classes like `fas` used across views) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dNmRQm0FQXQm5Y3bZ6+q6QFv7Zc1q1z6bGm2Fz6V9YjKp1G1C1q1K1p1y1Z1+Y1G1q1Z1+Y1G1q1Z1+Y1G1q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     @RenderSection("Styles", required: false)
 
@@ -29,7 +29,7 @@
             left: 0;
             width: 280px;
             height: 100vh;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            background: #18181F;
             box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             display: flex;
@@ -988,13 +988,43 @@
                     <div class="collapse @(isSalesActive ? "show" : "")" id="saleMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li data-permission-module="Sales Invoice" data-permission-action="create"><a href="/Web/Sales/Create" class="nav-link">New Invoice</a></li>
-                            <li data-permission-module="Sales Invoice" data-permission-action="view"><a href="/Web/Sales/index" class="nav-link">Sales Invoices</a></li>
-                            <li data-permission-module="Estimation/Quotation" data-permission-action="view"><a href="/Web/Estimate_Quotations/index" class="nav-link">Estimate/Quotation</a></li>
+                            <li data-permission-module="Sales Invoice" data-permission-action="view" style="position: relative;">
+                                <a href="/Web/Sales/index" class="nav-link" style="padding-right: 2.5rem;">Sales Invoices</a>
+                                <a href="/Web/Sales/Create" onclick="event.stopPropagation();" title="Add Sales Invoice" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
+                            <li data-permission-module="Estimation/Quotation" data-permission-action="view" style="position: relative;">
+                                <a href="/Web/Estimate_Quotations/index" class="nav-link" style="padding-right: 2.5rem;">Estimate/Quotation</a>
+                                <a href="/Web/Estimate_Quotations/Create" onclick="event.stopPropagation();" title="Add Estimate" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
                             <li data-permission-module="Payment In" data-permission-action="view"><a href="/Web/PaymentIn/index" class="nav-link">Payment In</a></li>
-                            <li data-permission-module="Sale Order" data-permission-action="view"><a href="/Web/SalesOrder/index" class="nav-link">Sale Order</a></li>
-                            <li data-permission-module="Delivery Challan" data-permission-action="view"><a href="/Web/DeliveryChallan/index" class="nav-link">Delivery Challan</a></li>
-                            <li data-permission-module="Credit Note" data-permission-action="view"><a href="/Web/CreditNote/index" class="nav-link">Sale Return/Credit Note</a></li>
-                            <li data-permission-module="Other Income" data-permission-action="view"><a href="/Web/OtherIncome/index" class="nav-link">Other Income</a></li>
+                            <li data-permission-module="Sale Order" data-permission-action="view" style="position: relative;">
+                                <a href="/Web/SalesOrder/index" class="nav-link" style="padding-right: 2.5rem;">Sale Order</a>
+                                <a href="/Web/SalesOrder/Create" onclick="event.stopPropagation();" title="Add Sale Order" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
+                            <li data-permission-module="Delivery Challan" data-permission-action="view" style="position: relative;">
+                                <a href="/Web/DeliveryChallan/index" class="nav-link" style="padding-right: 2.5rem;">Delivery Challan</a>
+                                <a href="/Web/DeliveryChallan/Create" onclick="event.stopPropagation();" title="Add Delivery Challan" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
+                            <li data-permission-module="Credit Note" data-permission-action="view" style="position: relative;">
+                                <a href="/Web/CreditNote/index" class="nav-link" style="padding-right: 2.5rem;">Sale Return/Credit Note</a>
+                                <a href="/Web/CreditNote/Create" onclick="event.stopPropagation();" title="Add Credit Note" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
+                            <li data-permission-module="Other Income" data-permission-action="view" style="position: relative;">
+                                <a href="/Web/OtherIncome/index" class="nav-link" style="padding-right: 2.5rem;">Other Income</a>
+                                <a href="/Web/OtherIncome/Create" onclick="event.stopPropagation();" title="Add Other Income" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -1018,11 +1048,26 @@
                     <div class="collapse @(isPurchaseActive ? "show" : "")" id="purchaseMenu">
                         <ul class="btn-toggle-nav list-unstyled fw-normal">
                             <li data-permission-module="Purchase Bill" data-permission-action="create"><a href="/Web/PurchaseBill/Create" class="nav-link">New Purchase</a></li>
-                            <li data-permission-module="Purchase Bill" data-permission-action="view"><a href="/Web/PurchaseBill/index" class="nav-link">Purchase Bill</a></li>
+                            <li data-permission-module="Purchase Bill" data-permission-action="view" style="position: relative;">
+                                <a href="/Web/PurchaseBill/index" class="nav-link" style="padding-right: 2.5rem;">Purchase Bill</a>
+                                <a href="/Web/PurchaseBill/Create" onclick="event.stopPropagation();" title="Add Purchase Bill" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
                             <li data-permission-module="Payment Out" data-permission-action="view"><a href="/Web/PaymentOut/index" class="nav-link">Payment Out</a></li>
                             <li data-permission-module="Expense" data-permission-action="view"><a href="/Web/Expense/Index" class="nav-link">Expense</a></li>
-                            <li data-permission-module="Purchase Order" data-permission-action="view"><a href="/Web/PurchaseOrder/index" class="nav-link">Purchase Order</a></li>
-                            <li><a href="/Web/DebitNote/index" class="nav-link">Purchase Return/Dr. Note</a></li>
+                            <li data-permission-module="Purchase Order" data-permission-action="view" style="position: relative;">
+                                <a href="/Web/PurchaseOrder/index" class="nav-link" style="padding-right: 2.5rem;">Purchase Order</a>
+                                <a href="/Web/PurchaseOrder/Create" onclick="event.stopPropagation();" title="Add Purchase Order" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
+                            <li style="position: relative;">
+                                <a href="/Web/DebitNote/index" class="nav-link" style="padding-right: 2.5rem;">Purchase Return/Dr. Note</a>
+                                <a href="/Web/DebitNote/Create" onclick="event.stopPropagation();" title="Add Purchase Return" style="position: absolute; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 16px; font-weight: 300; text-decoration: none; cursor: pointer; padding: 4px; border-radius: 4px; z-index: 2;">
+                                    <i class="bi bi-plus"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>

@@ -41,6 +41,10 @@ namespace MUNEEMJI.Models
 
 
         public decimal? WholesalePrice { get; set; }
+        public string WholesalePriceTaxType { get; set; } = "Without Tax";
+        public int MinWholesaleQty { get; set; }
+        public decimal? DiscOnMrpWholesale { get; set; }
+        public decimal? AdditionalCess { get; set; }
 
         // Stock Information (for Products)
         public int OpeningQuantity { get; set; }

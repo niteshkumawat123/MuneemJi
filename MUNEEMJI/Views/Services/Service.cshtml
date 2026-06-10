@@ -27,16 +27,15 @@
     }
 
     .products-main-wrapper {
-        /*    width: 100vw;
-            height: 100vh; */
-        margin: 0 auto;
+        margin: -1.5rem -1.5rem -1.5rem 0;
         background: white;
         border-radius: 0;
         box-shadow: none;
-        overflow: hidden;
+        overflow: visible;
         display: flex;
         flex-direction: column;
         padding: 0;
+        height: calc(100vh - 65px);
     }
 
     .products-header-navigation {
@@ -46,6 +45,7 @@
         padding: 0;
         flex-shrink: 0;
         overflow-x: auto;
+        z-index: 10;
     }
 
     .products-nav-tab {
@@ -77,6 +77,7 @@
         flex: 1;
         overflow: hidden;
         padding-left: 0px;
+        min-height: 0;
     }
 
     .products-sidebar-panel {
@@ -85,9 +86,10 @@
         border-right: 1px solid #e9ecef;
         padding: 20px;
         flex-shrink: 0;
-        overflow-y: auto;
-        overflow-x: visible;
-        height: calc(100vh - 60px);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
     }
 
     .products-search-container {
@@ -149,7 +151,10 @@
     .products-items-container {
         background: white;
         border-radius: 8px;
-        overflow: visible;
+        overflow-y: auto;
+        overflow-x: hidden;
+        flex: 1;
+        min-height: 0;
     }
 
     .products-list-header {
@@ -159,15 +164,23 @@
         font-weight: 600;
         color: #495057;
         border-bottom: 1px solid #e9ecef;
+        position: sticky;
+        top: 0;
+        z-index: 2;
     }
 
     .products-item-name-col {
         flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
     }
 
     .products-item-qty-col {
         width: 80px;
         text-align: center;
+        flex-shrink: 0;
     }
 
     .products-item-entry {
@@ -191,6 +204,9 @@
             display: flex;
             text-decoration: none;
             color: inherit;
+            overflow: hidden;
+            min-width: 0;
+        }
         }
 
             .products-item-entry a.active {
@@ -204,6 +220,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
+        min-height: 0;
     }
 
     .products-detail-header {
@@ -266,6 +283,7 @@
         flex-direction: column;
         padding: 20px;
         overflow-y: auto;
+        min-height: 0;
     }
 
     .products-section-header {
@@ -647,7 +665,7 @@
                                 data-bs-html="true"
                                 data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'
                                 style="border: none; background: none; outline: none; cursor: pointer;">
-                            <span style="font-size: 16px; color: #6c757d;">⋮</span>
+                            <i class="bi bi-three-dots-vertical" style="font-size:16px;color:#6c757d;"></i>
                         </button>
                     </div>
                 }

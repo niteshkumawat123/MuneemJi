@@ -6,6 +6,40 @@
     var taxGroups = (List<MUNEEMJI.Models.Setting.TaxGroupModel>)ViewBag.TaxGroups;
 }
 
+<script type="text/javascript">
+    function navigateBack() {
+        try {
+            var urlParams = new URLSearchParams(window.location.search);
+            var returnUrl = urlParams.get('returnUrl');
+
+            if (!returnUrl || returnUrl === '') {
+                window.location.href = '/Web/Home/Index';
+                return;
+            }
+
+            var decodedReturnUrl = decodeURIComponent(returnUrl);
+
+            if (decodedReturnUrl.indexOf('returnUrl=') !== -1) {
+                window.location.href = '/Web/Home/Index';
+            } else {
+                window.location.href = returnUrl;
+            }
+        } catch (e) {
+            window.location.href = '/Web/Home/Index';
+        }
+    }
+</script>
+
+<div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+    <button type="button" class="btn-close btn-close-custom"
+            style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
+           height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
+           padding-right: 6px;"
+            aria-label="Close"
+            onclick="navigateBack(); return false;">
+    </button>
+</div>
+
 <div class="row">
     <div class="col-md-4">
         <h4>GST Settings</h4>
@@ -229,7 +263,7 @@
                     }
                 }
 
-                fetch('/Settings/GstSettings/SaveSettings', {
+                fetch('/Web/Settings/GstSettings/SaveSettings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(model)
@@ -276,7 +310,7 @@
             TaxType: type
         };
 
-        fetch('/Settings/GstSettings/SaveTaxRate', {
+        fetch('/Web/Settings/GstSettings/SaveTaxRate', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(model)
@@ -303,7 +337,7 @@
 
     function deleteTaxRate(id) {
         if(confirm('Are you sure you want to delete this tax rate?')) {
-            fetch('/Settings/GstSettings/DeleteTaxRate', {
+            fetch('/Web/Settings/GstSettings/DeleteTaxRate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'id=' + id
@@ -341,7 +375,7 @@
             TaxRateIds: selectedTaxes
         };
 
-        fetch('/Settings/GstSettings/SaveTaxGroup', {
+        fetch('/Web/Settings/GstSettings/SaveTaxGroup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(model)
@@ -371,7 +405,7 @@
 
     function deleteTaxGroup(id) {
         if(confirm('Are you sure you want to delete this tax group?')) {
-            fetch('/Settings/GstSettings/DeleteTaxGroup', {
+            fetch('/Web/Settings/GstSettings/DeleteTaxGroup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'id=' + id

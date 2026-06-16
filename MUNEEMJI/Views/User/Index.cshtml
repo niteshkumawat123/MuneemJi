@@ -237,15 +237,15 @@
         .role-dropdown-menu {
             display: none;
             position: absolute;
-            top: 100%;
+            bottom: 100%;
             left: 0;
             background: white;
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.15);
             min-width: 200px;
-            z-index: 1000;
-            margin-top: 4px;
+            z-index: 9999;
+            margin-bottom: 4px;
             max-height: 300px;
             overflow-y: auto;
         }
@@ -413,7 +413,19 @@
                                     </td>
                                     <td>
                                         <div style="display: flex; align-items: center; gap: 10px;">
-                                            <span class="role-badge" id="roleBadge@(user.Id)">SECONDARY ADMIN</span>
+                                            @{
+                                                var roleName = user.RoleId switch
+                                                {
+                                                    1 => "SECONDARY ADMIN",
+                                                    2 => "SALESMAN",
+                                                    3 => "BILLER",
+                                                    4 => "BILLER AND SALESMAN",
+                                                    5 => "CA/ACCOUNTANT",
+                                                    6 => "STOCK KEEPER",
+                                                    _ => "SECONDARY ADMIN"
+                                                };
+                                            }
+                                            <span class="role-badge" id="roleBadge@(user.Id)">@roleName</span>
                                             <div class="role-dropdown-container">
                                                 <button class="role-dropdown-toggle" onclick="toggleRoleDropdown(@user.Id)">
                                                     Change Role <i class="bi bi-chevron-down"></i>

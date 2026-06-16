@@ -314,6 +314,7 @@
 </div>
 
 @section Scripts {
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 // Pill menus
 function toggleMenu(id) {
@@ -351,11 +352,118 @@ function toggleCompare() {
 // FAQ
 function toggleFaq(el) { el.parentElement.classList.toggle('open'); }
 
-// CTA
+// Razorpay Payment Integration
 function getplan(plan) {
     event.preventDefault();
-    alert('Redirecting to payment for ' + plan.toUpperCase() + ' plan...');
-    // TODO: integrate payment gateway
+
+    var duration = document.getElementById('durationLabel').textContent;
+    var platform = document.getElementById('platformLabel').textContent;
+
+    // Create order on server
+    fetch('@Url.Action("CreateOrder", "PlansAndPricing")', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            planName: plan,
+            duration: duration,
+            platform: platform
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success) {
+            alert(data.message || 'Failed to create order. Please try again.');
+            return;
+        }
+        openRazorpayCheckout(data, plan, duration);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Something went wrong. Please try again.');
+    });
+}
+
+function openRazorpayCheckout(orderData, plan, duration) {
+    var options = {
+        "key": "@ViewBag.RazorpayKeyId",
+        "amount": orderData.amount,
+        "currency": orderData.currency,
+        "name": "MuneemJi",
+        "description": plan.charAt(0).toUpperCase() + plan.slice(1) + " Plan - " + duration,
+        "order_id": orderData.orderId,
+        "handler": function (response) {
+            verifyPayment(response, plan, duration);
+        },
+        "prefill": {
+            "name": "",
+            "email": "",
+            "contact": ""
+        },
+        "notes": {
+            "plan": plan,
+            "duration": duration
+        },
+        "theme": {
+            "color": "#6366f1"
+        },
+        "modal": {
+            "ondismiss": function () {
+                console.log('Payment popup closed');
+            }
+        }
+    };
+
+    var rzp = new Razorpay(options);
+    rzp.on('payment.failed', function (response) {
+        alert('Payment failed: ' + response.error.description);
+        console.error('Payment failed:', response.error);
+    });
+    rzp.open();
+}
+
+function verifyPayment(response, plan, duration) {
+    fetch('@Url.Action("VerifyPayment", "PlansAndPricing")', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            planName: plan,
+            duration: duration
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            showPaymentSuccess(data.paymentId, plan, duration);
+        } else {
+            alert(data.message || 'Payment verification failed. Please contact support.');
+        }
+    })
+    .catch(error => {
+        console.error('Verification error:', error);
+        alert('Payment was received but verification failed. Please contact support with your payment ID: ' + response.razorpay_payment_id);
+    });
+}
+
+function showPaymentSuccess(paymentId, plan, duration) {
+    var overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:9999;';
+    overlay.innerHTML = '<div style="background:#fff;border-radius:16px;padding:40px;text-align:center;max-width:420px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.3);">'
+        + '<div style="width:64px;height:64px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">'
+        + '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+        + '</div>'
+        + '<h2 style="color:#1f2937;margin-bottom:8px;font-size:22px;">Payment Successful!</h2>'
+        + '<p style="color:#6b7280;margin-bottom:16px;font-size:14px;">Your <strong>' + plan.charAt(0).toUpperCase() + plan.slice(1) + '</strong> plan (' + duration + ') is now active.</p>'
+        + '<p style="color:#9ca3af;font-size:12px;margin-bottom:24px;">Payment ID: ' + paymentId + '</p>'
+        + '<button onclick="window.location.href=\'@Url.Action("Index", "Home")\'" style="background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;border:none;padding:12px 32px;border-radius:24px;font-size:15px;font-weight:600;cursor:pointer;">Go to Dashboard</button>'
+        + '</div>';
+    document.body.appendChild(overlay);
 }
 </script>
 }

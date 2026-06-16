@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using MUNEEMJI.Models;
 using MUNEEMJI.PdfServices;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
@@ -37,6 +38,11 @@ builder.Services.AddScoped<IDropdownService, DropdownService>();
 builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<MUNEEMJI.Services.IGstSettingsService, MUNEEMJI.Services.GstSettingsService>();
+
+// Razorpay configuration
+builder.Services.Configure<RazorpaySettings>(builder.Configuration.GetSection("Razorpay"));
+builder.Services.AddScoped<IRazorpayService, RazorpayService>();
+
 builder.Services.AddScoped<ISalesInvoicesPdf, SalesInvoicesPdf>();
 builder.Services.AddScoped<IEstimationQuotationPdf, EstimationQuotationPdf>();
 builder.Services.AddScoped<IPaymentInPdf, PaymentInPdf>();

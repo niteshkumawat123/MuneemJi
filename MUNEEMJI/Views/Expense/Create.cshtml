@@ -131,7 +131,11 @@
 </style>
 
 <div class="container-fluid">
-    <form asp-action="Create" method="post" enctype="multipart/form-data" id="billForm">
+    <form asp-action="@(Model.Expenses.Id > 0 ? "UpdateExpense" : "Create")" method="post" enctype="multipart/form-data" id="billForm">
+        @if (Model.Expenses.Id > 0)
+        {
+            <input type="hidden" asp-for="Expenses.Id" />
+        }
         <div class="form-container">
 
             <!-- Search Section -->

@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
 using MUNEEMJI.Models;
+using MUNEEMJI.Services;
 using Npgsql;
-using SkiaSharp;
-using System.Transactions;
 
 namespace MUNEEMJI.Controllers
 {
@@ -12,9 +10,16 @@ namespace MUNEEMJI.Controllers
     public class LoanController : Controller
     {
         private readonly string _connStr = MUNEEMJI.DbConfig.ConnectionString;
+        private readonly ICompanyTenancy _companyTenancy;
+
+        public LoanController(ICompanyTenancy companyTenancy)
+        {
+            _companyTenancy = companyTenancy;
+        }
 
         public IActionResult Index()
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
             var loanAccounts = new List<LoanAccountModel>();
 
             string sql = @"
@@ -34,12 +39,14 @@ namespace MUNEEMJI.Controllers
                     created_at,
                     updated_at
                 FROM loan_accounts
+                WHERE companyid = @p_companyid
                 ORDER BY id DESC";
 
             var conn = new NpgsqlConnection(_connStr);
             conn.Open();
 
             using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@p_companyid", companyId);
             using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
@@ -95,6 +102,7 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public void SaveLoanAccount([FromBody] LoanAccountModel model)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
             string sql;
             var conn = new NpgsqlConnection(_connStr);
             conn.Open();
@@ -116,7 +124,7 @@ namespace MUNEEMJI.Controllers
                 processing_fee = @processing_fee,
                 processing_fee_paid_from = @processing_fee_paid_from,
                 updated_at = NOW()
-            WHERE id = @id;
+            WHERE id = @id AND companyid = @p_companyid;
         ";
             }
             else
@@ -127,13 +135,13 @@ namespace MUNEEMJI.Controllers
             (
                 account_name, lender_bank, account_number, description,
                 current_balance, balance_as_of, loan_received_in,
-                interest_rate, term_duration, processing_fee, processing_fee_paid_from
+                interest_rate, term_duration, processing_fee, processing_fee_paid_from, companyid
             )
             VALUES
             (
                 @account_name, @lender_bank, @account_number, @description,
                 @current_balance, @balance_as_of, @loan_received_in,
-                @interest_rate, @term_duration, @processing_fee, @processing_fee_paid_from
+                @interest_rate, @term_duration, @processing_fee, @processing_fee_paid_from, @p_companyid
             );
         ";
             }
@@ -159,12 +167,14 @@ namespace MUNEEMJI.Controllers
             cmd.Parameters.AddWithValue("@term_duration", (object?)model.TermDuration ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@processing_fee", (object?)model.ProcessingFee ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@processing_fee_paid_from", (object?)model.ProcessingFeePaidFrom ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@p_companyid", companyId);
 
             cmd.ExecuteNonQuery();
         }
 
         public List<LoanAccountModel> GetAllLoanAccounts()
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
             var loanAccounts = new List<LoanAccountModel>();
 
             string sql = @"
@@ -184,12 +194,14 @@ namespace MUNEEMJI.Controllers
                     created_at,
                     updated_at
                 FROM loan_accounts
+                WHERE companyid = @p_companyid
                 ORDER BY id DESC";
 
             var conn = new NpgsqlConnection(_connStr);
             conn.Open();
 
             using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@p_companyid", companyId);
             using var reader = cmd.ExecuteReader();
 
             while (reader.Read())
@@ -246,6 +258,8 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var companyId = _companyTenancy.GetCurrentCompanyId();
+
                 string sql = @"
             SELECT 
                 id,
@@ -261,12 +275,13 @@ namespace MUNEEMJI.Controllers
                 processing_fee,
                 processing_fee_paid_from
             FROM loan_accounts
-            WHERE id = @id";
+            WHERE id = @id AND companyid = @p_companyid";
 
                 using var conn = new NpgsqlConnection(_connStr);
                 conn.Open();
                 using var cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@id", id);
+                cmd.Parameters.AddWithValue("@p_companyid", companyId);
 
                 using var reader = cmd.ExecuteReader();
                 if (reader.Read())
@@ -315,6 +330,8 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var companyId = _companyTenancy.GetCurrentCompanyId();
+
                 string sql = @"
             SELECT 
                 id,
@@ -330,13 +347,14 @@ namespace MUNEEMJI.Controllers
                 description,
                 createddate
             FROM loantransactions
-            WHERE loanaccountid = @loanaccountid
+            WHERE loanaccountid = @loanaccountid AND companyid = @p_companyid
             ORDER BY transactiondate DESC, createddate DESC";
 
                 using var conn = new NpgsqlConnection(_connStr);
                 conn.Open();
                 using var cmd = new NpgsqlCommand(sql, conn);
                 cmd.Parameters.AddWithValue("@loanaccountid", accountId);
+                cmd.Parameters.AddWithValue("@p_companyid", companyId);
 
                 var transactions = new List<object>();
 
@@ -404,6 +422,7 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var companyId = _companyTenancy.GetCurrentCompanyId();
 
                 string sql;
                 var conn = new NpgsqlConnection(_connStr);
@@ -421,7 +440,7 @@ namespace MUNEEMJI.Controllers
                                     totalamount = @totalamount,
                                     transactiondate = @transactiondate,
                                     paymentmethod = @paymentmethod
-                                WHERE id = @id;
+                                WHERE id = @id AND companyid = @p_companyid;
                             ";
                 }
                 else
@@ -430,12 +449,12 @@ namespace MUNEEMJI.Controllers
                                 INSERT INTO loantransactions
                                 (
                                     loanaccountid, transactiontype, principalamount, interestamount,
-                                    totalamount, transactiondate, paymentmethod
+                                    totalamount, transactiondate, paymentmethod, companyid
                                 )
                                 VALUES
                                 (
                                     @loanaccountid, @transactiontype, @principalamount, @interestamount,
-                                    @totalamount, @transactiondate, @paymentmethod
+                                    @totalamount, @transactiondate, @paymentmethod, @p_companyid
                                 );
                             ";
                 }
@@ -454,6 +473,7 @@ namespace MUNEEMJI.Controllers
                 cmd.Parameters.AddWithValue("@totalamount", (object?)model.TotalAmount ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@transactiondate", model.Date);
                 cmd.Parameters.AddWithValue("@paymentmethod", (object?)model.PaidFrom ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@p_companyid", companyId);
 
                 cmd.ExecuteNonQuery();
 
@@ -475,6 +495,7 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public IActionResult SaveTakeMoreLoan([FromBody] TakeMoreLoanModel model)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
             string sql;
             var conn = new NpgsqlConnection(_connStr);
             conn.Open();
@@ -494,7 +515,7 @@ namespace MUNEEMJI.Controllers
                 totalamount = @totalamount,
                 transactiondate = @transactiondate,
                 paymentmethod = @paymentmethod
-            WHERE id = @id;
+            WHERE id = @id AND companyid = @p_companyid;
         ";
                 }
                 else
@@ -504,12 +525,12 @@ namespace MUNEEMJI.Controllers
             INSERT INTO loantransactions
             (
                 loanaccountid, transactiontype, principalamount, interestamount,
-                totalamount, transactiondate, paymentmethod
+                totalamount, transactiondate, paymentmethod, companyid
             )
             VALUES
             (
                 @loanaccountid, @transactiontype, @principalamount, @interestamount,
-                @totalamount, @transactiondate, @paymentmethod
+                @totalamount, @transactiondate, @paymentmethod, @p_companyid
             );
         ";
                 }
@@ -528,6 +549,7 @@ namespace MUNEEMJI.Controllers
                 cmd.Parameters.AddWithValue("@totalamount", (object?)model.LoanAmount ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@transactiondate", model.Date);
                 cmd.Parameters.AddWithValue("@paymentmethod", (object?)model.LoanReceivedIn ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@p_companyid", companyId);
 
                 cmd.ExecuteNonQuery();
 
@@ -552,6 +574,7 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public IActionResult SaveChargesOnLoan([FromBody] ChargesOnLoanModel model)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
             string sql;
             var conn = new NpgsqlConnection(_connStr);
             conn.Open();
@@ -571,7 +594,7 @@ namespace MUNEEMJI.Controllers
                 totalamount = @totalamount,
                 transactiondate = @transactiondate,
                 paymentmethod = @paymentmethod
-            WHERE id = @id;
+            WHERE id = @id AND companyid = @p_companyid;
         ";
                 }
                 else
@@ -581,12 +604,12 @@ namespace MUNEEMJI.Controllers
             INSERT INTO loantransactions
             (
                 loanaccountid, transactiontype, principalamount, interestamount,
-                totalamount, transactiondate, paymentmethod
+                totalamount, transactiondate, paymentmethod, companyid
             )
             VALUES
             (
                 @loanaccountid, @transactiontype, @principalamount, @interestamount,
-                @totalamount, @transactiondate, @paymentmethod
+                @totalamount, @transactiondate, @paymentmethod, @p_companyid
             );
         ";
                 }
@@ -605,6 +628,7 @@ namespace MUNEEMJI.Controllers
                 cmd.Parameters.AddWithValue("@totalamount", (object?)model.Amount ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@transactiondate", model.Date);
                 cmd.Parameters.AddWithValue("@paymentmethod", (object?)model.LoanReceivedIn ?? DBNull.Value);
+                cmd.Parameters.AddWithValue("@p_companyid", companyId);
 
                 cmd.ExecuteNonQuery();
 

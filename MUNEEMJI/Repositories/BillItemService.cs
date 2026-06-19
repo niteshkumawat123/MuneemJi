@@ -9,7 +9,7 @@ namespace MUNEEMJI.Repositories
     public interface IBillItemService
     {
         Task<bool> SaveBillItemAsync(BillItem model,int companyId);
-        Task<List<string>> GetCategoriesAsync();
+        Task<List<string>> GetCategoriesAsync(int companyId = 0);
         Task<List<string>> GetUnitsAsync();
         Task<List<string>> GetTaxRatesAsync();
         Task<List<BillItem>> GetItems(int companyid );
@@ -207,22 +207,23 @@ namespace MUNEEMJI.Repositories
             command.Parameters.AddWithValue("@p_companyid", CompanyId);
         }
 
-        public async Task<List<string>> GetCategoriesAsync()
+        public async Task<List<string>> GetCategoriesAsync(int companyId = 0)
         {
             try
             {
                 using var connection = new NpgsqlConnection(_connectionString);
                 await connection.OpenAsync();
 
-                string sql = "SELECT DISTINCT category FROM billitem WHERE category IS NOT NULL ORDER BY category";
+                string sql = "SELECT name FROM categorieses WHERE companyid = @p_companyid ORDER BY name";
 
                 using var command = new NpgsqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@p_companyid", companyId);
                 using var reader = await command.ExecuteReaderAsync();
 
                 var categories = new List<string>();
                 while (await reader.ReadAsync())
                 {
-                    categories.Add(reader.GetString("category"));
+                    categories.Add(reader.GetString(0));
                 }
 
                 return categories;

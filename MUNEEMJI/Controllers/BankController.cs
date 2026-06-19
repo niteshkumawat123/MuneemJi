@@ -1,8 +1,10 @@
 using Insight.Database;
+using Insight.Database;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using MUNEEMJI.Models.BankAccount;
+using MUNEEMJI.Services;
 using Npgsql;
 
 namespace MUNEEMJI.Controllers
@@ -11,10 +13,17 @@ namespace MUNEEMJI.Controllers
     public class BankController: Controller
     {
         private readonly string _connStr = MUNEEMJI.DbConfig.ConnectionString;
+        private readonly ICompanyTenancy _companyTenancy;
+
+        public BankController(ICompanyTenancy companyTenancy)
+        {
+            _companyTenancy = companyTenancy;
+        }
 
         [HttpGet]
         public IActionResult AddBankAccount(int id = 0, int typeid = 0)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
             BankAccountModel model = new BankAccountModel();
 
             if (id > 0)
@@ -35,11 +44,11 @@ namespace MUNEEMJI.Controllers
                     bank_name               AS ""BankName"",
                     account_holder_name     AS ""AccountHolderName""
                 FROM public.extended_bank_accounts
-                WHERE id = @p_id;
+                WHERE id = @p_id AND companyid = @p_companyid;
             ";
 
                     model = conn
-                        .QuerySql<BankAccountModel>(query, new { p_id = id })
+                        .QuerySql<BankAccountModel>(query, new { p_id = id, p_companyid = companyId })
                         .FirstOrDefault() ?? new BankAccountModel();
 
                     model.RequestTypeId = typeid;
@@ -56,6 +65,8 @@ namespace MUNEEMJI.Controllers
         [HttpPost]
         public IActionResult AddBankAccount(BankAccountModel model)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
+
             if (string.IsNullOrWhiteSpace(model.AccountNumber))
             {
                 ModelState.AddModelError("AccountNumber", "Account Number is required.");
@@ -84,7 +95,7 @@ namespace MUNEEMJI.Controllers
                                     upi_id = @upi_id,
                                     bank_name = @bank_name,
                                     account_holder_name = @account_holder_name
-                                WHERE id = @id;
+                                WHERE id = @id AND companyid = @companyid;
                             ";
                 }
                 else
@@ -96,14 +107,14 @@ namespace MUNEEMJI.Controllers
                                  account_display_name, opening_balance, as_of_date,
                                  print_upi_qr, print_bank_details,
                                  account_number, ifsc_code, upi_id,
-                                 bank_name, account_holder_name
+                                 bank_name, account_holder_name, companyid
                              )
                              VALUES
                              (
                                  @account_display_name, @opening_balance, @as_of_date,
                                  @print_upi_qr_code, @print_bank_details,
                                  @account_number, @ifsc_code, @upi_id,
-                                 @bank_name, @account_holder_name
+                                 @bank_name, @account_holder_name, @companyid
                              );
                          ";
                  }
@@ -125,6 +136,7 @@ namespace MUNEEMJI.Controllers
                     cmd.Parameters.AddWithValue("@upi_id", (object?)model.UPIID ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@bank_name", (object?)model.BankName ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@account_holder_name", (object?)model.AccountHolderName ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@companyid", companyId);
 
                     cmd.ExecuteNonQuery();
                 }
@@ -141,17 +153,20 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public IActionResult Index(int? id)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
+
             // List to hold all bank accounts (basic info + details)
             var accounts = new List<BankAccountModel>();
 
             // Get connection string from configuration
             string connStr = MUNEEMJI.DbConfig.ConnectionString; 
             using var conn = new NpgsqlConnection(connStr);
-            conn.Open();  // Open the PostgreSQL connection:contentReference[oaicite:6]{index=6}
+            conn.Open();
 
             // Query all accounts (id, display name, opening balance)
-            string sqlAll = "SELECT id, account_display_name, opening_balance FROM extended_bank_accounts";
+            string sqlAll = "SELECT id, account_display_name, opening_balance FROM extended_bank_accounts WHERE companyid = @p_companyid";
             using var cmd1 = new NpgsqlCommand(sqlAll, conn);
+            cmd1.Parameters.AddWithValue("p_companyid", companyId);
             using var reader = cmd1.ExecuteReader();
             while (reader.Read())
             {
@@ -180,9 +195,10 @@ namespace MUNEEMJI.Controllers
             string sqlDetail = @"
                 SELECT account_number, ifsc_code, upi_id, as_of_date 
                 FROM extended_bank_accounts 
-                WHERE id = @id";
+                WHERE id = @id AND companyid = @p_companyid";
             using var cmd2 = new NpgsqlCommand(sqlDetail, conn);
             cmd2.Parameters.AddWithValue("id", id.Value);
+            cmd2.Parameters.AddWithValue("p_companyid", companyId);
             using var reader2 = cmd2.ExecuteReader();
             if (reader2.Read())
             {
@@ -206,6 +222,8 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public IActionResult CashInhand( )
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
+
             using (var conn = new NpgsqlConnection(_connStr))
             {
                 string query = @"
@@ -216,9 +234,10 @@ namespace MUNEEMJI.Controllers
                         adjustmentdate AS ""AdjustmentDate"",
                         description AS ""Description""
                     FROM bank_cash
+                    WHERE companyid = @p_companyid
                     ORDER BY adjustmentdate DESC";
 
-                var transactions = conn.QuerySql<BankCash>(query).ToList();
+                var transactions = conn.QuerySql<BankCash>(query, new { p_companyid = companyId }).ToList();
                 if(transactions!=null && transactions.Count()>0)
                 {
                     var addcash = transactions?
@@ -249,10 +268,12 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public ActionResult DeleteConfirmed(int id)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
+
             using (var conn = new NpgsqlConnection(_connStr))
             {
-                var QueryString = " delete from extended_bank_accounts where id = @p_id ";
-                conn.ExecuteSql(QueryString, new { p_id = id });
+                var QueryString = " delete from extended_bank_accounts where id = @p_id AND companyid = @p_companyid ";
+                conn.ExecuteSql(QueryString, new { p_id = id, p_companyid = companyId });
             }
                 return RedirectToAction("Index");
         }
@@ -261,10 +282,12 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public ActionResult DeleteCashConfirmed(int id)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
+
             using (var conn = new NpgsqlConnection(_connStr))
             {
-                var QueryString = " delete from bank_cash where id = @p_id ";
-                conn.ExecuteSql(QueryString, new { p_id = id });
+                var QueryString = " delete from bank_cash where id = @p_id AND companyid = @p_companyid ";
+                conn.ExecuteSql(QueryString, new { p_id = id, p_companyid = companyId });
             }
             return RedirectToAction("Index");
         }
@@ -280,6 +303,8 @@ namespace MUNEEMJI.Controllers
 
             try
             {
+                var companyId = _companyTenancy.GetCurrentCompanyId();
+
                 using (var connection = new NpgsqlConnection(_connStr))
                 {
                     await connection.OpenAsync();
@@ -294,7 +319,7 @@ namespace MUNEEMJI.Controllers
                         amount = @amount, 
                         adjustmentdate = @adjustmentDate, 
                         description = @description
-                    WHERE id = @id
+                    WHERE id = @id AND companyid = @companyId
                     RETURNING id";
 
                         using (var command = new NpgsqlCommand(updateQuery, connection))
@@ -305,6 +330,7 @@ namespace MUNEEMJI.Controllers
                             command.Parameters.AddWithValue("@adjustmentDate", request.AdjustmentDate);
                             command.Parameters.AddWithValue("@description",
                                 string.IsNullOrEmpty(request.Description) ? DBNull.Value : (object)request.Description);
+                            command.Parameters.AddWithValue("@companyId", companyId);
 
                             var updatedId = await command.ExecuteScalarAsync();
 
@@ -329,8 +355,8 @@ namespace MUNEEMJI.Controllers
                     {
                         // INSERT new record
                         string insertQuery = @"
-                    INSERT INTO bank_cash (adjusttypeid, amount, adjustmentdate, description) 
-                    VALUES (@adjustTypeId, @amount, @adjustmentDate, @description)
+                    INSERT INTO bank_cash (adjusttypeid, amount, adjustmentdate, description, companyid) 
+                    VALUES (@adjustTypeId, @amount, @adjustmentDate, @description, @companyId)
                     RETURNING id";
 
                         using (var command = new NpgsqlCommand(insertQuery, connection))
@@ -340,6 +366,7 @@ namespace MUNEEMJI.Controllers
                             command.Parameters.AddWithValue("@adjustmentDate", request.AdjustmentDate);
                             command.Parameters.AddWithValue("@description",
                                 string.IsNullOrEmpty(request.Description) ? DBNull.Value : (object)request.Description);
+                            command.Parameters.AddWithValue("@companyId", companyId);
 
                             var insertedId = await command.ExecuteScalarAsync();
 
@@ -370,6 +397,8 @@ namespace MUNEEMJI.Controllers
         [HttpGet]
         public IActionResult GetCashTransactionById(int id)
         {
+            var companyId = _companyTenancy.GetCurrentCompanyId();
+
             using (var conn = new NpgsqlConnection(_connStr))
             {
                 string query = @"
@@ -380,9 +409,9 @@ namespace MUNEEMJI.Controllers
                         adjustmentdate AS ""AdjustmentDate"",
                         description AS ""Description""
                     FROM bank_cash
-                    WHERE id = @p_id";
+                    WHERE id = @p_id AND companyid = @p_companyid";
 
-                var transaction = conn.QuerySql<BankCash>(query, new { p_id = id }).FirstOrDefault();
+                var transaction = conn.QuerySql<BankCash>(query, new { p_id = id, p_companyid = companyId }).FirstOrDefault();
 
                 if (transaction == null)
                 {
@@ -399,10 +428,13 @@ namespace MUNEEMJI.Controllers
         {
             try
             {
+                var companyId = _companyTenancy.GetCurrentCompanyId();
+
                 string query = @"
                     SELECT 
                         COALESCE(SUM(CASE WHEN adjusttypeid = 1 THEN amount ELSE -amount END), 0) as balance
-                    FROM bank_cash";
+                    FROM bank_cash
+                    WHERE companyid = @companyId";
 
                 using (var connection = new NpgsqlConnection(_connStr))
                 {
@@ -410,6 +442,7 @@ namespace MUNEEMJI.Controllers
 
                     using (var command = new NpgsqlCommand(query, connection))
                     {
+                        command.Parameters.AddWithValue("@companyId", companyId);
                         var balance = await command.ExecuteScalarAsync();
 
                         return Ok(new

@@ -1,5 +1,6 @@
 ﻿using MUNEEMJI.Controllers;
 using MUNEEMJI.Models.Setting;
+using Npgsql;
 using System.ComponentModel.DataAnnotations;
 
 namespace MUNEEMJI.Models
@@ -126,14 +127,29 @@ namespace MUNEEMJI.Models
         public List<string> UnitOptions { get; set; } = new List<string> { "NONE", "KG", "PIECE", "LITER", "METER" };
         public List<string> TaxOptions { get; set; } = new List<string> { "Select", "0%", "5%", "12%", "18%", "28%" };
         public List<string> PaymentTypes { get; set; } = new List<string> { "Cash", "Credit", "Debit Card", "UPI", "Net Banking" };
-        public List<string> StateOptions { get; set; } = new List<string>
+        public List<string> StateOptions { get; set; } = LoadStatesFromDb();
+
+        private static List<string> LoadStatesFromDb()
         {
-            "Select", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
-            "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka",
-            "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram",
-            "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu",
-            "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"
-        };
+            var states = new List<string>();
+            try
+            {
+                using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand("SELECT name FROM states ORDER BY name", conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            states.Add(reader.GetString(0));
+                        }
+                    }
+                }
+            }
+            catch { }
+            return states;
+        }
         public List<BillItem> DropDownItem { get; set; }
         public List<CategoryDropdownModel> DropDownCategory { get; set; }
         public int ViewTypeId { get; set; }

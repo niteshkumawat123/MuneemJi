@@ -514,9 +514,10 @@
                             <label class="form-label">Category</label>
                             <select name="Category" class="form-select">
                                 <option value="" selected="@(string.IsNullOrEmpty(Model.BillItem.Category))">Select Category</option>
-                                <option value="electronics" selected="@(Model.BillItem.Category == "electronics")">Electronics</option>
-                                <option value="clothing" selected="@(Model.BillItem.Category == "clothing")">Clothing</option>
-                                <option value="food" selected="@(Model.BillItem.Category == "food")">Food & Beverages</option>
+                                @foreach (var cat in Model.Categories)
+                                {
+                                    <option value="@cat" selected="@(Model.BillItem.Category == cat)">@cat</option>
+                                }
                             </select>
                         </div>
                         <div class="form-group">

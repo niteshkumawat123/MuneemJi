@@ -51,7 +51,7 @@ namespace MUNEEMJI.Controllers
                     {
 
                         BillItem = billItem,
-                        Categories = await _billItemService.GetCategoriesAsync(),
+                        Categories = await _billItemService.GetCategoriesAsync(companyId),
                         Units = await _billItemService.GetUnitsAsync(),
                         TaxRates = await _billItemService.GetTaxRatesAsync(),
                         RawMaterials = billItem.Manufacturing,
@@ -75,7 +75,7 @@ namespace MUNEEMJI.Controllers
                             ItemCode =Convert.ToString(ServiceCode)
                             
                         },
-                        Categories = await _billItemService.GetCategoriesAsync(),
+                        Categories = await _billItemService.GetCategoriesAsync(companyId),
                         Units = await _billItemService.GetUnitsAsync(),
                         TaxRates = await _billItemService.GetTaxRatesAsync(),
                         RawMaterials = new List<RawMaterial>
@@ -159,7 +159,7 @@ namespace MUNEEMJI.Controllers
 
                 viewModel.BillItem = model;
                 // Reload dropdown data if validation fails
-                viewModel.Categories = await _billItemService.GetCategoriesAsync();
+                viewModel.Categories = await _billItemService.GetCategoriesAsync(companyId);
                 viewModel.Units = await _billItemService.GetUnitsAsync();
                 viewModel.TaxRates = await _billItemService.GetTaxRatesAsync();
 
@@ -172,7 +172,7 @@ namespace MUNEEMJI.Controllers
                 ModelState.AddModelError("", "An error occurred while saving the item.");
 
                 // Reload dropdown data
-                viewModel.Categories = await _billItemService.GetCategoriesAsync();
+                viewModel.Categories = await _billItemService.GetCategoriesAsync(companyId);
                 viewModel.Units = await _billItemService.GetUnitsAsync();
                 viewModel.TaxRates = await _billItemService.GetTaxRatesAsync();
 

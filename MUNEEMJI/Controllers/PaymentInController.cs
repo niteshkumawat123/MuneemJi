@@ -236,10 +236,11 @@ namespace MUNEEMJI.Controllers
         private async Task LoadViewBag()
         {
             using var connection = new NpgsqlConnection(_connectionString);
+            var CompanyId = companyTenancy.GetCurrentCompanyId();
 
             var parties = connection.QuerySql<Party>(@"
-                SELECT Id,party_name as Name FROM parties ORDER BY party_name
-            ").ToList();
+                SELECT Id,party_name as Name FROM parties where companyid = @Companyid ORDER BY party_name
+            ", new { Companyid = CompanyId }).ToList();
 
             ViewBag.Parties = parties.Select(p => new SelectListItem
             {

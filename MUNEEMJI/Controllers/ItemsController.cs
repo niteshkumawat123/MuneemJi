@@ -236,7 +236,13 @@ namespace MUNEEMJI.Controllers
                 viewModel.Units = await _billItemService.GetUnitsAsync();
                 viewModel.TaxRates = await _billItemService.GetTaxRatesAsync();
 
-                return View(viewModel);
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return Json(new
+                {
+                    success = false,
+                    message = errors.Any() ? string.Join(", ", errors) : "Validation failed. Please check your input.",
+                    id = model.Id
+                });
             }
             catch (Exception ex)
             {

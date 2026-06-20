@@ -1439,16 +1439,33 @@
 
                 loader.style.display = 'none';
 
-                if (response.ok) {
-                    const result = await response.json();
+                if (response.status === 401) {
+                    showMessageModal(false, 'Your session has expired. Please login again.');
+                    setTimeout(() => { window.location.href = '/Web/Account/Login'; }, 2000);
+                    return;
+                }
+
+                const contentType = response.headers.get('content-type') || '';
+                if (!contentType.includes('application/json')) {
+                    if (response.redirected || response.url.toLowerCase().includes('login')) {
+                        showMessageModal(false, 'Your session has expired. Please login again.');
+                        setTimeout(() => { window.location.href = '/Web/Account/Login'; }, 2000);
+                        return;
+                    }
+                    showMessageModal(false, 'Unexpected server response. Please try again.');
+                    return;
+                }
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
                     const isUpdate = jsonData.Id > 0;
-                    const message = isUpdate
+                    const message = result.message || (isUpdate
                         ? 'Item updated successfully!'
-                        : 'Item has been saved successfully!';
+                        : 'Item has been saved successfully!');
                     showMessageModal(true, message, '/Web/Items/Products');
                 } else {
-                    const error = await response.text();
-                    showMessageModal(false, 'Error submitting form: ' + error);
+                    showMessageModal(false, result.message || 'Error submitting form. Please try again.');
                 }
             } catch (error) {
                 loader.style.display = 'none';

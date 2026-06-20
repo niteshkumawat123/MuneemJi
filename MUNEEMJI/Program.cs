@@ -1,4 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MUNEEMJI.Models;
 using MUNEEMJI.PdfServices;
 using MUNEEMJI.Repositories;
@@ -7,7 +10,23 @@ var builder = WebApplication.CreateBuilder(args);
 
 MUNEEMJI.DbConfig.ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
 
+// Configure Kestrel to allow larger request bodies (applies when running directly on Kestrel)
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB
+});
 
+// Configure IIS to allow larger request bodies (applies when hosted behind IIS)
+builder.Services.Configure<IISServerOptions>(options =>
+{
+    options.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB
+});
+
+// Configure form options for multipart form data uploads
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 50 * 1024 * 1024; // 50 MB
+});
 
 // Add services to the container.
 
@@ -15,6 +34,9 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add<MUNEEMJI.Filters.GlobalPermissionFilter>();
+}).AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.MaxDepth = 64;
 });
 builder.Services.AddScoped<MUNEEMJI.Filters.GlobalPermissionFilter>();
 builder.Services.AddScoped<IPurchaseBillService, PurchaseBillService>();
@@ -79,6 +101,19 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.SlidingExpiration = false;
         options.ExpireTimeSpan = TimeSpan.FromDays(365 * 10); 
         options.Cookie.IsEssential = true;
+        options.Events.OnRedirectToLogin = context =>
+        {
+            if (context.Request.Headers["Accept"].ToString().Contains("application/json") ||
+                context.Request.Headers["Content-Type"].ToString().Contains("application/json") ||
+                context.Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"success\":false,\"message\":\"Session expired. Please login again.\"}");
+            }
+            context.Response.Redirect(context.RedirectUri);
+            return Task.CompletedTask;
+        };
     });
 
 var app = builder.Build();

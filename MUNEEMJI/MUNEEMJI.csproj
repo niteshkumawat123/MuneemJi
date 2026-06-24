@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Scripts\" />
     <Folder Include="wwwroot\DataContainer\GeneratedInvoices\" />
     <Folder Include="wwwroot\uploads\logos\" />
     <Folder Include="wwwroot\uploads\Item\" />

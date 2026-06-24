@@ -58,6 +58,92 @@ namespace MUNEEMJI.Controllers
                 using (var conn = new NpgsqlConnection(_connectionString))
                 {
                     conn.Open();
+
+                    // Check for duplicate party name
+                    string duplicateNameQuery = model.Id > 0
+                        ? "SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(party_name)) = LOWER(TRIM(@party_name)) AND companyid = @p_companyid AND id != @p_id"
+                        : "SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(party_name)) = LOWER(TRIM(@party_name)) AND companyid = @p_companyid";
+
+                    using (var checkCmd = new NpgsqlCommand(duplicateNameQuery, conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("party_name", model.PartyName ?? "");
+                        checkCmd.Parameters.AddWithValue("p_companyid", companyId);
+                        if (model.Id > 0)
+                            checkCmd.Parameters.AddWithValue("p_id", model.Id);
+
+                        var count = (long)(checkCmd.ExecuteScalar() ?? 0);
+                        if (count > 0)
+                        {
+                            return Json(new { success = false, message = "A party with this name already exists. Please use a different name." });
+                        }
+                    }
+
+                    // Check for duplicate GSTIN (if provided)
+                    if (!string.IsNullOrWhiteSpace(model.GSTIN))
+                    {
+                        string duplicateGstinQuery = model.Id > 0
+                            ? "SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(gstin)) = LOWER(TRIM(@gstin)) AND companyid = @p_companyid AND id != @p_id AND gstin IS NOT NULL AND gstin != ''"
+                            : "SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(gstin)) = LOWER(TRIM(@gstin)) AND companyid = @p_companyid AND gstin IS NOT NULL AND gstin != ''";
+
+                        using (var checkCmd = new NpgsqlCommand(duplicateGstinQuery, conn))
+                        {
+                            checkCmd.Parameters.AddWithValue("gstin", model.GSTIN.Trim());
+                            checkCmd.Parameters.AddWithValue("p_companyid", companyId);
+                            if (model.Id > 0)
+                                checkCmd.Parameters.AddWithValue("p_id", model.Id);
+
+                            var count = (long)(checkCmd.ExecuteScalar() ?? 0);
+                            if (count > 0)
+                            {
+                                return Json(new { success = false, message = "A party with this GSTIN already exists. Please use a different GSTIN." });
+                            }
+                        }
+                    }
+
+                    // Check for duplicate Phone Number (if provided)
+                    if (!string.IsNullOrWhiteSpace(model.PhoneNumber))
+                    {
+                        string duplicatePhoneQuery = model.Id > 0
+                            ? "SELECT COUNT(*) FROM parties WHERE TRIM(phone_number) = TRIM(@phone_number) AND companyid = @p_companyid AND id != @p_id AND phone_number IS NOT NULL AND phone_number != ''"
+                            : "SELECT COUNT(*) FROM parties WHERE TRIM(phone_number) = TRIM(@phone_number) AND companyid = @p_companyid AND phone_number IS NOT NULL AND phone_number != ''";
+
+                        using (var checkCmd = new NpgsqlCommand(duplicatePhoneQuery, conn))
+                        {
+                            checkCmd.Parameters.AddWithValue("phone_number", model.PhoneNumber.Trim());
+                            checkCmd.Parameters.AddWithValue("p_companyid", companyId);
+                            if (model.Id > 0)
+                                checkCmd.Parameters.AddWithValue("p_id", model.Id);
+
+                            var count = (long)(checkCmd.ExecuteScalar() ?? 0);
+                            if (count > 0)
+                            {
+                                return Json(new { success = false, message = "A party with this phone number already exists. Please use a different phone number." });
+                            }
+                        }
+                    }
+
+                    // Check for duplicate Email (if provided)
+                    if (!string.IsNullOrWhiteSpace(model.Email))
+                    {
+                        string duplicateEmailQuery = model.Id > 0
+                            ? "SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(email)) = LOWER(TRIM(@email)) AND companyid = @p_companyid AND id != @p_id AND email IS NOT NULL AND email != ''"
+                            : "SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(email)) = LOWER(TRIM(@email)) AND companyid = @p_companyid AND email IS NOT NULL AND email != ''";
+
+                        using (var checkCmd = new NpgsqlCommand(duplicateEmailQuery, conn))
+                        {
+                            checkCmd.Parameters.AddWithValue("email", model.Email.Trim());
+                            checkCmd.Parameters.AddWithValue("p_companyid", companyId);
+                            if (model.Id > 0)
+                                checkCmd.Parameters.AddWithValue("p_id", model.Id);
+
+                            var count = (long)(checkCmd.ExecuteScalar() ?? 0);
+                            if (count > 0)
+                            {
+                                return Json(new { success = false, message = "A party with this email already exists. Please use a different email." });
+                            }
+                        }
+                    }
+
                     string query;
 
                     if (model.Id > 0)

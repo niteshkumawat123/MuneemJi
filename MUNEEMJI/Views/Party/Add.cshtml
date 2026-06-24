@@ -110,6 +110,20 @@
                     #gstinStatus.text-success { color: #28a745 !important; }
                     #gstinStatus.text-danger { color: #dc3545 !important; }
                     #gstinStatus.text-info { color: #17a2b8 !important; }
+
+                    .input-validation-error {
+                        border-color: #dc3545 !important;
+                        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+                    }
+                    .field-error-message {
+                        color: #dc3545;
+                        font-size: 12px;
+                        margin-top: 4px;
+                        display: none;
+                    }
+                    .input-validation-success {
+                        border-color: #28a745 !important;
+                    }
                 </style>
             }
 
@@ -127,19 +141,21 @@
             <div class="col-md-4 field">
                 <label asp-for="GSTIN">GSTIN</label>
                 <div class="input-group">
-                    <input asp-for="GSTIN" class="form-control" maxlength="15" style="text-transform:uppercase;" />
+                    <input asp-for="GSTIN" class="form-control" maxlength="15" style="text-transform:uppercase;" oninput="validateGstinField(this)" />
                     <button type="button" class="btn btn-outline-primary" id="btnGstinLookup" title="Verify GSTIN" onclick="lookupGstin()">
                         <i class="bi bi-search" id="gstinSearchIcon"></i>
                         <span class="spinner-border spinner-border-sm d-none" id="gstinSpinner" role="status"></span>
                     </button>
                 </div>
                 <span asp-validation-for="GSTIN" class="text-danger"></span>
+                <div class="field-error-message" id="gstinError">GSTIN must be exactly 15 characters (e.g., 22AAAAA0000A1Z5)</div>
                 <small id="gstinStatus" class="d-none mt-1"></small>
             </div>
             <div class="col-md-4 field">
                 <label asp-for="PhoneNumber">Phone Number</label>
-                <input asp-for="PhoneNumber" class="form-control" />
+                <input asp-for="PhoneNumber" class="form-control" type="tel" maxlength="10" oninput="validatePhoneField(this)" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                <div class="field-error-message" id="phoneError">Please enter a valid 10-digit phone number</div>
             </div>
 
             <div class="col-md-4 field">
@@ -187,8 +203,9 @@
 
                     <div class="col-md-4 field">
                         <label asp-for="Email">Email ID</label>
-                        <input asp-for="Email" class="form-control" />
+                        <input asp-for="Email" class="form-control" type="email" oninput="validateEmailField(this)" />
                         <span asp-validation-for="Email" class="text-danger"></span>
+                        <div class="field-error-message" id="emailError">Please enter a valid email address</div>
                     </div>
                 </div>
 
@@ -388,6 +405,73 @@
         let savedPartyGroupId = '@Model.PartyGroupId';
         let messageModalAction = null;
 
+        // ── Validation helper functions ──
+        function isValidEmail(email) {
+            return /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(email);
+        }
+
+        function isValidPhone(phone) {
+            return /^[0-9]{10}$/.test(phone);
+        }
+
+        function isValidGstin(gstin) {
+            return /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(gstin);
+        }
+
+        function setFieldError(input, errorEl, show) {
+            if (show) {
+                input.classList.add('input-validation-error');
+                input.classList.remove('input-validation-success');
+                if (errorEl) errorEl.style.display = 'block';
+            } else {
+                input.classList.remove('input-validation-error');
+                if (input.value.trim().length > 0) {
+                    input.classList.add('input-validation-success');
+                } else {
+                    input.classList.remove('input-validation-success');
+                }
+                if (errorEl) errorEl.style.display = 'none';
+            }
+        }
+
+        function validatePhoneField(input) {
+            var val = input.value.replace(/[^0-9]/g, '');
+            input.value = val;
+            var errorEl = document.getElementById('phoneError');
+            if (val.length === 0) {
+                setFieldError(input, errorEl, false);
+            } else if (!isValidPhone(val)) {
+                setFieldError(input, errorEl, true);
+            } else {
+                setFieldError(input, errorEl, false);
+            }
+        }
+
+        function validateEmailField(input) {
+            var val = input.value.trim();
+            var errorEl = document.getElementById('emailError');
+            if (val.length === 0) {
+                setFieldError(input, errorEl, false);
+            } else if (!isValidEmail(val)) {
+                setFieldError(input, errorEl, true);
+            } else {
+                setFieldError(input, errorEl, false);
+            }
+        }
+
+        function validateGstinField(input) {
+            input.value = input.value.toUpperCase();
+            var val = input.value.trim();
+            var errorEl = document.getElementById('gstinError');
+            if (val.length === 0) {
+                setFieldError(input, errorEl, false);
+            } else if (val.length !== 15 || !isValidGstin(val)) {
+                setFieldError(input, errorEl, true);
+            } else {
+                setFieldError(input, errorEl, false);
+            }
+        }
+
         $(document).ready(function () {
             // Initialize Select2
             $('#PartyGroup').select2({
@@ -443,19 +527,39 @@
                 }
             }
 
-            // Basic validation
+            let isValid = true;
+
+            // Party Name validation
             const partyName = $('#PartyName').val().trim();
             if (!partyName) {
-                // alert('Please enter Party Name');
-                return false;
+                isValid = false;
             }
 
-            console.log('Form Data:');
-            console.log('PartyName:', partyName);
-            console.log('PartyGroup:', $('#PartyGroup').val());
-            console.log('PartyGroupId:', $('#PartyGroupId').val());
+            // Phone validation
+            const phoneInput = document.getElementById('PhoneNumber');
+            const phoneVal = phoneInput ? phoneInput.value.trim() : '';
+            if (phoneVal.length > 0 && !isValidPhone(phoneVal)) {
+                setFieldError(phoneInput, document.getElementById('phoneError'), true);
+                isValid = false;
+            }
 
-            return true;
+            // Email validation
+            const emailInput = document.getElementById('Email');
+            const emailVal = emailInput ? emailInput.value.trim() : '';
+            if (emailVal.length > 0 && !isValidEmail(emailVal)) {
+                setFieldError(emailInput, document.getElementById('emailError'), true);
+                isValid = false;
+            }
+
+            // GSTIN validation
+            const gstinInput = document.getElementById('GSTIN');
+            const gstinVal = gstinInput ? gstinInput.value.trim() : '';
+            if (gstinVal.length > 0 && (gstinVal.length !== 15 || !isValidGstin(gstinVal))) {
+                setFieldError(gstinInput, document.getElementById('gstinError'), true);
+                isValid = false;
+            }
+
+            return isValid;
         }
 
         function loadPartyGroups() {
@@ -712,8 +816,8 @@
 
         // Auto-trigger lookup when user finishes typing 15 chars
         document.getElementById('GSTIN').addEventListener('input', function() {
-            this.value = this.value.toUpperCase();
-            if (this.value.trim().length === 15) {
+            validateGstinField(this);
+            if (this.value.trim().length === 15 && isValidGstin(this.value.trim())) {
                 lookupGstin();
             } else {
                 const s = document.getElementById('gstinStatus');
@@ -724,19 +828,16 @@
         document.getElementById('partyForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-                if (!validateAndPrepareForm()) {
-            console.log('Validation failed, form not submitted');
-            return; // Stop submission if validation fails
-        }
-             debugger;
+            if (!validateAndPrepareForm()) {
+                console.log('Validation failed, form not submitted');
+                return;
+            }
 
             const formData = new FormData(this);
 
-                 if (clickedButton) {
-            formData.append('save', clickedButton);
-            console.log('Save parameter added:', clickedButton);
-        }
-
+            if (clickedButton) {
+                formData.append('save', clickedButton);
+            }
 
             const action = this.action;
             const partyId = document.querySelector('input[name="Id"]').value;
@@ -750,39 +851,22 @@
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
-
-                // Expect JSON always
                 return response.json();
             })
             .then(data => {
-                debugger;
                 console.log("Received JSON:", data);
 
-                // ✅ Example: do some work with the data before showing the message
                 if (data.success) {
-                    // Suppose your API returns data like { success: true, id: 123, name: "Nitesh", message: "Saved!" }
-
-                    // Example: show some data in console or DOM
-                    console.log("New Party ID:", data.id);
-                    console.log("Party Name:", data.name);
-
-                    // Example: do something custom with the data
-                    // updatePartyList(data);
-
-                    // Then show success message
                     const message = isUpdate
                         ? 'Party updated successfully!'
                         : 'Party saved successfully!';
-                        debugger;
                    if(data.isSaveAgain)
                    {
                     showMessageModal(true, message, '/Web/Party/Add');
-
                    }
                    else
                    {
                      showMessageModal(true, message, '/Web/Party/index');
-
                    }
                 }
                 else 

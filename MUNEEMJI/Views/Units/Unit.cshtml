@@ -675,17 +675,24 @@
                 .then(data => {
                     console.log('Unit saved:', data);
 
-                    // Close modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addUnitModal'));
-                    modal.hide();
+                    if (data.success) {
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addUnitModal'));
+                        modal.hide();
 
-                    // Show success message
-                    showToast(isUpdate ? 'Unit updated successfully!' : 'Unit created successfully!', 'success');
+                        // Show success message
+                        showToast(isUpdate ? 'Unit updated successfully!' : 'Unit created successfully!', 'success');
 
-                    // Reload page or update UI
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
+                        // Reload page or update UI
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        // Show duplicate or other error from server
+                        fullNameInput.classList.add('is-invalid');
+                        fullNameError.style.display = 'block';
+                        fullNameError.textContent = data.message || 'Failed to save unit.';
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);

@@ -21,6 +21,26 @@ namespace MUNEEMJI.Controllers
             {
                 using (var Conn = new NpgsqlConnection(_dbconnectionstrig))
                 {
+                    Conn.Open();
+
+                    // Check for duplicate unit name
+                    string duplicateCheckQuery = model.Id > 0
+                        ? "SELECT COUNT(*) FROM units WHERE LOWER(TRIM(fullname)) = LOWER(TRIM(@p_name)) AND id != @p_id"
+                        : "SELECT COUNT(*) FROM units WHERE LOWER(TRIM(fullname)) = LOWER(TRIM(@p_name))";
+
+                    using (var checkCmd = new NpgsqlCommand(duplicateCheckQuery, Conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("p_name", model.FullName ?? "");
+                        if (model.Id > 0)
+                            checkCmd.Parameters.AddWithValue("p_id", model.Id);
+
+                        var count = (long)(checkCmd.ExecuteScalar() ?? 0);
+                        if (count > 0)
+                        {
+                            return Json(new { success = false, message = "A unit with this name already exists. Please use a different name." });
+                        }
+                    }
+
                     var insertquery = string.Empty;
                     if (model.Id > 0)
                     {

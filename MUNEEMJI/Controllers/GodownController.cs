@@ -91,6 +91,13 @@ namespace MUNEEMJI.Controllers
                 var Companyid = _companyTenancy.GetCurrentCompanyId();
                 if (ModelState.IsValid)
                 {
+                    // Check for duplicate godown name
+                    var existingGodowns = await _godownService.GetAllGodownsAsync(Companyid);
+                    if (existingGodowns.Any(g => g.GodownName.Trim().Equals(godown.GodownName?.Trim(), StringComparison.OrdinalIgnoreCase) && g.Id != godown.Id))
+                    {
+                        return Json(new { success = false, message = "A godown with this name already exists. Please use a different name." });
+                    }
+
                     var result = await _godownService.CreateGodownAsync(godown, Companyid);
                     if (result)
                     {
@@ -124,8 +131,17 @@ namespace MUNEEMJI.Controllers
             {
                 try
                 {
-                    
+
                     var CompanyId = _companyTenancy.GetCurrentCompanyId();
+
+                    // Check for duplicate godown name
+                    var existingGodowns = await _godownService.GetAllGodownsAsync(CompanyId);
+                    if (existingGodowns.Any(g => g.GodownName.Trim().Equals(godown.GodownName?.Trim(), StringComparison.OrdinalIgnoreCase)))
+                    {
+                        TempData["ErrorMessage"] = "A godown with this name already exists. Please use a different name.";
+                        return View(godown);
+                    }
+
                     var result = await _godownService.CreateGodownAsync(godown, CompanyId);
                     if (result)
                     {
@@ -172,6 +188,15 @@ namespace MUNEEMJI.Controllers
             {
                 try
                 {
+                    // Check for duplicate godown name (exclude current godown)
+                    var CompanyId = _companyTenancy.GetCurrentCompanyId();
+                    var existingGodowns = await _godownService.GetAllGodownsAsync(CompanyId);
+                    if (existingGodowns.Any(g => g.GodownName.Trim().Equals(godown.GodownName?.Trim(), StringComparison.OrdinalIgnoreCase) && g.Id != godown.Id))
+                    {
+                        TempData["ErrorMessage"] = "A godown with this name already exists. Please use a different name.";
+                        return View(godown);
+                    }
+
                     var result = await _godownService.UpdateGodownAsync(godown);
                     if (result)
                     {

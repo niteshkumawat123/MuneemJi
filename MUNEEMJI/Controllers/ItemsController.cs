@@ -178,6 +178,35 @@ namespace MUNEEMJI.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // Check for duplicate item/service name
+                    string duplicateCheckQuery = model.Id > 0
+                        ? "SELECT COUNT(*) FROM billitem WHERE LOWER(TRIM(item_name)) = LOWER(TRIM(@p_name)) AND item_type = @p_itemtype AND companyid = @p_companyid AND id != @p_id"
+                        : "SELECT COUNT(*) FROM billitem WHERE LOWER(TRIM(item_name)) = LOWER(TRIM(@p_name)) AND item_type = @p_itemtype AND companyid = @p_companyid";
+
+                    using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
+                    {
+                        conn.Open();
+                        using (var checkCmd = new NpgsqlCommand(duplicateCheckQuery, conn))
+                        {
+                            checkCmd.Parameters.AddWithValue("p_name", model.ItemName ?? "");
+                            checkCmd.Parameters.AddWithValue("p_itemtype", model.ItemType ?? "product");
+                            checkCmd.Parameters.AddWithValue("p_companyid", companyId);
+                            if (model.Id > 0)
+                                checkCmd.Parameters.AddWithValue("p_id", model.Id);
+
+                            var count = (long)(checkCmd.ExecuteScalar() ?? 0);
+                            if (count > 0)
+                            {
+                                return Json(new
+                                {
+                                    success = false,
+                                    message = $"A {model.ItemType} with this name already exists. Please use a different name.",
+                                    id = model.Id
+                                });
+                            }
+                        }
+                    }
+
                     // Set service-specific fields based on item type
                     if (string.Equals(model.ItemType, "service", StringComparison.OrdinalIgnoreCase))
                     {
@@ -460,6 +489,27 @@ namespace MUNEEMJI.Controllers
             {
                 using (var Conn = new NpgsqlConnection(_dbconnectionstrig))
                 {
+                    Conn.Open();
+
+                    // Check for duplicate category name
+                    string duplicateCheckQuery = model.Id > 0
+                        ? "SELECT COUNT(*) FROM categorieses WHERE LOWER(TRIM(name)) = LOWER(TRIM(@p_name)) AND companyid = @p_companyid AND id != @p_id"
+                        : "SELECT COUNT(*) FROM categorieses WHERE LOWER(TRIM(name)) = LOWER(TRIM(@p_name)) AND companyid = @p_companyid";
+
+                    using (var checkCmd = new NpgsqlCommand(duplicateCheckQuery, Conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("p_name", model.Name ?? "");
+                        checkCmd.Parameters.AddWithValue("p_companyid", companyId);
+                        if (model.Id > 0)
+                            checkCmd.Parameters.AddWithValue("p_id", model.Id);
+
+                        var count = (long)(checkCmd.ExecuteScalar() ?? 0);
+                        if (count > 0)
+                        {
+                            return Json(new { success = false, message = "A category with this name already exists. Please use a different name." });
+                        }
+                    }
+
                     var insertquery = string.Empty;
                     if (model.Id > 0)
                     {

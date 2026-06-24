@@ -738,17 +738,24 @@
                 .then(data => {
                     console.log('Category saved:', data);
 
-                    // Close modal
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
-                    modal.hide();
+                    if (data.success) {
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('addCategoryModal'));
+                        modal.hide();
 
-                    // Show success message
-                    showToast(isUpdate ? 'Category updated successfully!' : 'Category created successfully!', 'success');
+                        // Show success message
+                        showToast(isUpdate ? 'Category updated successfully!' : 'Category created successfully!', 'success');
 
-                    // Reload page or update UI
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
+                        // Reload page or update UI
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    } else {
+                        // Show duplicate or other error from server
+                        inputField.classList.add('is-invalid');
+                        errorDiv.style.display = 'block';
+                        errorDiv.textContent = data.message || 'Failed to save category.';
+                    }
                 })
                 .catch(error => {
                     console.error('Error:', error);

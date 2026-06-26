@@ -1,14 +1,17 @@
-﻿@model ItemViewModel
+@model ItemViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Services";
 }
 
 <header>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 </header>
 
 <style>
@@ -22,154 +25,261 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: white;
         min-height: 100vh;
-        padding: 0;
-        margin: 0;
     }
 
-    .products-main-wrapper {
-        margin: -1.5rem -1.5rem -1.5rem 0;
+    .services-main-wrapper {
+        margin: -1.5rem 0 -1.5rem 0;
         background: white;
-        border-radius: 0;
-        box-shadow: none;
-        overflow: visible;
         display: flex;
         flex-direction: column;
-        padding: 0;
         height: calc(100vh - 65px);
+        overflow: hidden;
     }
 
-    .products-header-navigation {
-        background: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
+    /* Navigation Tabs */
+    .services-header-navigation {
+        background: #fff;
+        border-bottom: 2px solid #e9ecef;
         display: flex;
-        padding: 0;
         flex-shrink: 0;
-        overflow-x: auto;
         z-index: 10;
+        width: 100%;
     }
 
-    .products-nav-tab {
-        padding: 15px 30px;
+    .services-nav-tab {
+        padding: 14px 0;
         cursor: pointer;
         border-bottom: 3px solid transparent;
         color: #6c757d;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 13px;
         transition: all 0.3s ease;
         text-decoration: none;
         display: block;
         white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex: 1;
+        text-align: center;
     }
 
-        .products-nav-tab.active {
-            color: #007bff;
-            border-bottom-color: #007bff;
-            background: white;
-        }
+    .services-nav-tab.active {
+        color: #007bff;
+        border-bottom-color: #007bff;
+        background: white;
+    }
 
-        .products-nav-tab:hover {
-            background: #e9ecef;
-            color: #6c757d;
-            text-decoration: none;
-        }
+    .services-nav-tab:hover {
+        color: #495057;
+        text-decoration: none;
+    }
 
-    .products-content-wrapper {
+    /* Content Layout */
+    .services-content-wrapper {
         display: flex;
         flex: 1;
         overflow: hidden;
-        padding-left: 0px;
         min-height: 0;
+        min-width: 0;
     }
 
-    .products-sidebar-panel {
-        width: 322px;
-        background: #f8f9fa;
+    /* Left Sidebar */
+    .services-sidebar-panel {
+        width: 260px;
+        min-width: 220px;
+        background: #fff;
         border-right: 1px solid #e9ecef;
-        padding: 20px;
         flex-shrink: 0;
-        overflow: hidden;
         display: flex;
         flex-direction: column;
         min-height: 0;
+        z-index: 20;
     }
 
-    .products-search-container {
+    /* Toolbar row: search icon + add service + three dots */
+    .services-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #e9ecef;
         position: relative;
-        margin-bottom: 20px;
+        z-index: 100;
     }
 
-        .products-search-container input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
+    .services-toolbar .dropdown-menu {
+        position: fixed !important;
+        z-index: 9999 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 4px 0;
+        top: auto !important;
+        left: auto !important;
+        display: none;
+        min-width: 180px;
+    }
 
-            .products-search-container input:focus {
-                outline: none;
-                border-color: #007bff;
-                box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
-            }
+    .services-toolbar .dropdown-menu.show {
+        display: block !important;
+    }
 
-        .products-search-container i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
+    .services-toolbar .dropdown-item {
+        padding: 10px 16px;
+        font-size: 13px;
+        display: block;
+        color: #333;
+        text-decoration: none;
+        border-bottom: 1px solid #f5f5f5;
+    }
 
-    .products-add-button {
+    .services-toolbar .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .services-toolbar .dropdown-item:hover {
+        background: #f8f9fa;
+        color: #333;
+    }
+
+    .services-search-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: border-color 0.2s;
+    }
+
+    .services-search-btn:hover {
+        border-color: #007bff;
+    }
+
+    .services-search-btn i {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .services-add-btn-group {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+        position: relative;
+    }
+
+    .services-add-btn-group .btn-add-main {
         background: linear-gradient(45deg, #ff9500, #ffb347);
         color: white;
         border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-weight: 500;
+        padding: 7px 14px;
+        border-radius: 6px 0 0 6px;
+        font-weight: 600;
+        font-size: 13px;
         cursor: pointer;
-        width: 100%;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255,149,0,0.3);
+        white-space: nowrap;
+        transition: opacity 0.2s;
     }
 
-        .products-add-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,149,0,0.4);
-        }
+    .services-add-btn-group .btn-add-main:hover {
+        opacity: 0.9;
+    }
 
-    .products-godown-dropdown {
+    .services-add-btn-group .btn-add-dropdown {
+        background: linear-gradient(45deg, #e88600, #f0a030);
+        color: white;
+        border: none;
+        padding: 7px 8px;
+        border-radius: 0 6px 6px 0;
+        cursor: pointer;
+        border-left: 1px solid rgba(255,255,255,0.3);
+        display: flex;
+        align-items: center;
+    }
+
+    .services-add-btn-group .btn-add-dropdown i {
+        font-size: 12px;
+    }
+
+    .services-toolbar-dots-wrapper {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .services-toolbar-dots {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 4px;
+        flex-shrink: 0;
+        border: none;
+        background: none;
+    }
+
+    .services-toolbar-dots:hover {
+        background: #f0f0f0;
+    }
+
+    .services-toolbar-dots i {
+        font-size: 16px;
+        color: #6c757d;
+    }
+
+    /* Inline search bar (toggled) */
+    .services-inline-search {
+        display: none;
+        padding: 8px 12px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .services-inline-search.active {
+        display: block;
+    }
+
+    .services-inline-search input {
         width: 100%;
-        padding: 10px;
+        padding: 6px 10px;
         border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        background: white;
+        border-radius: 6px;
+        font-size: 13px;
+        outline: none;
     }
 
-    .products-items-container {
-        background: white;
-        border-radius: 8px;
+    .services-inline-search input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+    }
+
+    /* Item List */
+    .services-items-container {
+        flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
-        flex: 1;
         min-height: 0;
     }
 
-    .products-list-header {
+    .services-list-header {
         display: flex;
-        background: #f8f9fa;
-        padding: 10px;
+        padding: 8px 12px;
         font-weight: 600;
         color: #495057;
+        font-size: 11px;
+        text-transform: uppercase;
         border-bottom: 1px solid #e9ecef;
         position: sticky;
         top: 0;
+        background: #fff;
         z-index: 2;
     }
 
-    .products-item-name-col {
+    .services-item-name-col {
         flex: 1;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -177,256 +287,292 @@
         min-width: 0;
     }
 
-    .products-item-qty-col {
-        width: 80px;
-        text-align: center;
+    .services-item-dots-col {
+        width: 24px;
         flex-shrink: 0;
-    }
-
-    .products-item-entry {
         display: flex;
-        padding: 12px;
         align-items: center;
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
-        margin: 1px 0;
-        transition: all 0.3s ease;
-        position: relative;
+        justify-content: center;
     }
 
-        .products-item-entry:hover {
-            background: #bbdefb;
-            transform: translateX(5px);
-        }
+    .services-item-entry {
+        display: flex;
+        padding: 10px 12px;
+        align-items: center;
+        border-bottom: 1px solid #f5f5f5;
+        transition: background 0.2s;
+        cursor: pointer;
+        gap: 4px;
+    }
 
-        .products-item-entry a {
-            flex: 1;
-            display: flex;
-            text-decoration: none;
-            color: inherit;
-            overflow: hidden;
-            min-width: 0;
-        }
-        }
+    .services-item-entry:hover {
+        background: #f0f7ff;
+    }
 
-            .products-item-entry a.active {
-                font-weight: 600;
-                color: #007bff;
-            }
+    .services-item-entry.selected {
+        background: #e3f2fd;
+        border-left: 3px solid #2196f3;
+        padding-left: 9px;
+    }
 
-    .products-detail-section {
-        padding: 0;
-        overflow-y: auto;
+    .services-item-entry .item-name {
         flex: 1;
+        font-size: 13px;
+        color: #333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .services-item-entry .item-dots {
+        width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+        color: #6c757d;
+    }
+
+    .services-item-entry .item-dots:hover {
+        color: #333;
+    }
+
+    /* Right Detail Section */
+    .services-detail-section {
+        flex: 1;
+        overflow: auto;
         display: flex;
         flex-direction: column;
         min-height: 0;
+        min-width: 0;
     }
 
-    .products-detail-header {
-        background: #f8f9fa;
-        padding: 15px 20px;
-        border-bottom: 1px solid #e9ecef;
+    .services-detail-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e9ecef;
         flex-shrink: 0;
+        flex-wrap: nowrap;
+        gap: 10px;
+        min-width: 0;
     }
 
-    .products-detail-title {
-        font-size: 18px;
-        font-weight: 600;
+    .services-detail-title {
+        font-size: 16px;
+        font-weight: 700;
         color: #2c3e50;
         display: flex;
         align-items: center;
+        gap: 8px;
+        min-width: 0;
+        overflow: hidden;
+    }
+
+    .services-detail-title span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .services-detail-title .edit-link {
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .services-detail-title .edit-link:hover {
+        color: #007bff;
+    }
+
+    /* Info Grid */
+    .services-info-grid {
+        display: flex;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e9ecef;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        gap: 8px 30px;
+    }
+
+    .services-info-item {
+        font-size: 13px;
+        color: #555;
+    }
+
+    .services-info-item .info-label {
+        text-transform: uppercase;
+        font-size: 11px;
+        color: #888;
+        font-weight: 500;
+    }
+
+    .services-info-item .info-value {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    /* Transactions */
+    .services-transactions-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 12px 20px;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .services-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
         gap: 10px;
     }
 
-    .products-info-grid {
+    .services-section-heading {
+        font-size: 14px;
+        font-weight: 700;
+        color: #2c3e50;
+        text-transform: uppercase;
+    }
+
+    .services-transaction-search {
         display: flex;
-        background: white;
-        padding: 20px;
-        border-bottom: 1px solid #e9ecef;
-        gap: 40px;
+        align-items: center;
+        gap: 6px;
         flex-shrink: 0;
     }
 
-    .products-info-item {
-        flex: 1;
-    }
-
-    .products-info-label {
-        font-size: 12px;
-        color: #6c757d;
-        margin-bottom: 5px;
-        text-transform: uppercase;
-        font-weight: 500;
-    }
-
-    .products-info-value {
-        font-size: 14px;
-        font-weight: 600;
-        color: #2c3e50;
-    }
-
-    .products-stock-warning {
-        color: #dc3545;
-    }
-
-    .products-stock-success {
-        color: #28a745;
-    }
-
-    .products-transactions-area {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        padding: 20px;
-        overflow-y: auto;
-        min-height: 0;
-    }
-
-    .products-section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .products-section-heading {
-        font-size: 16px;
-        font-weight: 600;
-        color: #2c3e50;
-        text-transform: uppercase;
-    }
-
-    .products-transaction-search {
-        position: relative;
-        width: 300px;
+    .services-transaction-search input {
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 13px;
+        width: 160px;
         max-width: 100%;
+        outline: none;
     }
 
-        .products-transaction-search input {
-            width: 100%;
-            padding: 8px 15px 8px 35px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
+    .services-transaction-search input:focus {
+        border-color: #007bff;
+    }
 
-        .products-transaction-search i {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
+    .services-transaction-search .search-icon-sm {
+        color: #999;
+        font-size: 14px;
+    }
 
-    .products-table-wrapper {
-        background: white;
-        border-radius: 8px;
-        overflow-x: auto;
-        border: 1px solid #e9ecef;
+    .services-table-wrapper {
         flex: 1;
+        overflow: auto;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
     }
 
-        .products-table-wrapper table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
+    .services-table-wrapper table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
 
-        .products-table-wrapper th {
-            background: #f8f9fa;
-            color: #495057;
-            padding: 12px 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .products-table-wrapper td {
-            padding: 15px;
-            border-bottom: 1px solid #f1f3f4;
-            color: #2c3e50;
-            font-size: 14px;
-        }
-
-        .products-table-wrapper tr:hover {
-            background: #f8f9ff;
-        }
-
-    .products-status-label {
-        padding: 4px 8px;
-        border-radius: 12px;
+    .services-table-wrapper th {
+        background: #f8f9fa;
+        color: #6c757d;
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 600;
         font-size: 11px;
-        font-weight: 500;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.3px;
+        border-bottom: 1px solid #e9ecef;
+        white-space: nowrap;
     }
 
-    .products-status-partial {
-        background: #fff3cd;
-        color: #856404;
+    .services-table-wrapper td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f1f3f4;
+        color: #333;
+        white-space: nowrap;
     }
 
-    .products-status-complete {
-        background: #d4edda;
-        color: #155724;
+    .services-table-wrapper tr:hover {
+        background: #f8f9ff;
     }
 
-    .products-status-pending {
-        background: #f8d7da;
-        color: #721c24;
-    }
-
-    .products-transaction-dot {
+    .services-transaction-dot {
         width: 8px;
         height: 8px;
         border-radius: 50%;
         display: inline-block;
-        margin-right: 8px;
+        margin-right: 6px;
     }
 
-    .products-dot-purchase {
+    .services-dot-purchase {
         background: #28a745;
     }
 
-    .products-dot-sale {
-        background: #dc3545;
+    .services-dot-sale {
+        background: #28a745;
     }
 
-    .products-sort-arrow {
-        margin-left: 5px;
-        opacity: 0.7;
+    .services-status-label {
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 500;
+    }
+
+    .services-status-partial {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .services-status-complete {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .services-status-pending,
+    .services-status-unpaid {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .services-sort-arrow {
+        margin-left: 3px;
+        opacity: 0.5;
         font-size: 10px;
     }
 
-    .products-no-data {
+    .services-no-data {
         text-align: center;
-        padding: 60px 20px;
+        padding: 40px 20px;
         color: #6c757d;
-        font-size: 14px;
+        font-size: 13px;
     }
 
-    .products-loading-state {
+    .services-loading-state {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 400px;
+        flex: 1;
         color: #6c757d;
+        text-align: center;
     }
 
+    /* Popover styles */
     .popover {
         border: 1px solid #ddd;
         border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        min-width: 120px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        min-width: 140px;
     }
 
     .popover-body {
@@ -435,324 +581,233 @@
 
     .popover-action {
         display: block;
-        padding: 12px 16px;
+        padding: 10px 16px;
         text-decoration: none;
         color: #333;
         cursor: pointer;
         border-bottom: 1px solid #f0f0f0;
-        transition: background-color 0.2s ease;
+        font-size: 13px;
+        transition: background-color 0.15s;
     }
 
-        .popover-action:last-child {
-            border-bottom: none;
-        }
-
-        .popover-action:hover {
-            background-color: #f8f9fa;
-            color: #333;
-            text-decoration: none;
-        }
-
-    /* Responsive Design */
-    @@media (max-width: 1200px) {
-        .products-sidebar-panel {
-            width: 280px;
-        }
-
-        .products-info-grid {
-            gap: 20px;
-        }
+    .popover-action:last-child {
+        border-bottom: none;
     }
 
+    .popover-action:hover {
+        background-color: #f8f9fa;
+        color: #333;
+        text-decoration: none;
+    }
+
+    /* Responsive */
     @@media (max-width: 992px) {
-        .products-sidebar-panel {
-            width: 250px;
+        .services-sidebar-panel {
+            width: 220px;
+            min-width: 180px;
         }
 
-        .products-nav-tab {
-            padding: 12px 20px;
-            font-size: 14px;
+        .services-info-grid {
+            padding: 10px 14px;
         }
 
-        .products-info-grid {
-            flex-wrap: wrap;
-        }
-
-        .products-info-item {
-            flex: 0 0 calc(50% - 10px);
+        .services-transactions-area {
+            padding: 10px 14px;
         }
     }
 
     @@media (max-width: 768px) {
-        .products-main-wrapper {
+        .services-main-wrapper {
             height: auto;
             min-height: 100vh;
         }
 
-        .products-content-wrapper {
+        .services-content-wrapper {
             flex-direction: column;
-            height: auto;
         }
 
-        .products-sidebar-panel {
+        .services-sidebar-panel {
             width: 100%;
-            max-height: none;
-            height: auto;
+            min-width: unset;
+            max-height: 40vh;
             border-right: none;
             border-bottom: 1px solid #e9ecef;
         }
 
-        .products-detail-section {
-            height: auto;
-            min-height: 500px;
+        .services-detail-section {
+            min-height: 60vh;
         }
 
-        .products-nav-tab {
-            padding: 12px 15px;
-            font-size: 13px;
-        }
-
-        .products-info-grid {
+        .services-info-grid {
             flex-direction: column;
-            gap: 15px;
+            gap: 6px;
         }
 
-        .products-info-item {
-            flex: 1;
+        .services-transaction-search input {
+            width: 140px;
         }
 
-        .products-transaction-search {
-            width: 100%;
+        .services-detail-header {
+            padding: 10px 14px;
         }
 
-        .products-section-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-        .products-detail-header {
-            flex-wrap: wrap;
-        }
-
-        .products-detail-title {
-            font-size: 16px;
-        }
-
-        .products-transactions-area {
-            padding: 15px;
-        }
-
-        .products-table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        .services-transactions-area {
+            padding: 10px 14px;
         }
     }
 
     @@media (max-width: 576px) {
-        .products-nav-tab {
-            padding: 10px 12px;
-            font-size: 12px;
-        }
-
-        .products-detail-header {
-            padding: 12px 15px;
-        }
-
-        .products-info-grid {
-            padding: 15px;
-        }
-
-        .products-add-button {
-            padding: 10px 15px;
-            font-size: 14px;
-        }
-
-        .products-search-container input {
-            font-size: 13px;
-            padding: 8px 12px 8px 35px;
-        }
-
-        .products-item-entry {
-            padding: 10px;
-        }
-
-        .products-table-wrapper th,
-        .products-table-wrapper td {
-            padding: 10px 8px;
-            font-size: 12px;
-        }
-    }
-
-    @@media (max-width: 480px) {
-        .products-sidebar-panel {
-            padding: 15px;
-        }
-
-        .products-godown-dropdown {
-            font-size: 13px;
-            padding: 8px;
-        }
-
-        .products-list-header {
-            padding: 8px;
+        .services-nav-tab {
             font-size: 11px;
+            padding: 10px 0;
         }
 
-        .products-item-qty-col {
-            width: 60px;
+        .services-toolbar {
+            padding: 8px 10px;
         }
 
-        .products-section-heading {
-            font-size: 14px;
+        .services-add-btn-group .btn-add-main {
+            font-size: 12px;
+            padding: 6px 10px;
+        }
+
+        .services-item-entry {
+            padding: 8px 10px;
+        }
+
+        .services-detail-header {
+            padding: 8px 12px;
+        }
+
+        .services-transactions-area {
+            padding: 8px 12px;
+        }
+
+        .services-table-wrapper th,
+        .services-table-wrapper td {
+            padding: 8px 8px;
+            font-size: 12px;
         }
     }
 </style>
 
-<div class="products-main-wrapper">
+<div class="services-main-wrapper">
     <!-- Navigation Tabs -->
-    <div class="products-header-navigation">
-        <a href="/Web/Items/Products" class="products-nav-tab">
-            PRODUCTS
-        </a>
-        <a href="/Web/Services/Service" class="products-nav-tab active">
-            SERVICES
-        </a>
-        <a href="/Web/Items/Category" class="products-nav-tab">
-            CATEGORY
-        </a>
-        <a href="/Web/Units/Unit" class="products-nav-tab">
-            UNITS
-        </a>
+    <div class="services-header-navigation">
+        <a href="/Web/Items/Products" class="services-nav-tab">PRODUCTS</a>
+        <a href="/Web/Services/Service" class="services-nav-tab active">SERVICES</a>
+        <a href="/Web/Items/Category" class="services-nav-tab">CATEGORY</a>
+        <a href="/Web/Units/Unit" class="services-nav-tab">UNITS</a>
     </div>
 
-    <!-- Products Content -->
-    <div class="products-content-wrapper">
-        <div class="products-sidebar-panel">
-            <div class="products-search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" id="product-search" placeholder="Search items...">
+    <!-- Content -->
+    <div class="services-content-wrapper">
+        <!-- Left Sidebar -->
+        <div class="services-sidebar-panel">
+            <!-- Toolbar: Search icon + Add Service + Three dots -->
+            <div class="services-toolbar">
+                <button class="services-search-btn" id="toggleSearchBtn" title="Search">
+                    <i class="bi bi-search"></i>
+                </button>
+                <div class="services-add-btn-group">
+                    <button class="btn-add-main" onclick="window.location.href='/Web/Services/create';">
+                        <i class="bi bi-plus"></i> Add Service
+                    </button>
+                    <button class="btn-add-dropdown" id="addServiceDropdownBtn">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-menu" id="addServiceDropdownMenu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-down me-2"></i>Import Services</a></li>
+                    </ul>
+                </div>
+                <div class="services-toolbar-dots-wrapper">
+                    <button class="services-toolbar-dots" id="threeDotsDropdownBtn">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu" id="threeDotsDropdownMenu">
+                        <li><a class="dropdown-item" href="#" onclick="openServiceBulkInactiveModal(); return false;">Bulk Inactive</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openServiceBulkActiveModal(); return false;">Bulk Active</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openServiceBulkAssignCodeModal(); return false;">Bulk Assign Code</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openServiceAssignUnitsModal(); return false;">Assign Units</a></li>
+                        <li><a class="dropdown-item" href="#">Bulk Update Items</a></li>
+                    </ul>
+                </div>
             </div>
 
-            <button class="products-add-button" onclick="window.location.href='/Web/Services/create';">
-                <i class="fas fa-plus"></i> Add Service
-            </button>
+            <!-- Inline search (hidden by default) -->
+            <div class="services-inline-search" id="inlineSearchBox">
+                <input type="text" id="service-search" placeholder="Search services..." autofocus>
+            </div>
 
-            <select class="products-godown-dropdown" data-dropdown-source="Godowns">
-                <option value="">Godown: All Godowns</option>
-            </select>
-
-            <div class="products-items-container">
-                <div class="products-list-header">
-                    <div class="products-item-name-col">ITEM <i class="fas fa-filter"></i></div>
-@*                     <div class="products-item-qty-col">QUANTITY</div>
- *@                </div>
+            <!-- Item List -->
+            <div class="services-items-container">
+                <div class="services-list-header">
+                    <div class="services-item-name-col">SERVICE <i class="bi bi-funnel" style="font-size:10px;"></i></div>
+                    <div class="services-item-dots-col"></div>
+                </div>
                 @foreach (var item in Model.ItemView)
                 {
-                    <div class="products-item-entry">
-                        <a href="#"
-                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center product-item-link @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
-                           data-item-id="@item.Id"
-                           style="text-decoration: none; color: inherit; width: 100%; display: flex;">
-                            <div class="products-item-name-col">@item.ItemName</div>
-@*                             <div class="products-item-qty-col">@item.OpeningQuantity</div>
- *@                        </a>
-
-                        <button type="button"
-                                class="btn btn-link p-1"
+                    <div class="services-item-entry @(item.Id == Model.SelectedItem?.Id ? "selected" : "")" data-item-id="@item.Id">
+                        <span class="item-name">@item.ItemName</span>
+                        <button type="button" class="item-dots"
                                 data-bs-toggle="popover"
                                 data-bs-placement="left"
                                 data-bs-trigger="click"
                                 data-bs-html="true"
-                                data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'
-                                style="border: none; background: none; outline: none; cursor: pointer;">
-                            <i class="bi bi-three-dots-vertical" style="font-size:16px;color:#6c757d;"></i>
+                                data-bs-content='<a href="#" class="popover-action" onclick="viewService(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteService(@item.Id); return false;">Delete</a>'>
+                            <i class="bi bi-three-dots-vertical" style="font-size:14px;"></i>
                         </button>
                     </div>
                 }
             </div>
         </div>
 
-        <div class="products-detail-section" id="product-detail-area">
+        <!-- Right Detail -->
+        <div class="services-detail-section" id="service-detail-area">
             @if (Model.SelectedItem != null)
             {
-                <div class="products-detail-header">
-                    <div class="products-detail-title">
+                <div class="services-detail-header">
+                    <div class="services-detail-title">
                         <span>@Model.SelectedItem.ItemName</span>
-                        <a asp-action="Create" asp-route-id="@Model.SelectedItem.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                        <a asp-action="Create" asp-route-id="@Model.SelectedItem.Id" class="edit-link">
                             <i class="bi bi-pencil"></i>
                         </a>
                     </div>
                 </div>
 
-                <div class="products-info-grid">
-                    <div class="products-info-item">
-                        <div class="products-info-label">Sale Price</div>
-                        <div class="products-info-value">₹ @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
+                <div class="services-info-grid">
+                    <div class="services-info-item">
+                        <div class="info-label">Sale Price</div>
+                        <div class="info-value">&#8377; @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
                     </div>
-                 @*    <div class="products-info-item">
-                        <div class="products-info-label">Purchase Price</div>
-                        <div class="products-info-value">₹ @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
-                    </div>
-                    <div class="products-info-item">
-                        <div class="products-info-label products-stock-warning">Stock Quantity</div>
-                        <div class="products-info-value products-stock-warning">@(Model.SelectedItem?.OpeningQuantity ?? 0)</div>
-                    </div>
-                    <div class="products-info-item">
-                        <div class="products-info-label">Stock Value</div>
-                        <div class="products-info-value products-stock-success">₹ @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
-                    </div> *@
                 </div>
 
-                <div class="products-transactions-area">
-                    <div class="products-section-header">
-                        <h3 class="products-section-heading">TRANSACTIONS</h3>
-                        <div class="products-transaction-search">
-                            <i class="fas fa-search"></i>
+                <div class="services-transactions-area">
+                    <div class="services-section-header">
+                        <h3 class="services-section-heading">TRANSACTIONS</h3>
+                        <div class="services-transaction-search">
+                            <i class="bi bi-search search-icon-sm"></i>
                             <input type="text" placeholder="Search transactions...">
                         </div>
                     </div>
 
-                    <div class="products-table-wrapper">
+                    <div class="services-table-wrapper">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>TYPE <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>INVOICE/REF. <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>NAME <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>DATE <i class="fas fa-sort-down products-sort-arrow"></i></th>
-                                    <th>QUANTITY <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>PRICE/UNIT <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>STATUS <i class="fas fa-sort products-sort-arrow"></i></th>
+                                    <th>TYPE <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>INVOICE/REF. <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>NAME <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>DATE <i class="bi bi-arrow-down" style="font-size:9px;"></i> <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>PRICE/UNIT <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>STATUS <i class="bi bi-funnel" style="font-size:9px;"></i></th>
                                     <th></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @if (Model.SelectedItem.OpeningQuantity > 0)
-                                {
-                                    <tr>
-                                        <td>
-                                            <span class="products-transaction-dot products-dot-purchase"></span>
-                                            Purchase (Main ...)
-                                        </td>
-                                        <td>-</td>
-                                        <td>test</td>
-                                        <td>14/06/2025</td>
-                                        <td>1 Btl</td>
-                                        <td>₹ 1,233.00</td>
-                                        <td>
-                                            <span class="products-status-label products-status-partial">Partial</span>
-                                        </td>
-                                        <td>
-                                            <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
-                                        </td>
-                                    </tr>
-                                }
-                                else
-                                {
-                                    <tr>
-                                        <td colspan="8" class="products-no-data">No transactions to show</td>
-                                    </tr>
-                                }
+                                <tr>
+                                    <td colspan="7" class="services-no-data">No transactions to show</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -760,10 +815,10 @@
             }
             else
             {
-                <div class="products-loading-state">
+                <div class="services-loading-state">
                     <div>
-                        <i class="fas fa-box" style="font-size: 48px; margin-bottom: 15px;"></i>
-                        <p>Select an item to view details</p>
+                        <i class="bi bi-box" style="font-size: 48px; margin-bottom: 15px; display:block;"></i>
+                        <p>Select a service to view details</p>
                     </div>
                 </div>
             }
@@ -772,17 +827,94 @@
 </div>
 
 <script>
-    // Initialize popovers
-    document.addEventListener('DOMContentLoaded', function() {
+    // Configure toastr
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        timeOut: 3000,
+        showEasing: 'swing',
+        hideEasing: 'linear',
+        showMethod: 'fadeIn',
+        hideMethod: 'fadeOut'
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
         initializePopovers();
-        initProductItemHandlers();
-        initProductSearch();
+        initializeToolbarDropdowns();
+        initServiceItemHandlers();
+        initServiceSearch();
+        initToggleSearch();
     });
+
+    function initializeToolbarDropdowns() {
+        const addServiceBtn = document.getElementById('addServiceDropdownBtn');
+        const addServiceMenu = document.getElementById('addServiceDropdownMenu');
+        const threeDotsBtn = document.getElementById('threeDotsDropdownBtn');
+        const threeDotsMenu = document.getElementById('threeDotsDropdownMenu');
+
+        function closeAllMenus() {
+            if (addServiceMenu) addServiceMenu.classList.remove('show');
+            if (threeDotsMenu) threeDotsMenu.classList.remove('show');
+        }
+
+        function positionAndShow(btn, menu) {
+            closeAllMenus();
+            const rect = btn.getBoundingClientRect();
+            menu.style.position = 'fixed';
+            menu.style.top = (rect.bottom + 4) + 'px';
+            menu.style.left = rect.left + 'px';
+            menu.classList.add('show');
+        }
+
+        if (addServiceBtn && addServiceMenu) {
+            addServiceBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (addServiceMenu.classList.contains('show')) {
+                    addServiceMenu.classList.remove('show');
+                } else {
+                    positionAndShow(this, addServiceMenu);
+                }
+            });
+        }
+
+        if (threeDotsBtn && threeDotsMenu) {
+            threeDotsBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (threeDotsMenu.classList.contains('show')) {
+                    threeDotsMenu.classList.remove('show');
+                } else {
+                    positionAndShow(this, threeDotsMenu);
+                }
+            });
+        }
+
+        // Close menus when clicking anywhere outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.services-add-btn-group') && !e.target.closest('.services-toolbar-dots-wrapper')) {
+                closeAllMenus();
+            }
+        });
+    }
+
+    function initToggleSearch() {
+        const toggleBtn = document.getElementById('toggleSearchBtn');
+        const searchBox = document.getElementById('inlineSearchBox');
+        if (toggleBtn && searchBox) {
+            toggleBtn.addEventListener('click', function () {
+                searchBox.classList.toggle('active');
+                if (searchBox.classList.contains('active')) {
+                    searchBox.querySelector('input').focus();
+                }
+            });
+        }
+    }
 
     function initializePopovers() {
         const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-
-        popoverTriggerList.forEach(function(popoverTriggerEl) {
+        popoverTriggerList.forEach(function (popoverTriggerEl) {
             new bootstrap.Popover(popoverTriggerEl, {
                 sanitize: false,
                 html: true,
@@ -790,270 +922,175 @@
             });
         });
 
-        // Close popovers when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!e.target.closest('[data-bs-toggle="popover"]') && !e.target.closest('.popover')) {
                 const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
                 popovers.forEach(popover => {
                     const bsPopover = bootstrap.Popover.getInstance(popover);
-                    if (bsPopover) {
-                        bsPopover.hide();
-                    }
+                    if (bsPopover) bsPopover.hide();
                 });
             }
         });
     }
 
-    function initProductItemHandlers() {
-        const productLinks = document.querySelectorAll('.product-item-link');
-
-        productLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
+    function initServiceItemHandlers() {
+        const itemEntries = document.querySelectorAll('.services-item-entry');
+        itemEntries.forEach(entry => {
+            entry.addEventListener('click', function (e) {
+                if (e.target.closest('.item-dots') || e.target.closest('[data-bs-toggle="popover"]') || e.target.closest('.popover') || e.target.closest('.dropdown-menu')) return;
                 const itemId = this.getAttribute('data-item-id');
-
-                productLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-
-                loadProductDetails(itemId);
+                itemEntries.forEach(el => el.classList.remove('selected'));
+                this.classList.add('selected');
+                loadServiceDetails(itemId);
             });
         });
     }
 
-    function loadProductDetails(itemId) {
-        const detailArea = document.getElementById('product-detail-area');
-
-        if (!detailArea) {
-            console.error('Product detail area not found');
-            return;
-        }
+    function loadServiceDetails(itemId) {
+        const detailArea = document.getElementById('service-detail-area');
+        if (!detailArea) return;
 
         detailArea.innerHTML = `
-            <div class="products-loading-state">
-                <div style="text-align: center; color: #6c757d;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
-                    <p>Loading product details...</p>
+            <div class="services-loading-state">
+                <div style="text-align: center;">
+                    <i class="bi bi-arrow-repeat" style="font-size: 28px; animation: spin 1s linear infinite; display:block; margin-bottom:10px;"></i>
+                    <p>Loading...</p>
                 </div>
             </div>`;
 
         fetch(`/Web/Services/ViewItemForPartial?id=${itemId}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
+            headers: { 'Accept': 'application/json' }
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to load product details');
-            }
+            if (!response.ok) throw new Error('Failed to load');
             return response.json();
         })
-        .then(data => {
-            renderProductDetails(data);
-        })
+        .then(data => renderServiceDetails(data))
         .catch(error => {
-            console.error('Error loading product details:', error);
+            console.error('Error:', error);
             detailArea.innerHTML = `
-                <div class="products-loading-state">
-                    <div style="text-align: center; color: #dc3545;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
-                        <p>Error loading product details</p>
-                        <button class="btn btn-primary btn-sm" onclick="loadProductDetails(${itemId})">Retry</button>
+                <div class="services-loading-state">
+                    <div style="text-align:center; color:#dc3545;">
+                        <i class="bi bi-exclamation-triangle" style="font-size:28px; display:block; margin-bottom:10px;"></i>
+                        <p>Error loading details</p>
+                        <button class="btn btn-sm btn-primary" onclick="loadServiceDetails(${itemId})">Retry</button>
                     </div>
                 </div>`;
         });
     }
 
-    function renderProductDetails(item) {
-        const detailArea = document.getElementById('product-detail-area');
-
+    function renderServiceDetails(item) {
+        const detailArea = document.getElementById('service-detail-area');
         if (!item) {
-            detailArea.innerHTML = `
-                <div class="products-loading-state">
-                    <div>
-                        <i class="fas fa-box"></i>
-                        <p>Select an item to view details</p>
-                    </div>
-                </div>`;
+            detailArea.innerHTML = `<div class="services-loading-state"><div><i class="bi bi-box" style="font-size:48px;display:block;margin-bottom:15px;"></i><p>Select a service to view details</p></div></div>`;
             return;
         }
 
         const salePrice = (item.salePrice || 0).toFixed(2);
-        const purchasePrice = (item.purchasePrice || 0).toFixed(2);
-        const openingQuantity = item.openingQuantity || 0;
-        const stockValue = (item.onlineStorePrice || 0).toFixed(2);
 
         let transactionsHTML = '';
         if (item.transactions && item.transactions.length > 0) {
-            transactionsHTML = item.transactions.map(transaction => `
+            transactionsHTML = item.transactions.map(t => `
                 <tr>
-                    <td>
-                        <span class="products-transaction-dot products-dot-${transaction.type?.toLowerCase()}"></span>
-                        ${transaction.type || 'N/A'} (${transaction.location || 'N/A'})
-                    </td>
-                    <td>${transaction.invoiceRef || '-'}</td>
-                    <td>${transaction.name || '-'}</td>
-                    <td>${transaction.date || '-'}</td>
-                    <td>${transaction.quantity || '-'}</td>
-                    <td>₹ ${(transaction.pricePerUnit || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    <td>
-                        <span class="products-status-label products-status-${transaction.status?.toLowerCase()}">${transaction.status || 'N/A'}</span>
-                    </td>
-                    <td>
-                        <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
-                    </td>
-                </tr>
-            `).join('');
-        } else if (openingQuantity > 0) {
-            transactionsHTML = `
-                <tr>
-                    <td>
-                        <span class="products-transaction-dot products-dot-purchase"></span>
-                        Purchase (Main ...)
-                    </td>
-                    <td>-</td>
-                    <td>test</td>
-                    <td>14/06/2025</td>
-                    <td>1 Btl</td>
-                    <td>₹ 1,233.00</td>
-                    <td>
-                        <span class="products-status-label products-status-partial">Partial</span>
-                    </td>
-                    <td>
-                        <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
-                    </td>
-                </tr>
-            `;
+                    <td><span class="services-transaction-dot services-dot-sale"></span>${t.type || 'N/A'}</td>
+                    <td>${t.invoiceRef || '-'}</td>
+                    <td>${t.name || '-'}</td>
+                    <td>${t.date || '-'}</td>
+                    <td>&#8377; ${(t.pricePerUnit || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td><span class="services-status-label services-status-unpaid">${t.status || 'N/A'}</span></td>
+                    <td><i class="bi bi-three-dots-vertical" style="color:#6c757d;cursor:pointer;"></i></td>
+                </tr>`).join('');
         } else {
-            transactionsHTML = `
-                <tr>
-                    <td colspan="8" class="products-no-data">No transactions to show</td>
-                </tr>
-            `;
+            transactionsHTML = `<tr><td colspan="7" class="services-no-data">No transactions to show</td></tr>`;
         }
 
-        const html = `
-            <div class="products-detail-header">
-                <div class="products-detail-title">
-                    <span>${item.itemName || 'Unknown Item'}</span>
-                    <a href="/Web/Services/Create?id=${item.id}" class="btn btn-sm btn-outline-secondary ms-2 p-1">
-                        <i class="bi bi-pencil"></i>
-                    </a>
+        detailArea.innerHTML = `
+            <div class="services-detail-header">
+                <div class="services-detail-title">
+                    <span>${item.itemName || 'Unknown'}</span>
+                    <a href="/Web/Services/Create?id=${item.id}" class="edit-link"><i class="bi bi-pencil"></i></a>
                 </div>
             </div>
-
-            <div class="products-info-grid">
-                <div class="products-info-item">
-                    <div class="products-info-label">Sale Price</div>
-                    <div class="products-info-value">₹ ${salePrice} (excl)</div>
-                </div>
-          
+            <div class="services-info-grid">
+                <div class="services-info-item"><div class="info-label">Sale Price</div><div class="info-value">&#8377; ${salePrice} (excl)</div></div>
             </div>
-
-            <div class="products-transactions-area">
-                <div class="products-section-header">
-                    <h3 class="products-section-heading">TRANSACTIONS</h3>
-                    <div class="products-transaction-search">
-                        <i class="fas fa-search"></i>
+            <div class="services-transactions-area">
+                <div class="services-section-header">
+                    <h3 class="services-section-heading">TRANSACTIONS</h3>
+                    <div class="services-transaction-search">
+                        <i class="bi bi-search search-icon-sm"></i>
                         <input type="text" placeholder="Search transactions...">
                     </div>
                 </div>
-
-                <div class="products-table-wrapper">
+                <div class="services-table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>TYPE <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>INVOICE/REF. <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>NAME <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>DATE <i class="fas fa-sort-down products-sort-arrow"></i></th>
-                                <th>QUANTITY <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>PRICE/UNIT <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>STATUS <i class="fas fa-sort products-sort-arrow"></i></th>
+                                <th>TYPE <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>INVOICE/REF. <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>NAME <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>DATE <i class="bi bi-arrow-down" style="font-size:9px;"></i> <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>PRICE/UNIT <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>STATUS <i class="bi bi-funnel" style="font-size:9px;"></i></th>
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${transactionsHTML}
-                        </tbody>
+                        <tbody>${transactionsHTML}</tbody>
                     </table>
                 </div>
-            </div>
-        `;
-
-        detailArea.innerHTML = html;
+            </div>`;
     }
 
-    function initProductSearch() {
-        const searchInput = document.getElementById('product-search');
-
+    function initServiceSearch() {
+        const searchInput = document.getElementById('service-search');
         if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const itemRows = document.querySelectorAll('.products-item-entry');
-
-                itemRows.forEach(row => {
-                    const itemName = row.querySelector('.products-item-name-col')?.textContent.toLowerCase();
-                    if (itemName && (itemName.includes(searchTerm) || searchTerm === '')) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                document.querySelectorAll('.services-item-entry').forEach(row => {
+                    const name = row.querySelector('.item-name')?.textContent.toLowerCase() || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
                 });
             });
         }
     }
 
-    function viewItem(itemId) {
-        const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
-        popovers.forEach(popover => {
-            const bsPopover = bootstrap.Popover.getInstance(popover);
-            if (bsPopover) {
-                bsPopover.hide();
-            }
-        });
-
+    function viewService(itemId) {
+        hideAllPopovers();
         window.location.href = `/Web/Services/Create?id=${itemId}&isview=true`;
     }
 
-    function deleteItem(itemId) {
-        const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
-        popovers.forEach(popover => {
-            const bsPopover = bootstrap.Popover.getInstance(popover);
-            if (bsPopover) {
-                bsPopover.hide();
-            }
-        });
-
+    function deleteService(itemId) {
+        hideAllPopovers();
         const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
         deleteModal.show();
 
         const confirmBtn = document.getElementById('confirmDeleteBtn');
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        const newBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
 
-        newConfirmBtn.addEventListener('click', function() {
+        newBtn.addEventListener('click', function () {
             fetch(`/Web/Services/DeleteItem/${itemId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
                 }
-            })
-            .then(response => {
+            }).then(response => {
                 if (response.ok) {
                     deleteModal.hide();
-                    window.location.href = `/Web/Services/Service`;
-                } else {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Failed to delete item');
-                    });
+                    window.location.href = '/Web/Services/Service';
                 }
             });
         });
     }
 
+    function hideAllPopovers() {
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+            const p = bootstrap.Popover.getInstance(el);
+            if (p) p.hide();
+        });
+    }
 </script>
 
 <!-- Delete Confirmation Modal -->
@@ -1065,7 +1102,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete this item
+                Are you sure you want to delete this service?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -1074,3 +1111,1015 @@
         </div>
     </div>
 </div>
+
+<style>
+    @@keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Bulk Modal Styles */
+    .bulk-inactive-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bulk-inactive-overlay.show {
+        display: flex;
+    }
+
+    .bulk-inactive-modal {
+        background: #fff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+        overflow: hidden;
+    }
+
+    .bulk-inactive-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .bulk-inactive-header h4 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .bulk-inactive-close {
+        background: none;
+        border: none;
+        font-size: 22px;
+        color: #999;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .bulk-inactive-close:hover {
+        color: #333;
+        background: #f0f0f0;
+    }
+
+    .bulk-inactive-search {
+        padding: 12px 24px;
+    }
+
+    .bulk-inactive-search input {
+        width: 100%;
+        padding: 10px 14px 10px 38px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .bulk-inactive-search input:focus {
+        border-color: #007bff;
+    }
+
+    .bulk-inactive-search-wrapper {
+        position: relative;
+    }
+
+    .bulk-inactive-search-wrapper i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        font-size: 14px;
+    }
+
+    .bulk-inactive-table-wrapper {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 24px;
+    }
+
+    .bulk-inactive-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .bulk-inactive-table thead th {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        padding: 10px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6c757d;
+        text-align: left;
+        border-bottom: 1px solid #e9ecef;
+        white-space: nowrap;
+    }
+
+    .bulk-inactive-table thead th:first-child {
+        width: 40px;
+    }
+
+    .bulk-inactive-table tbody td {
+        padding: 14px 12px;
+        font-size: 14px;
+        color: #333;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .bulk-inactive-table tbody tr:hover {
+        background: #f8f9ff;
+    }
+
+    .bulk-inactive-table input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #007bff;
+    }
+
+    .bulk-inactive-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        border-top: 1px solid #e9ecef;
+        background: #fff;
+    }
+
+    .bulk-inactive-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #17a2b8;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .bulk-inactive-info i {
+        font-size: 16px;
+    }
+
+    .bulk-inactive-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .bulk-inactive-cancel {
+        padding: 8px 20px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fff;
+        color: #555;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .bulk-inactive-cancel:hover {
+        background: #f5f5f5;
+    }
+
+    .bulk-inactive-submit {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 6px;
+        background: #dc3545;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .bulk-inactive-submit:hover {
+        background: #c82333;
+    }
+
+    .bulk-inactive-submit:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    .bulk-active-info-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #e8f5e9;
+        color: #2e7d32;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 20px;
+    }
+
+    .bulk-active-info-badge i {
+        font-size: 15px;
+        color: #43a047;
+    }
+</style>
+
+<!-- Bulk Inactive Modal -->
+<div class="bulk-inactive-overlay" id="serviceBulkInactiveOverlay">
+    <div class="bulk-inactive-modal">
+        <div class="bulk-inactive-header">
+            <h4>Bulk Inactive</h4>
+            <button class="bulk-inactive-close" onclick="closeServiceBulkInactiveModal()">&times;</button>
+        </div>
+        <div class="bulk-inactive-search">
+            <div class="bulk-inactive-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="serviceBulkInactiveSearch" placeholder="Search services">
+            </div>
+        </div>
+        <div class="bulk-inactive-table-wrapper">
+            <table class="bulk-inactive-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="serviceBulkInactiveSelectAll"></th>
+                        <th>Service Name</th>
+                        <th>Sale Price</th>
+                    </tr>
+                </thead>
+                <tbody id="serviceBulkInactiveTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div class="bulk-inactive-footer">
+            <div class="bulk-inactive-info">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Showing only active services</span>
+            </div>
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-cancel" onclick="closeServiceBulkInactiveModal()">Cancel</button>
+                <button class="bulk-inactive-submit" id="serviceBulkInactiveSubmitBtn" disabled onclick="submitServiceBulkInactive()">Mark as Inactive</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bulk Inactive functionality for Services
+    function openServiceBulkInactiveModal() {
+        const overlay = document.getElementById('serviceBulkInactiveOverlay');
+        overlay.classList.add('show');
+        loadActiveServicesForBulkInactive();
+    }
+
+    function closeServiceBulkInactiveModal() {
+        const overlay = document.getElementById('serviceBulkInactiveOverlay');
+        overlay.classList.remove('show');
+        document.getElementById('serviceBulkInactiveSearch').value = '';
+    }
+
+    function loadActiveServicesForBulkInactive() {
+        const tbody = document.getElementById('serviceBulkInactiveTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">Loading...</td></tr>';
+
+        fetch('/Web/Services/GetActiveServices', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.items) {
+                renderServiceBulkInactiveItems(data.items);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Failed to load services</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Error loading services</td></tr>';
+        });
+    }
+
+    function renderServiceBulkInactiveItems(items) {
+        const tbody = document.getElementById('serviceBulkInactiveTableBody');
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">No active services found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr data-item-id="${item.id}" data-item-name="${(item.itemName || '').toLowerCase()}">
+                <td><input type="checkbox" class="service-bulk-inactive-checkbox" value="${item.id}"></td>
+                <td>${item.itemName || ''}</td>
+                <td>&#8377; ${(item.salePrice || 0).toFixed(2)}</td>
+            </tr>
+        `).join('');
+
+        bindServiceBulkInactiveCheckboxes();
+    }
+
+    function bindServiceBulkInactiveCheckboxes() {
+        const selectAll = document.getElementById('serviceBulkInactiveSelectAll');
+        const checkboxes = document.querySelectorAll('.service-bulk-inactive-checkbox');
+        const submitBtn = document.getElementById('serviceBulkInactiveSubmitBtn');
+
+        selectAll.checked = false;
+
+        selectAll.addEventListener('change', function () {
+            const visibleRows = document.querySelectorAll('#serviceBulkInactiveTableBody tr:not([style*="display: none"]) .service-bulk-inactive-checkbox');
+            visibleRows.forEach(cb => cb.checked = this.checked);
+            updateServiceBulkInactiveSubmitBtn();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                updateServiceBulkInactiveSubmitBtn();
+                const visibleCheckboxes = document.querySelectorAll('#serviceBulkInactiveTableBody tr:not([style*="display: none"]) .service-bulk-inactive-checkbox');
+                const allChecked = Array.from(visibleCheckboxes).every(c => c.checked);
+                selectAll.checked = allChecked && visibleCheckboxes.length > 0;
+            });
+        });
+    }
+
+    function updateServiceBulkInactiveSubmitBtn() {
+        const checked = document.querySelectorAll('.service-bulk-inactive-checkbox:checked');
+        const submitBtn = document.getElementById('serviceBulkInactiveSubmitBtn');
+        submitBtn.disabled = checked.length === 0;
+    }
+
+    function submitServiceBulkInactive() {
+        const checked = document.querySelectorAll('.service-bulk-inactive-checkbox:checked');
+        const itemIds = Array.from(checked).map(cb => parseInt(cb.value));
+
+        if (itemIds.length === 0) return;
+
+        const submitBtn = document.getElementById('serviceBulkInactiveSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Processing...';
+
+        fetch('/Web/Services/BulkMarkInactive', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ itemIds: itemIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeServiceBulkInactiveModal();
+                toastr.success(data.message || 'Services marked as inactive successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to mark services as inactive.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Mark as Inactive';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Mark as Inactive';
+        });
+    }
+
+    // Search within Bulk Inactive modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('serviceBulkInactiveSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#serviceBulkInactiveTableBody tr');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-item-name') || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+
+<!-- Bulk Active Modal -->
+<div class="bulk-inactive-overlay" id="serviceBulkActiveOverlay">
+    <div class="bulk-inactive-modal">
+        <div class="bulk-inactive-header">
+            <h4>Bulk Active</h4>
+            <button class="bulk-inactive-close" onclick="closeServiceBulkActiveModal()">&times;</button>
+        </div>
+        <div class="bulk-inactive-search">
+            <div class="bulk-inactive-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="serviceBulkActiveSearch" placeholder="Search services">
+            </div>
+        </div>
+        <div class="bulk-inactive-table-wrapper">
+            <table class="bulk-inactive-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="serviceBulkActiveSelectAll"></th>
+                        <th>Service Name <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                        <th style="text-align:right;">Sale Price <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="serviceBulkActiveTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div class="bulk-inactive-footer">
+            <div class="bulk-active-info-badge">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Showing only inactive services</span>
+            </div>
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-cancel" onclick="closeServiceBulkActiveModal()">Cancel</button>
+                <button class="bulk-inactive-submit" id="serviceBulkActiveSubmitBtn" disabled onclick="submitServiceBulkActive()" style="background:#dc3545;">Mark as Active</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bulk Active functionality for Services
+    function openServiceBulkActiveModal() {
+        const overlay = document.getElementById('serviceBulkActiveOverlay');
+        overlay.classList.add('show');
+        loadInactiveServicesForBulkActive();
+    }
+
+    function closeServiceBulkActiveModal() {
+        const overlay = document.getElementById('serviceBulkActiveOverlay');
+        overlay.classList.remove('show');
+        document.getElementById('serviceBulkActiveSearch').value = '';
+    }
+
+    function loadInactiveServicesForBulkActive() {
+        const tbody = document.getElementById('serviceBulkActiveTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">Loading...</td></tr>';
+
+        fetch('/Web/Services/GetInactiveServices', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.items) {
+                renderServiceBulkActiveItems(data.items);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Failed to load services</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Error loading services</td></tr>';
+        });
+    }
+
+    function renderServiceBulkActiveItems(items) {
+        const tbody = document.getElementById('serviceBulkActiveTableBody');
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">No inactive services found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr data-item-id="${item.id}" data-item-name="${(item.itemName || '').toLowerCase()}">
+                <td><input type="checkbox" class="service-bulk-active-checkbox" value="${item.id}"></td>
+                <td>${item.itemName || ''}</td>
+                <td style="text-align:right;">&#8377; ${(item.salePrice || 0).toFixed(2)}</td>
+            </tr>
+        `).join('');
+
+        bindServiceBulkActiveCheckboxes();
+    }
+
+    function bindServiceBulkActiveCheckboxes() {
+        const selectAll = document.getElementById('serviceBulkActiveSelectAll');
+        const checkboxes = document.querySelectorAll('.service-bulk-active-checkbox');
+        const submitBtn = document.getElementById('serviceBulkActiveSubmitBtn');
+
+        selectAll.checked = false;
+
+        selectAll.addEventListener('change', function () {
+            const visibleRows = document.querySelectorAll('#serviceBulkActiveTableBody tr:not([style*="display: none"]) .service-bulk-active-checkbox');
+            visibleRows.forEach(cb => cb.checked = this.checked);
+            updateServiceBulkActiveSubmitBtn();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                updateServiceBulkActiveSubmitBtn();
+                const visibleCheckboxes = document.querySelectorAll('#serviceBulkActiveTableBody tr:not([style*="display: none"]) .service-bulk-active-checkbox');
+                const allChecked = Array.from(visibleCheckboxes).every(c => c.checked);
+                selectAll.checked = allChecked && visibleCheckboxes.length > 0;
+            });
+        });
+    }
+
+    function updateServiceBulkActiveSubmitBtn() {
+        const checked = document.querySelectorAll('.service-bulk-active-checkbox:checked');
+        const submitBtn = document.getElementById('serviceBulkActiveSubmitBtn');
+        submitBtn.disabled = checked.length === 0;
+    }
+
+    function submitServiceBulkActive() {
+        const checked = document.querySelectorAll('.service-bulk-active-checkbox:checked');
+        const itemIds = Array.from(checked).map(cb => parseInt(cb.value));
+
+        if (itemIds.length === 0) return;
+
+        const submitBtn = document.getElementById('serviceBulkActiveSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Processing...';
+
+        fetch('/Web/Services/BulkMarkActive', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ itemIds: itemIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeServiceBulkActiveModal();
+                toastr.success(data.message || 'Services marked as active successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to mark services as active.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Mark as Active';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Mark as Active';
+        });
+    }
+
+    // Search within Bulk Active modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('serviceBulkActiveSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#serviceBulkActiveTableBody tr');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-item-name') || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+
+<!-- Bulk Assign Code Modal -->
+<div class="bulk-inactive-overlay" id="serviceBulkAssignCodeOverlay">
+    <div class="bulk-inactive-modal">
+        <div class="bulk-inactive-header">
+            <h4>Bulk Assign Code</h4>
+            <button class="bulk-inactive-close" onclick="closeServiceBulkAssignCodeModal()">&times;</button>
+        </div>
+        <div class="bulk-inactive-search">
+            <div class="bulk-inactive-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="serviceBulkAssignCodeSearch" placeholder="Search services">
+            </div>
+        </div>
+        <div class="bulk-inactive-table-wrapper">
+            <table class="bulk-inactive-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="serviceBulkAssignCodeSelectAll"></th>
+                        <th>Service Name <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                        <th style="text-align:right;">Sale Price <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="serviceBulkAssignCodeTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div class="bulk-inactive-footer">
+            <div class="bulk-active-info-badge" style="background:#fff3e0; color:#e65100;">
+                <i class="bi bi-info-circle-fill" style="color:#fb8c00;"></i>
+                <span>Showing services that don't have service code</span>
+            </div>
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-cancel" onclick="closeServiceBulkAssignCodeModal()">Cancel</button>
+                <button class="bulk-inactive-submit" id="serviceBulkAssignCodeSubmitBtn" disabled onclick="submitServiceBulkAssignCode()">Assign Code</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bulk Assign Code functionality for Services
+    function openServiceBulkAssignCodeModal() {
+        const overlay = document.getElementById('serviceBulkAssignCodeOverlay');
+        overlay.classList.add('show');
+        loadServicesWithoutCode();
+    }
+
+    function closeServiceBulkAssignCodeModal() {
+        const overlay = document.getElementById('serviceBulkAssignCodeOverlay');
+        overlay.classList.remove('show');
+        document.getElementById('serviceBulkAssignCodeSearch').value = '';
+    }
+
+    function loadServicesWithoutCode() {
+        const tbody = document.getElementById('serviceBulkAssignCodeTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">Loading...</td></tr>';
+
+        fetch('/Web/Services/GetServicesWithoutCode', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.items) {
+                renderServiceBulkAssignCodeItems(data.items);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Failed to load services</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Error loading services</td></tr>';
+        });
+    }
+
+    function renderServiceBulkAssignCodeItems(items) {
+        const tbody = document.getElementById('serviceBulkAssignCodeTableBody');
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">No services without code found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr data-item-id="${item.id}" data-item-name="${(item.itemName || '').toLowerCase()}">
+                <td><input type="checkbox" class="service-bulk-assign-code-checkbox" value="${item.id}"></td>
+                <td>${item.itemName || ''}</td>
+                <td style="text-align:right;">&#8377; ${(item.salePrice || 0).toFixed(2)}</td>
+            </tr>
+        `).join('');
+
+        bindServiceBulkAssignCodeCheckboxes();
+    }
+
+    function bindServiceBulkAssignCodeCheckboxes() {
+        const selectAll = document.getElementById('serviceBulkAssignCodeSelectAll');
+        const checkboxes = document.querySelectorAll('.service-bulk-assign-code-checkbox');
+        const submitBtn = document.getElementById('serviceBulkAssignCodeSubmitBtn');
+
+        selectAll.checked = false;
+
+        selectAll.addEventListener('change', function () {
+            const visibleRows = document.querySelectorAll('#serviceBulkAssignCodeTableBody tr:not([style*="display: none"]) .service-bulk-assign-code-checkbox');
+            visibleRows.forEach(cb => cb.checked = this.checked);
+            updateServiceBulkAssignCodeSubmitBtn();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                updateServiceBulkAssignCodeSubmitBtn();
+                const visibleCheckboxes = document.querySelectorAll('#serviceBulkAssignCodeTableBody tr:not([style*="display: none"]) .service-bulk-assign-code-checkbox');
+                const allChecked = Array.from(visibleCheckboxes).every(c => c.checked);
+                selectAll.checked = allChecked && visibleCheckboxes.length > 0;
+            });
+        });
+    }
+
+    function updateServiceBulkAssignCodeSubmitBtn() {
+        const checked = document.querySelectorAll('.service-bulk-assign-code-checkbox:checked');
+        const submitBtn = document.getElementById('serviceBulkAssignCodeSubmitBtn');
+        submitBtn.disabled = checked.length === 0;
+    }
+
+    function submitServiceBulkAssignCode() {
+        const checked = document.querySelectorAll('.service-bulk-assign-code-checkbox:checked');
+        const itemIds = Array.from(checked).map(cb => parseInt(cb.value));
+
+        if (itemIds.length === 0) return;
+
+        const submitBtn = document.getElementById('serviceBulkAssignCodeSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Assigning...';
+
+        fetch('/Web/Services/BulkAssignCode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ itemIds: itemIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeServiceBulkAssignCodeModal();
+                toastr.success(data.message || 'Codes assigned successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to assign codes.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Assign Code';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Assign Code';
+        });
+    }
+
+    // Search within Bulk Assign Code modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('serviceBulkAssignCodeSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#serviceBulkAssignCodeTableBody tr');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-item-name') || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+
+<!-- Assign Units Modal - Step 1: Select Services -->
+<div class="bulk-inactive-overlay" id="serviceAssignUnitsOverlay">
+    <div class="bulk-inactive-modal">
+        <div class="bulk-inactive-header">
+            <h4>Select Services</h4>
+            <button class="bulk-inactive-close" onclick="closeServiceAssignUnitsModal()">&times;</button>
+        </div>
+        <div class="bulk-inactive-search">
+            <div class="bulk-inactive-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="serviceAssignUnitsSearch" placeholder="Search services">
+            </div>
+        </div>
+        <div class="bulk-inactive-table-wrapper">
+            <table class="bulk-inactive-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="serviceAssignUnitsSelectAll"></th>
+                        <th>Service Name <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                        <th style="text-align:right;">Sale Price <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="serviceAssignUnitsTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div class="bulk-inactive-footer">
+            <div></div>
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-cancel" onclick="closeServiceAssignUnitsModal()">Cancel</button>
+                <button class="bulk-inactive-submit" id="serviceAssignUnitsNextBtn" disabled onclick="showServiceAssignUnitsStep2()">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Units Modal - Step 2: Select Unit -->
+<div class="bulk-inactive-overlay" id="serviceSelectUnitOverlay">
+    <div class="bulk-inactive-modal" style="max-width:450px;">
+        <div class="bulk-inactive-header">
+            <h4>Select Unit</h4>
+            <button class="bulk-inactive-close" onclick="closeServiceSelectUnitModal()">&times;</button>
+        </div>
+        <div style="padding:24px;">
+            <div style="display:flex; gap:20px; margin-bottom:20px;">
+                <div style="flex:1;">
+                    <label style="display:block; font-size:12px; font-weight:700; color:#17a2b8; margin-bottom:8px; text-transform:uppercase;">BASE UNIT</label>
+                    <select id="serviceBaseUnitSelect" style="width:100%; padding:10px 12px; border:2px solid #e0a800; border-radius:6px; font-size:14px; outline:none; background:#fff;">
+                        <option value="">None</option>
+                    </select>
+                </div>
+                <div style="flex:1;">
+                    <label style="display:block; font-size:12px; font-weight:700; color:#17a2b8; margin-bottom:8px; text-transform:uppercase;">SECONDARY UNIT</label>
+                    <select id="serviceSecondaryUnitSelect" style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px; outline:none; background:#fff;">
+                        <option value="">None</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="bulk-inactive-footer" style="justify-content:flex-end;">
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-submit" id="serviceAssignUnitSaveBtn" onclick="submitServiceBulkAssignUnit()" style="background:#17a2b8;">SAVE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Assign Units functionality for Services
+    let serviceAssignUnitsSelectedItemIds = [];
+
+    function openServiceAssignUnitsModal() {
+        const overlay = document.getElementById('serviceAssignUnitsOverlay');
+        overlay.classList.add('show');
+        loadServicesWithoutUnit();
+    }
+
+    function closeServiceAssignUnitsModal() {
+        const overlay = document.getElementById('serviceAssignUnitsOverlay');
+        overlay.classList.remove('show');
+        document.getElementById('serviceAssignUnitsSearch').value = '';
+    }
+
+    function closeServiceSelectUnitModal() {
+        const overlay = document.getElementById('serviceSelectUnitOverlay');
+        overlay.classList.remove('show');
+    }
+
+    function loadServicesWithoutUnit() {
+        const tbody = document.getElementById('serviceAssignUnitsTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">Loading...</td></tr>';
+
+        fetch('/Web/Services/GetServicesWithoutUnit', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.items) {
+                renderServiceAssignUnitsItems(data.items);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Failed to load services</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Error loading services</td></tr>';
+        });
+    }
+
+    function renderServiceAssignUnitsItems(items) {
+        const tbody = document.getElementById('serviceAssignUnitsTableBody');
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">No services without unit found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr data-item-id="${item.id}" data-item-name="${(item.itemName || '').toLowerCase()}">
+                <td><input type="checkbox" class="service-assign-units-checkbox" value="${item.id}"></td>
+                <td>${item.itemName || ''}</td>
+                <td style="text-align:right;">&#8377; ${(item.salePrice || 0).toFixed(2)}</td>
+            </tr>
+        `).join('');
+
+        bindServiceAssignUnitsCheckboxes();
+    }
+
+    function bindServiceAssignUnitsCheckboxes() {
+        const selectAll = document.getElementById('serviceAssignUnitsSelectAll');
+        const checkboxes = document.querySelectorAll('.service-assign-units-checkbox');
+        const nextBtn = document.getElementById('serviceAssignUnitsNextBtn');
+
+        selectAll.checked = false;
+
+        selectAll.addEventListener('change', function () {
+            const visibleRows = document.querySelectorAll('#serviceAssignUnitsTableBody tr:not([style*="display: none"]) .service-assign-units-checkbox');
+            visibleRows.forEach(cb => cb.checked = this.checked);
+            updateServiceAssignUnitsNextBtn();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                updateServiceAssignUnitsNextBtn();
+                const visibleCheckboxes = document.querySelectorAll('#serviceAssignUnitsTableBody tr:not([style*="display: none"]) .service-assign-units-checkbox');
+                const allChecked = Array.from(visibleCheckboxes).every(c => c.checked);
+                selectAll.checked = allChecked && visibleCheckboxes.length > 0;
+            });
+        });
+    }
+
+    function updateServiceAssignUnitsNextBtn() {
+        const checked = document.querySelectorAll('.service-assign-units-checkbox:checked');
+        const nextBtn = document.getElementById('serviceAssignUnitsNextBtn');
+        nextBtn.disabled = checked.length === 0;
+    }
+
+    function showServiceAssignUnitsStep2() {
+        const checked = document.querySelectorAll('.service-assign-units-checkbox:checked');
+        serviceAssignUnitsSelectedItemIds = Array.from(checked).map(cb => parseInt(cb.value));
+
+        if (serviceAssignUnitsSelectedItemIds.length === 0) return;
+
+        closeServiceAssignUnitsModal();
+        document.getElementById('serviceSelectUnitOverlay').classList.add('show');
+
+        loadServiceUnitsFromMaster();
+    }
+
+    function loadServiceUnitsFromMaster() {
+        fetch('/Web/Services/GetUnitsFromMaster', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.units) {
+                const baseSelect = document.getElementById('serviceBaseUnitSelect');
+                const secondarySelect = document.getElementById('serviceSecondaryUnitSelect');
+
+                baseSelect.innerHTML = '<option value="">None</option>';
+                secondarySelect.innerHTML = '<option value="">None</option>';
+
+                data.units.forEach(unit => {
+                    const label = unit.fullName + (unit.shortName ? ' (' + unit.shortName + ')' : '');
+                    baseSelect.innerHTML += `<option value="${unit.fullName}">${label}</option>`;
+                    secondarySelect.innerHTML += `<option value="${unit.fullName}">${label}</option>`;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading units:', error);
+        });
+    }
+
+    function submitServiceBulkAssignUnit() {
+        const baseUnit = document.getElementById('serviceBaseUnitSelect').value;
+        const secondaryUnit = document.getElementById('serviceSecondaryUnitSelect').value;
+
+        if (!baseUnit) {
+            toastr.error('Please select a base unit.');
+            return;
+        }
+
+        const saveBtn = document.getElementById('serviceAssignUnitSaveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        fetch('/Web/Services/BulkAssignUnit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                itemIds: serviceAssignUnitsSelectedItemIds,
+                baseUnit: baseUnit,
+                secondaryUnit: secondaryUnit
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeServiceSelectUnitModal();
+                toastr.success(data.message || 'Units assigned successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to assign units.');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'SAVE';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'SAVE';
+        });
+    }
+
+    // Search within Assign Units modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('serviceAssignUnitsSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#serviceAssignUnitsTableBody tr');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-item-name') || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>

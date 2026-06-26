@@ -121,5 +121,12 @@ namespace MUNEEMJI.Models
 
     }
 
+    public class MoveItemsToCategoryRequest
+    {
+        public string CategoryId { get; set; }
+        public List<int> ItemIds { get; set; }
+        public bool RemoveFromExisting { get; set; }
+    }
+
 }
 

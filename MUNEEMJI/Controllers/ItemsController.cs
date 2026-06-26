@@ -345,7 +345,7 @@ namespace MUNEEMJI.Controllers
                                         brand AS ""Brand"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
-                                    FROM billitem where  item_type = @p_itemtype and companyid = @p_companyid
+                                    FROM billitem where  item_type = @p_itemtype and companyid = @p_companyid and (is_active = true OR is_active IS NULL)
                                     ORDER BY id;
                                     ";
 
@@ -435,6 +435,7 @@ namespace MUNEEMJI.Controllers
         {
             ItemViewModel ViewModel = new ItemViewModel();
             ViewModel.Categories = new List<Category>();
+            ViewModel.ItemView = new List<BillItem>();
             var companyId = _CompayTenancy.GetCurrentCompanyId();
 
             try
@@ -444,14 +445,16 @@ namespace MUNEEMJI.Controllers
                 using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
                 {
                     conn.Open();
-                    string query = @"SELECT id, name 
-                     FROM categorieses 
-                     WHERE companyid = @p_companyid";
+
+                    // Load categories with item counts
+                    string query = @"SELECT c.id, c.name, 
+                        COALESCE((SELECT COUNT(*) FROM billitem b WHERE b.companyid = @p_companyid AND b.category = CAST(c.id AS TEXT)), 0) as item_count
+                     FROM categorieses c
+                     WHERE c.companyid = @p_companyid";
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
-                        // Add parameter value here
-                        cmd.Parameters.AddWithValue("p_companyid", companyId); // ?? replace companyId with your variable
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -460,15 +463,38 @@ namespace MUNEEMJI.Controllers
                                 ViewModel.Categories.Add(new Category
                                 {
                                     Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1)
+                                    Name = reader.GetString(1),
+                                    itemCount = reader.GetInt64(2)
+                                });
+                            }
+                        }
+                    }
+
+                    // Load uncategorized items
+                    string uncatQuery = @"SELECT id, item_name, opening_quantity, online_store_price 
+                        FROM billitem 
+                        WHERE companyid = @p_companyid 
+                          AND (category IS NULL OR TRIM(category) = '')
+                        ORDER BY item_name";
+
+                    using (var cmd2 = new NpgsqlCommand(uncatQuery, conn))
+                    {
+                        cmd2.Parameters.AddWithValue("p_companyid", companyId);
+                        using (var reader2 = cmd2.ExecuteReader())
+                        {
+                            while (reader2.Read())
+                            {
+                                ViewModel.ItemView.Add(new BillItem
+                                {
+                                    Id = reader2.GetInt32(0),
+                                    ItemName = reader2.IsDBNull(1) ? "" : reader2.GetString(1),
+                                    OpeningQuantity = reader2.IsDBNull(2) ? 0 : reader2.GetInt32(2),
+                                    OnlineStorePrice = reader2.IsDBNull(3) ? 0m : reader2.GetDecimal(3)
                                 });
                             }
                         }
                     }
                 }
-
-
-
             }
             catch (Exception ex)
             {
@@ -961,6 +987,672 @@ namespace MUNEEMJI.Controllers
                 return Json(new { success = false, message = "Error generating code: " + ex.Message });
             }
         }
+
+        [HttpGet]
+        public IActionResult GetItemsByCategory(string categoryId)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query;
+                    if (categoryId == "0" || categoryId == "uncategorized")
+                    {
+                        query = @"SELECT id, item_name, opening_quantity, online_store_price 
+                                  FROM billitem 
+                                  WHERE companyid = @p_companyid 
+                                    AND (category IS NULL OR TRIM(category) = '')
+                                  ORDER BY item_name";
+                    }
+                    else
+                    {
+                        query = @"SELECT id, item_name, opening_quantity, online_store_price 
+                                  FROM billitem 
+                                  WHERE companyid = @p_companyid 
+                                    AND category = @p_category
+                                  ORDER BY item_name";
+                    }
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        if (categoryId != "0" && categoryId != "uncategorized")
+                        {
+                            cmd.Parameters.AddWithValue("p_category", categoryId);
+                        }
+
+                        var items = new List<object>();
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    openingQuantity = reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
+                                    onlineStorePrice = reader.IsDBNull(3) ? 0m : reader.GetDecimal(3)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetItemsForCategoryModal(string categoryId)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    // Get items that are NOT already in the selected category
+                    string query;
+                    if (categoryId == "0" || categoryId == "uncategorized")
+                    {
+                        // For uncategorized, show all items that ARE in some category
+                        query = @"SELECT id, item_name, opening_quantity 
+                                  FROM billitem 
+                                  WHERE companyid = @p_companyid 
+                                    AND category IS NOT NULL AND TRIM(category) != ''
+                                  ORDER BY item_name";
+                    }
+                    else
+                    {
+                        // For a specific category, show items NOT in that category
+                        query = @"SELECT id, item_name, opening_quantity 
+                                  FROM billitem 
+                                  WHERE companyid = @p_companyid 
+                                    AND (category IS NULL OR TRIM(category) = '' OR category != @p_category)
+                                  ORDER BY item_name";
+                    }
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        if (categoryId != "0" && categoryId != "uncategorized")
+                        {
+                            cmd.Parameters.AddWithValue("p_category", categoryId);
+                        }
+
+                        var items = new List<object>();
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    openingQuantity = reader.IsDBNull(2) ? 0 : reader.GetInt32(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult MoveItemsToCategory([FromBody] MoveItemsToCategoryRequest request)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                    return Json(new { success = false, message = "No items selected." });
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    // If RemoveFromExisting is true, set category to the new one
+                    // Otherwise just assign to the new category
+                    string categoryValue = request.CategoryId;
+
+                    foreach (var itemId in request.ItemIds)
+                    {
+                        string updateQuery = @"UPDATE billitem SET category = @p_category 
+                                              WHERE id = @p_id AND companyid = @p_companyid";
+                        using (var cmd = new NpgsqlCommand(updateQuery, conn))
+                        {
+                            cmd.Parameters.AddWithValue("p_category", categoryValue);
+                            cmd.Parameters.AddWithValue("p_id", itemId);
+                            cmd.Parameters.AddWithValue("p_companyid", companyId);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = "Items moved to category successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetActiveItems()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, item_name, opening_quantity 
+                                  FROM billitem 
+                                  WHERE item_type = 'product' 
+                                    AND companyid = @p_companyid 
+                                    AND (is_active = true OR is_active IS NULL)
+                                  ORDER BY item_name";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var items = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.GetString(1),
+                                    quantity = reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
+                                    quantitySoldIn90Days = 0
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult BulkMarkInactive([FromBody] BulkInactiveRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                {
+                    return Json(new { success = false, message = "No items selected." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"UPDATE billitem 
+                                  SET is_active = false, updated_at = @p_updated_at 
+                                  WHERE id = ANY(@p_ids) 
+                                    AND companyid = @p_companyid";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_ids", request.ItemIds.ToArray());
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+
+                        var rowsAffected = cmd.ExecuteNonQuery();
+                        return Json(new { success = true, message = $"{rowsAffected} item(s) marked as inactive." });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetInactiveItems()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, item_name, opening_quantity 
+                                  FROM billitem 
+                                  WHERE item_type = 'product' 
+                                    AND companyid = @p_companyid 
+                                    AND is_active = false
+                                  ORDER BY item_name";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var items = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.GetString(1),
+                                    quantity = reader.IsDBNull(2) ? 0 : reader.GetInt32(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetItemsWithoutCode()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, item_name, opening_quantity 
+                                  FROM billitem 
+                                  WHERE item_type = 'product' 
+                                    AND companyid = @p_companyid 
+                                    AND (is_active = true OR is_active IS NULL)
+                                    AND (item_code IS NULL OR TRIM(item_code) = '')
+                                  ORDER BY item_name";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var items = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.GetString(1),
+                                    quantity = reader.IsDBNull(2) ? 0 : reader.GetInt32(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> BulkAssignCode([FromBody] BulkAssignCodeRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                {
+                    return Json(new { success = false, message = "No items selected." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                var rand = new Random();
+                const long min = 10000000000L;
+                const long max = 99999999999L;
+                int assignedCount = 0;
+
+                foreach (var itemId in request.ItemIds)
+                {
+                    string generatedCode = null;
+                    for (int attempt = 0; attempt < 10; attempt++)
+                    {
+                        long code = (long)(rand.NextDouble() * (max - min)) + min;
+                        string codeStr = code.ToString();
+
+                        var checkQuery = "SELECT COUNT(*) FROM billitem WHERE item_code = @code";
+                        using var checkCmd = new NpgsqlCommand(checkQuery, conn);
+                        checkCmd.Parameters.AddWithValue("code", codeStr);
+                        var count = (long)(await checkCmd.ExecuteScalarAsync() ?? 0);
+                        if (count == 0)
+                        {
+                            generatedCode = codeStr;
+                            break;
+                        }
+                    }
+
+                    if (generatedCode != null)
+                    {
+                        var updateQuery = @"UPDATE billitem 
+                                            SET item_code = @p_code, updated_at = @p_updated_at 
+                                            WHERE id = @p_id AND companyid = @p_companyid";
+                        using var updateCmd = new NpgsqlCommand(updateQuery, conn);
+                        updateCmd.Parameters.AddWithValue("p_code", generatedCode);
+                        updateCmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+                        updateCmd.Parameters.AddWithValue("p_id", itemId);
+                        updateCmd.Parameters.AddWithValue("p_companyid", companyId);
+                        await updateCmd.ExecuteNonQueryAsync();
+                        assignedCount++;
+                    }
+                }
+
+                return Json(new { success = true, message = $"Code assigned to {assignedCount} item(s) successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetItemsWithoutUnit()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, item_name, opening_quantity 
+                                  FROM billitem 
+                                  WHERE item_type = 'product' 
+                                    AND companyid = @p_companyid 
+                                    AND (is_active = true OR is_active IS NULL)
+                                    AND (unit IS NULL OR TRIM(unit) = '')
+                                  ORDER BY item_name";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var items = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.GetString(1),
+                                    quantity = reader.IsDBNull(2) ? 0 : reader.GetInt32(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetUnitsFromMaster()
+        {
+            try
+            {
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, fullname, shortname FROM units ORDER BY fullname";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        var units = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                units.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    fullName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    shortName = reader.IsDBNull(2) ? "" : reader.GetString(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, units });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult BulkAssignUnit([FromBody] BulkAssignUnitRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                {
+                    return Json(new { success = false, message = "No items selected." });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.BaseUnit))
+                {
+                    return Json(new { success = false, message = "Please select a base unit." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"UPDATE billitem 
+                                  SET unit = @p_unit, updated_at = @p_updated_at 
+                                  WHERE id = ANY(@p_ids) 
+                                    AND companyid = @p_companyid";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_unit", request.BaseUnit);
+                        cmd.Parameters.AddWithValue("p_ids", request.ItemIds.ToArray());
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+
+                        var rowsAffected = cmd.ExecuteNonQuery();
+                        return Json(new { success = true, message = $"Unit assigned to {rowsAffected} item(s) successfully." });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult AdjustStock([FromBody] StockAdjustmentRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemId <= 0)
+                {
+                    return Json(new { success = false, message = "Invalid item." });
+                }
+
+                if (request.TotalQty <= 0)
+                {
+                    return Json(new { success = false, message = "Quantity must be greater than 0." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    // Get current quantity
+                    var getQtyQuery = "SELECT opening_quantity FROM billitem WHERE id = @p_id AND companyid = @p_companyid";
+                    int currentQty = 0;
+                    using (var getCmd = new NpgsqlCommand(getQtyQuery, conn))
+                    {
+                        getCmd.Parameters.AddWithValue("p_id", request.ItemId);
+                        getCmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var result = getCmd.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                            currentQty = Convert.ToInt32(result);
+                    }
+
+                    int newQty;
+                    if (request.AdjustmentType == "add")
+                        newQty = currentQty + request.TotalQty;
+                    else
+                        newQty = currentQty - request.TotalQty;
+
+                    if (newQty < 0)
+                        newQty = 0;
+
+                    var updateQuery = @"UPDATE billitem 
+                                        SET opening_quantity = @p_qty, at_price = @p_price, updated_at = @p_updated_at 
+                                        WHERE id = @p_id AND companyid = @p_companyid";
+
+                    using (var cmd = new NpgsqlCommand(updateQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_qty", newQty);
+                        cmd.Parameters.AddWithValue("p_price", request.AtPrice);
+                        cmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+                        cmd.Parameters.AddWithValue("p_id", request.ItemId);
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    var action = request.AdjustmentType == "add" ? "added to" : "reduced from";
+                    return Json(new { success = true, message = $"Stock {action} successfully. New quantity: {newQty}" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult BulkMarkActive([FromBody] BulkActiveRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                {
+                    return Json(new { success = false, message = "No items selected." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"UPDATE billitem 
+                                  SET is_active = true, updated_at = @p_updated_at 
+                                  WHERE id = ANY(@p_ids) 
+                                    AND companyid = @p_companyid";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_ids", request.ItemIds.ToArray());
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+
+                        var rowsAffected = cmd.ExecuteNonQuery();
+                        return Json(new { success = true, message = $"{rowsAffected} item(s) marked as active." });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+    }
+
+    public class BulkInactiveRequest
+    {
+        public List<int> ItemIds { get; set; }
+    }
+
+    public class BulkActiveRequest
+    {
+        public List<int> ItemIds { get; set; }
+    }
+
+    public class BulkAssignCodeRequest
+    {
+        public List<int> ItemIds { get; set; }
+    }
+
+    public class BulkAssignUnitRequest
+    {
+        public List<int> ItemIds { get; set; }
+        public string BaseUnit { get; set; }
+        public string SecondaryUnit { get; set; }
+    }
+
+    public class StockAdjustmentRequest
+    {
+        public int ItemId { get; set; }
+        public string AdjustmentType { get; set; } // "add" or "reduce"
+        public int TotalQty { get; set; }
+        public decimal AtPrice { get; set; }
+        public string AdjustmentDate { get; set; }
+        public string Details { get; set; }
     }
 }
 

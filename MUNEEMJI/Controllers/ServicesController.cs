@@ -565,5 +565,417 @@ namespace MUNEEMJI.Controllers
             return itemcode;
         }
 
+        [HttpGet]
+        public IActionResult GetActiveServices()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, item_name, sale_price 
+                                  FROM billitem 
+                                  WHERE item_type = 'service' 
+                                    AND companyid = @p_companyid 
+                                    AND (is_active = true OR is_active IS NULL)
+                                  ORDER BY item_name";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var items = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    salePrice = reader.IsDBNull(2) ? 0m : reader.GetDecimal(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetInactiveServices()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, item_name, sale_price 
+                                  FROM billitem 
+                                  WHERE item_type = 'service' 
+                                    AND companyid = @p_companyid 
+                                    AND is_active = false
+                                  ORDER BY item_name";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var items = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    salePrice = reader.IsDBNull(2) ? 0m : reader.GetDecimal(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult BulkMarkInactive([FromBody] BulkInactiveRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                {
+                    return Json(new { success = false, message = "No services selected." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"UPDATE billitem 
+                                  SET is_active = false, updated_at = @p_updated_at 
+                                  WHERE id = ANY(@p_ids) 
+                                    AND companyid = @p_companyid";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_ids", request.ItemIds.ToArray());
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+
+                        var rowsAffected = cmd.ExecuteNonQuery();
+                        return Json(new { success = true, message = $"{rowsAffected} service(s) marked as inactive." });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult BulkMarkActive([FromBody] BulkActiveRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                {
+                    return Json(new { success = false, message = "No services selected." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"UPDATE billitem 
+                                  SET is_active = true, updated_at = @p_updated_at 
+                                  WHERE id = ANY(@p_ids) 
+                                    AND companyid = @p_companyid";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_ids", request.ItemIds.ToArray());
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+
+                        var rowsAffected = cmd.ExecuteNonQuery();
+                        return Json(new { success = true, message = $"{rowsAffected} service(s) marked as active." });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetServicesWithoutCode()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, item_name, sale_price 
+                                  FROM billitem 
+                                  WHERE item_type = 'service' 
+                                    AND companyid = @p_companyid 
+                                    AND (is_active = true OR is_active IS NULL)
+                                    AND (item_code IS NULL OR TRIM(item_code) = '')
+                                  ORDER BY item_name";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var items = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    salePrice = reader.IsDBNull(2) ? 0m : reader.GetDecimal(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public async Task<IActionResult> BulkAssignCode([FromBody] BulkAssignCodeRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                {
+                    return Json(new { success = false, message = "No services selected." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using var conn = new NpgsqlConnection(_connectionString);
+                await conn.OpenAsync();
+
+                var rand = new Random();
+                const long min = 10000000000L;
+                const long max = 99999999999L;
+                int assignedCount = 0;
+
+                foreach (var itemId in request.ItemIds)
+                {
+                    string generatedCode = null;
+                    for (int attempt = 0; attempt < 10; attempt++)
+                    {
+                        long code = (long)(rand.NextDouble() * (max - min)) + min;
+                        string codeStr = code.ToString();
+
+                        var checkQuery = "SELECT COUNT(*) FROM billitem WHERE item_code = @code";
+                        using var checkCmd = new NpgsqlCommand(checkQuery, conn);
+                        checkCmd.Parameters.AddWithValue("code", codeStr);
+                        var count = (long)(await checkCmd.ExecuteScalarAsync() ?? 0);
+                        if (count == 0)
+                        {
+                            generatedCode = codeStr;
+                            break;
+                        }
+                    }
+
+                    if (generatedCode != null)
+                    {
+                        var updateQuery = @"UPDATE billitem 
+                                            SET item_code = @p_code, updated_at = @p_updated_at 
+                                            WHERE id = @p_id AND companyid = @p_companyid";
+                        using var updateCmd = new NpgsqlCommand(updateQuery, conn);
+                        updateCmd.Parameters.AddWithValue("p_code", generatedCode);
+                        updateCmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+                        updateCmd.Parameters.AddWithValue("p_id", itemId);
+                        updateCmd.Parameters.AddWithValue("p_companyid", companyId);
+                        await updateCmd.ExecuteNonQueryAsync();
+                        assignedCount++;
+                    }
+                }
+
+                return Json(new { success = true, message = $"Code assigned to {assignedCount} service(s) successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetServicesWithoutUnit()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, item_name, sale_price 
+                                  FROM billitem 
+                                  WHERE item_type = 'service' 
+                                    AND companyid = @p_companyid 
+                                    AND (is_active = true OR is_active IS NULL)
+                                    AND (unit IS NULL OR TRIM(unit) = '')
+                                  ORDER BY item_name";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        var items = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                items.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    itemName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    salePrice = reader.IsDBNull(2) ? 0m : reader.GetDecimal(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, items });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult GetUnitsFromMaster()
+        {
+            try
+            {
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"SELECT id, fullname, shortname FROM units ORDER BY fullname";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        var units = new List<object>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                units.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    fullName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                                    shortName = reader.IsDBNull(2) ? "" : reader.GetString(2)
+                                });
+                            }
+                        }
+
+                        return Json(new { success = true, units });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult BulkAssignUnit([FromBody] BulkAssignUnitRequest request)
+        {
+            try
+            {
+                if (request == null || request.ItemIds == null || !request.ItemIds.Any())
+                {
+                    return Json(new { success = false, message = "No services selected." });
+                }
+
+                if (string.IsNullOrWhiteSpace(request.BaseUnit))
+                {
+                    return Json(new { success = false, message = "Please select a base unit." });
+                }
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    var query = @"UPDATE billitem 
+                                  SET unit = @p_unit, updated_at = @p_updated_at 
+                                  WHERE id = ANY(@p_ids) 
+                                    AND companyid = @p_companyid";
+
+                    using (var cmd = new NpgsqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_unit", request.BaseUnit);
+                        cmd.Parameters.AddWithValue("p_ids", request.ItemIds.ToArray());
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.Parameters.AddWithValue("p_updated_at", DateTime.UtcNow);
+
+                        var rowsAffected = cmd.ExecuteNonQuery();
+                        return Json(new { success = true, message = $"Unit assigned to {rowsAffected} service(s) successfully." });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
     }
 }

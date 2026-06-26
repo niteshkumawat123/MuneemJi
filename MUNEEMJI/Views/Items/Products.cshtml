@@ -1,4 +1,4 @@
-﻿@model ItemViewModel
+@model ItemViewModel
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -9,6 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 </header>
 
 <style>
@@ -22,150 +25,257 @@
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         background: white;
         min-height: 100vh;
-        padding: 0;
-        margin: 0;
     }
 
     .products-main-wrapper {
-        margin: -1.5rem -1.5rem -1.5rem 0;
+        margin: -1.5rem 0 -1.5rem 0;
         background: white;
-        border-radius: 0;
-        box-shadow: none;
-        overflow: visible;
         display: flex;
         flex-direction: column;
-        padding: 0;
         height: calc(100vh - 65px);
+        overflow: hidden;
     }
 
+    /* Navigation Tabs */
     .products-header-navigation {
-        background: #f8f9fa;
-        border-bottom: 1px solid #e9ecef;
+        background: #fff;
+        border-bottom: 2px solid #e9ecef;
         display: flex;
-        padding: 0;
         flex-shrink: 0;
-        overflow-x: auto;
         z-index: 10;
+        width: 100%;
     }
 
     .products-nav-tab {
-        padding: 15px 30px;
+        padding: 14px 0;
         cursor: pointer;
         border-bottom: 3px solid transparent;
         color: #6c757d;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 13px;
         transition: all 0.3s ease;
         text-decoration: none;
         display: block;
         white-space: nowrap;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        flex: 1;
+        text-align: center;
     }
 
-        .products-nav-tab.active {
-            color: #007bff;
-            border-bottom-color: #007bff;
-            background: white;
-        }
+    .products-nav-tab.active {
+        color: #007bff;
+        border-bottom-color: #007bff;
+        background: white;
+    }
 
-        .products-nav-tab:hover {
-            background: #e9ecef;
-            color: #6c757d;
-            text-decoration: none;
-        }
+    .products-nav-tab:hover {
+        color: #495057;
+        text-decoration: none;
+    }
 
+    /* Content Layout */
     .products-content-wrapper {
         display: flex;
         flex: 1;
         overflow: hidden;
-        padding-left: 0px;
         min-height: 0;
+        min-width: 0;
     }
 
+    /* Left Sidebar */
     .products-sidebar-panel {
-        width: 322px;
-        background: #f8f9fa;
+        width: 260px;
+        min-width: 220px;
+        background: #fff;
         border-right: 1px solid #e9ecef;
-        padding: 20px;
         flex-shrink: 0;
-        overflow: hidden;
         display: flex;
         flex-direction: column;
         min-height: 0;
+        z-index: 20;
     }
 
-    .products-search-container {
+    /* Toolbar row: search icon + add item + three dots */
+    .products-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #e9ecef;
         position: relative;
-        margin-bottom: 20px;
+        z-index: 100;
     }
 
-        .products-search-container input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s ease;
-        }
+    .products-toolbar .dropdown-menu {
+        position: fixed !important;
+        z-index: 9999 !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 4px 0;
+        top: auto !important;
+        left: auto !important;
+        display: none;
+        min-width: 180px;
+    }
 
-            .products-search-container input:focus {
-                outline: none;
-                border-color: #007bff;
-                box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
-            }
+    .products-toolbar .dropdown-menu.show {
+        display: block !important;
+    }
 
-        .products-search-container i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
+    .products-toolbar .dropdown-item {
+        padding: 10px 16px;
+        font-size: 13px;
+        display: block;
+        color: #333;
+        text-decoration: none;
+        border-bottom: 1px solid #f5f5f5;
+    }
 
-    .products-add-button {
+    .products-toolbar .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .products-toolbar .dropdown-item:hover {
+        background: #f8f9fa;
+        color: #333;
+    }
+
+    .products-search-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        border: 1px solid #dee2e6;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: border-color 0.2s;
+    }
+
+    .products-search-btn:hover {
+        border-color: #007bff;
+    }
+
+    .products-search-btn i {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+    .products-add-btn-group {
+        display: flex;
+        flex: 1;
+        min-width: 0;
+        position: relative;
+    }
+
+    .products-add-btn-group .btn-add-main {
         background: linear-gradient(45deg, #ff9500, #ffb347);
         color: white;
         border: none;
-        padding: 12px 20px;
-        border-radius: 8px;
-        font-weight: 500;
+        padding: 7px 14px;
+        border-radius: 6px 0 0 6px;
+        font-weight: 600;
+        font-size: 13px;
         cursor: pointer;
-        width: 100%;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255,149,0,0.3);
+        white-space: nowrap;
+        transition: opacity 0.2s;
     }
 
-        .products-add-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255,149,0,0.4);
-        }
+    .products-add-btn-group .btn-add-main:hover {
+        opacity: 0.9;
+    }
 
-    .products-godown-dropdown {
+    .products-add-btn-group .btn-add-dropdown {
+        background: linear-gradient(45deg, #e88600, #f0a030);
+        color: white;
+        border: none;
+        padding: 7px 8px;
+        border-radius: 0 6px 6px 0;
+        cursor: pointer;
+        border-left: 1px solid rgba(255,255,255,0.3);
+        display: flex;
+        align-items: center;
+    }
+
+    .products-add-btn-group .btn-add-dropdown i {
+        font-size: 12px;
+    }
+
+    .products-toolbar-dots-wrapper {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .products-toolbar-dots {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 4px;
+        flex-shrink: 0;
+        border: none;
+        background: none;
+    }
+
+    .products-toolbar-dots:hover {
+        background: #f0f0f0;
+    }
+
+    .products-toolbar-dots i {
+        font-size: 16px;
+        color: #6c757d;
+    }
+
+    /* Inline search bar (toggled) */
+    .products-inline-search {
+        display: none;
+        padding: 8px 12px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .products-inline-search.active {
+        display: block;
+    }
+
+    .products-inline-search input {
         width: 100%;
-        padding: 10px;
+        padding: 6px 10px;
         border: 1px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        background: white;
+        border-radius: 6px;
+        font-size: 13px;
+        outline: none;
     }
 
+    .products-inline-search input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.1);
+    }
+
+    /* Item List */
     .products-items-container {
-        background: white;
-        border-radius: 8px;
+        flex: 1;
         overflow-y: auto;
         overflow-x: hidden;
-        flex: 1;
         min-height: 0;
     }
 
     .products-list-header {
         display: flex;
-        background: #f8f9fa;
-        padding: 10px;
+        padding: 8px 12px;
         font-weight: 600;
         color: #495057;
+        font-size: 11px;
+        text-transform: uppercase;
         border-bottom: 1px solid #e9ecef;
         position: sticky;
         top: 0;
+        background: #fff;
         z-index: 2;
     }
 
@@ -178,195 +288,289 @@
     }
 
     .products-item-qty-col {
-        width: 80px;
-        text-align: center;
+        width: 65px;
+        text-align: right;
         flex-shrink: 0;
+        font-weight: 600;
+    }
+
+    .products-item-dots-col {
+        width: 24px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .products-item-entry {
         display: flex;
-        padding: 12px;
+        padding: 10px 12px;
         align-items: center;
-        background: #e3f2fd;
-        border-left: 4px solid #2196f3;
-        margin: 1px 0;
-        transition: all 0.3s ease;
-        position: relative;
+        border-bottom: 1px solid #f5f5f5;
+        transition: background 0.2s;
+        cursor: pointer;
+        gap: 4px;
     }
 
-        .products-item-entry:hover {
-            background: #bbdefb;
-            transform: translateX(5px);
-        }
+    .products-item-entry:hover {
+        background: #f0f7ff;
+    }
 
-        .products-item-entry a {
-            flex: 1;
-            display: flex;
-            text-decoration: none;
-            color: inherit;
-            overflow: hidden;
-            min-width: 0;
-        }
+    .products-item-entry.selected {
+        background: #e3f2fd;
+        border-left: 3px solid #2196f3;
+        padding-left: 9px;
+    }
 
-            .products-item-entry a.active {
-                font-weight: 600;
-                color: #007bff;
-            }
-
-    .products-detail-section {
-        padding: 0;
-        overflow-y: auto;
+    .products-item-entry .item-name {
         flex: 1;
+        font-size: 13px;
+        color: #333;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .products-item-entry .item-qty {
+        width: 65px;
+        text-align: right;
+        font-size: 13px;
+        font-weight: 600;
+        color: #ff9500;
+        flex-shrink: 0;
+    }
+
+    .products-item-entry .item-dots {
+        width: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        border: none;
+        background: none;
+        cursor: pointer;
+        padding: 0;
+        color: #6c757d;
+    }
+
+    .products-item-entry .item-dots:hover {
+        color: #333;
+    }
+
+    /* Right Detail Section */
+    .products-detail-section {
+        flex: 1;
+        overflow: auto;
         display: flex;
         flex-direction: column;
         min-height: 0;
+        min-width: 0;
     }
 
     .products-detail-header {
-        background: #f8f9fa;
-        padding: 15px 20px;
-        border-bottom: 1px solid #e9ecef;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e9ecef;
         flex-shrink: 0;
+        flex-wrap: nowrap;
+        gap: 10px;
+        min-width: 0;
     }
 
     .products-detail-title {
-        font-size: 18px;
-        font-weight: 600;
+        font-size: 16px;
+        font-weight: 700;
         color: #2c3e50;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+        min-width: 0;
+        overflow: hidden;
     }
 
-    .products-info-grid {
+    .products-detail-title span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .products-detail-title .edit-link {
+        color: #6c757d;
+        font-size: 14px;
+    }
+
+    .products-detail-title .edit-link:hover {
+        color: #007bff;
+    }
+
+    .products-adjust-btn {
+        background: #007bff;
+        color: #fff;
+        border: none;
+        padding: 7px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
         display: flex;
-        background: white;
-        padding: 20px;
-        border-bottom: 1px solid #e9ecef;
-        gap: 40px;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
         flex-shrink: 0;
     }
 
-    .products-info-item {
-        flex: 1;
+    .products-adjust-btn:hover {
+        background: #0069d9;
     }
 
-    .products-info-label {
-        font-size: 12px;
-        color: #6c757d;
-        margin-bottom: 5px;
+    /* Info Grid */
+    .products-info-grid {
+        display: flex;
+        padding: 12px 20px;
+        border-bottom: 1px solid #e9ecef;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        gap: 8px 30px;
+    }
+
+    .products-info-item {
+        font-size: 13px;
+        color: #555;
+    }
+
+    .products-info-item .info-label {
         text-transform: uppercase;
+        font-size: 11px;
+        color: #888;
         font-weight: 500;
     }
 
-    .products-info-value {
-        font-size: 14px;
+    .products-info-item .info-value {
         font-weight: 600;
         color: #2c3e50;
     }
 
-    .products-stock-warning {
-        color: #dc3545;
+    .products-info-item .info-value.stock-qty {
+        color: #ff9500;
     }
 
-    .products-stock-success {
+    .products-info-item .info-value.stock-val {
         color: #28a745;
     }
 
+    /* Transactions */
     .products-transactions-area {
         flex: 1;
         display: flex;
         flex-direction: column;
-        padding: 20px;
-        overflow-y: auto;
+        padding: 12px 20px;
         min-height: 0;
+        overflow: hidden;
     }
 
     .products-section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
         flex-wrap: wrap;
-        gap: 15px;
+        gap: 10px;
     }
 
     .products-section-heading {
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 14px;
+        font-weight: 700;
         color: #2c3e50;
         text-transform: uppercase;
     }
 
     .products-transaction-search {
-        position: relative;
-        width: 300px;
-        max-width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
     }
 
-        .products-transaction-search input {
-            width: 100%;
-            padding: 8px 15px 8px 35px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-        }
+    .products-transaction-search input {
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 13px;
+        width: 160px;
+        max-width: 100%;
+        outline: none;
+    }
 
-        .products-transaction-search i {
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6c757d;
-        }
+    .products-transaction-search input:focus {
+        border-color: #007bff;
+    }
+
+    .products-transaction-search .search-icon-sm {
+        color: #999;
+        font-size: 14px;
+    }
 
     .products-table-wrapper {
-        background: white;
-        border-radius: 8px;
-        overflow-x: auto;
-        border: 1px solid #e9ecef;
         flex: 1;
+        overflow: auto;
+        border: 1px solid #e9ecef;
+        border-radius: 4px;
     }
 
-        .products-table-wrapper table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 800px;
-        }
+    .products-table-wrapper table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
 
-        .products-table-wrapper th {
-            background: #f8f9fa;
-            color: #495057;
-            padding: 12px 15px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid #e9ecef;
-        }
+    .products-table-wrapper th {
+        background: #f8f9fa;
+        color: #6c757d;
+        padding: 10px 12px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        border-bottom: 1px solid #e9ecef;
+        white-space: nowrap;
+    }
 
-        .products-table-wrapper td {
-            padding: 15px;
-            border-bottom: 1px solid #f1f3f4;
-            color: #2c3e50;
-            font-size: 14px;
-        }
+    .products-table-wrapper td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f1f3f4;
+        color: #333;
+        white-space: nowrap;
+    }
 
-        .products-table-wrapper tr:hover {
-            background: #f8f9ff;
-        }
+    .products-table-wrapper tr:hover {
+        background: #f8f9ff;
+    }
+
+    .products-transaction-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+    }
+
+    .products-dot-purchase {
+        background: #28a745;
+    }
+
+    .products-dot-sale {
+        background: #28a745;
+    }
 
     .products-status-label {
-        padding: 4px 8px;
-        border-radius: 12px;
+        padding: 3px 8px;
+        border-radius: 3px;
         font-size: 11px;
         font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
     }
 
     .products-status-partial {
@@ -379,53 +583,40 @@
         color: #155724;
     }
 
-    .products-status-pending {
+    .products-status-pending,
+    .products-status-unpaid {
         background: #f8d7da;
         color: #721c24;
     }
 
-    .products-transaction-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 8px;
-    }
-
-    .products-dot-purchase {
-        background: #28a745;
-    }
-
-    .products-dot-sale {
-        background: #dc3545;
-    }
-
     .products-sort-arrow {
-        margin-left: 5px;
-        opacity: 0.7;
+        margin-left: 3px;
+        opacity: 0.5;
         font-size: 10px;
     }
 
     .products-no-data {
         text-align: center;
-        padding: 60px 20px;
+        padding: 40px 20px;
         color: #6c757d;
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .products-loading-state {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 400px;
+        flex: 1;
         color: #6c757d;
+        text-align: center;
     }
 
+    /* Popover styles */
     .popover {
         border: 1px solid #ddd;
         border-radius: 6px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        min-width: 120px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+        min-width: 140px;
     }
 
     .popover-body {
@@ -434,286 +625,221 @@
 
     .popover-action {
         display: block;
-        padding: 12px 16px;
+        padding: 10px 16px;
         text-decoration: none;
         color: #333;
         cursor: pointer;
         border-bottom: 1px solid #f0f0f0;
-        transition: background-color 0.2s ease;
+        font-size: 13px;
+        transition: background-color 0.15s;
     }
 
-        .popover-action:last-child {
-            border-bottom: none;
-        }
-
-        .popover-action:hover {
-            background-color: #f8f9fa;
-            color: #333;
-            text-decoration: none;
-        }
-
-    /* Responsive Design */
-    @@media (max-width: 1200px) {
-        .products-sidebar-panel
-
-    {
-        width: 280px;
+    .popover-action:last-child {
+        border-bottom: none;
     }
 
-    .products-info-grid {
-        gap: 20px;
+    .popover-action:hover {
+        background-color: #f8f9fa;
+        color: #333;
+        text-decoration: none;
     }
 
-    }
-
+    /* Responsive */
     @@media (max-width: 992px) {
-        .products-sidebar-panel
+        .products-sidebar-panel {
+            width: 220px;
+            min-width: 180px;
+        }
 
-    {
-        width: 250px;
-    }
+        .products-info-grid {
+            padding: 10px 14px;
+        }
 
-    .products-nav-tab {
-        padding: 12px 20px;
-        font-size: 14px;
-    }
-
-    .products-info-grid {
-        flex-wrap: wrap;
-    }
-
-    .products-info-item {
-        flex: 0 0 calc(50% - 10px);
-    }
-
+        .products-transactions-area {
+            padding: 10px 14px;
+        }
     }
 
     @@media (max-width: 768px) {
-        .products-main-wrapper
+        .products-main-wrapper {
+            height: auto;
+            min-height: 100vh;
+        }
 
-    {
-        height: auto;
-        min-height: 100vh;
-    }
+        .products-content-wrapper {
+            flex-direction: column;
+        }
 
-    .products-content-wrapper {
-        flex-direction: column;
-        height: auto;
-    }
+        .products-sidebar-panel {
+            width: 100%;
+            min-width: unset;
+            max-height: 40vh;
+            border-right: none;
+            border-bottom: 1px solid #e9ecef;
+        }
 
-    .products-sidebar-panel {
-        width: 100%;
-        max-height: none;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid #e9ecef;
-    }
+        .products-detail-section {
+            min-height: 60vh;
+        }
 
-    .products-detail-section {
-        height: auto;
-        min-height: 500px;
-    }
+        .products-info-grid {
+            flex-direction: column;
+            gap: 6px;
+        }
 
-    .products-nav-tab {
-        padding: 12px 15px;
-        font-size: 13px;
-    }
+        .products-transaction-search input {
+            width: 140px;
+        }
 
-    .products-info-grid {
-        flex-direction: column;
-        gap: 15px;
-    }
+        .products-detail-header {
+            padding: 10px 14px;
+        }
 
-    .products-info-item {
-        flex: 1;
-    }
-
-    .products-transaction-search {
-        width: 100%;
-    }
-
-    .products-section-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .products-detail-header {
-        flex-wrap: wrap;
-    }
-
-    .products-detail-title {
-        font-size: 16px;
-    }
-
-    .products-transactions-area {
-        padding: 15px;
-    }
-
-    .products-table-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
+        .products-transactions-area {
+            padding: 10px 14px;
+        }
     }
 
     @@media (max-width: 576px) {
-        .products-nav-tab
+        .products-nav-tab {
+            font-size: 11px;
+            padding: 10px 0;
+        }
 
-    {
-        padding: 10px 12px;
-        font-size: 12px;
-    }
+        .products-toolbar {
+            padding: 8px 10px;
+        }
 
-    .products-detail-header {
-        padding: 12px 15px;
-    }
+        .products-add-btn-group .btn-add-main {
+            font-size: 12px;
+            padding: 6px 10px;
+        }
 
-    .products-info-grid {
-        padding: 15px;
-    }
+        .products-item-entry {
+            padding: 8px 10px;
+        }
 
-    .products-add-button {
-        padding: 10px 15px;
-        font-size: 14px;
-    }
+        .products-detail-header {
+            padding: 8px 12px;
+        }
 
-    .products-search-container input {
-        font-size: 13px;
-        padding: 8px 12px 8px 35px;
-    }
+        .products-transactions-area {
+            padding: 8px 12px;
+        }
 
-    .products-item-entry {
-        padding: 10px;
-    }
-
-    .products-table-wrapper th,
-    .products-table-wrapper td {
-        padding: 10px 8px;
-        font-size: 12px;
-    }
-
-    }
-
-    @@media (max-width: 480px) {
-        .products-sidebar-panel
-
-    {
-        padding: 15px;
-    }
-
-    .products-godown-dropdown {
-        font-size: 13px;
-        padding: 8px;
-    }
-
-    .products-list-header {
-        padding: 8px;
-        font-size: 11px;
-    }
-
-    .products-item-qty-col {
-        width: 60px;
-    }
-
-    .products-section-heading {
-        font-size: 14px;
-    }
-
+        .products-table-wrapper th,
+        .products-table-wrapper td {
+            padding: 8px 8px;
+            font-size: 12px;
+        }
     }
 </style>
 
 <div class="products-main-wrapper">
     <!-- Navigation Tabs -->
     <div class="products-header-navigation">
-        <a href="/Web/Items/Products" class="products-nav-tab active">
-            PRODUCTS
-        </a>
-        <a href="/Web/Services/Service" class="products-nav-tab">
-            SERVICES
-        </a>
-        <a href="/Web/Items/Category" class="products-nav-tab">
-            CATEGORY
-        </a>
-        <a href="/Web/Units/Unit" class="products-nav-tab">
-            UNITS
-        </a>
+        <a href="/Web/Items/Products" class="products-nav-tab active">PRODUCTS</a>
+        <a href="/Web/Services/Service" class="products-nav-tab">SERVICES</a>
+        <a href="/Web/Items/Category" class="products-nav-tab">CATEGORY</a>
+        <a href="/Web/Units/Unit" class="products-nav-tab">UNITS</a>
     </div>
 
-    <!-- Products Content -->
+    <!-- Content -->
     <div class="products-content-wrapper">
+        <!-- Left Sidebar -->
         <div class="products-sidebar-panel">
-            <div class="products-search-container">
-                <i class="fas fa-search"></i>
-                <input type="text" id="product-search" placeholder="Search items...">
+            <!-- Toolbar: Search icon + Add Item + Three dots -->
+            <div class="products-toolbar">
+                <button class="products-search-btn" id="toggleSearchBtn" title="Search">
+                    <i class="bi bi-search"></i>
+                </button>
+                <div class="products-add-btn-group">
+                    <button class="btn-add-main" onclick="window.location.href='/Web/Items/create';">
+                        <i class="bi bi-plus"></i> Add Item
+                    </button>
+                    <button class="btn-add-dropdown" id="addItemDropdownBtn">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                    <ul class="dropdown-menu" id="addItemDropdownMenu">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-arrow-down me-2"></i>Import Items</a></li>
+                    </ul>
+                </div>
+                <div class="products-toolbar-dots-wrapper">
+                    <button class="products-toolbar-dots" id="threeDotsDropdownBtn">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu" id="threeDotsDropdownMenu">
+                        <li><a class="dropdown-item" href="#" onclick="openBulkInactiveModal(); return false;">Bulk Inactive</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openBulkActiveModal(); return false;">Bulk Active</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openBulkAssignCodeModal(); return false;">Bulk Assign Code</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openAssignUnitsModal(); return false;">Assign Units</a></li>
+                        <li><a class="dropdown-item" href="#">Bulk Update Items</a></li>
+                    </ul>
+                </div>
             </div>
 
-            <button class="products-add-button" onclick="window.location.href='/Web/Items/create';">
-                <i class="fas fa-plus"></i> Add Item
-            </button>
+            <!-- Inline search (hidden by default) -->
+            <div class="products-inline-search" id="inlineSearchBox">
+                <input type="text" id="product-search" placeholder="Search items..." autofocus>
+            </div>
 
-            <select class="products-godown-dropdown" data-dropdown-source="Godowns">
-                <option value="">Godown: All Godowns</option>
-            </select>
-
+            <!-- Item List -->
             <div class="products-items-container">
                 <div class="products-list-header">
-                    <div class="products-item-name-col">ITEM <i class="fas fa-filter"></i></div>
+                    <div class="products-item-name-col">ITEM <i class="bi bi-funnel" style="font-size:10px;"></i></div>
                     <div class="products-item-qty-col">QUANTITY</div>
+                    <div class="products-item-dots-col"></div>
                 </div>
                 @foreach (var item in Model.ItemView)
                 {
-                    <div class="products-item-entry">
-                        <a href="#"
-                           class="list-group-item list-group-item-action d-flex justify-content-between align-items-center product-item-link @(item.Id == Model.SelectedItem?.Id ? "active" : "")"
-                           data-item-id="@item.Id"
-                           style="text-decoration: none; color: inherit; width: 100%; display: flex;">
-                            <div class="products-item-name-col">@item.ItemName</div>
-                            <div class="products-item-qty-col">@item.OpeningQuantity</div>
-                        </a>
-
-                        <button type="button"
-                                class="btn btn-link p-1"
+                    <div class="products-item-entry @(item.Id == Model.SelectedItem?.Id ? "selected" : "")" data-item-id="@item.Id">
+                        <span class="item-name">@item.ItemName</span>
+                        <span class="item-qty">@item.OpeningQuantity</span>
+                        <button type="button" class="item-dots"
                                 data-bs-toggle="popover"
                                 data-bs-placement="left"
                                 data-bs-trigger="click"
                                 data-bs-html="true"
-                                data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'
-                                style="border: none; background: none; outline: none; cursor: pointer;">
-                            <i class="bi bi-three-dots-vertical" style="font-size:16px;color:#6c757d;"></i>
+                                data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'>
+                            <i class="bi bi-three-dots-vertical" style="font-size:14px;"></i>
                         </button>
                     </div>
                 }
             </div>
         </div>
 
+        <!-- Right Detail -->
         <div class="products-detail-section" id="product-detail-area">
             @if (Model.SelectedItem != null)
             {
                 <div class="products-detail-header">
                     <div class="products-detail-title">
                         <span>@Model.SelectedItem.ItemName</span>
-                        <a asp-action="Create" asp-route-id="@Model.SelectedItem.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
+                        <a asp-action="Create" asp-route-id="@Model.SelectedItem.Id" class="edit-link">
                             <i class="bi bi-pencil"></i>
                         </a>
                     </div>
+                    <button class="products-adjust-btn" onclick="openStockAdjustmentModal(@Model.SelectedItem.Id, '@Model.SelectedItem.ItemName', '@(Model.SelectedItem.Unit ?? "Pcs")')">
+                        <i class="bi bi-sliders"></i> ADJUST ITEM
+                    </button>
                 </div>
 
                 <div class="products-info-grid">
                     <div class="products-info-item">
-                        <div class="products-info-label">Sale Price</div>
-                        <div class="products-info-value">&#8377; @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
+                        <div class="info-label">Sale Price</div>
+                        <div class="info-value">&#8377; @((Model.SelectedItem?.SalePrice ?? 0).ToString("0.00")) (excl)</div>
                     </div>
                     <div class="products-info-item">
-                        <div class="products-info-label">Purchase Price</div>
-                        <div class="products-info-value">&#8377; @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
+                        <div class="info-label">Purchase Price</div>
+                        <div class="info-value">&#8377; @((Model.SelectedItem?.PurchasePrice ?? 0).ToString("0.00")) (excl)</div>
                     </div>
                     <div class="products-info-item">
-                        <div class="products-info-label products-stock-warning">Stock Quantity</div>
-                        <div class="products-info-value products-stock-warning">@(Model.SelectedItem?.OpeningQuantity ?? 0)</div>
+                        <div class="info-label">Stock Quantity</div>
+                        <div class="info-value stock-qty">@(Model.SelectedItem?.OpeningQuantity ?? 0)</div>
                     </div>
                     <div class="products-info-item">
-                        <div class="products-info-label">Stock Value</div>
-                        <div class="products-info-value products-stock-success">&#8377; @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
+                        <div class="info-label">Stock Value</div>
+                        <div class="info-value stock-val">&#8377; @((Model.SelectedItem?.OnlineStorePrice ?? 0).ToString("0.00"))</div>
                     </div>
                 </div>
 
@@ -721,7 +847,7 @@
                     <div class="products-section-header">
                         <h3 class="products-section-heading">TRANSACTIONS</h3>
                         <div class="products-transaction-search">
-                            <i class="fas fa-search"></i>
+                            <i class="bi bi-search search-icon-sm"></i>
                             <input type="text" placeholder="Search transactions...">
                         </div>
                     </div>
@@ -730,13 +856,13 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>TYPE <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>INVOICE/REF. <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>NAME <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>DATE <i class="fas fa-sort-down products-sort-arrow"></i></th>
-                                    <th>QUANTITY <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>PRICE/UNIT <i class="fas fa-sort products-sort-arrow"></i></th>
-                                    <th>STATUS <i class="fas fa-sort products-sort-arrow"></i></th>
+                                    <th>TYPE <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>INVOICE/... <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>NAME <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>DATE <i class="bi bi-arrow-down" style="font-size:9px;"></i> <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>QUANTITY <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>PRICE/ U... <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                    <th>STATUS <i class="bi bi-funnel" style="font-size:9px;"></i></th>
                                     <th></th>
                                 </tr>
                             </thead>
@@ -745,19 +871,19 @@
                                 {
                                     <tr>
                                         <td>
-                                            <span class="products-transaction-dot products-dot-purchase"></span>
-                                            Purchase (Main ...)
+                                            <span class="products-transaction-dot products-dot-sale"></span>
+                                            Sale
                                         </td>
                                         <td>-</td>
-                                        <td>test</td>
-                                        <td>14/06/2025</td>
-                                        <td>1 Btl</td>
-                                        <td>&#8377; 1,233.00</td>
+                                        <td>Opening Stock</td>
+                                        <td>@DateTime.Now.ToString("dd/MM/yyyy")</td>
+                                        <td>@Model.SelectedItem.OpeningQuantity</td>
+                                        <td>&#8377; @((Model.SelectedItem?.SalePrice ?? 0).ToString("N2"))</td>
                                         <td>
-                                            <span class="products-status-label products-status-partial">Partial</span>
+                                            <span class="products-status-label products-status-unpaid">Unpaid</span>
                                         </td>
                                         <td>
-                                            <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
+                                            <i class="bi bi-three-dots-vertical" style="color: #6c757d; cursor: pointer;"></i>
                                         </td>
                                     </tr>
                                 }
@@ -776,7 +902,7 @@
             {
                 <div class="products-loading-state">
                     <div>
-                        <i class="fas fa-box" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <i class="bi bi-box" style="font-size: 48px; margin-bottom: 15px; display:block;"></i>
                         <p>Select an item to view details</p>
                     </div>
                 </div>
@@ -786,17 +912,94 @@
 </div>
 
 <script>
-    // Initialize popovers
-    document.addEventListener('DOMContentLoaded', function() {
+    // Configure toastr
+    toastr.options = {
+        closeButton: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        timeOut: 3000,
+        showEasing: 'swing',
+        hideEasing: 'linear',
+        showMethod: 'fadeIn',
+        hideMethod: 'fadeOut'
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
         initializePopovers();
+        initializeToolbarDropdowns();
         initProductItemHandlers();
         initProductSearch();
+        initToggleSearch();
     });
+
+    function initializeToolbarDropdowns() {
+        const addItemBtn = document.getElementById('addItemDropdownBtn');
+        const addItemMenu = document.getElementById('addItemDropdownMenu');
+        const threeDotsBtn = document.getElementById('threeDotsDropdownBtn');
+        const threeDotsMenu = document.getElementById('threeDotsDropdownMenu');
+
+        function closeAllMenus() {
+            if (addItemMenu) addItemMenu.classList.remove('show');
+            if (threeDotsMenu) threeDotsMenu.classList.remove('show');
+        }
+
+        function positionAndShow(btn, menu) {
+            closeAllMenus();
+            const rect = btn.getBoundingClientRect();
+            menu.style.position = 'fixed';
+            menu.style.top = (rect.bottom + 4) + 'px';
+            menu.style.left = rect.left + 'px';
+            menu.classList.add('show');
+        }
+
+        if (addItemBtn && addItemMenu) {
+            addItemBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (addItemMenu.classList.contains('show')) {
+                    addItemMenu.classList.remove('show');
+                } else {
+                    positionAndShow(this, addItemMenu);
+                }
+            });
+        }
+
+        if (threeDotsBtn && threeDotsMenu) {
+            threeDotsBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (threeDotsMenu.classList.contains('show')) {
+                    threeDotsMenu.classList.remove('show');
+                } else {
+                    positionAndShow(this, threeDotsMenu);
+                }
+            });
+        }
+
+        // Close menus when clicking anywhere outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.products-add-btn-group') && !e.target.closest('.products-toolbar-dots-wrapper')) {
+                closeAllMenus();
+            }
+        });
+    }
+
+    function initToggleSearch() {
+        const toggleBtn = document.getElementById('toggleSearchBtn');
+        const searchBox = document.getElementById('inlineSearchBox');
+        if (toggleBtn && searchBox) {
+            toggleBtn.addEventListener('click', function () {
+                searchBox.classList.toggle('active');
+                if (searchBox.classList.contains('active')) {
+                    searchBox.querySelector('input').focus();
+                }
+            });
+        }
+    }
 
     function initializePopovers() {
         const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-
-        popoverTriggerList.forEach(function(popoverTriggerEl) {
+        popoverTriggerList.forEach(function (popoverTriggerEl) {
             new bootstrap.Popover(popoverTriggerEl, {
                 sanitize: false,
                 html: true,
@@ -804,31 +1007,25 @@
             });
         });
 
-        // Close popovers when clicking outside
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             if (!e.target.closest('[data-bs-toggle="popover"]') && !e.target.closest('.popover')) {
                 const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
                 popovers.forEach(popover => {
                     const bsPopover = bootstrap.Popover.getInstance(popover);
-                    if (bsPopover) {
-                        bsPopover.hide();
-                    }
+                    if (bsPopover) bsPopover.hide();
                 });
             }
         });
     }
 
     function initProductItemHandlers() {
-        const productLinks = document.querySelectorAll('.product-item-link');
-
-        productLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
+        const itemEntries = document.querySelectorAll('.products-item-entry');
+        itemEntries.forEach(entry => {
+            entry.addEventListener('click', function (e) {
+                if (e.target.closest('.item-dots') || e.target.closest('[data-bs-toggle="popover"]') || e.target.closest('[data-bs-toggle="dropdown"]') || e.target.closest('.popover') || e.target.closest('.dropdown-menu')) return;
                 const itemId = this.getAttribute('data-item-id');
-
-                productLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-
+                itemEntries.forEach(el => el.classList.remove('selected'));
+                this.classList.add('selected');
                 loadProductDetails(itemId);
             });
         });
@@ -836,44 +1033,33 @@
 
     function loadProductDetails(itemId) {
         const detailArea = document.getElementById('product-detail-area');
-
-        if (!detailArea) {
-            console.error('Product detail area not found');
-            return;
-        }
+        if (!detailArea) return;
 
         detailArea.innerHTML = `
             <div class="products-loading-state">
-                <div style="text-align: center; color: #6c757d;">
-                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; margin-bottom: 15px;"></i>
-                    <p>Loading product details...</p>
+                <div style="text-align: center;">
+                    <i class="bi bi-arrow-repeat" style="font-size: 28px; animation: spin 1s linear infinite; display:block; margin-bottom:10px;"></i>
+                    <p>Loading...</p>
                 </div>
             </div>`;
 
         fetch(`/Web/Items/ViewItemForPartial?id=${itemId}`, {
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
+            headers: { 'Accept': 'application/json' }
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to load product details');
-            }
+            if (!response.ok) throw new Error('Failed to load');
             return response.json();
         })
-        .then(data => {
-            renderProductDetails(data);
-        })
+        .then(data => renderProductDetails(data))
         .catch(error => {
-            console.error('Error loading product details:', error);
+            console.error('Error:', error);
             detailArea.innerHTML = `
                 <div class="products-loading-state">
-                    <div style="text-align: center; color: #dc3545;">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 32px; margin-bottom: 15px;"></i>
-                        <p>Error loading product details</p>
-                        <button class="btn btn-primary btn-sm" onclick="loadProductDetails(${itemId})">Retry</button>
+                    <div style="text-align:center; color:#dc3545;">
+                        <i class="bi bi-exclamation-triangle" style="font-size:28px; display:block; margin-bottom:10px;"></i>
+                        <p>Error loading details</p>
+                        <button class="btn btn-sm btn-primary" onclick="loadProductDetails(${itemId})">Retry</button>
                     </div>
                 </div>`;
         });
@@ -881,15 +1067,8 @@
 
     function renderProductDetails(item) {
         const detailArea = document.getElementById('product-detail-area');
-
         if (!item) {
-            detailArea.innerHTML = `
-                <div class="products-loading-state">
-                    <div>
-                        <i class="fas fa-box"></i>
-                        <p>Select an item to view details</p>
-                    </div>
-                </div>`;
+            detailArea.innerHTML = `<div class="products-loading-state"><div><i class="bi bi-box" style="font-size:48px;display:block;margin-bottom:15px;"></i><p>Select an item to view details</p></div></div>`;
             return;
         }
 
@@ -900,186 +1079,128 @@
 
         let transactionsHTML = '';
         if (item.transactions && item.transactions.length > 0) {
-            transactionsHTML = item.transactions.map(transaction => `
+            transactionsHTML = item.transactions.map(t => `
                 <tr>
-                    <td>
-                        <span class="products-transaction-dot products-dot-${transaction.type?.toLowerCase()}"></span>
-                        ${transaction.type || 'N/A'} (${transaction.location || 'N/A'})
-                    </td>
-                    <td>${transaction.invoiceRef || '-'}</td>
-                    <td>${transaction.name || '-'}</td>
-                    <td>${transaction.date || '-'}</td>
-                    <td>${transaction.quantity || '-'}</td>
-                    <td>&#8377; ${(transaction.pricePerUnit || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
-                    <td>
-                        <span class="products-status-label products-status-${transaction.status?.toLowerCase()}">${transaction.status || 'N/A'}</span>
-                    </td>
-                    <td>
-                        <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
-                    </td>
-                </tr>
-            `).join('');
+                    <td><span class="products-transaction-dot products-dot-sale"></span>${t.type || 'N/A'}</td>
+                    <td>${t.invoiceRef || '-'}</td>
+                    <td>${t.name || '-'}</td>
+                    <td>${t.date || '-'}</td>
+                    <td>${t.quantity || '-'}</td>
+                    <td>&#8377; ${(t.pricePerUnit || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td><span class="products-status-label products-status-unpaid">${t.status || 'N/A'}</span></td>
+                    <td><i class="bi bi-three-dots-vertical" style="color:#6c757d;cursor:pointer;"></i></td>
+                </tr>`).join('');
         } else if (openingQuantity > 0) {
             transactionsHTML = `
                 <tr>
-                    <td>
-                        <span class="products-transaction-dot products-dot-purchase"></span>
-                        Purchase (Main ...)
-                    </td>
+                    <td><span class="products-transaction-dot products-dot-sale"></span>Opening Stock</td>
                     <td>-</td>
-                    <td>test</td>
-                    <td>14/06/2025</td>
-                    <td>1 Btl</td>
-                    <td>&#8377; 1,233.00</td>
-                    <td>
-                        <span class="products-status-label products-status-partial">Partial</span>
-                    </td>
-                    <td>
-                        <i class="fas fa-ellipsis-v" style="color: #6c757d; cursor: pointer;"></i>
-                    </td>
-                </tr>
-            `;
+                    <td>Opening Stock</td>
+                    <td>${new Date().toLocaleDateString('en-GB')}</td>
+                    <td>${openingQuantity}</td>
+                    <td>&#8377; ${parseFloat(salePrice).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</td>
+                    <td><span class="products-status-label products-status-unpaid">Unpaid</span></td>
+                    <td><i class="bi bi-three-dots-vertical" style="color:#6c757d;cursor:pointer;"></i></td>
+                </tr>`;
         } else {
-            transactionsHTML = `
-                <tr>
-                    <td colspan="8" class="products-no-data">No transactions to show</td>
-                </tr>
-            `;
+            transactionsHTML = `<tr><td colspan="8" class="products-no-data">No transactions to show</td></tr>`;
         }
 
-        const html = `
+        detailArea.innerHTML = `
             <div class="products-detail-header">
                 <div class="products-detail-title">
-                    <span>${item.itemName || 'Unknown Item'}</span>
-                    <a href="/Web/Items/Create?id=${item.id}" class="btn btn-sm btn-outline-secondary ms-2 p-1">
-                        <i class="bi bi-pencil"></i>
-                    </a>
+                    <span>${item.itemName || 'Unknown'}</span>
+                    <a href="/Web/Items/Create?id=${item.id}" class="edit-link"><i class="bi bi-pencil"></i></a>
                 </div>
+                <button class="products-adjust-btn" onclick="openStockAdjustmentModal(${item.id}, '${(item.itemName || '').replace(/'/g, "\\'")}'  , '${item.unit || 'Pcs'}')">
+                    <i class="bi bi-sliders"></i> ADJUST ITEM
+                </button>
             </div>
-
             <div class="products-info-grid">
-                <div class="products-info-item">
-                    <div class="products-info-label">Sale Price</div>
-                    <div class="products-info-value">&#8377; ${salePrice} (excl)</div>
-                </div>
-                <div class="products-info-item">
-                    <div class="products-info-label">Purchase Price</div>
-                    <div class="products-info-value">&#8377; ${purchasePrice} (excl)</div>
-                </div>
-                <div class="products-info-item">
-                    <div class="products-info-label products-stock-warning">Stock Quantity</div>
-                    <div class="products-info-value products-stock-warning">${openingQuantity}</div>
-                </div>
-                <div class="products-info-item">
-                    <div class="products-info-label">Stock Value</div>
-                    <div class="products-info-value products-stock-success">&#8377; ${stockValue}</div>
-                </div>
+                <div class="products-info-item"><div class="info-label">Sale Price</div><div class="info-value">&#8377; ${salePrice} (excl)</div></div>
+                <div class="products-info-item"><div class="info-label">Purchase Price</div><div class="info-value">&#8377; ${purchasePrice} (excl)</div></div>
+                <div class="products-info-item"><div class="info-label">Stock Quantity</div><div class="info-value stock-qty">${openingQuantity}</div></div>
+                <div class="products-info-item"><div class="info-label">Stock Value</div><div class="info-value stock-val">&#8377; ${stockValue}</div></div>
             </div>
-
             <div class="products-transactions-area">
                 <div class="products-section-header">
                     <h3 class="products-section-heading">TRANSACTIONS</h3>
                     <div class="products-transaction-search">
-                        <i class="fas fa-search"></i>
+                        <i class="bi bi-search search-icon-sm"></i>
                         <input type="text" placeholder="Search transactions...">
                     </div>
                 </div>
-
                 <div class="products-table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>TYPE <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>INVOICE/REF. <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>NAME <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>DATE <i class="fas fa-sort-down products-sort-arrow"></i></th>
-                                <th>QUANTITY <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>PRICE/UNIT <i class="fas fa-sort products-sort-arrow"></i></th>
-                                <th>STATUS <i class="fas fa-sort products-sort-arrow"></i></th>
+                                <th>TYPE <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>INVOICE/... <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>NAME <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>DATE <i class="bi bi-arrow-down" style="font-size:9px;"></i> <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>QUANTITY <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>PRICE/ U... <i class="bi bi-funnel" style="font-size:9px;"></i></th>
+                                <th>STATUS <i class="bi bi-funnel" style="font-size:9px;"></i></th>
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${transactionsHTML}
-                        </tbody>
+                        <tbody>${transactionsHTML}</tbody>
                     </table>
                 </div>
-            </div>
-        `;
-
-        detailArea.innerHTML = html;
+            </div>`;
     }
 
     function initProductSearch() {
         const searchInput = document.getElementById('product-search');
-
         if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                const itemRows = document.querySelectorAll('.products-item-entry');
-
-                itemRows.forEach(row => {
-                    const itemName = row.querySelector('.products-item-name-col')?.textContent.toLowerCase();
-                    if (itemName && (itemName.includes(searchTerm) || searchTerm === '')) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                document.querySelectorAll('.products-item-entry').forEach(row => {
+                    const name = row.querySelector('.item-name')?.textContent.toLowerCase() || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
                 });
             });
         }
     }
 
     function viewItem(itemId) {
-        const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
-        popovers.forEach(popover => {
-            const bsPopover = bootstrap.Popover.getInstance(popover);
-            if (bsPopover) {
-                bsPopover.hide();
-            }
-        });
-
+        hideAllPopovers();
         window.location.href = `/Web/items/Create?id=${itemId}&isview=true`;
     }
 
     function deleteItem(itemId) {
-        const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
-        popovers.forEach(popover => {
-            const bsPopover = bootstrap.Popover.getInstance(popover);
-            if (bsPopover) {
-                bsPopover.hide();
-            }
-        });
-
+        hideAllPopovers();
         const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
         deleteModal.show();
 
         const confirmBtn = document.getElementById('confirmDeleteBtn');
-        const newConfirmBtn = confirmBtn.cloneNode(true);
-        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+        const newBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
 
-        newConfirmBtn.addEventListener('click', function() {
+        newBtn.addEventListener('click', function () {
             fetch(`/Web/Items/DeleteItem/${itemId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
                 }
-            })
-            .then(response => {
+            }).then(response => {
                 if (response.ok) {
                     deleteModal.hide();
-                    window.location.href = `/Web/items/Products`;
-                } else {
-                    return response.json().then(data => {
-                        throw new Error(data.message || 'Failed to delete item');
-                    });
+                    window.location.href = '/Web/items/Products';
                 }
             });
         });
     }
 
+    function hideAllPopovers() {
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+            const p = bootstrap.Popover.getInstance(el);
+            if (p) p.hide();
+        });
+    }
 </script>
+
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -1089,7 +1210,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete this item
+                Are you sure you want to delete this item?
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -1099,4 +1220,1388 @@
     </div>
 </div>
 
-<script src="~/js/dropdown-loader.js"></script>
+<style>
+    @@keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    /* Bulk Inactive Modal */
+    .bulk-inactive-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bulk-inactive-overlay.show {
+        display: flex;
+    }
+
+    .bulk-inactive-modal {
+        background: #fff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+        overflow: hidden;
+    }
+
+    .bulk-inactive-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .bulk-inactive-header h4 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .bulk-inactive-close {
+        background: none;
+        border: none;
+        font-size: 22px;
+        color: #999;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .bulk-inactive-close:hover {
+        color: #333;
+        background: #f0f0f0;
+    }
+
+    .bulk-inactive-search {
+        padding: 12px 24px;
+    }
+
+    .bulk-inactive-search input {
+        width: 100%;
+        padding: 10px 14px 10px 38px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+    .bulk-inactive-search input:focus {
+        border-color: #007bff;
+    }
+
+    .bulk-inactive-search-wrapper {
+        position: relative;
+    }
+
+    .bulk-inactive-search-wrapper i {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        font-size: 14px;
+    }
+
+    .bulk-inactive-table-wrapper {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 24px;
+    }
+
+    .bulk-inactive-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .bulk-inactive-table thead th {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        padding: 10px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #6c757d;
+        text-align: left;
+        border-bottom: 1px solid #e9ecef;
+        white-space: nowrap;
+    }
+
+    .bulk-inactive-table thead th:first-child {
+        width: 40px;
+    }
+
+    .bulk-inactive-table tbody td {
+        padding: 14px 12px;
+        font-size: 14px;
+        color: #333;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .bulk-inactive-table tbody tr:hover {
+        background: #f8f9ff;
+    }
+
+    .bulk-inactive-table .qty-value {
+        color: #007bff;
+        font-weight: 600;
+    }
+
+    .bulk-inactive-table .sold-value {
+        color: #ff9500;
+        font-weight: 600;
+    }
+
+    .bulk-inactive-table input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #007bff;
+    }
+
+    .bulk-inactive-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 24px;
+        border-top: 1px solid #e9ecef;
+        background: #fff;
+    }
+
+    .bulk-inactive-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #17a2b8;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .bulk-inactive-info i {
+        font-size: 16px;
+    }
+
+    .bulk-inactive-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .bulk-inactive-cancel {
+        padding: 8px 20px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background: #fff;
+        color: #555;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .bulk-inactive-cancel:hover {
+        background: #f5f5f5;
+    }
+
+    .bulk-inactive-submit {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 6px;
+        background: #dc3545;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .bulk-inactive-submit:hover {
+        background: #c82333;
+    }
+
+    .bulk-inactive-submit:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+
+    .bulk-active-info-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #e8f5e9;
+        color: #2e7d32;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 20px;
+    }
+
+    .bulk-active-info-badge i {
+        font-size: 15px;
+        color: #43a047;
+    }
+</style>
+
+<!-- Bulk Inactive Modal -->
+<div class="bulk-inactive-overlay" id="bulkInactiveOverlay">
+    <div class="bulk-inactive-modal">
+        <div class="bulk-inactive-header">
+            <h4>Bulk Inactive</h4>
+            <button class="bulk-inactive-close" onclick="closeBulkInactiveModal()">&times;</button>
+        </div>
+        <div class="bulk-inactive-search">
+            <div class="bulk-inactive-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="bulkInactiveSearch" placeholder="Search items">
+            </div>
+        </div>
+        <div class="bulk-inactive-table-wrapper">
+            <table class="bulk-inactive-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="bulkInactiveSelectAll"></th>
+                        <th>Item Name</th>
+                        <th>Quantity</th>
+                        <th>Quantity Sold in Last 90 Days</th>
+                    </tr>
+                </thead>
+                <tbody id="bulkInactiveTableBody">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+        <div class="bulk-inactive-footer">
+            <div class="bulk-inactive-info">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Showing only active items</span>
+            </div>
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-cancel" onclick="closeBulkInactiveModal()">Cancel</button>
+                <button class="bulk-inactive-submit" id="bulkInactiveSubmitBtn" disabled onclick="submitBulkInactive()">Mark as Inactive</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bulk Inactive functionality
+    function openBulkInactiveModal() {
+        const overlay = document.getElementById('bulkInactiveOverlay');
+        overlay.classList.add('show');
+        loadActiveItemsForBulkInactive();
+    }
+
+    function closeBulkInactiveModal() {
+        const overlay = document.getElementById('bulkInactiveOverlay');
+        overlay.classList.remove('show');
+        document.getElementById('bulkInactiveSearch').value = '';
+    }
+
+    function loadActiveItemsForBulkInactive() {
+        const tbody = document.getElementById('bulkInactiveTableBody');
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">Loading...</td></tr>';
+
+        fetch('/Web/Items/GetActiveItems', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.items) {
+                renderBulkInactiveItems(data.items);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#dc3545;">Failed to load items</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#dc3545;">Error loading items</td></tr>';
+        });
+    }
+
+    function renderBulkInactiveItems(items) {
+        const tbody = document.getElementById('bulkInactiveTableBody');
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:30px; color:#999;">No active items found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr data-item-id="${item.id}" data-item-name="${(item.itemName || '').toLowerCase()}">
+                <td><input type="checkbox" class="bulk-inactive-checkbox" value="${item.id}"></td>
+                <td>${item.itemName || ''}</td>
+                <td class="qty-value">${item.quantity || 0}</td>
+                <td class="sold-value">${item.quantitySoldIn90Days || 0}</td>
+            </tr>
+        `).join('');
+
+        // Bind checkbox events
+        bindBulkInactiveCheckboxes();
+    }
+
+    function bindBulkInactiveCheckboxes() {
+        const selectAll = document.getElementById('bulkInactiveSelectAll');
+        const checkboxes = document.querySelectorAll('.bulk-inactive-checkbox');
+        const submitBtn = document.getElementById('bulkInactiveSubmitBtn');
+
+        selectAll.checked = false;
+
+        selectAll.addEventListener('change', function () {
+            const visibleRows = document.querySelectorAll('#bulkInactiveTableBody tr:not([style*="display: none"]) .bulk-inactive-checkbox');
+            visibleRows.forEach(cb => cb.checked = this.checked);
+            updateBulkInactiveSubmitBtn();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                updateBulkInactiveSubmitBtn();
+                // Update select-all state
+                const visibleCheckboxes = document.querySelectorAll('#bulkInactiveTableBody tr:not([style*="display: none"]) .bulk-inactive-checkbox');
+                const allChecked = Array.from(visibleCheckboxes).every(c => c.checked);
+                selectAll.checked = allChecked && visibleCheckboxes.length > 0;
+            });
+        });
+    }
+
+    function updateBulkInactiveSubmitBtn() {
+        const checked = document.querySelectorAll('.bulk-inactive-checkbox:checked');
+        const submitBtn = document.getElementById('bulkInactiveSubmitBtn');
+        submitBtn.disabled = checked.length === 0;
+    }
+
+    function submitBulkInactive() {
+        const checked = document.querySelectorAll('.bulk-inactive-checkbox:checked');
+        const itemIds = Array.from(checked).map(cb => parseInt(cb.value));
+
+        if (itemIds.length === 0) return;
+
+        const submitBtn = document.getElementById('bulkInactiveSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Processing...';
+
+        fetch('/Web/Items/BulkMarkInactive', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ itemIds: itemIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeBulkInactiveModal();
+                toastr.success(data.message || 'Items marked as inactive successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to mark items as inactive.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Mark as Inactive';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Mark as Inactive';
+        });
+    }
+
+    // Search within Bulk Inactive modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('bulkInactiveSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#bulkInactiveTableBody tr');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-item-name') || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+
+<!-- Bulk Active Modal -->
+<div class="bulk-inactive-overlay" id="bulkActiveOverlay">
+    <div class="bulk-inactive-modal">
+        <div class="bulk-inactive-header">
+            <h4>Bulk Active</h4>
+            <button class="bulk-inactive-close" onclick="closeBulkActiveModal()">&times;</button>
+        </div>
+        <div class="bulk-inactive-search">
+            <div class="bulk-inactive-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="bulkActiveSearch" placeholder="Search items">
+            </div>
+        </div>
+        <div class="bulk-inactive-table-wrapper">
+            <table class="bulk-inactive-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="bulkActiveSelectAll"></th>
+                        <th>Item Name <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                        <th style="text-align:right;">Quantity <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="bulkActiveTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div class="bulk-inactive-footer">
+            <div class="bulk-active-info-badge">
+                <i class="bi bi-info-circle-fill"></i>
+                <span>Showing only inactive items</span>
+            </div>
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-cancel" onclick="closeBulkActiveModal()">Cancel</button>
+                <button class="bulk-inactive-submit" id="bulkActiveSubmitBtn" disabled onclick="submitBulkActive()" style="background:#dc3545;">Mark as Active</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bulk Active functionality
+    function openBulkActiveModal() {
+        const overlay = document.getElementById('bulkActiveOverlay');
+        overlay.classList.add('show');
+        loadInactiveItemsForBulkActive();
+    }
+
+    function closeBulkActiveModal() {
+        const overlay = document.getElementById('bulkActiveOverlay');
+        overlay.classList.remove('show');
+        document.getElementById('bulkActiveSearch').value = '';
+    }
+
+    function loadInactiveItemsForBulkActive() {
+        const tbody = document.getElementById('bulkActiveTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">Loading...</td></tr>';
+
+        fetch('/Web/Items/GetInactiveItems', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.items) {
+                renderBulkActiveItems(data.items);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Failed to load items</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Error loading items</td></tr>';
+        });
+    }
+
+    function renderBulkActiveItems(items) {
+        const tbody = document.getElementById('bulkActiveTableBody');
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">No inactive items found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr data-item-id="${item.id}" data-item-name="${(item.itemName || '').toLowerCase()}">
+                <td><input type="checkbox" class="bulk-active-checkbox" value="${item.id}"></td>
+                <td>${item.itemName || ''}</td>
+                <td class="qty-value" style="text-align:right;">${item.quantity || 0}</td>
+            </tr>
+        `).join('');
+
+        bindBulkActiveCheckboxes();
+    }
+
+    function bindBulkActiveCheckboxes() {
+        const selectAll = document.getElementById('bulkActiveSelectAll');
+        const checkboxes = document.querySelectorAll('.bulk-active-checkbox');
+        const submitBtn = document.getElementById('bulkActiveSubmitBtn');
+
+        selectAll.checked = false;
+
+        selectAll.addEventListener('change', function () {
+            const visibleRows = document.querySelectorAll('#bulkActiveTableBody tr:not([style*="display: none"]) .bulk-active-checkbox');
+            visibleRows.forEach(cb => cb.checked = this.checked);
+            updateBulkActiveSubmitBtn();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                updateBulkActiveSubmitBtn();
+                const visibleCheckboxes = document.querySelectorAll('#bulkActiveTableBody tr:not([style*="display: none"]) .bulk-active-checkbox');
+                const allChecked = Array.from(visibleCheckboxes).every(c => c.checked);
+                selectAll.checked = allChecked && visibleCheckboxes.length > 0;
+            });
+        });
+    }
+
+    function updateBulkActiveSubmitBtn() {
+        const checked = document.querySelectorAll('.bulk-active-checkbox:checked');
+        const submitBtn = document.getElementById('bulkActiveSubmitBtn');
+        submitBtn.disabled = checked.length === 0;
+    }
+
+    function submitBulkActive() {
+        const checked = document.querySelectorAll('.bulk-active-checkbox:checked');
+        const itemIds = Array.from(checked).map(cb => parseInt(cb.value));
+
+        if (itemIds.length === 0) return;
+
+        const submitBtn = document.getElementById('bulkActiveSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Processing...';
+
+        fetch('/Web/Items/BulkMarkActive', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ itemIds: itemIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeBulkActiveModal();
+                toastr.success(data.message || 'Items marked as active successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to mark items as active.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Mark as Active';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Mark as Active';
+        });
+    }
+
+    // Search within Bulk Active modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('bulkActiveSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#bulkActiveTableBody tr');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-item-name') || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+
+<!-- Bulk Assign Code Modal -->
+<div class="bulk-inactive-overlay" id="bulkAssignCodeOverlay">
+    <div class="bulk-inactive-modal">
+        <div class="bulk-inactive-header">
+            <h4>Bulk Assign Code</h4>
+            <button class="bulk-inactive-close" onclick="closeBulkAssignCodeModal()">&times;</button>
+        </div>
+        <div class="bulk-inactive-search">
+            <div class="bulk-inactive-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="bulkAssignCodeSearch" placeholder="Search items">
+            </div>
+        </div>
+        <div class="bulk-inactive-table-wrapper">
+            <table class="bulk-inactive-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="bulkAssignCodeSelectAll"></th>
+                        <th>Item Name <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                        <th style="text-align:right;">Quantity <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="bulkAssignCodeTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div class="bulk-inactive-footer">
+            <div class="bulk-active-info-badge" style="background:#fff3e0; color:#e65100;">
+                <i class="bi bi-info-circle-fill" style="color:#fb8c00;"></i>
+                <span>Showing items that don't have item code</span>
+            </div>
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-cancel" onclick="closeBulkAssignCodeModal()">Cancel</button>
+                <button class="bulk-inactive-submit" id="bulkAssignCodeSubmitBtn" disabled onclick="submitBulkAssignCode()">Assign Code</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Bulk Assign Code functionality
+    function openBulkAssignCodeModal() {
+        const overlay = document.getElementById('bulkAssignCodeOverlay');
+        overlay.classList.add('show');
+        loadItemsWithoutCode();
+    }
+
+    function closeBulkAssignCodeModal() {
+        const overlay = document.getElementById('bulkAssignCodeOverlay');
+        overlay.classList.remove('show');
+        document.getElementById('bulkAssignCodeSearch').value = '';
+    }
+
+    function loadItemsWithoutCode() {
+        const tbody = document.getElementById('bulkAssignCodeTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">Loading...</td></tr>';
+
+        fetch('/Web/Items/GetItemsWithoutCode', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.items) {
+                renderBulkAssignCodeItems(data.items);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Failed to load items</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Error loading items</td></tr>';
+        });
+    }
+
+    function renderBulkAssignCodeItems(items) {
+        const tbody = document.getElementById('bulkAssignCodeTableBody');
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">No items without code found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr data-item-id="${item.id}" data-item-name="${(item.itemName || '').toLowerCase()}">
+                <td><input type="checkbox" class="bulk-assign-code-checkbox" value="${item.id}"></td>
+                <td>${item.itemName || ''}</td>
+                <td class="qty-value" style="text-align:right;">${item.quantity || 0}</td>
+            </tr>
+        `).join('');
+
+        bindBulkAssignCodeCheckboxes();
+    }
+
+    function bindBulkAssignCodeCheckboxes() {
+        const selectAll = document.getElementById('bulkAssignCodeSelectAll');
+        const checkboxes = document.querySelectorAll('.bulk-assign-code-checkbox');
+        const submitBtn = document.getElementById('bulkAssignCodeSubmitBtn');
+
+        selectAll.checked = false;
+
+        selectAll.addEventListener('change', function () {
+            const visibleRows = document.querySelectorAll('#bulkAssignCodeTableBody tr:not([style*="display: none"]) .bulk-assign-code-checkbox');
+            visibleRows.forEach(cb => cb.checked = this.checked);
+            updateBulkAssignCodeSubmitBtn();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                updateBulkAssignCodeSubmitBtn();
+                const visibleCheckboxes = document.querySelectorAll('#bulkAssignCodeTableBody tr:not([style*="display: none"]) .bulk-assign-code-checkbox');
+                const allChecked = Array.from(visibleCheckboxes).every(c => c.checked);
+                selectAll.checked = allChecked && visibleCheckboxes.length > 0;
+            });
+        });
+    }
+
+    function updateBulkAssignCodeSubmitBtn() {
+        const checked = document.querySelectorAll('.bulk-assign-code-checkbox:checked');
+        const submitBtn = document.getElementById('bulkAssignCodeSubmitBtn');
+        submitBtn.disabled = checked.length === 0;
+    }
+
+    function submitBulkAssignCode() {
+        const checked = document.querySelectorAll('.bulk-assign-code-checkbox:checked');
+        const itemIds = Array.from(checked).map(cb => parseInt(cb.value));
+
+        if (itemIds.length === 0) return;
+
+        const submitBtn = document.getElementById('bulkAssignCodeSubmitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Assigning...';
+
+        fetch('/Web/Items/BulkAssignCode', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ itemIds: itemIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeBulkAssignCodeModal();
+                toastr.success(data.message || 'Codes assigned successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to assign codes.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Assign Code';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Assign Code';
+        });
+    }
+
+    // Search within Bulk Assign Code modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('bulkAssignCodeSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#bulkAssignCodeTableBody tr');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-item-name') || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+
+<!-- Assign Units Modal - Step 1: Select Items -->
+<div class="bulk-inactive-overlay" id="assignUnitsOverlay">
+    <div class="bulk-inactive-modal">
+        <div class="bulk-inactive-header">
+            <h4>Select Items</h4>
+            <button class="bulk-inactive-close" onclick="closeAssignUnitsModal()">&times;</button>
+        </div>
+        <div class="bulk-inactive-search">
+            <div class="bulk-inactive-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" id="assignUnitsSearch" placeholder="Search items">
+            </div>
+        </div>
+        <div class="bulk-inactive-table-wrapper">
+            <table class="bulk-inactive-table">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="assignUnitsSelectAll"></th>
+                        <th>Item Name <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                        <th style="text-align:right;">Quantity <i class="bi bi-chevron-expand" style="font-size:11px;color:#aaa;"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="assignUnitsTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div class="bulk-inactive-footer">
+            <div></div>
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-cancel" onclick="closeAssignUnitsModal()">Cancel</button>
+                <button class="bulk-inactive-submit" id="assignUnitsNextBtn" disabled onclick="showAssignUnitsStep2()">Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Units Modal - Step 2: Select Unit -->
+<div class="bulk-inactive-overlay" id="selectUnitOverlay">
+    <div class="bulk-inactive-modal" style="max-width:450px;">
+        <div class="bulk-inactive-header">
+            <h4>Select Unit</h4>
+            <button class="bulk-inactive-close" onclick="closeSelectUnitModal()">&times;</button>
+        </div>
+        <div style="padding:24px;">
+            <div style="display:flex; gap:20px; margin-bottom:20px;">
+                <div style="flex:1;">
+                    <label style="display:block; font-size:12px; font-weight:700; color:#17a2b8; margin-bottom:8px; text-transform:uppercase;">BASE UNIT</label>
+                    <select id="baseUnitSelect" style="width:100%; padding:10px 12px; border:2px solid #e0a800; border-radius:6px; font-size:14px; outline:none; background:#fff;">
+                        <option value="">None</option>
+                    </select>
+                </div>
+                <div style="flex:1;">
+                    <label style="display:block; font-size:12px; font-weight:700; color:#17a2b8; margin-bottom:8px; text-transform:uppercase;">SECONDARY UNIT</label>
+                    <select id="secondaryUnitSelect" style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-size:14px; outline:none; background:#fff;">
+                        <option value="">None</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="bulk-inactive-footer" style="justify-content:flex-end;">
+            <div class="bulk-inactive-actions">
+                <button class="bulk-inactive-submit" id="assignUnitSaveBtn" onclick="submitBulkAssignUnit()" style="background:#17a2b8;">SAVE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Assign Units functionality
+    let assignUnitsSelectedItemIds = [];
+
+    function openAssignUnitsModal() {
+        const overlay = document.getElementById('assignUnitsOverlay');
+        overlay.classList.add('show');
+        loadItemsWithoutUnit();
+    }
+
+    function closeAssignUnitsModal() {
+        const overlay = document.getElementById('assignUnitsOverlay');
+        overlay.classList.remove('show');
+        document.getElementById('assignUnitsSearch').value = '';
+    }
+
+    function closeSelectUnitModal() {
+        const overlay = document.getElementById('selectUnitOverlay');
+        overlay.classList.remove('show');
+    }
+
+    function loadItemsWithoutUnit() {
+        const tbody = document.getElementById('assignUnitsTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">Loading...</td></tr>';
+
+        fetch('/Web/Items/GetItemsWithoutUnit', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.items) {
+                renderAssignUnitsItems(data.items);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Failed to load items</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#dc3545;">Error loading items</td></tr>';
+        });
+    }
+
+    function renderAssignUnitsItems(items) {
+        const tbody = document.getElementById('assignUnitsTableBody');
+
+        if (!items || items.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:30px; color:#999;">No items without unit found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = items.map(item => `
+            <tr data-item-id="${item.id}" data-item-name="${(item.itemName || '').toLowerCase()}">
+                <td><input type="checkbox" class="assign-units-checkbox" value="${item.id}"></td>
+                <td>${item.itemName || ''}</td>
+                <td class="qty-value" style="text-align:right;">${item.quantity || 0}</td>
+            </tr>
+        `).join('');
+
+        bindAssignUnitsCheckboxes();
+    }
+
+    function bindAssignUnitsCheckboxes() {
+        const selectAll = document.getElementById('assignUnitsSelectAll');
+        const checkboxes = document.querySelectorAll('.assign-units-checkbox');
+        const nextBtn = document.getElementById('assignUnitsNextBtn');
+
+        selectAll.checked = false;
+
+        selectAll.addEventListener('change', function () {
+            const visibleRows = document.querySelectorAll('#assignUnitsTableBody tr:not([style*="display: none"]) .assign-units-checkbox');
+            visibleRows.forEach(cb => cb.checked = this.checked);
+            updateAssignUnitsNextBtn();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                updateAssignUnitsNextBtn();
+                const visibleCheckboxes = document.querySelectorAll('#assignUnitsTableBody tr:not([style*="display: none"]) .assign-units-checkbox');
+                const allChecked = Array.from(visibleCheckboxes).every(c => c.checked);
+                selectAll.checked = allChecked && visibleCheckboxes.length > 0;
+            });
+        });
+    }
+
+    function updateAssignUnitsNextBtn() {
+        const checked = document.querySelectorAll('.assign-units-checkbox:checked');
+        const nextBtn = document.getElementById('assignUnitsNextBtn');
+        nextBtn.disabled = checked.length === 0;
+    }
+
+    function showAssignUnitsStep2() {
+        const checked = document.querySelectorAll('.assign-units-checkbox:checked');
+        assignUnitsSelectedItemIds = Array.from(checked).map(cb => parseInt(cb.value));
+
+        if (assignUnitsSelectedItemIds.length === 0) return;
+
+        // Close step 1 and open step 2
+        closeAssignUnitsModal();
+        document.getElementById('selectUnitOverlay').classList.add('show');
+
+        // Load units from master
+        loadUnitsFromMaster();
+    }
+
+    function loadUnitsFromMaster() {
+        fetch('/Web/Items/GetUnitsFromMaster', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.units) {
+                const baseSelect = document.getElementById('baseUnitSelect');
+                const secondarySelect = document.getElementById('secondaryUnitSelect');
+
+                baseSelect.innerHTML = '<option value="">None</option>';
+                secondarySelect.innerHTML = '<option value="">None</option>';
+
+                data.units.forEach(unit => {
+                    const label = unit.fullName + (unit.shortName ? ' (' + unit.shortName + ')' : '');
+                    baseSelect.innerHTML += `<option value="${unit.fullName}">${label}</option>`;
+                    secondarySelect.innerHTML += `<option value="${unit.fullName}">${label}</option>`;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error loading units:', error);
+        });
+    }
+
+    function submitBulkAssignUnit() {
+        const baseUnit = document.getElementById('baseUnitSelect').value;
+        const secondaryUnit = document.getElementById('secondaryUnitSelect').value;
+
+        if (!baseUnit) {
+            toastr.error('Please select a base unit.');
+            return;
+        }
+
+        const saveBtn = document.getElementById('assignUnitSaveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        fetch('/Web/Items/BulkAssignUnit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                itemIds: assignUnitsSelectedItemIds,
+                baseUnit: baseUnit,
+                secondaryUnit: secondaryUnit || ''
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeSelectUnitModal();
+                toastr.success(data.message || 'Unit assigned successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to assign unit.');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'SAVE';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'SAVE';
+        });
+    }
+
+    // Search within Assign Units modal
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('assignUnitsSearch');
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const term = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#assignUnitsTableBody tr');
+                rows.forEach(row => {
+                    const name = row.getAttribute('data-item-name') || '';
+                    row.style.display = name.includes(term) || term === '' ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+
+<!-- Stock Adjustment Modal -->
+<style>
+    .stock-adj-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 10000;
+        align-items: center;
+        justify-content: center;
+    }
+    .stock-adj-overlay.show { display: flex; }
+    .stock-adj-modal {
+        background: #fff;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 680px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+        overflow: hidden;
+    }
+    .stock-adj-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .stock-adj-header h4 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    .stock-adj-header-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    .stock-adj-close {
+        background: none;
+        border: none;
+        font-size: 24px;
+        color: #999;
+        cursor: pointer;
+        padding: 4px 8px;
+    }
+    .stock-adj-close:hover { color: #333; }
+    .stock-adj-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+    .stock-adj-toggle-label {
+        color: #6c757d;
+        cursor: pointer;
+    }
+    .stock-adj-toggle-label.active { color: #007bff; }
+    .stock-adj-switch {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: #007bff;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    .stock-adj-switch.reduce { background: #dc3545; }
+    .stock-adj-switch-knob {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        background: #fff;
+        border-radius: 50%;
+        transition: left 0.3s;
+    }
+    .stock-adj-switch.reduce .stock-adj-switch-knob { left: 23px; }
+    .stock-adj-body {
+        padding: 20px 24px;
+    }
+    .stock-adj-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .stock-adj-item-name {
+        font-size: 12px;
+        color: #6c757d;
+    }
+    .stock-adj-item-name strong {
+        display: block;
+        font-size: 15px;
+        color: #2c3e50;
+        margin-top: 2px;
+    }
+    .stock-adj-date-field {
+        position: relative;
+    }
+    .stock-adj-date-field label {
+        position: absolute;
+        top: -8px;
+        left: 10px;
+        background: #fff;
+        padding: 0 4px;
+        font-size: 11px;
+        color: #6c757d;
+    }
+    .stock-adj-date-field input {
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+        width: 180px;
+    }
+    .stock-adj-date-field input:focus { border-color: #007bff; }
+    .stock-adj-fields {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    .stock-adj-field {
+        flex: 1;
+    }
+    .stock-adj-field input, .stock-adj-field select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+    }
+    .stock-adj-field input:focus, .stock-adj-field select:focus { border-color: #007bff; }
+    .stock-adj-field input::placeholder { color: #aaa; }
+    .stock-adj-details {
+        margin-top: 16px;
+    }
+    .stock-adj-details-wrapper {
+        position: relative;
+    }
+    .stock-adj-details-wrapper label {
+        position: absolute;
+        top: -8px;
+        left: 10px;
+        background: #fff;
+        padding: 0 4px;
+        font-size: 11px;
+        color: #007bff;
+        font-weight: 500;
+    }
+    .stock-adj-details textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #007bff;
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+        resize: vertical;
+        min-height: 60px;
+    }
+    .stock-adj-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 16px 24px;
+        border-top: 1px solid #e9ecef;
+    }
+    .stock-adj-save-btn {
+        background: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 28px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .stock-adj-save-btn:hover { background: #0069d9; }
+    .stock-adj-save-btn:disabled { background: #ccc; cursor: not-allowed; }
+</style>
+
+<div class="stock-adj-overlay" id="stockAdjOverlay">
+    <div class="stock-adj-modal">
+        <div class="stock-adj-header">
+            <div class="stock-adj-header-left">
+                <h4>Stock Adjustment</h4>
+                <div class="stock-adj-toggle">
+                    <span class="stock-adj-toggle-label active" id="addStockLabel">Add Stock</span>
+                    <div class="stock-adj-switch" id="stockAdjSwitch" onclick="toggleStockAdjType()">
+                        <div class="stock-adj-switch-knob"></div>
+                    </div>
+                    <span class="stock-adj-toggle-label" id="reduceStockLabel">Reduce Stock</span>
+                </div>
+            </div>
+            <button class="stock-adj-close" onclick="closeStockAdjustmentModal()">&times;</button>
+        </div>
+        <div class="stock-adj-body">
+            <div class="stock-adj-item-row">
+                <div class="stock-adj-item-name">
+                    Item Name
+                    <strong id="stockAdjItemName"></strong>
+                </div>
+                <div class="stock-adj-date-field">
+                    <label>Adjustment Date</label>
+                    <input type="date" id="stockAdjDate">
+                </div>
+            </div>
+            <div class="stock-adj-fields">
+                <div class="stock-adj-field">
+                    <input type="number" id="stockAdjQty" placeholder="Total Qty" min="1">
+                </div>
+                <div class="stock-adj-field" style="max-width:90px;">
+                    <select id="stockAdjUnit">
+                        <option value="Pcs">Pcs</option>
+                    </select>
+                </div>
+                <div class="stock-adj-field">
+                    <input type="number" id="stockAdjPrice" placeholder="At Price" step="0.01" min="0">
+                </div>
+            </div>
+            <div class="stock-adj-details">
+                <div class="stock-adj-details-wrapper">
+                    <label>Details</label>
+                    <textarea id="stockAdjDetails" placeholder=""></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="stock-adj-footer">
+            <button class="stock-adj-save-btn" id="stockAdjSaveBtn" onclick="submitStockAdjustment()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let stockAdjItemId = 0;
+    let stockAdjType = 'add'; // 'add' or 'reduce'
+
+    function openStockAdjustmentModal(itemId, itemName, unit) {
+        stockAdjItemId = itemId;
+        stockAdjType = 'add';
+
+        document.getElementById('stockAdjItemName').textContent = itemName;
+        document.getElementById('stockAdjDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('stockAdjQty').value = '';
+        document.getElementById('stockAdjPrice').value = '';
+        document.getElementById('stockAdjDetails').value = '';
+
+        // Set unit dropdown
+        const unitSelect = document.getElementById('stockAdjUnit');
+        unitSelect.innerHTML = `<option value="${unit}">${unit}</option>`;
+
+        // Load units from master for the dropdown
+        fetch('/Web/Items/GetUnitsFromMaster', { headers: { 'Accept': 'application/json' } })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success && data.units) {
+                    unitSelect.innerHTML = '';
+                    let hasCurrentUnit = false;
+                    data.units.forEach(u => {
+                        const label = u.shortName || u.fullName;
+                        if (label === unit) hasCurrentUnit = true;
+                        unitSelect.innerHTML += `<option value="${label}" ${label === unit ? 'selected' : ''}>${label}</option>`;
+                    });
+                    if (!hasCurrentUnit && unit) {
+                        unitSelect.innerHTML = `<option value="${unit}" selected>${unit}</option>` + unitSelect.innerHTML;
+                    }
+                }
+            })
+            .catch(() => {});
+
+        // Reset toggle to 'add'
+        updateStockAdjToggle();
+
+        document.getElementById('stockAdjOverlay').classList.add('show');
+    }
+
+    function closeStockAdjustmentModal() {
+        document.getElementById('stockAdjOverlay').classList.remove('show');
+    }
+
+    function toggleStockAdjType() {
+        stockAdjType = stockAdjType === 'add' ? 'reduce' : 'add';
+        updateStockAdjToggle();
+    }
+
+    function updateStockAdjToggle() {
+        const switchEl = document.getElementById('stockAdjSwitch');
+        const addLabel = document.getElementById('addStockLabel');
+        const reduceLabel = document.getElementById('reduceStockLabel');
+
+        if (stockAdjType === 'reduce') {
+            switchEl.classList.add('reduce');
+            addLabel.classList.remove('active');
+            reduceLabel.classList.add('active');
+        } else {
+            switchEl.classList.remove('reduce');
+            addLabel.classList.add('active');
+            reduceLabel.classList.remove('active');
+        }
+    }
+
+    function submitStockAdjustment() {
+        const qty = parseInt(document.getElementById('stockAdjQty').value);
+        const price = parseFloat(document.getElementById('stockAdjPrice').value) || 0;
+        const date = document.getElementById('stockAdjDate').value;
+        const details = document.getElementById('stockAdjDetails').value;
+
+        if (!qty || qty <= 0) {
+            toastr.error('Please enter a valid quantity.');
+            return;
+        }
+
+        const saveBtn = document.getElementById('stockAdjSaveBtn');
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+
+        fetch('/Web/Items/AdjustStock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                itemId: stockAdjItemId,
+                adjustmentType: stockAdjType,
+                totalQty: qty,
+                atPrice: price,
+                adjustmentDate: date,
+                details: details
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                closeStockAdjustmentModal();
+                toastr.success(data.message || 'Stock adjusted successfully!');
+                setTimeout(function() { window.location.reload(); }, 1500);
+            } else {
+                toastr.error(data.message || 'Failed to adjust stock.');
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            toastr.error('An error occurred. Please try again.');
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save';
+        });
+    }
+</script>

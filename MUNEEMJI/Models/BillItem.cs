@@ -81,6 +81,7 @@ namespace MUNEEMJI.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public decimal mrp { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class RawMaterial

@@ -66,4 +66,32 @@ namespace MUNEEMJI.Models
 
     }
 
+    public class PartyGroupDetailModel
+    {
+        public int Id { get; set; }
+        public string GroupName { get; set; }
+        public long PartyCount { get; set; }
+    }
+
+    public class PartyGroupViewModel
+    {
+        public List<PartyGroupDetailModel> Groups { get; set; }
+        public int SelectedGroupId { get; set; }
+        public string SelectedGroupName { get; set; }
+        public List<PartyModel> PartiesInGroup { get; set; }
+        public decimal TotalAmount { get; set; }
+    }
+
+    public class MovePartiesToGroupRequest
+    {
+        public int GroupId { get; set; }
+        public List<int> PartyIds { get; set; }
+    }
+
+    public class PartyGroupUpdateRequest
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+
 }

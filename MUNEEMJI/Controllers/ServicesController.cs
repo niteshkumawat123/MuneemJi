@@ -474,8 +474,8 @@ namespace MUNEEMJI.Controllers
                                         brand AS ""Brand"",
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
-                                    FROM billitem where item_type = @p_itemtye and companyid = @p_companyId
-                                    ORDER BY id;
+                                    FROM billitem where item_type = @p_itemtye and companyid = @p_companyId and (is_active = true OR is_active IS NULL)
+                                                    ORDER BY id;
                                     ";
 
                     // ? Fetch bill items

@@ -253,6 +253,71 @@ namespace MUNEEMJI.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        // GET: Get godown by id for modal edit
+        [HttpGet]
+        public async Task<IActionResult> GetGodownById(int id)
+        {
+            var godown = await _godownService.GetGodownByIdAsync(id);
+            if (godown == null)
+            {
+                return Json(new { success = false, message = "Godown not found." });
+            }
+            return Json(new
+            {
+                success = true,
+                data = new
+                {
+                    godown.Id,
+                    godown.GodownName,
+                    godown.GodownType,
+                    godown.PhoneNo,
+                    godown.EmailId,
+                    godown.GSTIN,
+                    godown.GodownAddress,
+                    godown.GodownPincode
+                }
+            });
+        }
+
+        // POST: Update godown via AJAX
+        [HttpPost]
+        public async Task<IActionResult> UpdateAjax([FromBody] Godown godown)
+        {
+            try
+            {
+                var CompanyId = _companyTenancy.GetCurrentCompanyId();
+                if (ModelState.IsValid)
+                {
+                    var existingGodowns = await _godownService.GetAllGodownsAsync(CompanyId);
+                    if (existingGodowns.Any(g => g.GodownName.Trim().Equals(godown.GodownName?.Trim(), StringComparison.OrdinalIgnoreCase) && g.Id != godown.Id))
+                    {
+                        return Json(new { success = false, message = "A godown with this name already exists. Please use a different name." });
+                    }
+
+                    var result = await _godownService.UpdateGodownAsync(godown);
+                    if (result)
+                    {
+                        return Json(new { success = true, message = "Godown updated successfully!" });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "Failed to update godown." });
+                    }
+                }
+
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { Field = x.Key, Message = x.Value.Errors.First().ErrorMessage })
+                    .ToList();
+
+                return Json(new { success = false, message = "Validation failed.", errors = errors });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred: " + ex.Message });
+            }
+        }
+
         // GET: Get godown types for dropdown
         [HttpGet]
         public IActionResult GetGodownTypes()

@@ -707,6 +707,263 @@ namespace MUNEEMJI.Controllers
             return Json(new { success = true });
         }
 
+        [HttpGet]
+        public IActionResult Group(int? id)
+        {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            var model = new PartyGroupViewModel();
+            model.Groups = new List<PartyGroupDetailModel>();
+
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                // Get all groups with party count
+                string groupSql = @"SELECT pg.id, pg.groupname, 
+                    COALESCE((SELECT COUNT(*) FROM parties p WHERE p.companyid = @p_companyid AND p.partygroupid = pg.id), 0) as party_count
+                    FROM partygroup pg ORDER BY pg.groupname";
+
+                using (var cmd = new NpgsqlCommand(groupSql, conn))
+                {
+                    cmd.Parameters.AddWithValue("p_companyid", companyId);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            model.Groups.Add(new PartyGroupDetailModel
+                            {
+                                Id = reader.GetInt32(0),
+                                GroupName = reader.GetString(1),
+                                PartyCount = reader.GetInt64(2)
+                            });
+                        }
+                    }
+                }
+
+                // Select first group or the passed id
+                int selectedGroupId = id ?? (model.Groups.Any() ? model.Groups.First().Id : 0);
+                model.SelectedGroupId = selectedGroupId;
+
+                if (selectedGroupId > 0)
+                {
+                    var selectedGroup = model.Groups.FirstOrDefault(g => g.Id == selectedGroupId);
+                    model.SelectedGroupName = selectedGroup?.GroupName ?? "";
+
+                    // Get parties in this group
+                    model.PartiesInGroup = new List<PartyModel>();
+                    string partySql = @"SELECT id, party_name, opening_balance FROM parties 
+                        WHERE companyid = @p_companyid AND partygroupid = @p_groupid ORDER BY party_name";
+
+                    using (var cmd2 = new NpgsqlCommand(partySql, conn))
+                    {
+                        cmd2.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd2.Parameters.AddWithValue("p_groupid", selectedGroupId);
+                        using (var reader2 = cmd2.ExecuteReader())
+                        {
+                            while (reader2.Read())
+                            {
+                                model.PartiesInGroup.Add(new PartyModel
+                                {
+                                    Id = reader2.GetInt32(0),
+                                    PartyName = reader2.GetString(1),
+                                    OpeningBalance = reader2.IsDBNull(2) ? 0m : reader2.GetDecimal(2)
+                                });
+                            }
+                        }
+                    }
+
+                    model.TotalAmount = model.PartiesInGroup.Sum(p => p.OpeningBalance ?? 0);
+                }
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult GetPartiesNotInGroup(int groupId)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var parties = new List<object>();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string sql = @"SELECT id, party_name, opening_balance FROM parties 
+                        WHERE companyid = @p_companyid AND (partygroupid IS NULL OR partygroupid = 0 OR partygroupid != @p_groupid)
+                        ORDER BY party_name";
+
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.Parameters.AddWithValue("p_groupid", groupId);
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                parties.Add(new
+                                {
+                                    id = reader.GetInt32(0),
+                                    partyName = reader.GetString(1),
+                                    amount = reader.IsDBNull(2) ? 0m : reader.GetDecimal(2)
+                                });
+                            }
+                        }
+                    }
+                }
+
+                return Json(new { success = true, parties });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult MovePartiesToGroup([FromBody] MovePartiesToGroupRequest request)
+        {
+            try
+            {
+                if (request == null || request.PartyIds == null || !request.PartyIds.Any())
+                    return Json(new { success = false, message = "No parties selected." });
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    // Get group name
+                    string groupName = "";
+                    using (var gCmd = new NpgsqlCommand("SELECT groupname FROM partygroup WHERE id = @id", conn))
+                    {
+                        gCmd.Parameters.AddWithValue("id", request.GroupId);
+                        var result = gCmd.ExecuteScalar();
+                        groupName = result?.ToString() ?? "";
+                    }
+
+                    foreach (var partyId in request.PartyIds)
+                    {
+                        string updateSql = @"UPDATE parties SET partygroupid = @p_groupid, partygroup = @p_groupname 
+                            WHERE id = @p_id AND companyid = @p_companyid";
+                        using (var cmd = new NpgsqlCommand(updateSql, conn))
+                        {
+                            cmd.Parameters.AddWithValue("p_groupid", request.GroupId);
+                            cmd.Parameters.AddWithValue("p_groupname", groupName);
+                            cmd.Parameters.AddWithValue("p_id", partyId);
+                            cmd.Parameters.AddWithValue("p_companyid", companyId);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                return Json(new { success = true, message = "Parties moved to group successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult UpdatePartyGroup([FromBody] PartyGroupUpdateRequest request)
+        {
+            try
+            {
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string sql = "UPDATE partygroup SET groupname = @p_name WHERE id = @p_id";
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_name", request.Name ?? "");
+                        cmd.Parameters.AddWithValue("p_id", request.Id);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Update group name in parties table too
+                    string updatePartiesSql = "UPDATE parties SET partygroup = @p_name WHERE partygroupid = @p_id";
+                    using (var cmd2 = new NpgsqlCommand(updatePartiesSql, conn))
+                    {
+                        cmd2.Parameters.AddWithValue("p_name", request.Name ?? "");
+                        cmd2.Parameters.AddWithValue("p_id", request.Id);
+                        cmd2.ExecuteNonQuery();
+                    }
+                }
+
+                return Json(new { success = true, message = "Group updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult DeletePartyGroup(int id)
+        {
+            try
+            {
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    // Remove group assignment from parties
+                    string clearSql = "UPDATE parties SET partygroupid = 0, partygroup = '' WHERE partygroupid = @p_id";
+                    using (var cmd = new NpgsqlCommand(clearSql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_id", id);
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    // Delete group
+                    string deleteSql = "DELETE FROM partygroup WHERE id = @p_id";
+                    using (var cmd2 = new NpgsqlCommand(deleteSql, conn))
+                    {
+                        cmd2.Parameters.AddWithValue("p_id", id);
+                        cmd2.ExecuteNonQuery();
+                    }
+                }
+
+                return Json(new { success = true, message = "Group deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult RemovePartyFromGroup(int partyId)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                using (var conn = new NpgsqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string sql = "UPDATE parties SET partygroupid = 0, partygroup = '' WHERE id = @p_id AND companyid = @p_companyid";
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        cmd.Parameters.AddWithValue("p_id", partyId);
+                        cmd.Parameters.AddWithValue("p_companyid", companyId);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                return Json(new { success = true, message = "Party removed from group." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         // ?? GSTIN Lookup: check cache first, then call external API ??
         [HttpGet]
         public async Task<IActionResult> LookupGstin(string gstin)

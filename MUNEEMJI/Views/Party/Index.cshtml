@@ -3,36 +3,48 @@
     ViewData["Title"] = "Parties";
 }
 
-<div class="container-fluid">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<div class="container-fluid" style="padding: 0; font-size: 13px;">
     <!-- Header Section -->
-    <div class="d-flex justify-content-between align-items-center py-3 border-bottom">
-        <div class="d-flex align-items-center">
-            <h4 class="mb-0 me-2">Parties</h4>
+    <div class="d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+        <div class="d-flex align-items-center position-relative">
+            <div class="dropdown">
+                <h5 class="mb-0 me-2 dropdown-toggle" style="font-size: 16px; font-weight: 600; cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
+                    Parties
+                </h5>
+                <ul class="dropdown-menu" style="font-size: 13px;">
+                    <li><a class="dropdown-item active" href="/Web/Party/Index"><i class="bi bi-check me-1"></i>Parties</a></li>
+                    <li><a class="dropdown-item" href="/Web/Party/Group">Groups</a></li>
+                </ul>
+            </div>
         </div>
         <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-danger btn-sm" onclick="window.location.href='/Web/party/add'">
+            <button class="btn btn-danger btn-sm" style="font-size: 12px; padding: 4px 12px;" onclick="window.location.href='/Web/party/add'">
                 <i class="bi bi-plus"></i> Add Party
             </button>
-            <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Party/Index?returnUrl=' + encodeURIComponent(window.location.href)" style="font-size: 20px; color: #fff; background-color:#007bff;border: 2px solid #89bcf3;border-radius: 15%; padding-bottom:2px;padding-top:0px;padding-left:6px; padding-right:6px;">
+            <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Party/Index?returnUrl=' + encodeURIComponent(window.location.href)" style="font-size: 16px; color: #fff; background-color:#007bff;border: 1px solid #89bcf3;border-radius: 15%; padding: 2px 5px;">
             </button>
         </div>
     </div>
 
     <div class="row g-0">
         <!-- Left Sidebar: Party Search and List -->
-        <div class="col-md-4 border-end" style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
+        <div class="col-md-3 border-end" style="height: calc(100vh - 100px); display: flex; flex-direction: column;">
             <!-- Search Box with Dropdown -->
-            <div class="p-3 border-bottom">
+            <div class="p-2 border-bottom">
                 <div class="position-relative">
-                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
-                    <input type="text" id="searchInput" class="form-control ps-4" placeholder="Search Party Name" autocomplete="off" />
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 12px;"></i>
+                    <input type="text" id="searchInput" class="form-control form-control-sm ps-4" placeholder="Search Party Name" autocomplete="off" style="font-size: 12px;" />
                     <div id="searchDropdown" class="position-absolute w-100 bg-white border rounded mt-1" style="display: none; max-height: 300px; overflow-y: auto; z-index: 1000; left: 0; top: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                     </div>
                 </div>
             </div>
 
             <!-- Party List Header -->
-            <div class="d-flex justify-content-between align-items-center p-3 bg-light small text-muted border-bottom">
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-light small text-muted border-bottom" style="font-size: 11px;">
                 <div class="d-flex align-items-center">
                     <span>Party Name</span>
                     <i class="bi bi-funnel ms-1"></i>
@@ -46,21 +58,22 @@
             <!-- Party List with scrollbar -->
             <div class="list-group list-group-flush" id="partyList" style="flex: 1; overflow-y: scroll; overflow-x: hidden;">
                 @foreach (var party in Model.Parties)
-                {
-                    <a class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center py-3 party-item @(party.Id == Model.SelectedParty?.Id ? "bg-primary text-white" : "")"
-                       href="#" data-party-id="@party.Id" data-party-name="@party.PartyName" onclick="selectParty('@party.Id'); return false;">
-                        <span class="party-name">@party.PartyName</span>
-                        <span class="fw-bold">
-                            ₹ @((party?.OpeningBalance ?? 0) > 0
-                              ? party?.OpeningBalance?.ToString("0.00") ?? "0.00"
-                              : "0.00")
-                        </span>
-                    </a>
-                }
+                    {
+                        var amtDisplay = (party?.OpeningBalance ?? 0) > 0
+                            ? party?.OpeningBalance?.ToString("N2") ?? "0.00"
+                            : "0.00";
+                        <a class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center py-2 px-2 party-item @(party.Id == Model.SelectedParty?.Id ? "party-selected" : "")"
+                           href="#" data-party-id="@party.Id" data-party-name="@party.PartyName" onclick="selectParty('@party.Id'); return false;" style="font-size: 12px;">
+                            <span class="party-name text-truncate-party" title="@party.PartyName">@party.PartyName</span>
+                            <span class="fw-bold text-truncate-amount" title="₹ @amtDisplay" style="font-size: 11px;">
+                                @amtDisplay
+                            </span>
+                        </a>
+                    }
             </div>
 
             <!-- Slider Control -->
-            <div class="p-3 border-top bg-light d-flex align-items-center justify-content-between">
+            <div class="p-2 border-top bg-light d-flex align-items-center justify-content-between">
                 <button class="btn btn-sm btn-outline-secondary" onclick="scrollUp()" title="Scroll Up">
                     <i class="bi bi-chevron-up"></i>
                 </button>
@@ -72,49 +85,61 @@
         </div>
 
         <!-- Right Panel: Party Details and Transactions -->
-        <div class="col-md-8">
+        <div class="col-md-9">
             @if (Model.SelectedParty != null)
             {
                 <!-- Party Details Header -->
-                <div class="p-4 border-bottom">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="mb-0 d-flex align-items-center">
+                <div class="p-3 border-bottom">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <h6 class="mb-0 d-flex align-items-center" style="font-size: 14px; font-weight: 600;">
                             @Model.SelectedParty.PartyName
                             <a asp-action="Add" asp-route-id="@Model.SelectedParty.Id" class="btn btn-sm btn-outline-secondary ms-2 p-1">
                                 <i class="bi bi-pencil"></i>
                             </a>
-                        </h5>
+                        </h6>
                     </div>
 
                     <!-- Party Information Grid -->
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <small class="text-muted">Phone Number</small>
-                            <div class="fw-medium">@(Model.SelectedParty.PhoneNumber ?? "N/A")</div>
-                        </div>
-                        <div class="col-md-3">
-                            <small class="text-muted">Email</small>
-                            <div class="fw-medium" style="word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">@(Model.SelectedParty.Email ?? "N/A")</div>
-                        </div>
-                        <div class="col-md-3">
-                            <small class="text-muted">GSTIN</small>
-                            <div class="fw-medium">@(Model.SelectedParty.GSTIN ?? "N/A")</div>
-                        </div>
-                        <div class="col-md-3">
-                            <small class="text-muted">Billing Address</small>
-                            <div class="fw-medium">@(Model.SelectedParty.BillingAddress ?? "N/A")</div>
-                        </div>
+                    <div class="row g-2">
+                        @if (!string.IsNullOrWhiteSpace(Model.SelectedParty.PhoneNumber))
+                        {
+                            <div class="col-auto">
+                                <small class="text-muted" style="font-size: 11px;">Phone Number</small>
+                                <div class="fw-medium detail-hover-value" title="@Model.SelectedParty.PhoneNumber" style="font-size: 12px;">@Model.SelectedParty.PhoneNumber</div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.SelectedParty.Email))
+                        {
+                            <div class="col-auto">
+                                <small class="text-muted" style="font-size: 11px;">Email</small>
+                                <div class="fw-medium detail-hover-value" title="@Model.SelectedParty.Email" style="font-size: 12px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">@Model.SelectedParty.Email</div>
+                            </div>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.SelectedParty.GSTIN))
+                        {
+                            <div class="col-auto">
+                                <small class="text-muted" style="font-size: 11px;">GSTIN</small>
+                                <div class="fw-medium detail-hover-value" title="@Model.SelectedParty.GSTIN" style="font-size: 12px;">@Model.SelectedParty.GSTIN</div>
+                            </div>
+                        }
                     </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.SelectedParty.BillingAddress))
+                    {
+                        <div class="mt-1">
+                            <small class="text-muted" style="font-size: 11px;">Billing Address</small>
+                            <div class="fw-medium detail-hover-value text-truncate-address" title="@Model.SelectedParty.BillingAddress" style="font-size: 12px;">@Model.SelectedParty.BillingAddress</div>
+                        </div>
+                    }
                 </div>
 
                 <!-- Transactions Section -->
-                <div class="p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0">Transactions</h6>
+                <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0" style="font-size: 13px; font-weight: 600;">Transactions</h6>
                         <div class="d-flex gap-2">
                             <div class="position-relative">
-                                <input type="text" id="transactionSearchInput" class="form-control form-control-sm" placeholder="Search transactions..." style="width: 200px; height: 39px; padding-left: 30px;" />
-                                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
+                                <input type="text" id="transactionSearchInput" class="form-control form-control-sm" placeholder="Search transactions..." style="width: 180px; height: 30px; padding-left: 28px; font-size: 12px;" />
+                                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 11px;"></i>
                             </div>
                             <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
                                 <i class="bi bi-printer"></i>
@@ -224,9 +249,14 @@
         border-color: #0d6efd !important;
     }
 
+    .party-selected {
+        background-color: #e3f0ff !important;
+        border-left: 3px solid #4da3ff !important;
+    }
+
     .table th {
         font-weight: 500;
-        font-size: 0.875rem;
+        font-size: 0.75rem;
         color: #6c757d;
     }
 
@@ -239,9 +269,86 @@
         transition: background-color 0.2s;
     }
 
-        .party-item:not(.bg-primary):hover {
+        .party-item:not(.party-selected):hover {
             background-color: #f0f0f0;
         }
+
+    /* Truncate long party names */
+    .text-truncate-party {
+        display: inline-block;
+        max-width: 60%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    /* Truncate long amounts */
+    .text-truncate-amount {
+        display: inline-block;
+        max-width: 38%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: right;
+        vertical-align: middle;
+    }
+
+    /* Truncate billing address */
+    .text-truncate-address {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Hover tooltip for detail values */
+    .detail-hover-value {
+        position: relative;
+        cursor: default;
+    }
+
+    .detail-hover-value:hover::after {
+        content: attr(title);
+        position: absolute;
+        left: 0;
+        top: 100%;
+        z-index: 1050;
+        background: #3b5998;
+        color: #fff;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: normal;
+        word-break: break-all;
+        max-width: 400px;
+        min-width: 120px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        pointer-events: none;
+    }
+
+    /* Hover tooltip for party list items */
+    .text-truncate-party:hover::after,
+    .text-truncate-amount:hover::after {
+        content: attr(title);
+        position: absolute;
+        left: 0;
+        top: 100%;
+        z-index: 1050;
+        background: #3b5998;
+        color: #fff;
+        padding: 5px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        pointer-events: none;
+    }
+
+    .text-truncate-party,
+    .text-truncate-amount {
+        position: relative;
+    }
 
     #partyList {
         scrollbar-width: thin;

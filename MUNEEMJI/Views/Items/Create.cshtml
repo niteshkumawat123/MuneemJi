@@ -9,13 +9,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Item</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background-color: #f5f5f5;
-            line-height: 1.6;
+            line-height: 1.4;
+            font-size: 12px;
         }
 
         .page-container {
@@ -28,7 +32,7 @@
         }
 
         .page-header {
-            padding: 20px 25px;
+            padding: 12px 20px;
             border-bottom: 1px solid #e5e5e5;
             display: flex;
             justify-content: space-between;
@@ -51,14 +55,14 @@
         }
 
             .header-toggle .toggle-option {
-                padding: 8px 20px;
+                padding: 5px 14px;
                 border-radius: 20px;
                 border: none;
                 background: none;
                 cursor: pointer;
                 font-weight: 500;
                 transition: all 0.3s;
-                font-size: 14px;
+                font-size: 12px;
             }
 
                 .header-toggle .toggle-option.active {
@@ -73,18 +77,18 @@
         }
 
         .page-title {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 600;
             color: #333;
             margin: 0;
         }
 
         .page-body {
-            padding: 25px;
+            padding: 15px 20px;
         }
 
         .page-footer {
-            padding: 15px 25px;
+            padding: 10px 20px;
             border-top: 1px solid #e5e5e5;
             background: #fafafa;
             display: flex;
@@ -96,17 +100,18 @@
             display: flex;
             border-radius: 25px;
             padding: 4px;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
         .toggle-option {
-            padding: 8px 20px;
+            padding: 5px 14px;
             border-radius: 20px;
             border: none;
             background: none;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.3s;
+            font-size: 12px;
         }
 
             .toggle-option.active {
@@ -117,8 +122,8 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr auto;
-            gap: 20px;
-            margin-bottom: 20px;
+            gap: 12px;
+            margin-bottom: 12px;
             align-items: end;
         }
 
@@ -144,18 +149,18 @@
 
         .form-label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             font-weight: 500;
             color: #333;
-            font-size: 14px;
+            font-size: 11px;
         }
 
         .form-input {
             width: 100%;
-            padding: 12px;
+            padding: 6px 8px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            border-radius: 3px;
+            font-size: 12px;
             box-sizing: border-box;
         }
 
@@ -167,20 +172,20 @@
 
         .form-select {
             width: 100%;
-            padding: 12px;
+            padding: 6px 8px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 3px;
             background: white;
-            font-size: 14px;
+            font-size: 12px;
             box-sizing: border-box;
         }
 
         .form-textarea {
             width: 100%;
-            padding: 12px;
+            padding: 6px 8px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            border-radius: 3px;
+            font-size: 12px;
             box-sizing: border-box;
             resize: vertical;
         }
@@ -189,10 +194,10 @@
             background: #007bff;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
+            padding: 6px 16px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
         }
 
@@ -200,10 +205,10 @@
             background: #6c757d;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
+            padding: 6px 16px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
         }
 
@@ -213,22 +218,22 @@
             color: #007bff;
             cursor: pointer;
             text-decoration: none;
-            font-size: 14px;
-            padding: 8px 16px;
+            font-size: 11px;
+            padding: 4px 10px;
         }
 
         .tabs {
             display: flex;
             border-bottom: 1px solid #ddd;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
         .tab {
-            padding: 12px 20px;
+            padding: 6px 12px;
             border: none;
             background: none;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             color: #666;
             border-bottom: 2px solid transparent;
@@ -248,25 +253,25 @@
             }
 
         .pricing-section {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             background: #f8f9fa;
-            border-radius: 6px;
-            padding: 20px;
+            border-radius: 5px;
+            padding: 12px 14px;
             border: 1px solid #e9ecef;
         }
 
         .pricing-title {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             color: #333;
         }
 
         .pricing-row {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: end;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .input-group {
@@ -281,11 +286,11 @@
         .wholesale-link {
             color: #007bff;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 12px;
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .manufacturing-table {
@@ -300,7 +305,7 @@
 
             .manufacturing-table th,
             .manufacturing-table td {
-                padding: 12px 16px;
+                padding: 6px 10px;
                 text-align: left;
                 border-bottom: 1px solid #e8e8e8;
             }
@@ -309,7 +314,7 @@
                 background: linear-gradient(135deg, #f8f9fa, #e9ecef);
                 font-weight: 600;
                 color: #495057;
-                font-size: 12px;
+                font-size: 11px;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
             }
@@ -325,11 +330,11 @@
             .manufacturing-table input,
             .manufacturing-table select {
                 width: 100%;
-                padding: 8px 12px;
+                padding: 5px 8px;
                 border: 1px solid #dee2e6;
-                border-radius: 6px;
+                border-radius: 4px;
                 box-sizing: border-box;
-                font-size: 14px;
+                font-size: 12px;
                 transition: border-color 0.2s, box-shadow 0.2s;
             }
 
@@ -351,13 +356,13 @@
             background: none;
             border: 1px dashed #007bff;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 12px;
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            margin-bottom: 20px;
-            padding: 8px 16px;
-            border-radius: 6px;
+            gap: 4px;
+            margin-bottom: 12px;
+            padding: 5px 12px;
+            border-radius: 4px;
             transition: all 0.2s;
         }
 
@@ -368,11 +373,11 @@
 
         .cost-summary {
             background: linear-gradient(135deg, #fff8e1, #fef9e7);
-            padding: 18px 24px;
-            border-radius: 8px;
+            padding: 10px 14px;
+            border-radius: 5px;
             border-left: 4px solid #f39c12;
-            margin-top: 20px;
-            font-size: 15px;
+            margin-top: 12px;
+            font-size: 12px;
             box-shadow: 0 2px 8px rgba(243, 156, 18, 0.1);
         }
 
@@ -410,10 +415,10 @@
 
         .help-section {
             color: #666;
-            font-size: 13px;
+            font-size: 11px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .video-link {
@@ -425,10 +430,10 @@
         }
 
         .date-input {
-            padding: 12px;
+            padding: 6px 8px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            border-radius: 3px;
+            font-size: 12px;
             width: 100%;
             box-sizing: border-box;
         }
@@ -450,14 +455,14 @@
         .two-column-layout {
             display: grid;
             /*             grid-template-columns: 1fr 1fr;
-                                                                 */ gap: 30px;
+                                                                 */ gap: 15px;
         }
 
         .price-input-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             align-items: end;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .price-input-main {
@@ -465,14 +470,14 @@
         }
 
         .price-input-small {
-            flex: 0 0 247px;
+            flex: 0 0 200px;
         }
 
         .info-icon {
             color: #999;
-            font-size: 14px;
+            font-size: 12px;
             cursor: help;
-            margin-left: 5px;
+            margin-left: 4px;
         }
 
         /* Responsive design */
@@ -1225,6 +1230,18 @@
 
     <script>
 
+        // Configure toastr
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            timeOut: 3000,
+            showEasing: 'swing',
+            hideEasing: 'linear',
+            showMethod: 'fadeIn',
+            hideMethod: 'fadeOut'
+        };
+
                 let messageModalAction = null;
 
         function showMessageModal(isSuccess, message, redirectUrl = null) {
@@ -1463,13 +1480,14 @@
                     const message = result.message || (isUpdate
                         ? 'Item updated successfully!'
                         : 'Item has been saved successfully!');
-                    showMessageModal(true, message, '/Web/Items/Products');
+                    toastr.success(message);
+                    setTimeout(() => { window.location.href = '/Web/Items/Products'; }, 1500);
                 } else {
-                    showMessageModal(false, result.message || 'Error submitting form. Please try again.');
+                    toastr.error(result.message || 'Error submitting form. Please try again.');
                 }
             } catch (error) {
                 loader.style.display = 'none';
-                showMessageModal(false, 'Network error: ' + error.message);
+                toastr.error('Network error: ' + error.message);
             }
         }
 

@@ -27,7 +27,7 @@
     }
 
     .cat-main-wrapper {
-        margin: -1.5rem 0 -1.5rem 0;
+        margin: 0;
         background: white;
         display: flex;
         flex-direction: column;
@@ -664,27 +664,27 @@
                 <h5 class="modal-title" id="addCategoryModalLabel" style="font-weight: 600; color: #2c3e50;">Add Category</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" style="padding: 10px 24px 20px;">
+            <div class="modal-body" style="padding: 10px 24px 16px;">
                 <div class="mb-3">
-                    <label for="categoryNameInput" class="form-label" style="font-size: 14px; color: #6c757d; margin-bottom: 8px;">Enter Category Name</label>
+                    <label for="categoryNameInput" class="form-label" style="font-size: 12px; color: #6c757d; margin-bottom: 4px;">Enter Category Name</label>
                     <input type="hidden" id="categoryIdInput" value="0">
                     <input type="text"
                            class="form-control"
                            id="categoryNameInput"
                            placeholder="e.g., Grocery"
-                           style="border-radius: 8px; padding: 12px; border: 1px solid #dee2e6;"
+                           style="border-radius: 6px; padding: 8px 10px; border: 1px solid #dee2e6; font-size: 13px;"
                            maxlength="100">
                     <div class="invalid-feedback" id="categoryNameError" style="display: none;">
                         Please enter a category name
                     </div>
                 </div>
             </div>
-            <div class="modal-footer" style="border-top: none; padding: 10px 24px 20px;">
+            <div class="modal-footer" style="border-top: none; padding: 8px 24px 16px;">
                 <button type="button"
                         class="btn w-100"
                         id="saveCategoryBtn"
                         onclick="saveCategory();"
-                        style="background-color: #dc3545; color: white; border: none; border-radius: 8px; padding: 12px; font-weight: 500;">
+                        style="background-color: #dc3545; color: white; border: none; border-radius: 6px; padding: 8px; font-weight: 500; font-size: 13px;">
                     Create
                 </button>
             </div>
@@ -707,18 +707,18 @@
                     Are you sure you want to delete this category? This action cannot be undone.
                 </p>
             </div>
-            <div class="modal-footer" style="border-top: none; padding: 10px 24px 20px; gap: 10px;">
+            <div class="modal-footer" style="border-top: none; padding: 8px 24px 16px; gap: 10px;">
                 <button type="button"
                         class="btn"
                         data-bs-dismiss="modal"
-                        style="background-color: #6c757d; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 500; flex: 1;">
+                        style="background-color: #6c757d; color: white; border: none; border-radius: 6px; padding: 7px 16px; font-weight: 500; font-size: 13px; flex: 1;">
                     Cancel
                 </button>
                 <button type="button"
                         class="btn"
                         id="confirmDeleteBtn"
                         onclick="confirmDeleteCategory();"
-                        style="background-color: #dc3545; color: white; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 500; flex: 1;">
+                        style="background-color: #dc3545; color: white; border: none; border-radius: 6px; padding: 7px 16px; font-weight: 500; font-size: 13px; flex: 1;">
                     Delete
                 </button>
             </div>

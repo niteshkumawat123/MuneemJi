@@ -28,7 +28,7 @@
     }
 
     .services-main-wrapper {
-        margin: -1.5rem 0 -1.5rem 0;
+        margin: 0;
         background: white;
         display: flex;
         flex-direction: column;
@@ -1076,11 +1076,18 @@
                     'Content-Type': 'application/json',
                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
                 }
-            }).then(response => {
-                if (response.ok) {
-                    deleteModal.hide();
-                    window.location.href = '/Web/Services/Service';
+            }).then(response => response.json())
+            .then(data => {
+                deleteModal.hide();
+                if (data.success) {
+                    toastr.success(data.message || 'Service deleted successfully!');
+                    setTimeout(() => { window.location.href = '/Web/Services/Service'; }, 1500);
+                } else {
+                    toastr.error(data.message || 'Failed to delete service.');
                 }
+            }).catch(error => {
+                deleteModal.hide();
+                toastr.error('An error occurred. Please try again.');
             });
         });
     }

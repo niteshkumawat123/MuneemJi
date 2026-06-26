@@ -12,21 +12,37 @@
 @section Styles {
     <style>
         .field {
-            margin-bottom: 15px;
+            margin-bottom: 6px;
+        }
+
+        label {
+            font-size: 12px;
+            margin-bottom: 2px;
+            color: #555;
+        }
+
+        .form-control, .form-select {
+            font-size: 12px;
+            padding: 4px 8px;
+            height: 32px;
+        }
+
+        textarea.form-control {
+            height: 60px;
         }
 
         .toggle-container {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 6px;
         }
 
         .switch {
             position: relative;
             display: inline-block;
-            width: 40px;
-            height: 20px;
+            width: 32px;
+            height: 16px;
         }
 
             .switch input {
@@ -48,27 +64,27 @@
         }
 
             .slider:before {
-                position: absolute;
-                content: "";
-                height: 16px;
-                width: 16px;
-                left: 2px;
-                bottom: 2px;
-                background-color: white;
-                transition: .4s;
-                border-radius: 50%;
-            }
+                    position: absolute;
+                    content: "";
+                    height: 12px;
+                    width: 12px;
+                    left: 2px;
+                    bottom: 2px;
+                    background-color: white;
+                    transition: .4s;
+                    border-radius: 50%;
+                }
 
         input:checked + .slider {
             background-color: #3b82f6;
         }
 
             input:checked + .slider:before {
-                transform: translateX(20px);
+                transform: translateX(16px);
             }
 
         .toggle-label {
-            font-size: 14px;
+            font-size: 12px;
             cursor: pointer;
         }
 
@@ -127,22 +143,22 @@
                 </style>
             }
 
-<div class="container-fluid mt-4">
-    <h2>Add Party</h2>
+<div class="container-fluid mt-1 px-3" style="font-size: 12px;">
+    <h6 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Add Party</h6>
     <form asp-action="Add" method="post" onsubmit="return validateAndPrepareForm()" id="partyForm">
-        <div class="row mb-3">
+        <div class="row mb-2">
             <input type="hidden" name="Id" value="@Model.Id" />
 
             <div class="col-md-4 field">
                 <label asp-for="PartyName">Party Name *</label>
-                <input asp-for="PartyName" class="form-control" required />
+                <input asp-for="PartyName" class="form-control form-control-sm" required />
                 <span asp-validation-for="PartyName" class="text-danger"></span>
             </div>
             <div class="col-md-4 field">
                 <label asp-for="GSTIN">GSTIN</label>
-                <div class="input-group">
-                    <input asp-for="GSTIN" class="form-control" maxlength="15" style="text-transform:uppercase;" oninput="validateGstinField(this)" />
-                    <button type="button" class="btn btn-outline-primary" id="btnGstinLookup" title="Verify GSTIN" onclick="lookupGstin()">
+                <div class="input-group input-group-sm">
+                    <input asp-for="GSTIN" class="form-control form-control-sm" maxlength="15" style="text-transform:uppercase;" oninput="validateGstinField(this)" />
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="btnGstinLookup" title="Verify GSTIN" onclick="lookupGstin()">
                         <i class="bi bi-search" id="gstinSearchIcon"></i>
                         <span class="spinner-border spinner-border-sm d-none" id="gstinSpinner" role="status"></span>
                     </button>
@@ -153,7 +169,7 @@
             </div>
             <div class="col-md-4 field">
                 <label asp-for="PhoneNumber">Phone Number</label>
-                <input asp-for="PhoneNumber" class="form-control" type="tel" maxlength="10" oninput="validatePhoneField(this)" />
+                <input asp-for="PhoneNumber" class="form-control form-control-sm" type="tel" maxlength="10" oninput="validatePhoneField(this)" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                 <div class="field-error-message" id="phoneError">Please enter a valid 10-digit phone number</div>
             </div>
@@ -161,31 +177,31 @@
             <div class="col-md-4 field">
                 <label asp-for="PartyGroup">Party Group</label>
                 <input type="hidden" id="PartyGroupId" name="PartyGroupId" />
-                <select id="PartyGroup" asp-for="PartyGroup" class="form-select">
-                    <option value="">-- Select Party Group --</option>
+                <select id="PartyGroup" asp-for="PartyGroup" class="form-select form-select-sm">
+                    <option value="">Party Group</option>
                 </select>
                 <span asp-validation-for="PartyGroup" class="text-danger"></span>
             </div>
         </div>
 
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <ul class="nav nav-tabs" id="myTab" role="tablist" style="font-size: 12px;">
             <li class="nav-item">
-                <a class="nav-link active" data-bs-toggle="tab" href="#gstTab">GST & Address</a>
+                <a class="nav-link active py-1 px-3" data-bs-toggle="tab" href="#gstTab">GST & Address</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#creditTab">Credit & Balance</a>
+                <a class="nav-link py-1 px-3" data-bs-toggle="tab" href="#creditTab">Credit & Balance</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="tab" href="#additionalTab">Additional Fields</a>
+                <a class="nav-link py-1 px-3" data-bs-toggle="tab" href="#additionalTab">Additional Fields</a>
             </li>
         </ul>
 
-        <div class="tab-content mt-3">
+        <div class="tab-content mt-2">
             <div class="tab-pane fade show active" id="gstTab">
-                <div class="row mb-3">
+                <div class="row mb-2">
                     <div class="col-md-4 field">
                         <label asp-for="GSTType">GST Type</label>
-                        <select asp-for="GSTType" class="form-select">
+                        <select asp-for="GSTType" class="form-select form-select-sm">
                             <option value="Unregistered/Consumer">Unregistered/Consumer</option>
                             <option value="Registered Business">Registered Business</option>
                             <option value="Composition Scheme">Composition Scheme</option>
@@ -195,7 +211,7 @@
 
                     <div class="col-md-4 field">
                         <label asp-for="State">State</label>
-                        <select asp-for="State" class="form-select" asp-items="@(new SelectList(Model.States, "StateId", "Name"))">
+                        <select asp-for="State" class="form-select form-select-sm" asp-items="@(new SelectList(Model.States, "StateId", "Name"))">
                             <option value="">-- Select State --</option>
                         </select>
                         <span asp-validation-for="State" class="text-danger"></span>
@@ -203,35 +219,35 @@
 
                     <div class="col-md-4 field">
                         <label asp-for="Email">Email ID</label>
-                        <input asp-for="Email" class="form-control" type="email" oninput="validateEmailField(this)" />
+                        <input asp-for="Email" class="form-control form-control-sm" type="email" oninput="validateEmailField(this)" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                         <div class="field-error-message" id="emailError">Please enter a valid email address</div>
                     </div>
                 </div>
 
-                <div class="row mb-3">
+                <div class="row mb-2">
                     <div class="col-md-6 field">
                         <label asp-for="BillingAddress">Billing Address</label>
-                        <textarea asp-for="BillingAddress" class="form-control"></textarea>
+                        <textarea asp-for="BillingAddress" class="form-control form-control-sm" rows="2"></textarea>
                         <span asp-validation-for="BillingAddress" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6 field">
                         <label asp-for="ShippingAddress">Shipping Address</label>
-                        <textarea asp-for="ShippingAddress" class="form-control"></textarea>
+                        <textarea asp-for="ShippingAddress" class="form-control form-control-sm" rows="2"></textarea>
                         <span asp-validation-for="ShippingAddress" class="text-danger"></span>
                     </div>
                 </div>
             </div>
 
             <div class="tab-pane fade" id="creditTab">
-                <div class="row mb-3">
+                <div class="row mb-2">
                     <div class="col-md-4 field">
                         <label asp-for="OpeningBalance">Opening Balance</label>
-                        <input asp-for="OpeningBalance" class="form-control" placeholder="Opening Balance" />
+                        <input asp-for="OpeningBalance" class="form-control form-control-sm" placeholder="Opening Balance" />
                         <span asp-validation-for="OpeningBalance" class="text-danger" oninput="autoCheck('EnableOpeningBalance')"></span>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-2" style="font-size: 12px;">
                         <input type="radio" id="ToPay" name="BalanceDirection" value="ToPay"
                         @(Model.BalanceDirection == "ToPay" ? "checked" : "") onclick="autoCheck('EnableOpeningBalance')" />
                         <label for="ToPay">To Pay</label>
@@ -245,7 +261,7 @@
                            style="display: none;" @(Model.EnableOpeningBalance ? "checked" : "") />
                     <div class="col-md-4 field">
                         <label asp-for="AsOfDate">As Of Date</label>
-                        <input asp-for="AsOfDate" type="date" class="form-control" />
+                        <input asp-for="AsOfDate" type="date" class="form-control form-control-sm" />
                         <span asp-validation-for="AsOfDate" class="text-danger"></span>
                     </div>
                 </div>
@@ -265,7 +281,7 @@
 
                 <div id="creditLimitField" class="field">
                     <label asp-for="CreditLimit" class="hidden" id="creditLimitLabel">Credit Limit</label>
-                    <input asp-for="CreditLimit" class="form-control" placeholder="Credit Limit" />
+                    <input asp-for="CreditLimit" class="form-control form-control-sm" placeholder="Credit Limit" />
                     <span asp-validation-for="CreditLimit" class="text-danger"></span>
                 </div>
             </div>
@@ -275,9 +291,9 @@
                     <input class="form-check-input" type="checkbox" id="enableField1"
                            onchange="toggleField('field1', this)"
                     @(Model.AdditionalField1Enabled != null ? "checked" : "") />
-                    <label class="form-check-label" for="enableField1">Enable Additional Field 1</label>
+                    <label class="form-check-label" for="enableField1" style="font-size: 12px;">Enable Additional Field 1</label>
                 </div>
-                <input type="text" class="form-control mb-3" id="field1" name="AdditionalField1"
+                <input type="text" class="form-control form-control-sm mb-2" id="field1" name="AdditionalField1"
                        placeholder="Additional Field 1 Name"
                        value="@Model.AdditionalField1Value"
                 @(Model.AdditionalField1Value != null ? "" : "disabled") />
@@ -286,9 +302,9 @@
                     <input class="form-check-input" type="checkbox" id="enableField2"
                            onchange="toggleField('field2', this)"
                     @(Model.AdditionalField2Enabled != null ? "checked" : "") />
-                    <label class="form-check-label" for="enableField2">Enable Additional Field 2</label>
+                    <label class="form-check-label" for="enableField2" style="font-size: 12px;">Enable Additional Field 2</label>
                 </div>
-                <input type="text" class="form-control mb-3" id="field2" name="AdditionalField2"
+                <input type="text" class="form-control form-control-sm mb-2" id="field2" name="AdditionalField2"
                        placeholder="Additional Field 2 Name"
                        value="@Model.AdditionalField2Value"
                 @(Model.AdditionalField2Value != null ? "" : "disabled") />
@@ -297,9 +313,9 @@
                     <input class="form-check-input" type="checkbox" id="enableField3"
                            onchange="toggleField('field3', this)"
                     @(Model.AdditionalField3Enabled != null ? "checked" : "") />
-                    <label class="form-check-label" for="enableField3">Enable Additional Field 3</label>
+                    <label class="form-check-label" for="enableField3" style="font-size: 12px;">Enable Additional Field 3</label>
                 </div>
-                <input type="text" class="form-control mb-3" id="field3" name="AdditionalField3"
+                <input type="text" class="form-control form-control-sm mb-2" id="field3" name="AdditionalField3"
                        placeholder="Additional Field 3 Name"
                        value="@Model.AdditionalField3Value"
                 @(Model.AdditionalField3Value != null ? "" : "disabled") />
@@ -308,9 +324,9 @@
                     <input class="form-check-input" type="checkbox" id="enableField4"
                            onchange="toggleField('field4', this)"
                     @(Model.AdditionalField4Enabled != null ? "checked" : "") />
-                    <label class="form-check-label" for="enableField4">Enable Additional Field 4</label>
+                    <label class="form-check-label" for="enableField4" style="font-size: 12px;">Enable Additional Field 4</label>
                 </div>
-                <input type="date" class="form-control mb-3" id="field4" name="AdditionalField4"
+                <input type="date" class="form-control form-control-sm mb-2" id="field4" name="AdditionalField4"
                        value="@(Model.AdditionalField4Value?.ToString("yyyy-MM-dd"))"
                 @(Model.AdditionalField4Value != null ? "" : "disabled") />
             </div>
@@ -318,16 +334,16 @@
 
         @if (Model.Id > 0)
         {
-            <div class="mt-3 text-end">
-                <button type="button" name="deleteBtn" onclick="showDeleteConfirmation(@Model.Id)" class="btn btn-primary">Delete</button>
-                <button type="submit" name="save" value="save" class="btn btn-outline-primary">Update</button>
+            <div class="mt-2 text-end">
+                <button type="button" name="deleteBtn" onclick="showDeleteConfirmation(@Model.Id)" class="btn btn-primary btn-sm" style="font-size: 11px; padding: 4px 12px;">Delete</button>
+                <button type="submit" name="save" value="save" class="btn btn-outline-primary btn-sm" style="font-size: 11px; padding: 4px 12px;">Update</button>
             </div>
         }
         else
         {
-            <div class="mt-3 text-end">
-                <button type="submit" name="save" value="new" class="btn btn-outline-primary">Save & New</button>
-                <button type="submit" name="save" value="save" class="btn btn-primary">Save</button>
+            <div class="mt-2 text-end">
+                <button type="submit" name="save" value="new" class="btn btn-outline-primary btn-sm" style="font-size: 11px; padding: 4px 12px;">Save & New</button>
+                <button type="submit" name="save" value="save" class="btn btn-danger btn-sm" style="font-size: 11px; padding: 4px 12px;">Save</button>
             </div>
         }
     </form>
@@ -394,12 +410,25 @@
 @section Scripts {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-5-theme/1.3.0/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        // Configure toastr
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            timeOut: 3000,
+            showEasing: 'swing',
+            hideEasing: 'linear',
+            showMethod: 'fadeIn',
+            hideMethod: 'fadeOut'
+        };
         let partyGroups = [];
         let savedPartyGroup = '@Model.PartyGroup';
         let savedPartyGroupId = '@Model.PartyGroupId';
@@ -705,30 +734,18 @@
         }
 
         function showMessageModal(isSuccess, message, redirectUrl = null) {
-            const messageModalHeader = document.getElementById('messageModalHeader');
-            const messageModalTitle = document.getElementById('messageModalTitle');
-            const messageModalBody = document.getElementById('messageModalBody');
-
-            messageModalTitle.textContent = isSuccess ? 'Success' : 'Error';
-            messageModalBody.textContent = message;
-
             if (isSuccess) {
-                messageModalHeader.style.backgroundColor = '#28a745';
-                messageModalHeader.style.color = 'white';
+                toastr.success(message);
             } else {
-                messageModalHeader.style.backgroundColor = '#dc3545';
-                messageModalHeader.style.color = 'white';
+                toastr.error(message);
             }
-
-            messageModalAction = redirectUrl;
-            const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
-            messageModal.show();
+            if (redirectUrl) {
+                setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+            }
         }
 
         function redirectAfterMessage() {
-            if (messageModalAction) {
-                window.location.href = messageModalAction;
-            }
+            // No-op since toastr handles redirect via setTimeout
         }
 
                 let clickedButton = null;

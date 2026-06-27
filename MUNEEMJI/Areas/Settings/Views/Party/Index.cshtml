@@ -1,631 +1,154 @@
-﻿@using MUNEEMJI.Models.Setting
+@using MUNEEMJI.Models.Setting
 @model PartySettingsViewModel;
 @{
     ViewData["Title"] = "Party Settings";
     Layout = "~/Areas/Settings/Views/Shared/_SettingsLayout.cshtml";
 }
 
-<script type="text/javascript">
-    function navigateBack() {
-        try {
-            var urlParams = new URLSearchParams(window.location.search);
-            var returnUrl = urlParams.get('returnUrl');
-
-            // If no returnUrl, go to Home/Index
-            if (!returnUrl || returnUrl === '') {
-                window.location.href = '/Web/Home/Index';
-                return;
-            }
-
-            // Decode and check if the returnUrl contains another nested returnUrl
-            var decodedReturnUrl = decodeURIComponent(returnUrl);
-
-            // If nested returnUrl exists (2+ levels), go to Home/Index
-            if (decodedReturnUrl.indexOf('returnUrl=') !== -1) {
-                window.location.href = '/Web/Home/Index';
-            } else {
-                // Single returnUrl, navigate to it normally
-                window.location.href = returnUrl;
-            }
-        } catch (e) {
-            // If any error, go to Home/Index as fallback
-            window.location.href = '/Web/Home/Index';
-        }
-    }
-</script>
-
-
 <style>
-    body {
-        background-color: #f8f9fa;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .party-settings-container {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.0);
-        padding: 0px;
-        position: relative;
-    }
-
-    .settings-sections {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 40px;
-    }
-
-    .settings-section {
-        min-height: 400px;
-    }
-
-    .section-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 25px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .form-check {
-        margin-bottom: 20px;
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-    }
-
-    .form-check-input {
-        width: 18px;
-        height: 18px;
-        margin: 0;
-        border: 2px solid #007bff;
-        border-radius: 3px;
-        background-color: white;
-        cursor: pointer;
-        flex-shrink: 0;
-        margin-top: 2px;
-    }
-
-        .form-check-input:checked {
-            background-color: #007bff;
-            border-color: #007bff;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
-        }
-
-    .form-check-label {
-        color: #333;
-        font-weight: 400;
-        font-size: 15px;
-        line-height: 1.4;
-        cursor: pointer;
-        flex: 1;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .help-icon {
-        color: #6c757d;
-        font-size: 12px;
-        cursor: help;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background-color: #6c757d;
-        color: white;
-        font-weight: bold;
-        flex-shrink: 0;
-    }
-
-    .additional-field-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-    }
-
-    .additional-field-checkbox {
-        width: 18px;
-        height: 18px;
-        border: 2px solid #ccc;
-        border-radius: 3px;
-        background-color: white;
-        cursor: pointer;
-        flex-shrink: 0;
-    }
-
-        .additional-field-checkbox:checked {
-            background-color: #007bff;
-            border-color: #007bff;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='m6 10 3 3 6-6'/%3e%3c/svg%3e");
-        }
-
-    .additional-field-input {
-        flex: 1;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        padding: 8px 12px;
-        font-size: 14px;
-        background-color: white;
-    }
-
-        .additional-field-input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-            outline: none;
-        }
-
-        .additional-field-input::placeholder {
-            color: #adb5bd;
-        }
-
-    .show-in-print-toggle {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .toggle-switch {
-        position: relative;
-        width: 44px;
-        height: 24px;
-        background-color: #ccc;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-        .toggle-switch.active {
-            background-color: #007bff;
-        }
-
-        .toggle-switch::before {
-            content: '';
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            width: 20px;
-            height: 20px;
-            background-color: white;
-            border-radius: 50%;
-            transition: transform 0.3s;
-        }
-
-        .toggle-switch.active::before {
-            transform: translateX(20px);
-        }
-
-    .toggle-label {
-        font-size: 14px;
-        color: #6c757d;
-    }
-
-    .date-type-dropdown {
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        padding: 6px 10px;
-        font-size: 14px;
-        background-color: white;
-        min-width: 100px;
-        margin-left: 5px;
-    }
-
-        .date-type-dropdown:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-            outline: none;
-        }
-
-    .payment-reminder-section {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f8f9fa;
-        border-radius: 6px;
-        border: 1px solid #e9ecef;
-    }
-
-    .reminder-input-group {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 15px;
-    }
-
-    .reminder-text {
-        font-size: 14px;
-        color: #495057;
-    }
-
-    .reminder-days-input {
-        width: 60px;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        padding: 6px 8px;
-        font-size: 14px;
-        text-align: center;
-    }
-
-        .reminder-days-input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-            outline: none;
-        }
-
-    .reminder-link {
-        color: #007bff;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 500;
-        margin-top: 10px;
-        display: inline-block;
-    }
-
-        .reminder-link:hover {
-            text-decoration: underline;
-        }
-
-    .close-btn {
-        position: absolute;
-        top: 20px;
-        right: 25px;
-        background: #6c757d;
-        border: none;
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        color: white;
-        font-size: 16px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-    }
-
-        .close-btn:hover {
-            background: #5a6268;
-        }
-
-    .save-btn {
-        background: #28a745;
-        border: none;
-        color: white;
-        padding: 12px 30px;
-        border-radius: 5px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        margin-top: 30px;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-        .save-btn:hover {
-            background: #218838;
-        }
-
-        .save-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-
-    .loading-spinner {
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid #ffffff;
-        border-radius: 50%;
-        width: 18px;
-        height: 18px;
-        animation: spin 1s linear infinite;
-        display: inline-block;
-        margin-right: 8px;
-    }
-
-    @@keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .alert {
-        padding: 12px 20px;
-        margin: 20px 0;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-
-    .alert-success {
-        color: #155724;
-        background-color: #d4edda;
-        border-color: #c3e6cb;
-    }
-
-    .alert-danger {
-        color: #721c24;
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
-    }
-
-    .activation-notice {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid #dee2e6;
-        border-radius: 8px;
-        padding: 15px 20px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        font-size: 13px;
-        color: #6c757d;
-        max-width: 250px;
-    }
-
-        .activation-notice .title {
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #495057;
-        }
+    .s-container { padding: 10px 14px; background: #fff; }
+    .s-close { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+    .s-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .s-title { font-size: 12px; font-weight: 700; color: #1a3353; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid #e9ecef; text-transform: uppercase; }
+    .s-check { display: flex; align-items: center; margin-bottom: 5px; }
+    .s-check input[type="checkbox"] { width: 14px; height: 14px; margin-right: 6px; cursor: pointer; accent-color: #007bff; }
+    .s-check label { font-size: 11px; color: #444; margin: 0; cursor: pointer; }
+    .s-check .s-info { margin-left: 4px; color: #aaa; font-size: 9px; background: #f0f0f0; border-radius: 50%; width: 13px; height: 13px; display: inline-flex; align-items: center; justify-content: center; }
+    .s-input { padding: 4px 8px; border: 1px solid #dee2e6; border-radius: 3px; font-size: 11px; outline: none; width: 100%; }
+    .s-input:focus { border-color: #007bff; }
+    .s-label { font-size: 10px; color: #666; margin-bottom: 2px; display: block; }
+    .s-reminder { background: #f8f9fa; padding: 8px 10px; border-radius: 4px; border: 1px solid #e9ecef; margin-top: 8px; }
+    .s-reminder-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #555; }
+    .s-field-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+    .s-field-row input[type="checkbox"] { width: 14px; height: 14px; accent-color: #007bff; }
+    .s-field-row input[type="text"] { flex: 1; }
+    .s-toggle { position: relative; width: 32px; height: 16px; background: #ccc; border-radius: 8px; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+    .s-toggle.active { background: #007bff; }
+    .s-toggle::before { content: ''; position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+    .s-toggle.active::before { transform: translateX(16px); }
+    .s-toggle-label { font-size: 9px; color: #888; }
+    .s-toast { position: fixed; top: 16px; right: 16px; background: #28a745; color: #fff; padding: 10px 16px; border-radius: 5px; font-size: 12px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; display: none; }
+    .s-toast.error { background: #dc3545; }
 </style>
 
-<form id="partySettingsForm">
-    <div class="party-settings-container">
+<div class="s-container">
+    <div class="s-close">
+        <button type="button" class="btn-close" style="font-size:10px;" aria-label="Close" onclick="history.back(); return false;"></button>
+    </div>
 
-        <div style="display: flex; justify-content: flex-end;">
-            <button type="button" class="btn-close btn-close-custom"
-                    style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
-                   height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
-                   padding-right: 6px;"
-                    aria-label="Close"
-                    onclick="navigateBack(); return false;">
-            </button>
-        </div>
+    <div id="partyToast" class="s-toast"></div>
 
-        <!-- Alert Messages -->
-        <div id="alertContainer"></div>
+    <form id="partyForm">
+        <div class="s-grid">
+            <!-- Party Settings -->
+            <div>
+                <h3 class="s-title">Party Settings</h3>
+                <div class="s-check"><input type="checkbox" name="PartyGrouping" id="partyGrouping" @(Model?.PartyGrouping == true ? "checked" : "")><label for="partyGrouping">Party Grouping</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="ShippingAddress" id="shippingAddress" @(Model?.ShippingAddress == true ? "checked" : "")><label for="shippingAddress">Shipping Address</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="PrintShippingAddress" id="printShippingAddress" @(Model?.PrintShippingAddress == true ? "checked" : "")><label for="printShippingAddress">Print Shipping Address</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="ManagePartyStatus" id="managePartyStatus" @(Model?.ManagePartyStatus == true ? "checked" : "")><label for="managePartyStatus">Manage Party Status</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="EnablePaymentReminder" id="enablePaymentReminder" @(Model?.EnablePaymentReminder == true ? "checked" : "")><label for="enablePaymentReminder">Enable Payment Reminder</label><span class="s-info">i</span></div>
 
-        <div class="settings-sections">
-            <!-- Party Settings Section -->
-            <div class="settings-section">
-                <h3 class="section-title">Party Settings</h3>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="PartyGrouping" id="partyGrouping" @(Model?.PartyGrouping == true ? "checked" : "")>
-                    <label class="form-check-label" for="partyGrouping">
-                        Party Grouping
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="ShippingAddress" id="shippingAddress" @(Model?.ShippingAddress == true ? "checked" : "")>
-                    <label class="form-check-label" for="shippingAddress">
-                        Shipping Address
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="PrintShippingAddress" id="printShippingAddress" @(Model?.PrintShippingAddress == true ? "checked" : "")>
-                    <label class="form-check-label" for="printShippingAddress">
-                        Print Shipping Address
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="ManagePartyStatus" id="managePartyStatus" @(Model?.ManagePartyStatus == true ? "checked" : "")>
-                    <label class="form-check-label" for="managePartyStatus">
-                        Manage Party Status
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="EnablePaymentReminder" id="enablePaymentReminder" @(Model?.EnablePaymentReminder == true ? "checked" : "")>
-                    <label class="form-check-label" for="enablePaymentReminder">
-                        Enable Payment Reminder
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="payment-reminder-section">
-                    <div class="reminder-input-group">
-                        <span class="reminder-text">Remind me for payment due in</span>
-                        <span class="help-icon">i</span>
-                        <input type="number" name="PaymentReminderDays" id="paymentReminderDays" class="reminder-days-input" value="@(Model?.PaymentReminderDays ?? 1)" min="1" max="365">
-                        <span class="reminder-text">(days)</span>
+                <div class="s-reminder">
+                    <div class="s-reminder-row">
+                        <span>Remind me for payment due in</span>
+                        <input type="number" name="PaymentReminderDays" id="paymentReminderDays" class="s-input" style="width:45px;text-align:center;" value="@(Model?.PaymentReminderDays ?? 1)" min="1" max="365">
+                        <span>(days)</span>
                     </div>
-                    <a href="#" class="reminder-link">Reminder Message ></a>
                 </div>
             </div>
 
-            <!-- Additional Fields Section -->
-            <div class="settings-section">
-                <h3 class="section-title">Additional fields <span class="help-icon">i</span></h3>
-
-                <div class="additional-field-row">
-                    <input class="additional-field-checkbox" type="checkbox" name="AdditionalField1Enabled" id="additionalField1Enabled" @(Model?.AdditionalField1Enabled == true ? "checked" : "")>
-                    <input type="text" name="AdditionalField1" id="additionalField1" class="additional-field-input" placeholder="Additional Field 1" value="@(Model?.AdditionalField1 ?? "")">
-                    <div class="show-in-print-toggle">
-                        <div class="toggle-switch @(Model?.AdditionalField1ShowInPrint == true ? "active" : "")" data-field="additionalField1ShowInPrint"></div>
-                        <span class="toggle-label">Show In Print</span>
-                    </div>
+            <!-- Additional Fields -->
+            <div>
+                <h3 class="s-title">Additional Fields</h3>
+                <div class="s-field-row">
+                    <input type="checkbox" name="AdditionalField1Enabled" id="af1" @(Model?.AdditionalField1Enabled == true ? "checked" : "")>
+                    <input type="text" name="AdditionalField1" class="s-input" placeholder="Additional Field 1" value="@(Model?.AdditionalField1 ?? "")">
+                    <div class="s-toggle @(Model?.AdditionalField1ShowInPrint == true ? "active" : "")" data-field="additionalField1ShowInPrint" onclick="toggleSwitch(this)"></div>
+                    <span class="s-toggle-label">Print</span>
                     <input type="hidden" name="AdditionalField1ShowInPrint" id="additionalField1ShowInPrint" value="@(Model?.AdditionalField1ShowInPrint == true ? "true" : "false")">
                 </div>
-
-                <div class="additional-field-row">
-                    <input class="additional-field-checkbox" type="checkbox" name="AdditionalField2Enabled" id="additionalField2Enabled" @(Model?.AdditionalField2Enabled == true ? "checked" : "")>
-                    <input type="text" name="AdditionalField2" id="additionalField2" class="additional-field-input" placeholder="Additional Field 2" value="@(Model?.AdditionalField2 ?? "")">
-                    <div class="show-in-print-toggle">
-                        <div class="toggle-switch @(Model?.AdditionalField2ShowInPrint == true ? "active" : "")" data-field="additionalField2ShowInPrint"></div>
-                        <span class="toggle-label">Show In Print</span>
-                    </div>
+                <div class="s-field-row">
+                    <input type="checkbox" name="AdditionalField2Enabled" id="af2" @(Model?.AdditionalField2Enabled == true ? "checked" : "")>
+                    <input type="text" name="AdditionalField2" class="s-input" placeholder="Additional Field 2" value="@(Model?.AdditionalField2 ?? "")">
+                    <div class="s-toggle @(Model?.AdditionalField2ShowInPrint == true ? "active" : "")" data-field="additionalField2ShowInPrint" onclick="toggleSwitch(this)"></div>
+                    <span class="s-toggle-label">Print</span>
                     <input type="hidden" name="AdditionalField2ShowInPrint" id="additionalField2ShowInPrint" value="@(Model?.AdditionalField2ShowInPrint == true ? "true" : "false")">
                 </div>
-
-                <div class="additional-field-row">
-                    <input class="additional-field-checkbox" type="checkbox" name="AdditionalField3Enabled" id="additionalField3Enabled" @(Model?.AdditionalField3Enabled == true ? "checked" : "")>
-                    <input type="text" name="AdditionalField3" id="additionalField3" class="additional-field-input" placeholder="Additional Field 3" value="@(Model?.AdditionalField3 ?? "")">
-                    <div class="show-in-print-toggle">
-                        <div class="toggle-switch @(Model?.AdditionalField3ShowInPrint == true ? "active" : "")" data-field="additionalField3ShowInPrint"></div>
-                        <span class="toggle-label">Show In Print</span>
-                    </div>
+                <div class="s-field-row">
+                    <input type="checkbox" name="AdditionalField3Enabled" id="af3" @(Model?.AdditionalField3Enabled == true ? "checked" : "")>
+                    <input type="text" name="AdditionalField3" class="s-input" placeholder="Additional Field 3" value="@(Model?.AdditionalField3 ?? "")">
+                    <div class="s-toggle @(Model?.AdditionalField3ShowInPrint == true ? "active" : "")" data-field="additionalField3ShowInPrint" onclick="toggleSwitch(this)"></div>
+                    <span class="s-toggle-label">Print</span>
                     <input type="hidden" name="AdditionalField3ShowInPrint" id="additionalField3ShowInPrint" value="@(Model?.AdditionalField3ShowInPrint == true ? "true" : "false")">
                 </div>
-
-                <div class="additional-field-row">
-                    <input class="additional-field-checkbox" type="checkbox" name="AdditionalField4Enabled" id="additionalField4Enabled" @(Model?.AdditionalField4Enabled == true ? "checked" : "")>
-                    <input type="text" name="AdditionalField4" id="additionalField4" class="additional-field-input" placeholder="Additional Field 4" value="@(Model?.AdditionalField4 ?? "")">
-                    <select name="AdditionalField4Type" class="date-type-dropdown">
+                <div class="s-field-row">
+                    <input type="checkbox" name="AdditionalField4Enabled" id="af4" @(Model?.AdditionalField4Enabled == true ? "checked" : "")>
+                    <input type="text" name="AdditionalField4" class="s-input" placeholder="Additional Field 4" value="@(Model?.AdditionalField4 ?? "")">
+                    <select name="AdditionalField4Type" class="s-input" style="width:70px;flex:none;">
                         <option value="dd/mm/yy" @(Model?.AdditionalField4Type == "dd/mm/yy" ? "selected" : "")>dd/mm/yy</option>
                         <option value="mm/dd/yy" @(Model?.AdditionalField4Type == "mm/dd/yy" ? "selected" : "")>mm/dd/yy</option>
-                        <option value="yy/mm/dd" @(Model?.AdditionalField4Type == "yy/mm/dd" ? "selected" : "")>yy/mm/dd</option>
                     </select>
-                    <div class="show-in-print-toggle">
-                        <div class="toggle-switch @(Model?.AdditionalField4ShowInPrint == true ? "active" : "")" data-field="additionalField4ShowInPrint"></div>
-                        <span class="toggle-label">Show In Print</span>
-                    </div>
+                    <div class="s-toggle @(Model?.AdditionalField4ShowInPrint == true ? "active" : "")" data-field="additionalField4ShowInPrint" onclick="toggleSwitch(this)"></div>
+                    <span class="s-toggle-label">Print</span>
                     <input type="hidden" name="AdditionalField4ShowInPrint" id="additionalField4ShowInPrint" value="@(Model?.AdditionalField4ShowInPrint == true ? "true" : "false")">
                 </div>
             </div>
-
-            </div>
-
-        <!-- Save Button -->
-        <button type="submit" class="save-btn" id="saveBtn">
-            <span id="saveText">Save Settings</span>
-        </button>
-    </div>
-</form>
-
+        </div>
+    </form>
+</div>
 
 <script>
+    function toggleSwitch(el) {
+        el.classList.toggle('active');
+        var field = el.getAttribute('data-field');
+        document.getElementById(field).value = el.classList.contains('active') ? 'true' : 'false';
+        autoSaveParty();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize toggle switches
-        document.querySelectorAll('.toggle-switch').forEach(function(toggle) {
-            toggle.addEventListener('click', function() {
-                const fieldName = this.getAttribute('data-field');
-                const hiddenInput = document.getElementById(fieldName);
-
-                this.classList.toggle('active');
-                const isActive = this.classList.contains('active');
-                hiddenInput.value = isActive ? 'true' : 'false';
-            });
+        document.querySelectorAll('#partyForm input[type="checkbox"]').forEach(function(el) {
+            el.addEventListener('change', function() { autoSaveParty(); });
         });
-
-        // Initialize tooltips if using Bootstrap
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('.help-icon'));
-        // Add tooltip functionality here if needed
+        document.querySelectorAll('#partyForm input[type="text"], #partyForm input[type="number"]').forEach(function(el) {
+            el.addEventListener('blur', function() { autoSaveParty(); });
+        });
+        document.querySelectorAll('#partyForm select').forEach(function(el) {
+            el.addEventListener('change', function() { autoSaveParty(); });
+        });
     });
 
-    // Form submission handler
-    document.getElementById('partySettingsForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        savePartySettings();
-    });
+    function autoSaveParty() {
+        var form = document.getElementById('partyForm');
+        var formData = new FormData(form);
+        var data = {};
+        var checkboxes = ['PartyGrouping','ShippingAddress','PrintShippingAddress','ManagePartyStatus','EnablePaymentReminder','AdditionalField1Enabled','AdditionalField2Enabled','AdditionalField3Enabled','AdditionalField4Enabled','EnableLoyaltyPoint'];
 
-    function savePartySettings() {
-        const saveBtn = document.getElementById('saveBtn');
-        const saveText = document.getElementById('saveText');
-        const alertContainer = document.getElementById('alertContainer');
-
-        // Show loading state
-        saveBtn.disabled = true;
-        saveText.innerHTML = '<div class="loading-spinner"></div>Saving...';
-
-        // Clear previous alerts
-        alertContainer.innerHTML = '';
-
-        // Collect form data
-        const formData = new FormData(document.getElementById('partySettingsForm'));
-
-        // Convert FormData to object and handle checkboxes
-        const data = {};
-
-        // Handle checkboxes - they need special treatment
-        const checkboxes = [
-            'PartyGrouping', 'ShippingAddress', 'PrintShippingAddress', 'ManagePartyStatus',
-            'EnablePaymentReminder', 'AdditionalField1Enabled', 'AdditionalField2Enabled',
-            'AdditionalField3Enabled', 'AdditionalField4Enabled', 'EnableLoyaltyPoint'
-        ];
-
-        // Set all checkboxes to false first
-        checkboxes.forEach(name => {
-            data[name] = false;
-        });
-
-        // Then set checked ones to true and collect other form data
-        for (const [key, value] of formData.entries()) {
-            if (checkboxes.includes(key)) {
-                data[key] = true;
-            } else {
-                data[key] = value;
-            }
+        checkboxes.forEach(function(n) { data[n] = false; });
+        for (var pair of formData.entries()) {
+            if (checkboxes.indexOf(pair[0]) > -1) data[pair[0]] = true;
+            else data[pair[0]] = pair[1];
         }
-
-        // Handle toggle switches (hidden inputs)
         data.AdditionalField1ShowInPrint = document.getElementById('additionalField1ShowInPrint').value === 'true';
         data.AdditionalField2ShowInPrint = document.getElementById('additionalField2ShowInPrint').value === 'true';
         data.AdditionalField3ShowInPrint = document.getElementById('additionalField3ShowInPrint').value === 'true';
         data.AdditionalField4ShowInPrint = document.getElementById('additionalField4ShowInPrint').value === 'true';
 
-        // Make AJAX request
         fetch('/Web/Settings/Party/SavePartySettings', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
-        .then(result => {
-            // Reset button state
-            saveBtn.disabled = false;
-            saveText.innerHTML = 'Save Settings';
-
-            // Show result message
-            if (result.success) {
-                showAlert('success', result.message || 'Party settings saved successfully!');
-            } else {
-                showAlert('danger', result.message || 'Failed to save party settings.');
-            }
-        })
-        .catch(error => {
-            // Reset button state
-            saveBtn.disabled = false;
-            saveText.innerHTML = 'Save Settings';
-
-            // Show error message
-            showAlert('danger', 'An error occurred while saving party settings. Please try again.');
-            console.error('Error:', error);
-        });
+        .then(function(r) { return r.json(); })
+        .then(function(result) { if (result.success) showPartyToast('Settings saved!'); else showPartyToast('Error saving', 'error'); })
+        .catch(function() { showPartyToast('Error saving settings', 'error'); });
     }
 
-    function showAlert(type, message) {
-        const alertContainer = document.getElementById('alertContainer');
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type}`;
-        alertDiv.innerHTML = message;
-
-        alertContainer.innerHTML = '';
-        alertContainer.appendChild(alertDiv);
-
-        // Auto hide after 5 seconds
-        setTimeout(() => {
-            alertDiv.remove();
-        }, 5000);
-
-        // Scroll to top to show the message
-        document.querySelector('.party-settings-container').scrollIntoView({ behavior: 'smooth' });
+    function showPartyToast(msg, type) {
+        var t = document.getElementById('partyToast');
+        t.textContent = msg;
+        t.className = 's-toast' + (type === 'error' ? ' error' : '');
+        t.style.display = 'block';
+        setTimeout(function() { t.style.display = 'none'; }, 2500);
     }
 </script>

@@ -1,742 +1,172 @@
-﻿@using MUNEEMJI.Models.Setting
+@using MUNEEMJI.Models.Setting
 @model TransactionSettingsViewModel;
 
 @{
-    ViewData["Title"] = "General Settings";
+    ViewData["Title"] = "Transaction Settings";
     Layout = "~/Areas/Settings/Views/Shared/_SettingsLayout.cshtml";
 }
 
-<script type="text/javascript">
-    function navigateBack() {
-        try {
-            var urlParams = new URLSearchParams(window.location.search);
-            var returnUrl = urlParams.get('returnUrl');
-
-            // If no returnUrl, go to Home/Index
-            if (!returnUrl || returnUrl === '') {
-                window.location.href = '/Web/Home/Index';
-                return;
-            }
-
-            // Decode and check if the returnUrl contains another nested returnUrl
-            var decodedReturnUrl = decodeURIComponent(returnUrl);
-
-            // If nested returnUrl exists (2+ levels), go to Home/Index
-            if (decodedReturnUrl.indexOf('returnUrl=') !== -1) {
-                window.location.href = '/Web/Home/Index';
-            } else {
-                // Single returnUrl, navigate to it normally
-                window.location.href = returnUrl;
-            }
-        } catch (e) {
-            // If any error, go to Home/Index as fallback
-            window.location.href = '/Web/Home/Index';
-        }
-    }
-</script>
-
-
 <style>
-    body {
-        background-color: #f8f9fa;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .settings-container {
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.0);
-        padding: 20px;
-    }
-
-    .section-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .form-check {
-        margin-bottom: 15px;
-    }
-
-    .form-check-input:checked {
-        background-color: #007bff;
-        border-color: #007bff;
-    }
-
-    .form-check-label {
-        color: #495057;
-        font-weight: 400;
-        margin-left: 5px;
-    }
-
-    .help-icon {
-        color: #6c757d;
-        font-size: 14px;
-        margin-left: 5px;
-        cursor: help;
-        display: inline-block;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background-color: #6c757d;
-        color: white;
-        text-align: center;
-        line-height: 16px;
-        font-size: 12px;
-        font-weight: bold;
-    }
-
-    .popover {
-        max-width: 300px;
-    }
-
-    .popover-header {
-        background-color: #495057;
-        color: white;
-        font-weight: 600;
-        border-bottom: 1px solid #6c757d;
-    }
-
-    .popover-body {
-        font-size: 13px;
-        line-height: 1.4;
-    }
-
-    .three-column {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: 40px;
-    }
-
-    .form-select, .form-control {
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        padding: 8px 12px;
-        font-size: 14px;
-    }
-
-        .form-select:focus, .form-control:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-
-    .prefixes-section {
-        background: #f8f9fa;
-        border: 1px solid #dee2e6;
-        border-radius: 6px;
-        padding: 20px;
-        margin-top: 20px;
-    }
-
-    .prefixes-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-top: 15px;
-    }
-
-    .billing-type-section {
-        margin-top: 20px;
-    }
-
-    .radio-group {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 15px;
-    }
-
-    .form-check-input[type="radio"] {
-        margin-top: 0.25rem;
-    }
-
-    .round-off-section {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-top: 15px;
-    }
-
-    .firm-select {
-        width: 100%;
-        margin-bottom: 15px;
-    }
-
-    .close-btn {
-        position: absolute;
-        top: 15px;
-        right: 20px;
-        background: #6c757d;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        color: white;
-        font-size: 18px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-        .close-btn:hover {
-            background: #5a6268;
-        }
-
-    .change-text-link {
-        color: #007bff;
-        text-decoration: none;
-        font-size: 12px;
-        margin-left: 5px;
-    }
-
-        .change-text-link:hover {
-            text-decoration: underline;
-        }
-
-    .save-settings-btn {
-        background: #28a745;
-        border: none;
-        color: white;
-        padding: 12px 30px;
-        border-radius: 5px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        margin-top: 20px;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-        .save-settings-btn:hover {
-            background: #218838;
-        }
-
-        .save-settings-btn:disabled {
-            background: #6c757d;
-            cursor: not-allowed;
-        }
-
-    .loading-spinner {
-        border: 2px solid #f3f3f3;
-        border-top: 2px solid #007bff;
-        border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        animation: spin 1s linear infinite;
-        display: inline-block;
-        margin-right: 10px;
-    }
-
-    @@keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .alert {
-        padding: 12px 20px;
-        margin: 20px 0;
-        border: 1px solid transparent;
-        border-radius: 4px;
-    }
-
-    .alert-success {
-        color: #155724;
-        background-color: #d4edda;
-        border-color: #c3e6cb;
-    }
-
-    .alert-danger {
-        color: #721c24;
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
-    }
+    .s-container { padding: 10px 14px; background: #fff; }
+    .s-close { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+    .s-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+    .s-title { font-size: 12px; font-weight: 700; color: #1a3353; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid #e9ecef; text-transform: uppercase; }
+    .s-check { display: flex; align-items: center; margin-bottom: 5px; }
+    .s-check input[type="checkbox"] { width: 14px; height: 14px; margin-right: 6px; cursor: pointer; accent-color: #007bff; }
+    .s-check label { font-size: 11px; color: #444; margin: 0; cursor: pointer; }
+    .s-check .s-info { margin-left: 4px; color: #aaa; font-size: 9px; background: #f0f0f0; border-radius: 50%; width: 13px; height: 13px; display: inline-flex; align-items: center; justify-content: center; }
+    .s-check.indent { margin-left: 18px; }
+    .s-input { padding: 4px 8px; border: 1px solid #dee2e6; border-radius: 3px; font-size: 11px; outline: none; width: 100%; }
+    .s-input:focus { border-color: #007bff; }
+    .s-select { padding: 4px 8px; border: 1px solid #dee2e6; border-radius: 3px; font-size: 11px; outline: none; background: #fff; }
+    .s-label { font-size: 10px; color: #666; margin-bottom: 2px; display: block; }
+    .s-prefix-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; background: #f8f9fa; padding: 10px; border-radius: 4px; border: 1px solid #e9ecef; }
+    .s-prefix-item { }
+    .s-round { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .s-radio { display: flex; align-items: center; margin-bottom: 4px; }
+    .s-radio input[type="radio"] { margin-right: 6px; width: 13px; height: 13px; }
+    .s-radio label { font-size: 11px; color: #444; margin: 0; }
+    .s-toast { position: fixed; top: 16px; right: 16px; background: #28a745; color: #fff; padding: 10px 16px; border-radius: 5px; font-size: 12px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 9999; display: none; }
+    .s-toast.error { background: #dc3545; }
 </style>
 
-<form id="transactionSettingsForm">
-    <div class="settings-container position-relative">
+<div class="s-container">
+    <div class="s-close">
+        <button type="button" class="btn-close" style="font-size:10px;" aria-label="Close" onclick="history.back(); return false;"></button>
+    </div>
 
-      
+    <div id="txnToast" class="s-toast"></div>
 
-        <div style="display: flex; justify-content: flex-end;">
-            <button type="button" class="btn-close btn-close-custom"
-                    style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
-            height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
-            padding-right: 6px;"
-                    aria-label="Close"
-                    onclick="navigateBack(); return false;">
-            </button>
-        </div>
-
-        <!-- Alert Messages -->
-        <div id="alertContainer"></div>
-
-        <div class="three-column">
-            <!-- Transaction Header Section -->
+    <form id="txnForm">
+        <div class="s-grid">
+            <!-- Column 1: Transaction Header -->
             <div>
-                <h3 class="section-title">Transaction Header</h3>
+                <h3 class="s-title">Transaction Header</h3>
+                <div class="s-check"><input type="checkbox" name="InvoiceBillNo" id="invoiceBillNo" @(Model?.InvoiceBillNo == true ? "checked" : "")><label for="invoiceBillNo">Invoice/Bill No.</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="AddTimeOnTransactions" id="addTimeTransactions" @(Model?.AddTimeOnTransactions == true ? "checked" : "")><label for="addTimeTransactions">Add Time on Transactions</label><span class="s-info">i</span></div>
+                <div class="s-check indent"><input type="checkbox" name="PrintTimeOnInvoices" id="printTimeInvoices" @(Model?.PrintTimeOnInvoices == true ? "checked" : "")><label for="printTimeInvoices">Print Time on Invoices</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="CashSaleByDefault" id="cashSaleDefault" @(Model?.CashSaleByDefault == true ? "checked" : "")><label for="cashSaleDefault">Cash Sale by default</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="BillingNameOfParties" id="billingNameParties" @(Model?.BillingNameOfParties == true ? "checked" : "")><label for="billingNameParties">Billing Name of Parties</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="CustomerPODetails" id="customerPODetails" @(Model?.CustomerPODetails == true ? "checked" : "")><label for="customerPODetails">Customers P.O. Details</label><span class="s-info">i</span></div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="InvoiceBillNo" id="invoiceBillNo" @(Model?.InvoiceBillNo == true ? "checked" : "")>
-                    <label class="form-check-label" for="invoiceBillNo">
-                        Invoice/Bill No.
-                        <span class="help-icon" data-bs-toggle="popover" data-bs-placement="top"
-                              data-bs-title="Invoice/Bill No."
-                              data-bs-content="Enable this to show invoice or bill numbers on your transaction documents. This helps in maintaining proper record keeping and tracking.">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="AddTimeOnTransactions" id="addTimeTransactions" @(Model?.AddTimeOnTransactions == true ? "checked" : "")>
-                    <label class="form-check-label" for="addTimeTransactions">
-                        Add Time on Transactions
-                        <span class="help-icon" data-bs-toggle="popover" data-bs-placement="top"
-                              data-bs-title="Add Time on Transactions"
-                              data-bs-content="This option allows you to record the time when transactions are created or modified.">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check ms-4">
-                    <input class="form-check-input" type="checkbox" name="PrintTimeOnInvoices" id="printTimeInvoices" @(Model?.PrintTimeOnInvoices == true ? "checked" : "")>
-                    <label class="form-check-label" for="printTimeInvoices">
-                        Print Time on Invoices
-                        <span class="help-icon" data-bs-toggle="popover" data-bs-placement="right"
-                              data-bs-title="Print Time on Invoices"
-                              data-bs-html="true"
-                              data-bs-content="<strong>What is this?</strong><br>Enabling this allows you to print the time of transaction on your invoices (both regular and thermal)<br><br><strong>How it is used?</strong><br>Vyapar would pick the time entered on the transaction, and show it below the usual date field.<br><br><strong>Why to use?</strong><br>If you have time critical invoices or want to communicate invoice generation to your users, you can use this setting.">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="CashSaleByDefault" id="cashSaleDefault" @(Model?.CashSaleByDefault == true ? "checked" : "")>
-                    <label class="form-check-label" for="cashSaleDefault">
-                        Cash Sale by default
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="BillingNameOfParties" id="billingNameParties" @(Model?.BillingNameOfParties == true ? "checked" : "")>
-                    <label class="form-check-label" for="billingNameParties">
-                        Billing Name of Parties
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="CustomerPODetails" id="customerPODetails" @(Model?.CustomerPODetails == true ? "checked" : "")>
-                    <label class="form-check-label" for="customerPODetails">
-                        Customers P.O. Details on Transactions
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <h3 class="section-title mt-4">More Transaction Features</h3>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="EwayBillNo" id="ewayBillNo" @(Model?.EwayBillNo == true ? "checked" : "")>
-                    <label class="form-check-label" for="ewayBillNo">
-                        E-way bill no
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="QuickEntry" id="quickEntry" @(Model?.QuickEntry == true ? "checked" : "")>
-                    <label class="form-check-label" for="quickEntry">
-                        Quick Entry
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DoNotShowInvoicePreview" id="doNotShowInvoicePreview" @(Model?.DoNotShowInvoicePreview == true ? "checked" : "")>
-                    <label class="form-check-label" for="doNotShowInvoicePreview">
-                        Do not Show Invoice Preview
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="EnablePasscode" id="enablePasscode" @(Model?.EnablePasscode == true ? "checked" : "")>
-                    <label class="form-check-label" for="enablePasscode">
-                        Enable Passcode for transaction edit/delete
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DiscountDuringPayments" id="discountDuringPayments" @(Model?.DiscountDuringPayments == true ? "checked" : "")>
-                    <label class="form-check-label" for="discountDuringPayments">
-                        Discount During Payments
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="LinkPaymentsToInvoices" id="linkPaymentsInvoices" @(Model?.LinkPaymentsToInvoices == true ? "checked" : "")>
-                    <label class="form-check-label" for="linkPaymentsInvoices">
-                        Link Payments to Invoices
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DueDatesPaymentTerms" id="dueDatesPaymentTerms" @(Model?.DueDatesPaymentTerms == true ? "checked" : "")>
-                    <label class="form-check-label" for="dueDatesPaymentTerms">
-                        Due Dates and Payment Terms
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-                @*  <div class="ms-4">
-                    <a href="#" class="change-text-link">Set Payment Terms</a>
-                </div> *@
-
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="checkbox" name="ShowProfitSaleInvoice" id="showProfitSaleInvoice" @(Model?.ShowProfitSaleInvoice == true ? "checked" : "")>
-                    <label class="form-check-label" for="showProfitSaleInvoice">
-                        Show Profit while making Sale Invoice
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="checkbox" name="TransportName" id="TransportName" @(Model?.TransportName == true ? "checked" : "")>
-                    <label class="form-check-label" for="TransportName">
-                        TransportName
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="checkbox" name="VehicleNumber" id="VehicleNumber" @(Model?.VehicleNumber == true ? "checked" : "")>
-                    <label class="form-check-label" for="VehicleNumber">
-                        Vehicle Number
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="checkbox" name="DeliveryDate" id="DeliveryDate" @(Model?.DeliveryDate == true ? "checked" : "")>
-                    <label class="form-check-label" for="DeliveryDate">
-                        Delivery Date
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="checkbox" name="DeliveryLocation" id="DeliveryLocation" @(Model?.DeliveryLocation == true ? "checked" : "")>
-                    <label class="form-check-label" for="DeliveryLocation">
-                        Delivery Location
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="checkbox" name="Field5" id="Field5" @(Model?.Field5 == true ? "checked" : "")>
-                    <label class="form-check-label" for="Field5">
-                        Field 5
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check mt-3">
-                    <input class="form-check-input" type="checkbox" name="Field6" id="Field6" @(Model?.Field6 == true ? "checked" : "")>
-                    <label class="form-check-label" for="Field6">
-                        Field 6
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-
+                <h3 class="s-title" style="margin-top:12px;">More Transaction Features</h3>
+                <div class="s-check"><input type="checkbox" name="EwayBillNo" id="ewayBillNo" @(Model?.EwayBillNo == true ? "checked" : "")><label for="ewayBillNo">E-way bill no</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="QuickEntry" id="quickEntry" @(Model?.QuickEntry == true ? "checked" : "")><label for="quickEntry">Quick Entry</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="DoNotShowInvoicePreview" id="doNotShowInvoicePreview" @(Model?.DoNotShowInvoicePreview == true ? "checked" : "")><label for="doNotShowInvoicePreview">Do not Show Invoice Preview</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="EnablePasscode" id="enablePasscode" @(Model?.EnablePasscode == true ? "checked" : "")><label for="enablePasscode">Enable Passcode for edit/delete</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="DiscountDuringPayments" id="discountDuringPayments" @(Model?.DiscountDuringPayments == true ? "checked" : "")><label for="discountDuringPayments">Discount During Payments</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="LinkPaymentsToInvoices" id="linkPaymentsInvoices" @(Model?.LinkPaymentsToInvoices == true ? "checked" : "")><label for="linkPaymentsInvoices">Link Payments to Invoices</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="DueDatesPaymentTerms" id="dueDatesPaymentTerms" @(Model?.DueDatesPaymentTerms == true ? "checked" : "")><label for="dueDatesPaymentTerms">Due Dates and Payment Terms</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="ShowProfitSaleInvoice" id="showProfitSaleInvoice" @(Model?.ShowProfitSaleInvoice == true ? "checked" : "")><label for="showProfitSaleInvoice">Show Profit on Sale Invoice</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="TransportName" id="TransportName" @(Model?.TransportName == true ? "checked" : "")><label for="TransportName">Transport Name</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="VehicleNumber" id="VehicleNumber" @(Model?.VehicleNumber == true ? "checked" : "")><label for="VehicleNumber">Vehicle Number</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="DeliveryDate" id="DeliveryDate" @(Model?.DeliveryDate == true ? "checked" : "")><label for="DeliveryDate">Delivery Date</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="DeliveryLocation" id="DeliveryLocation" @(Model?.DeliveryLocation == true ? "checked" : "")><label for="DeliveryLocation">Delivery Location</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="Field5" id="Field5" @(Model?.Field5 == true ? "checked" : "")><label for="Field5">Field 5</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="Field6" id="Field6" @(Model?.Field6 == true ? "checked" : "")><label for="Field6">Field 6</label><span class="s-info">i</span></div>
             </div>
 
-            <!-- Items Table Section -->
+            <!-- Column 2: Items Table & Prefixes -->
             <div>
-                <h3 class="section-title">Items Table</h3>
+                <h3 class="s-title">Items Table</h3>
+                <div class="s-check"><input type="checkbox" name="InclusiveExclusiveTax" id="inclusiveExclusiveTax" @(Model?.InclusiveExclusiveTax == true ? "checked" : "")><label for="inclusiveExclusiveTax">Inclusive/Exclusive Tax</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="DisplayPurchasePrice" id="displayPurchasePrice" @(Model?.DisplayPurchasePrice == true ? "checked" : "")><label for="displayPurchasePrice">Display Purchase Price</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="ShowLast5SalePrice" id="showLast5SalePrice" @(Model?.ShowLast5SalePrice == true ? "checked" : "")><label for="showLast5SalePrice">Show last 5 Sale Price</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="FreeItemQuantity" id="freeItemQuantity" @(Model?.FreeItemQuantity == true ? "checked" : "")><label for="freeItemQuantity">Free Item Quantity</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="CountEnabled" id="count" @(Model?.CountEnabled == true ? "checked" : "")><label for="count">Count</label><span class="s-info">i</span></div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="InclusiveExclusiveTax" id="inclusiveExclusiveTax" @(Model?.InclusiveExclusiveTax == true ? "checked" : "")>
-                    <label class="form-check-label" for="inclusiveExclusiveTax">
-                        Inclusive/Exclusive Tax on Rate(Price/Unit)
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="DisplayPurchasePrice" id="displayPurchasePrice" @(Model?.DisplayPurchasePrice == true ? "checked" : "")>
-                    <label class="form-check-label" for="displayPurchasePrice">
-                        Display Purchase Price of Items
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="ShowLast5SalePrice" id="showLast5SalePrice" @(Model?.ShowLast5SalePrice == true ? "checked" : "")>
-                    <label class="form-check-label" for="showLast5SalePrice">
-                        Show last 5 Sale Price of Items
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="FreeItemQuantity" id="freeItemQuantity" @(Model?.FreeItemQuantity == true ? "checked" : "")>
-                    <label class="form-check-label" for="freeItemQuantity">
-                        Free Item Quantity
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="CountEnabled" id="count" @(Model?.CountEnabled == true ? "checked" : "")>
-                    <label class="form-check-label" for="count">
-                        Count
-                        <a href="#" class="change-text-link">Change Text</a>
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <h3 class="section-title mt-4">Transaction Prefixes</h3>
-                @{
-                    var BusinessName = Context.Session.GetString("BusinessName");
-                }
-                <div class="mb-3">
-                    <label class="form-label">Firm</label>
-                    <select name="FirmId" class="form-select firm-select" id="firmSelect">
+                <h3 class="s-title" style="margin-top:12px;">Transaction Prefixes</h3>
+                @{ var BusinessName = Context.Session.GetString("BusinessName"); }
+                <div style="margin-bottom:6px;">
+                    <span class="s-label">Firm</span>
+                    <select name="FirmId" class="s-select" style="width:100%;" id="firmSelect">
                         <option value="1" @(Model?.FirmId == 1 ? "selected" : "")>@BusinessName</option>
-                        <!-- Add more firms as options -->
                     </select>
                 </div>
-
-                <div class="prefixes-section">
-                    <label class="form-label fw-semibold">Prefixes</label>
-                    <div class="prefixes-grid">
-                        <div>
-                            <label class="form-label small">Sale</label>
-                            <input type="text" name="SalePrefix" class="form-control" value="@(Model?.SalePrefix ?? "")">
-                        </div>
-                        <div>
-                            <label class="form-label small">Credit Note</label>
-                            <input type="text" name="CreditNotePrefix" class="form-control" value="@(Model?.CreditNotePrefix ?? "")">
-                        </div>
-                        <div>
-                            <label class="form-label small">Sale Order</label>
-                            <input type="text" name="SaleOrderPrefix" class="form-control" value="@(Model?.SaleOrderPrefix ?? "")">
-                        </div>
-                        <div>
-                            <label class="form-label small">Purchase Order</label>
-                            <input type="text" name="PurchaseOrderPrefix" class="form-control" value="@(Model?.PurchaseOrderPrefix ?? "")">
-                        </div>
-                        <div>
-                            <label class="form-label small">Estimate</label>
-                            <input type="text" name="EstimatePrefix" class="form-control" value="@(Model?.EstimatePrefix ?? "")">
-                        </div>
-                        <div>
-                            <label class="form-label small">Proforma Invoice</label>
-                            <input type="text" name="ProformaInvoicePrefix" class="form-control" value="@(Model?.ProformaInvoicePrefix ?? "")">
-                        </div>
-                        <div>
-                            <label class="form-label small">Delivery Challan</label>
-                            <input type="text" name="DeliveryChallanPrefix" class="form-control" value="@(Model?.DeliveryChallanPrefix ?? "")">
-                        </div>
-                        <div>
-                            <label class="form-label small">Payment In</label>
-                            <input type="text" name="PaymentInPrefix" class="form-control" value="@(Model?.PaymentInPrefix ?? "")">
-                        </div>
-                    </div>
+                <div class="s-prefix-grid">
+                    <div class="s-prefix-item"><span class="s-label">Sale</span><input type="text" name="SalePrefix" class="s-input" value="@(Model?.SalePrefix ?? "")"></div>
+                    <div class="s-prefix-item"><span class="s-label">Credit Note</span><input type="text" name="CreditNotePrefix" class="s-input" value="@(Model?.CreditNotePrefix ?? "")"></div>
+                    <div class="s-prefix-item"><span class="s-label">Sale Order</span><input type="text" name="SaleOrderPrefix" class="s-input" value="@(Model?.SaleOrderPrefix ?? "")"></div>
+                    <div class="s-prefix-item"><span class="s-label">Purchase Order</span><input type="text" name="PurchaseOrderPrefix" class="s-input" value="@(Model?.PurchaseOrderPrefix ?? "")"></div>
+                    <div class="s-prefix-item"><span class="s-label">Estimate</span><input type="text" name="EstimatePrefix" class="s-input" value="@(Model?.EstimatePrefix ?? "")"></div>
+                    <div class="s-prefix-item"><span class="s-label">Proforma Invoice</span><input type="text" name="ProformaInvoicePrefix" class="s-input" value="@(Model?.ProformaInvoicePrefix ?? "")"></div>
+                    <div class="s-prefix-item"><span class="s-label">Delivery Challan</span><input type="text" name="DeliveryChallanPrefix" class="s-input" value="@(Model?.DeliveryChallanPrefix ?? "")"></div>
+                    <div class="s-prefix-item"><span class="s-label">Payment In</span><input type="text" name="PaymentInPrefix" class="s-input" value="@(Model?.PaymentInPrefix ?? "")"></div>
                 </div>
             </div>
 
-            <!-- Taxes, Discount & Totals Section -->
+            <!-- Column 3: Taxes, Discount & Totals -->
             <div>
-                <h3 class="section-title">Taxes, Discount & Totals</h3>
+                <h3 class="s-title">Taxes, Discount & Totals</h3>
+                <div class="s-check"><input type="checkbox" name="TransactionWiseTax" id="transactionWiseTax" @(Model?.TransactionWiseTax == true ? "checked" : "")><label for="transactionWiseTax">Transaction wise Tax</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="TransactionWiseDiscount" id="transactionWiseDiscount" @(Model?.TransactionWiseDiscount == true ? "checked" : "")><label for="transactionWiseDiscount">Transaction wise Discount</label><span class="s-info">i</span></div>
+                <div class="s-check"><input type="checkbox" name="RoundOffTotal" id="roundOffTotal" @(Model?.RoundOffTotal == true ? "checked" : "")><label for="roundOffTotal">Round Off Total</label><span class="s-info">i</span></div>
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="TransactionWiseTax" id="transactionWiseTax" @(Model?.TransactionWiseTax == true ? "checked" : "")>
-                    <label class="form-check-label" for="transactionWiseTax">
-                        Transaction wise Tax
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="TransactionWiseDiscount" id="transactionWiseDiscount" @(Model?.TransactionWiseDiscount == true ? "checked" : "")>
-                    <label class="form-check-label" for="transactionWiseDiscount">
-                        Transaction wise Discount
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" name="RoundOffTotal" id="roundOffTotal" @(Model?.RoundOffTotal == true ? "checked" : "")>
-                    <label class="form-check-label" for="roundOffTotal">
-                        Round Off Total
-                        <span class="help-icon">i</span>
-                    </label>
-                </div>
-
-                <div class="round-off-section">
-                    <select name="RoundOffType" class="form-select" style="width: 120px;">
+                <div class="s-round">
+                    <select name="RoundOffType" class="s-select" style="width:80px;">
                         <option value="Nearest" @(Model?.RoundOffType == "Nearest" ? "selected" : "")>Nearest</option>
                         <option value="Up" @(Model?.RoundOffType == "Up" ? "selected" : "")>Up</option>
                         <option value="Down" @(Model?.RoundOffType == "Down" ? "selected" : "")>Down</option>
                     </select>
-                    <span>To</span>
-                    <select name="RoundOffValue" class="form-select" style="width: 80px;">
+                    <span style="font-size:10px;">To</span>
+                    <select name="RoundOffValue" class="s-select" style="width:60px;">
                         <option value="1" @(Model?.RoundOffValue == 1 ? "selected" : "")>1</option>
                         <option value="0.1" @(Model?.RoundOffValue == Convert.ToDecimal(0.1) ? "selected" : "")>0.1</option>
                         <option value="0.01" @(Model?.RoundOffValue == Convert.ToDecimal(0.01) ? "selected" : "")>0.01</option>
                     </select>
                 </div>
 
-                <div class="billing-type-section">
-                    <h3 class="section-title">Billing Type</h3>
-
-                    <div class="radio-group">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="BillingType" value="Lite Sale" id="liteSale" @(Model?.BillingType == "Lite Sale" ? "checked" : "")>
-                            <label class="form-check-label" for="liteSale">
-                                Lite Sale
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="BillingType" value="Full Sale" id="fullSale" @(Model?.BillingType == "Full Sale" ? "checked" : "")>
-                            <label class="form-check-label" for="fullSale">
-                                Full Sale
-                            </label>
-                        </div>
-                    </div>
-                </div>
+                <h3 class="s-title" style="margin-top:14px;">Billing Type</h3>
+                <div class="s-radio"><input type="radio" name="BillingType" value="Lite Sale" id="liteSale" @(Model?.BillingType == "Lite Sale" ? "checked" : "")><label for="liteSale">Lite Sale</label></div>
+                <div class="s-radio"><input type="radio" name="BillingType" value="Full Sale" id="fullSale" @(Model?.BillingType == "Full Sale" ? "checked" : "")><label for="fullSale">Full Sale</label></div>
             </div>
         </div>
-
-        <!-- Save Button -->
-        <button type="submit" class="save-settings-btn" id="saveBtn">
-            <span id="saveText">Save Settings</span>
-        </button>
-    </div>
-</form>
+    </form>
+</div>
 
 <script>
-    // Initialize all popovers
     document.addEventListener('DOMContentLoaded', function() {
-        var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-        var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
-            return new bootstrap.Popover(popoverTriggerEl, {
-                trigger: 'hover focus',
-                delay: { show: 300, hide: 100 }
-            });
+        // Auto-save on checkbox/radio change
+        document.querySelectorAll('#txnForm input[type="checkbox"], #txnForm input[type="radio"]').forEach(function(el) {
+            el.addEventListener('change', function() { autoSaveTxn(); });
+        });
+        // Auto-save on select change
+        document.querySelectorAll('#txnForm select').forEach(function(el) {
+            el.addEventListener('change', function() { autoSaveTxn(); });
+        });
+        // Auto-save on text input blur
+        document.querySelectorAll('#txnForm input[type="text"]').forEach(function(el) {
+            el.addEventListener('blur', function() { autoSaveTxn(); });
         });
     });
 
-    // Form submission handler
-    document.getElementById('transactionSettingsForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        saveTransactionSettings();
-    });
+    function autoSaveTxn() {
+        var form = document.getElementById('txnForm');
+        var formData = new FormData(form);
+        var data = {};
+        var checkboxes = ['InvoiceBillNo','AddTimeOnTransactions','PrintTimeOnInvoices','CashSaleByDefault','BillingNameOfParties','CustomerPODetails','EwayBillNo','QuickEntry','DoNotShowInvoicePreview','EnablePasscode','DiscountDuringPayments','LinkPaymentsToInvoices','DueDatesPaymentTerms','ShowProfitSaleInvoice','InclusiveExclusiveTax','DisplayPurchasePrice','ShowLast5SalePrice','FreeItemQuantity','CountEnabled','TransactionWiseTax','TransactionWiseDiscount','RoundOffTotal','DeliveryLocation','DeliveryDate','VehicleNumber','TransportName','Field5','Field6'];
 
-    function saveTransactionSettings() {
-        const saveBtn = document.getElementById('saveBtn');
-        const saveText = document.getElementById('saveText');
-        const alertContainer = document.getElementById('alertContainer');
-
-        // Show loading state
-        saveBtn.disabled = true;
-        saveText.innerHTML = '<div class="loading-spinner"></div>Saving...';
-
-        // Clear previous alerts
-        alertContainer.innerHTML = '';
-
-        // Collect form data
-        const formData = new FormData(document.getElementById('transactionSettingsForm'));
-
-        // Convert FormData to object and handle checkboxes
-        const data = {};
-
-        // Handle checkboxes - they need special treatment
-        const checkboxes = [
-            'InvoiceBillNo', 'AddTimeOnTransactions', 'PrintTimeOnInvoices', 'CashSaleByDefault',
-            'BillingNameOfParties', 'CustomerPODetails', 'EwayBillNo', 'QuickEntry',
-            'DoNotShowInvoicePreview', 'EnablePasscode', 'DiscountDuringPayments',
-            'LinkPaymentsToInvoices', 'DueDatesPaymentTerms', 'ShowProfitSaleInvoice',
-            'InclusiveExclusiveTax', 'DisplayPurchasePrice', 'ShowLast5SalePrice',
-            'FreeItemQuantity', 'CountEnabled', 'TransactionWiseTax',
-            'TransactionWiseDiscount', 'RoundOffTotal','DeliveryLocation','DeliveryDate','VehicleNumber','TransportName','Field5','Field6'
-        ];
-
-        // Set all checkboxes to false first
-        checkboxes.forEach(name => {
-            data[name] = false;
-        });
-
-        // Then set checked ones to true
-        for (const [key, value] of formData.entries()) {
-            if (checkboxes.includes(key)) {
-                data[key] = true;
-            } else {
-                data[key] = value;
-            }
+        checkboxes.forEach(function(n) { data[n] = false; });
+        for (var pair of formData.entries()) {
+            if (checkboxes.indexOf(pair[0]) > -1) data[pair[0]] = true;
+            else data[pair[0]] = pair[1];
         }
 
-        // Make AJAX request
         fetch('/Web/Settings/Transaction/SaveTransactionSettings', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
-        .then(result => {
-            // Reset button state
-            saveBtn.disabled = false;
-            saveText.innerHTML = 'Save Settings';
-
-            // Show result message
-            if (result.success) {
-                showAlert('success', result.message);
-                setTimeout(() => {
-            window.location.href = '/Web/Settings/Transaction/Index';
-        }, 2000);
-            } else {
-                showAlert('danger', result.message);
-            }
-        })
-        .catch(error => {
-            // Reset button state
-            saveBtn.disabled = false;
-            saveText.innerHTML = 'Save Settings';
-
-            // Show error message
-            showAlert('danger', 'An error occurred while saving settings. Please try again.');
-            console.error('Error:', error);
-        });
+        .then(function(r) { return r.json(); })
+        .then(function(result) { if (result.success) showTxnToast('Settings saved!'); else showTxnToast('Error saving', 'error'); })
+        .catch(function() { showTxnToast('Error saving settings', 'error'); });
     }
 
-    function showAlert(type, message) {
-        const alertContainer = document.getElementById('alertContainer');
-        const alertDiv = document.createElement('div');
-        alertDiv.className = `alert alert-${type}`;
-        alertDiv.innerHTML = message;
-
-        alertContainer.innerHTML = '';
-        alertContainer.appendChild(alertDiv);
-
-        // Auto hide after 5 seconds
-        setTimeout(() => {
-            alertDiv.remove();
-        }, 5000);
-
-        // Scroll to top to show the message
-        document.querySelector('.settings-container').scrollIntoView({ behavior: 'smooth' });
+    function showTxnToast(msg, type) {
+        var t = document.getElementById('txnToast');
+        t.textContent = msg;
+        t.className = 's-toast' + (type === 'error' ? ' error' : '');
+        t.style.display = 'block';
+        setTimeout(function() { t.style.display = 'none'; }, 2500);
     }
 </script>

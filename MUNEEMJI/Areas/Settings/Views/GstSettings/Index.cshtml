@@ -6,154 +6,163 @@
     var taxGroups = (List<MUNEEMJI.Models.Setting.TaxGroupModel>)ViewBag.TaxGroups;
 }
 
-<script type="text/javascript">
-    function navigateBack() {
-        try {
-            var urlParams = new URLSearchParams(window.location.search);
-            var returnUrl = urlParams.get('returnUrl');
+<style>
+    .gst-page { font-size: 12px; padding: 0; }
+    .gst-page h6 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .gst-page .form-check { margin-bottom: 4px; padding-left: 1.5em; }
+    .gst-page .form-check-input { width: 14px; height: 14px; margin-top: 2px; }
+    .gst-page .form-check-label { font-size: 11.5px; }
+    .gst-page .section-divider { border-top: 1px solid #dee2e6; margin: 6px 0; }
+    .gst-page .rate-item { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border-bottom: 1px solid #f0f0f0; font-size: 11.5px; }
+    .gst-page .rate-item:last-child { border-bottom: none; }
+    .gst-page .rate-name { color: #333; }
+    .gst-page .rate-value { color: #555; min-width: 40px; text-align: right; }
+    .gst-page .action-icon { cursor: pointer; font-size: 11px; color: #888; margin-left: 6px; }
+    .gst-page .action-icon:hover { color: #333; }
+    .gst-page .group-item { padding: 4px 0; border-bottom: 1px solid #f0f0f0; font-size: 11.5px; }
+    .gst-page .group-item:last-child { border-bottom: none; }
+    .gst-page .group-name { font-weight: 600; color: #333; }
+    .gst-page .group-taxes { color: #777; font-size: 10.5px; }
+    .gst-page .col-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .gst-page .add-btn { width: 22px; height: 22px; font-size: 13px; line-height: 20px; text-align: center; border-radius: 50%; border: 1px solid #aaa; background: transparent; color: #555; cursor: pointer; padding: 0; }
+    .gst-page .add-btn:hover { background: #f0f0f0; }
+    .gst-page .rate-list, .gst-page .group-list { max-height: 400px; overflow-y: auto; }
+    .gst-page .composite-select { font-size: 11px; padding: 2px 6px; height: auto; width: auto; display: inline-block; margin-left: 6px; }
 
-            if (!returnUrl || returnUrl === '') {
-                window.location.href = '/Web/Home/Index';
-                return;
-            }
+    #gstToast { position: fixed; bottom: 20px; right: 20px; min-width: 220px; padding: 10px 16px; border-radius: 6px; color: #fff; font-size: 12px; z-index: 9999; display: none; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
 
-            var decodedReturnUrl = decodeURIComponent(returnUrl);
+    .modal-content { font-size: 12px; }
+    .modal-header { padding: 10px 16px 6px; }
+    .modal-body { padding: 8px 16px 12px; }
+    .modal-title { font-size: 13px; font-weight: 600; }
+    .modal .form-control, .modal .form-select { font-size: 11.5px; padding: 4px 8px; }
+    .modal .btn { font-size: 11px; padding: 4px 12px; }
+    .modal .list-group-item { font-size: 11px; padding: 4px 8px; }
+</style>
 
-            if (decodedReturnUrl.indexOf('returnUrl=') !== -1) {
-                window.location.href = '/Web/Home/Index';
-            } else {
-                window.location.href = returnUrl;
-            }
-        } catch (e) {
-            window.location.href = '/Web/Home/Index';
-        }
-    }
-</script>
-
-<div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-    <button type="button" class="btn-close btn-close-custom"
-            style="background-color:#007bff;border: 2px solid #2c7be5;border-radius: 15%;
-           height:10px;padding-bottom: 13px;padding-top: 11px;padding-left: 6px;
-           padding-right: 6px;"
-            aria-label="Close"
-            onclick="navigateBack(); return false;">
-    </button>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h4>GST Settings</h4>
-        <hr />
-        <form id="gstSettingsForm">
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="EnableGST" @(Model.EnableGST ? "checked" : "")>
-                <label class="form-check-label" for="EnableGST">Enable GST</label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="EnableHSNSACCode" @(Model.EnableHSNSACCode ? "checked" : "")>
-                <label class="form-check-label" for="EnableHSNSACCode">Enable HSN/SAC Code</label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="AdditionalCessOnItem" @(Model.AdditionalCessOnItem ? "checked" : "")>
-                <label class="form-check-label" for="AdditionalCessOnItem">Additional Cess On Item</label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="ReverseCharge" @(Model.ReverseCharge ? "checked" : "")>
-                <label class="form-check-label" for="ReverseCharge">Reverse Charge</label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="EnablePlaceOfSupply" @(Model.EnablePlaceOfSupply ? "checked" : "")>
-                <label class="form-check-label" for="EnablePlaceOfSupply">Enable Place of Supply</label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="CompositeScheme" @(Model.CompositeScheme ? "checked" : "")>
-                <label class="form-check-label" for="CompositeScheme">Composite Scheme</label>
-                <select id="CompositeSchemeType" class="form-select w-auto d-inline-block ms-2" style="display: @(Model.CompositeScheme ? "inline-block" : "none") !important;">
-                    <option value="Trader(Goods) 1.0%" @(Model.CompositeSchemeType == "Trader(Goods) 1.0%" ? "selected":"")>Trader(Goods) 1.0%</option>
-                    <option value="Manufacturer 1.0%" @(Model.CompositeSchemeType == "Manufacturer 1.0%" ? "selected":"")>Manufacturer 1.0%</option>
-                    <option value="Restaurant 5.0%" @(Model.CompositeSchemeType == "Restaurant 5.0%" ? "selected":"")>Restaurant 5.0%</option>
-                    <option value="Service Provider 6.0%" @(Model.CompositeSchemeType == "Service Provider 6.0%" ? "selected":"")>Service Provider 6.0%</option>
-                </select>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="EnableTCS" @(Model.EnableTCS ? "checked" : "")>
-                <label class="form-check-label" for="EnableTCS">Enable TCS</label>
-            </div>
-            <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="EnableTDS" @(Model.EnableTDS ? "checked" : "")>
-                <label class="form-check-label" for="EnableTDS">Enable TDS</label>
-            </div>
-            <!-- Removed Tax List button since columns are always visible now -->
-        </form>
-    </div>
-
-    <!-- Tax Rates Column -->
-    <div class="col-md-4 tax-columns">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4>Tax Rates</h4>
-            <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="modal" data-bs-target="#taxRateModal">+</button>
+<div class="gst-page">
+    <div class="row g-3">
+        <!-- GST Settings Column -->
+        <div class="col-md-3">
+            <h6>GST Settings</h6>
+            <div class="section-divider"></div>
+            <form id="gstSettingsForm">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="EnableGST" @(Model.EnableGST ? "checked" : "")>
+                    <label class="form-check-label" for="EnableGST">Enable GST</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="EnableHSNSACCode" @(Model.EnableHSNSACCode ? "checked" : "")>
+                    <label class="form-check-label" for="EnableHSNSACCode">Enable HSN/SAC Code</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="AdditionalCessOnItem" @(Model.AdditionalCessOnItem ? "checked" : "")>
+                    <label class="form-check-label" for="AdditionalCessOnItem">Additional Cess On Item</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="ReverseCharge" @(Model.ReverseCharge ? "checked" : "")>
+                    <label class="form-check-label" for="ReverseCharge">Reverse Charge</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="EnablePlaceOfSupply" @(Model.EnablePlaceOfSupply ? "checked" : "")>
+                    <label class="form-check-label" for="EnablePlaceOfSupply">Enable Place of Supply</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="CompositeScheme" @(Model.CompositeScheme ? "checked" : "")>
+                    <label class="form-check-label" for="CompositeScheme">Composite Scheme</label>
+                    <select id="CompositeSchemeType" class="form-select composite-select" style="display: @(Model.CompositeScheme ? "inline-block" : "none") !important;">
+                        <option value="Trader(Goods) 1.0%" @(Model.CompositeSchemeType == "Trader(Goods) 1.0%" ? "selected":"")>Trader(Goods) 1.0%</option>
+                        <option value="Manufacturer 1.0%" @(Model.CompositeSchemeType == "Manufacturer 1.0%" ? "selected":"")>Manufacturer 1.0%</option>
+                        <option value="Restaurant 5.0%" @(Model.CompositeSchemeType == "Restaurant 5.0%" ? "selected":"")>Restaurant 5.0%</option>
+                        <option value="Service Provider 6.0%" @(Model.CompositeSchemeType == "Service Provider 6.0%" ? "selected":"")>Service Provider 6.0%</option>
+                    </select>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="EnableTCS" @(Model.EnableTCS ? "checked" : "")>
+                    <label class="form-check-label" for="EnableTCS">Enable TCS</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="EnableTDS" @(Model.EnableTDS ? "checked" : "")>
+                    <label class="form-check-label" for="EnableTDS">Enable TDS</label>
+                </div>
+            </form>
         </div>
-        <hr />
-        <ul class="list-group list-group-flush">
-            @if(taxRates != null) {
-                foreach(var r in taxRates) {
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        @r.Name
-                        <span>
-                            @r.Rate
-                            <i class="fas fa-pencil-alt ms-2 text-secondary" style="cursor:pointer;" onclick="editTaxRate(@r.Id, '@r.Name', @r.Rate, '@r.TaxType')"></i>
-                            <i class="fas fa-trash-alt ms-2 text-secondary" style="cursor:pointer;" onclick="deleteTaxRate(@r.Id)"></i>
-                        </span>
-                    </li>
-                }
-            }
-        </ul>
-    </div>
 
-    <!-- Tax Group Column -->
-    <div class="col-md-4 tax-columns">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4>Tax Group</h4>
-            <button class="btn btn-sm btn-outline-secondary rounded-circle" data-bs-toggle="modal" data-bs-target="#taxGroupModal">+</button>
-        </div>
-        <hr />
-        <ul class="list-group list-group-flush">
-            @if(taxGroups != null) {
-                foreach(var g in taxGroups) {
-                    <li class="list-group-item">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong>@g.GroupName</strong>
+        <!-- Tax Rates Column -->
+        <div class="col-md-5">
+            <div class="col-header">
+                <h6 class="mb-0">Tax Rates</h6>
+                <button class="add-btn" data-bs-toggle="modal" data-bs-target="#taxRateModal" title="Add Tax Rate">+</button>
+            </div>
+            <div class="section-divider"></div>
+            <div class="rate-list">
+                @if (taxRates != null)
+                {
+                    foreach (var r in taxRates)
+                    {
+                        <div class="rate-item">
+                            <span class="rate-name">@r.Name</span>
                             <span>
-                                @{
-                                    var arrStr = g.TaxRateIds != null ? string.Join(",", g.TaxRateIds) : "";
-                                }
-                                <i class="fas fa-pencil-alt ms-2 text-secondary" style="cursor:pointer;" onclick="editTaxGroup(@g.Id, '@g.GroupName', [@arrStr])"></i>
-                                <i class="fas fa-trash-alt ms-2 text-secondary" style="cursor:pointer;" onclick="deleteTaxGroup(@g.Id)"></i>
+                                <span class="rate-value">@r.Rate.ToString("0.000")</span>
+                                <i class="fas fa-pencil-alt action-icon" onclick="editTaxRate(@r.Id, '@r.Name', @r.Rate, '@r.TaxType')"></i>
+                                <i class="fas fa-trash-alt action-icon" onclick="deleteTaxRate(@r.Id)"></i>
                             </span>
                         </div>
-                        <small class="text-muted">@g.MemberTaxes</small>
-                    </li>
+                    }
                 }
-            }
-        </ul>
+            </div>
+        </div>
+
+        <!-- Tax Group Column -->
+        <div class="col-md-4">
+            <div class="col-header">
+                <h6 class="mb-0">Tax Group</h6>
+                <button class="add-btn" data-bs-toggle="modal" data-bs-target="#taxGroupModal" title="Add Tax Group">+</button>
+            </div>
+            <div class="section-divider"></div>
+            <div class="group-list">
+                @if (taxGroups != null)
+                {
+                    foreach (var g in taxGroups)
+                    {
+                        <div class="group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="group-name">@g.GroupName</span>
+                                <span>
+                                    @{
+                                        var arrStr = g.TaxRateIds != null ? string.Join(",", g.TaxRateIds) : "";
+                                    }
+                                    <i class="fas fa-pencil-alt action-icon" onclick="editTaxGroup(@g.Id, '@g.GroupName', [@arrStr])"></i>
+                                    <i class="fas fa-trash-alt action-icon" onclick="deleteTaxGroup(@g.Id)"></i>
+                                </span>
+                            </div>
+                            <div class="group-taxes">@g.MemberTaxes</div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Add Tax Rate Modal -->
-<div class="modal fade" id="taxRateModal" tabindex="-1" aria-labelledby="taxRateModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- Toast -->
+<div id="gstToast"></div>
+
+<!-- Add/Edit Tax Rate Modal -->
+<div class="modal fade" id="taxRateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title" id="taxRateModalLabel">Add Tax Rate</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h6 class="modal-title">Add Tax Rate</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="font-size:10px;"></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="taxRateId" value="0" />
-                <div class="mb-3">
+                <div class="mb-2">
                     <input type="text" class="form-control" id="taxRateName" placeholder="Tax Name">
                 </div>
-                <div class="d-flex mb-3 gap-2">
-                    <input type="number" class="form-control" id="taxRateValue" placeholder="Rate">
+                <div class="d-flex mb-2 gap-2">
+                    <input type="number" class="form-control" id="taxRateValue" placeholder="Rate" step="0.001">
                     <select class="form-select" id="taxRateType">
                         <option value="Other">Other</option>
                         <option value="SGST">SGST</option>
@@ -164,43 +173,45 @@
                     </select>
                 </div>
                 <div class="d-flex justify-content-end gap-2">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="button" class="btn btn-primary" onclick="saveTaxRate()">SAVE</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveTaxRate()">Save</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Add Tax Group Modal -->
-<div class="modal fade" id="taxGroupModal" tabindex="-1" aria-labelledby="taxGroupModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- Add/Edit Tax Group Modal -->
+<div class="modal fade" id="taxGroupModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
         <div class="modal-content">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title" id="taxGroupModalLabel">Add Tax Group</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h6 class="modal-title">Add Tax Group</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="font-size:10px;"></button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="taxGroupId" value="0" />
-                <div class="mb-3">
+                <div class="mb-2">
                     <input type="text" class="form-control" id="taxGroupName" placeholder="Enter Group Name">
                 </div>
-                <label>Select Taxes</label>
-                <div class="border" style="max-height: 200px; overflow-y: auto;">
+                <label style="font-size:11px;font-weight:500;">Select Taxes</label>
+                <div class="border rounded" style="max-height: 160px; overflow-y: auto;">
                     <ul class="list-group list-group-flush">
-                        @if(taxRates != null) {
-                            foreach(var r in taxRates) {
+                        @if (taxRates != null)
+                        {
+                            foreach (var r in taxRates)
+                            {
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <span>@r.Name</span>
-                                    <span>@r.Rate% <input class="form-check-input ms-2 tax-group-cb" type="checkbox" value="@r.Id"></span>
+                                    <span>@r.Rate% <input class="form-check-input ms-2 tax-group-cb" type="checkbox" value="@r.Id" style="width:13px;height:13px;"></span>
                                 </li>
                             }
                         }
                     </ul>
                 </div>
-                <div class="d-flex justify-content-end gap-2 mt-3">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <button type="button" class="btn btn-primary" onclick="saveTaxGroup()">SAVE</button>
+                <div class="d-flex justify-content-end gap-2 mt-2">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="saveTaxGroup()">Save</button>
                 </div>
             </div>
         </div>
@@ -208,39 +219,23 @@
 </div>
 
 <script>
-    // Simple inline toast function fallback if project toastr isn't globally exposed
-    function showToast(message, isSuccess = true) {
-        var toastEl = document.createElement('div');
-        toastEl.className = 'toast align-items-center text-white border-0 position-fixed bottom-0 end-0 m-3';
-        toastEl.classList.add(isSuccess ? 'bg-success' : 'bg-danger');
-        toastEl.setAttribute('role', 'alert');
-        toastEl.setAttribute('aria-live', 'assertive');
-        toastEl.setAttribute('aria-atomic', 'true');
-        toastEl.style.zIndex = '9999';
-
-        toastEl.innerHTML = `
-            <div class="d-flex">
-                <div class="toast-body">
-                    ${message}
-                </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-        `;
-
-        document.body.appendChild(toastEl);
-        var bsToast = new bootstrap.Toast(toastEl, { delay: 3000 });
-        bsToast.show();
-
-        toastEl.addEventListener('hidden.bs.toast', function () {
-            toastEl.remove();
-        });
+    function showGstToast(msg, success) {
+        var t = document.getElementById('gstToast');
+        t.textContent = msg;
+        t.style.background = success ? '#28a745' : '#dc3545';
+        t.style.display = 'block';
+        setTimeout(function () { t.style.display = 'none'; }, 2500);
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Form events for GST Settings...
         var inputs = document.querySelectorAll('#gstSettingsForm input[type="checkbox"], #CompositeSchemeType');
-        inputs.forEach(el => {
+        inputs.forEach(function (el) {
             el.addEventListener('change', function () {
+                if (this.id === 'CompositeScheme') {
+                    var cst = document.getElementById('CompositeSchemeType');
+                    cst.style.setProperty('display', this.checked ? 'inline-block' : 'none', 'important');
+                }
+
                 var model = {
                     EnableGST: document.getElementById('EnableGST').checked,
                     EnableHSNSACCode: document.getElementById('EnableHSNSACCode').checked,
@@ -253,61 +248,46 @@
                     EnableTDS: document.getElementById('EnableTDS').checked
                 };
 
-                // handle composite scheme dropdown visibility
-                if (this.id === 'CompositeScheme') {
-                    var cst = document.getElementById('CompositeSchemeType');
-                    if(this.checked) {
-                        cst.style.setProperty('display', 'inline-block', 'important');
-                    } else {
-                        cst.style.setProperty('display', 'none', 'important');
-                    }
-                }
-
                 fetch('/Web/Settings/GstSettings/SaveSettings', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(model)
                 })
-                .then(r => r.json())
-                .then(data => {
-                    if(data.success) { showToast(data.message, true); }
-                    else { showToast(data.message, false); }
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    showGstToast(data.message, data.success);
                 });
             });
         });
     });
 
-    // Reset modals on close
+    // Modal resets
     document.getElementById('taxRateModal').addEventListener('hidden.bs.modal', function () {
         document.getElementById('taxRateId').value = 0;
         document.getElementById('taxRateName').value = '';
         document.getElementById('taxRateValue').value = '';
         document.getElementById('taxRateType').value = 'Other';
+        document.querySelector('#taxRateModal .modal-title').textContent = 'Add Tax Rate';
     });
 
     document.getElementById('taxGroupModal').addEventListener('hidden.bs.modal', function () {
         document.getElementById('taxGroupId').value = 0;
         document.getElementById('taxGroupName').value = '';
-        document.querySelectorAll('.tax-group-cb').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.tax-group-cb').forEach(function (cb) { cb.checked = false; });
+        document.querySelector('#taxGroupModal .modal-title').textContent = 'Add Tax Group';
     });
 
-    // Methods for Tax Rate
+    // Tax Rate CRUD
     function saveTaxRate() {
-        var id = document.getElementById('taxRateId').value;
         var name = document.getElementById('taxRateName').value;
         var rate = document.getElementById('taxRateValue').value;
-        var type = document.getElementById('taxRateType').value;
-
-        if(!name || !rate) {
-            showToast('Please enter Name and Rate', false);
-            return;
-        }
+        if (!name || !rate) { showGstToast('Please enter Name and Rate', false); return; }
 
         var model = {
-            Id: parseInt(id),
+            Id: parseInt(document.getElementById('taxRateId').value),
             Name: name,
             Rate: parseFloat(rate),
-            TaxType: type
+            TaxType: document.getElementById('taxRateType').value
         };
 
         fetch('/Web/Settings/GstSettings/SaveTaxRate', {
@@ -315,14 +295,10 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(model)
         })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                showToast(data.message, true);
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                showToast(data.message || 'Error occurred', false);
-            }
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            showGstToast(data.message, data.success);
+            if (data.success) setTimeout(function () { window.location.reload(); }, 800);
         });
     }
 
@@ -331,46 +307,36 @@
         document.getElementById('taxRateName').value = name;
         document.getElementById('taxRateValue').value = rate;
         document.getElementById('taxRateType').value = type;
-        var modal = new bootstrap.Modal(document.getElementById('taxRateModal'));
-        modal.show();
+        document.querySelector('#taxRateModal .modal-title').textContent = 'Edit Tax Rate';
+        new bootstrap.Modal(document.getElementById('taxRateModal')).show();
     }
 
     function deleteTaxRate(id) {
-        if(confirm('Are you sure you want to delete this tax rate?')) {
-            fetch('/Web/Settings/GstSettings/DeleteTaxRate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'id=' + id
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    showToast(data.message || 'Deleted successfully', true);
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    showToast(data.message || 'Error occurred', false);
-                }
-            });
-        }
+        if (!confirm('Delete this tax rate?')) return;
+        fetch('/Web/Settings/GstSettings/DeleteTaxRate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'id=' + id
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            showGstToast(data.message, data.success);
+            if (data.success) setTimeout(function () { window.location.reload(); }, 800);
+        });
     }
 
-    // Methods for Tax Group
+    // Tax Group CRUD
     function saveTaxGroup() {
-        var id = document.getElementById('taxGroupId').value;
         var name = document.getElementById('taxGroupName').value;
-
-        if(!name) {
-            showToast('Please enter Group Name', false);
-            return;
-        }
+        if (!name) { showGstToast('Please enter Group Name', false); return; }
 
         var selectedTaxes = [];
-        document.querySelectorAll('.tax-group-cb:checked').forEach(cb => {
+        document.querySelectorAll('.tax-group-cb:checked').forEach(function (cb) {
             selectedTaxes.push(parseInt(cb.value));
         });
 
         var model = {
-            Id: parseInt(id),
+            Id: parseInt(document.getElementById('taxGroupId').value),
             GroupName: name,
             TaxRateIds: selectedTaxes
         };
@@ -380,45 +346,34 @@
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(model)
         })
-        .then(response => response.json())
-        .then(data => {
-            if(data.success) {
-                showToast(data.message, true);
-                setTimeout(() => window.location.reload(), 1000);
-            } else {
-                showToast('Error processing request.', false);
-            }
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            showGstToast(data.message, data.success);
+            if (data.success) setTimeout(function () { window.location.reload(); }, 800);
         });
     }
 
     function editTaxGroup(id, name, rateIds) {
         document.getElementById('taxGroupId').value = id;
         document.getElementById('taxGroupName').value = name;
-
-        document.querySelectorAll('.tax-group-cb').forEach(cb => {
+        document.querySelectorAll('.tax-group-cb').forEach(function (cb) {
             cb.checked = rateIds.includes(parseInt(cb.value));
         });
-
-        var modal = new bootstrap.Modal(document.getElementById('taxGroupModal'));
-        modal.show();
+        document.querySelector('#taxGroupModal .modal-title').textContent = 'Edit Tax Group';
+        new bootstrap.Modal(document.getElementById('taxGroupModal')).show();
     }
 
     function deleteTaxGroup(id) {
-        if(confirm('Are you sure you want to delete this tax group?')) {
-            fetch('/Web/Settings/GstSettings/DeleteTaxGroup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'id=' + id
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.success) {
-                    showToast(data.message || 'Deleted successfully', true);
-                    setTimeout(() => window.location.reload(), 1000);
-                } else {
-                    showToast(data.message || 'Error occurred', false);
-                }
-            });
-        }
+        if (!confirm('Delete this tax group?')) return;
+        fetch('/Web/Settings/GstSettings/DeleteTaxGroup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'id=' + id
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            showGstToast(data.message, data.success);
+            if (data.success) setTimeout(function () { window.location.reload(); }, 800);
+        });
     }
 </script>

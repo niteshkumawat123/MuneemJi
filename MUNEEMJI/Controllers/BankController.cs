@@ -191,9 +191,9 @@ namespace MUNEEMJI.Controllers
                 id = accounts[0].Id;
             }
 
-            // Query details for the selected account (account number, IFSC, UPI, date)
+            // Query details for the selected account (account number, IFSC, UPI, date, bank_name)
             string sqlDetail = @"
-                SELECT account_number, ifsc_code, upi_id, as_of_date 
+                SELECT account_number, ifsc_code, upi_id, as_of_date, bank_name 
                 FROM extended_bank_accounts 
                 WHERE id = @id AND companyid = @p_companyid";
             using var cmd2 = new NpgsqlCommand(sqlDetail, conn);
@@ -204,10 +204,11 @@ namespace MUNEEMJI.Controllers
             {
                 // Find the matching BankAccountModel and set its detail fields
                 var selectedAccount = accounts.First(a => a.Id == id.Value);
-                selectedAccount.AccountNumber = reader2.GetString(0);
-                selectedAccount.IFSCCode = reader2.GetString(1);
-                selectedAccount.UPIID = reader2.GetString(2);
-                selectedAccount.AsOfDate = reader2.GetDateTime(3);
+                selectedAccount.AccountNumber = reader2.IsDBNull(0) ? null : reader2.GetString(0);
+                selectedAccount.IFSCCode = reader2.IsDBNull(1) ? null : reader2.GetString(1);
+                selectedAccount.UPIID = reader2.IsDBNull(2) ? null : reader2.GetString(2);
+                selectedAccount.AsOfDate = reader2.IsDBNull(3) ? null : reader2.GetDateTime(3);
+                selectedAccount.BankName = reader2.IsDBNull(4) ? null : reader2.GetString(4);
             }
             reader2.Close();
 
@@ -393,6 +394,57 @@ namespace MUNEEMJI.Controllers
                 });
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> SaveBankTransfer([FromBody] BankTransferRequest request)
+        {
+            try
+            {
+                var companyId = _companyTenancy.GetCurrentCompanyId();
+
+                using (var connection = new NpgsqlConnection(_connStr))
+                {
+                    await connection.OpenAsync();
+
+                    string insertQuery = @"
+                        INSERT INTO bank_transactions (transaction_type, from_account, to_account, amount, transaction_date, description, companyid)
+                        VALUES (@transactionType, @fromAccount, @toAccount, @amount, @transactionDate, @description, @companyId)
+                        RETURNING id";
+
+                    using (var command = new NpgsqlCommand(insertQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@transactionType", request.TransactionType ?? "");
+                        command.Parameters.AddWithValue("@fromAccount", request.FromAccount ?? "");
+                        command.Parameters.AddWithValue("@toAccount", request.ToAccount ?? "");
+                        command.Parameters.AddWithValue("@amount", request.Amount);
+                        command.Parameters.AddWithValue("@transactionDate", request.TransactionDate);
+                        command.Parameters.AddWithValue("@description",
+                            string.IsNullOrEmpty(request.Description) ? DBNull.Value : (object)request.Description);
+                        command.Parameters.AddWithValue("@companyId", companyId);
+
+                        var insertedId = await command.ExecuteScalarAsync();
+
+                        return Ok(new
+                        {
+                            success = true,
+                            message = "Transaction saved successfully",
+                            id = insertedId
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+
+                return StatusCode(500, new
+                {
+                    success = false,
+                    message = "An error occurred while saving transaction",
+                    error = ex.Message
+                });
+            }
+        }
+
         // Optional: Get all transactions
         [HttpGet]
         public IActionResult GetCashTransactionById(int id)

@@ -189,26 +189,44 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px 18px;
+        padding: 8px 18px;
         border-bottom: 1px solid #e9ecef;
         flex-shrink: 0;
+        min-height: 0;
+    }
+
+    .loan-detail-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        min-width: 0;
+        flex: 1;
+        overflow: hidden;
     }
 
     .loan-detail-name {
-        font-size: 14px;
+        font-size: 13px;
         font-weight: 700;
         color: #1a3353;
+        white-space: nowrap;
     }
 
-    .loan-detail-sub {
+    .loan-detail-meta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
         font-size: 11px;
         color: #666;
-        margin-top: 2px;
+        white-space: nowrap;
     }
 
-    .loan-detail-sub .balance-amt {
+    .loan-detail-meta .balance-amt {
         color: #dc3545;
         font-weight: 600;
+    }
+
+    .loan-detail-meta .meta-sep {
+        color: #ccc;
     }
 
     /* Payment button */
@@ -277,22 +295,67 @@
     /* Info row */
     .loan-info-row {
         display: flex;
-        gap: 24px;
-        padding: 10px 18px;
+        align-items: center;
+        gap: 18px;
+        padding: 5px 18px;
         border-bottom: 5px solid #dee2e6;
         flex-shrink: 0;
         font-size: 11px;
         color: #555;
+        min-height: 0;
+    }
+
+    .loan-info-row .info-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
     }
 
     .loan-info-row .info-item label {
         color: #888;
         font-size: 10px;
+        margin: 0;
+        white-space: nowrap;
     }
 
     .loan-info-row .info-item span {
         font-weight: 600;
         color: #333;
+        white-space: nowrap;
+    }
+
+    /* Compact styling for loan partial modals */
+    .form-control-custom {
+        width: 100%;
+        padding: 5px 8px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: inherit;
+    }
+
+    .form-control-custom:focus {
+        outline: none;
+        border-color: #4285f4;
+        box-shadow: 0 0 0 0.15rem rgba(66,133,244,0.15);
+    }
+
+    .input-with-label {
+        position: relative;
+    }
+
+    .input-suffix {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 10px;
+        color: #888;
+        pointer-events: none;
+    }
+
+    .required-asterisk {
+        color: #dc3545;
     }
 
     /* Transactions */
@@ -669,18 +732,19 @@
         <!-- Right Panel -->
         <div class="loan-detail-panel">
             <div class="loan-detail-header">
-                <div>
+                <div class="loan-detail-left">
                     <div class="loan-detail-name" id="selectedAccountName">
                         @(selectedAccount?.AccountName ?? "Select an account")
                     </div>
-                    <div class="loan-detail-sub" id="selectedAccountDetails">
+                    <div class="loan-detail-meta" id="selectedAccountDetails">
                         @if (selectedAccount != null)
                         {
                             if (!string.IsNullOrEmpty(selectedAccount.LenderBank))
                             {
-                                <text>Lending Bank: @selectedAccount.LenderBank</text><br />
+                                <span>Bank: @selectedAccount.LenderBank</span>
+                                <span class="meta-sep">|</span>
                             }
-                            <span class="balance-amt">Balance Amount: ₹ @((selectedAccount.CurrentBalance ?? 0).ToString("N2"))</span>
+                            <span class="balance-amt">Balance: ₹ @((selectedAccount.CurrentBalance ?? 0).ToString("N2"))</span>
                         }
                     </div>
                 </div>
@@ -895,8 +959,8 @@
             success: function (r) {
                 document.getElementById('selectedAccountName').textContent = r.accountName || '';
                 var details = '';
-                if (r.lenderBank) details += 'Lending Bank: ' + r.lenderBank + '<br>';
-                if (r.accountNumber) details += 'A/C: ' + r.accountNumber + '<br>';
+                if (r.lenderBank) details += '<span>Bank: ' + r.lenderBank + '</span><span class="meta-sep">|</span>';
+                if (r.accountNumber) details += '<span>A/C: ' + r.accountNumber + '</span><span class="meta-sep">|</span>';
                 details += '<span class="balance-amt">Balance: ₹ ' + parseFloat(r.currentBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</span>';
                 document.getElementById('selectedAccountDetails').innerHTML = details;
 

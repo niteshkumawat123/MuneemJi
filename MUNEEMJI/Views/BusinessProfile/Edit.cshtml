@@ -1,256 +1,377 @@
 ﻿@model BusinessProfileModel
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";   // no shared layout, standalone page:contentReference[oaicite:12]{index=12}
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Edit Profile</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" />
-</head>
-<body>
-    <div class="container mt-4">
-        <h2>Edit Profile</h2>
-        <form asp-action="Edit" method="post" enctype="multipart/form-data">
-            @Html.AntiForgeryToken()
 
-            <input asp-for="Id" type="hidden" />
-            <input type="hidden" id="deleteLogoFlag" name="DeleteLogo" value="false" />
-            <input type="hidden" id="deleteSignatureFlag" name="DeleteSignature" value="false" />
+<style>
+    .profile-page {
+        padding: 16px 24px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .profile-page h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a3353;
+        margin-bottom: 4px;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 8px;
+        display: inline-block;
+    }
+    .profile-logo-section {
+        margin: 12px 0 16px 0;
+        position: relative;
+        display: inline-block;
+    }
+    .profile-logo-section img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #dee2e6;
+    }
+    .profile-logo-section .logo-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid #dee2e6;
+    }
+    .profile-logo-section .logo-edit-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 24px;
+        height: 24px;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 11px;
+        color: #333;
+    }
+    .profile-section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a3353;
+        margin-bottom: 12px;
+    }
+    .profile-form-label {
+        font-size: 11px;
+        color: #dc3545;
+        font-weight: 500;
+        margin-bottom: 3px;
+        display: block;
+    }
+    .profile-form-label.normal {
+        color: #555;
+    }
+    .profile-form-input {
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: inherit;
+        outline: none;
+    }
+    .profile-form-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.1rem rgba(0,123,255,0.15);
+    }
+    .profile-form-select {
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: inherit;
+        outline: none;
+        background: #fff;
+        appearance: auto;
+    }
+    .profile-form-select:focus {
+        border-color: #007bff;
+    }
+    .profile-form-textarea {
+        width: 100%;
+        padding: 6px 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: inherit;
+        outline: none;
+        resize: vertical;
+        min-height: 80px;
+    }
+    .profile-form-textarea:focus {
+        border-color: #007bff;
+    }
+    .profile-form-group {
+        margin-bottom: 10px;
+    }
+    .profile-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 24px;
+    }
+    .profile-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 12px 0;
+        margin-top: 10px;
+        border-top: 1px solid #e9ecef;
+    }
+    .btn-profile-cancel {
+        padding: 6px 18px;
+        border: 1.5px solid #6c757d;
+        color: #6c757d;
+        background: #fff;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-profile-cancel:hover {
+        background: #f5f5f5;
+    }
+    .btn-profile-save {
+        padding: 6px 18px;
+        border: none;
+        color: #fff;
+        background: #dc3545;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .btn-profile-save:hover {
+        background: #c82333;
+    }
+    .profile-signature-box {
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 10px;
+        text-align: center;
+        min-height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: #fafafa;
+    }
+    .profile-signature-box img {
+        max-width: 100%;
+        max-height: 90px;
+        object-fit: contain;
+    }
+    .gstin-verified {
+        color: #28a745;
+        font-size: 14px;
+        margin-left: 6px;
+    }
+    .profile-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: #28a745;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 9999;
+        display: none;
+    }
+    .profile-toast.error { background: #dc3545; }
+</style>
 
+<div class="profile-page">
+    <h4>Edit Profile</h4>
 
-            <div class="row">
-                <!-- Column 1: Business Details -->
-                <div class="col-md-4">
-                    <h5>Business Details</h5>
-                    <div class="form-group">
-                        <label asp-for="BusinessName">Business Name</label>
-                        <input asp-for="BusinessName" class="form-control" />
-                        <span asp-validation-for="BusinessName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="PhoneNumber">Phone Number</label>
-                        <input asp-for="PhoneNumber" class="form-control" placeholder="Enter Phone Number" />
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Gstin">GSTIN</label>
-                        <input asp-for="Gstin" class="form-control" placeholder="Enter GSTIN" />
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Email">Email ID</label>
-                        <input asp-for="Email" class="form-control" placeholder="Enter Email ID" />
-                    </div>
-
-                    @*   <div class="form-group">
-                        <label>Business Logo</label>
-                        <input type="file" name="LogoFile" class="form-control-file" />
-                    </div> *@
-
-
-                    <div class="form-group">
-                        <div class="floating-label-container upload-area-logo"
-                             style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;"
-                             onclick="document.querySelector('input[name=\'LogoFile\']').click()">
-
-                            <span class="upload-label-logo"
-                                  style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">
-                                Business Logo
-                            </span>
-
-                            <input type="file" name="LogoFile" class="floating-input" accept="image/*"
-                                   onchange="previewLogo(this)" style="display: none;" />
-
-                            <div class="upload-content-logo">
-                                <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
-                                <div style="color: #007bff; font-weight: 500;">Upload Logo</div>
-                                <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">Click to browse files</div>
-                            </div>
-
-                            <div class="image-preview-logo" style="display: none;">
-                                <img id="preview-img-logo" src="" alt="Logo Preview"
-                                     style="width: 85px; height: 85px; border: 1px solid #ddd; border-radius: 50%; object-fit: cover;" />
-                                <div id="image-name-logo" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
-                                <div style="margin-top: 8px;">
-                                    <button type="button" onclick="removeLogo(event)"
-                                            style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-
-                </div>
-                <!-- Column 2: More Details -->
-                <div class="col-md-4">
-                    <h5>More Details</h5>
-                    <div class="form-group">
-                        <label>Business Type</label>
-                        <select asp-for="BusinessTypeId" asp-items="ViewBag.Types" class="form-control">
-                            <option value="">Select Business Type</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Business Category</label>
-                        <select asp-for="BusinessCategoryId" asp-items="ViewBag.Categories" class="form-control">
-                            <option value="">Select Business Category</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>State</label>
-                        <select asp-for="StateId" asp-items="ViewBag.States" class="form-control">
-                            <option value="">Select State</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Pincode</label>
-                        <input asp-for="Pincode" class="form-control" placeholder="Enter Pincode" />
-                    </div>
-                </div>
-                <!-- Column 3: Address & Signature -->
-                <div class="col-md-4">
-                    <h5>Business Address</h5>
-                    <div class="form-group">
-                        <textarea asp-for="Address" class="form-control" rows="4" placeholder="Enter Business Address"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="floating-label-container upload-area-signature"
-                             style="border: 2px solid lightgray; border-radius: 8px; padding: 20px; text-align: center; background: #f8f9fb; cursor: pointer; transition: all 0.3s ease; position: relative;"
-                             onclick="document.querySelector('input[name=\'SignatureFile\']').click()">
-                            <span class="upload-label-signature"
-                                  style="position: absolute; top: -10px; left: 20px; background: white; padding: 0 8px; color: #6c757d; font-size: 14px;">
-                                Add Signature
-                            </span>
-                            <input type="file" name="SignatureFile" class="floating-input" accept="image/*"
-                                   onchange="previewSignature(this)" style="display: none;" />
-                            <div class="upload-content-signature">
-                                <i class="bi bi-cloud-upload" style="font-size: 24px; color: #007bff; margin-bottom: 8px;"></i>
-                                <div style="color: #007bff; font-weight: 500;">Upload Signature</div>
-                                <div style="color: #6c757d; font-size: 12px; margin-top: 4px;">Click to browse files</div>
-                            </div>
-                            <div class="image-preview-signature" style="display: none;">
-                                <img id="preview-img-signature" src="" alt="Signature Preview"
-                                     style="width: 85px; height: 85px; border: 1px solid #ddd; border-radius: 50%; object-fit: cover;" />
-                                <div id="image-name-signature" style="margin-top: 8px; color: #6c757d; font-size: 12px; word-break: break-all;"></div>
-                                <div style="margin-top: 8px;">
-                                    <button type="button" onclick="removeSignature(event)"
-                                            style="padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                                        Delete
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="profile-logo-section">
+        @if (!string.IsNullOrEmpty(Model.LogoPath))
+        {
+            <img id="profileLogoImg" src="/@Model.LogoPath" alt="Logo" />
+        }
+        else
+        {
+            <div class="logo-placeholder" id="profileLogoPlaceholder">
+                <i class="bi bi-person" style="font-size:32px;color:#aaa;"></i>
             </div>
-            <!-- Buttons -->
-            <div class="form-group mt-3">
-                <button type="submit" class="btn btn-primary">Save Changes</button>
-                <a asp-action="Edit" class="btn btn-secondary ml-2">Cancel</a>
-            </div>
-        </form>
+        }
+        <label class="logo-edit-btn" for="logoFileInput">✎</label>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" id="profileForm">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden" />
+        <input type="hidden" id="deleteLogoFlag" name="DeleteLogo" value="false" />
+        <input type="hidden" id="deleteSignatureFlag" name="DeleteSignature" value="false" />
+        <input type="file" name="LogoFile" id="logoFileInput" accept="image/*" style="display:none;" onchange="previewLogo(this)" />
+
+        <div class="profile-columns">
+            <!-- Column 1: Business Details -->
+            <div>
+                <div class="profile-section-title">Business Details</div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label">Business Name<span>*</span></label>
+                    <input asp-for="BusinessName" class="profile-form-input" placeholder="Business Name" />
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">Phone Number</label>
+                    <input asp-for="PhoneNumber" class="profile-form-input" placeholder="Phone Number" />
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">GSTIN <i class="bi bi-info-circle" style="font-size:10px;color:#999;"></i></label>
+                    <div style="position:relative;">
+                        <input asp-for="Gstin" class="profile-form-input" placeholder="GSTIN" />
+                        @if (!string.IsNullOrEmpty(Model.Gstin))
+                        {
+                            <span class="gstin-verified" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);">✔</span>
+                        }
+                    </div>
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">Email ID</label>
+                    <input asp-for="Email" class="profile-form-input" placeholder="Email ID" />
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">Account Books Beginning Date</label>
+                    <input type="date" class="profile-form-input" name="AccountBooksDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                </div>
+            </div>
+
+            <!-- Column 2: More Details -->
+            <div>
+                <div class="profile-section-title">More Details</div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">Business Type</label>
+                    <select asp-for="BusinessTypeId" asp-items="ViewBag.Types" class="profile-form-select">
+                        <option value="">Select Business Type</option>
+                    </select>
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">Business Category</label>
+                    <select asp-for="BusinessCategoryId" asp-items="ViewBag.Categories" class="profile-form-select">
+                        <option value="">Select Business Category</option>
+                    </select>
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">State</label>
+                    <select asp-for="StateId" asp-items="ViewBag.States" class="profile-form-select">
+                        <option value="">Select State</option>
+                    </select>
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">Pincode</label>
+                    <input asp-for="Pincode" class="profile-form-input" placeholder="Pincode" />
+                </div>
+            </div>
+
+            <!-- Column 3: Address & Signature -->
+            <div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">Business Address</label>
+                    <textarea asp-for="Address" class="profile-form-textarea" rows="4" placeholder="Enter Business Address"></textarea>
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label normal">Add Signature</label>
+                    <div class="profile-signature-box" onclick="document.getElementById('signatureFileInput').click()">
+                        @if (!string.IsNullOrEmpty(Model.SignaturePath))
+                        {
+                            <img id="signaturePreview" src="/@Model.SignaturePath" alt="Signature" />
+                        }
+                        else
+                        {
+                            <span style="color:#999;font-size:12px;" id="signaturePlaceholder">Click to upload signature</span>
+                        }
+                    </div>
+                    <input type="file" name="SignatureFile" id="signatureFileInput" accept="image/*" style="display:none;" onchange="previewSignature(this)" />
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-footer">
+            <a asp-action="Edit" class="btn-profile-cancel">Cancel</a>
+            <button type="submit" class="btn-profile-save">Save Changes</button>
+        </div>
+    </form>
+</div>
+
+<div id="profileToast" class="profile-toast"></div>
+
+@if (TempData["SuccessMessage"] != null)
+{
     <script>
-
-        function previewLogo(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.querySelector('.upload-content-logo').style.display = 'none';
-                    document.querySelector('.image-preview-logo').style.display = 'block';
-                    document.getElementById('preview-img-logo').src = e.target.result;
-                    document.getElementById('image-name-logo').textContent = file.name;
-                    document.querySelector('.upload-area-logo').style.borderColor = '#28a745';
-                     document.getElementById('deleteLogoFlag').value = 'false';
-
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function removeLogo(event) {
-            event.stopPropagation();
-            document.querySelector('input[name="LogoFile"]').value = '';
-            document.querySelector('.upload-content-logo').style.display = 'block';
-            document.querySelector('.image-preview-logo').style.display = 'none';
-            document.getElementById('preview-img-logo').src = '';
-            document.getElementById('image-name-logo').textContent = '';
-            document.querySelector('.upload-area-logo').style.borderColor = 'lightgray';
-            document.getElementById('deleteLogoFlag').value = 'true';
-        }
-
-        // NEW FUNCTION: Set logo from data
-        function setLogoFromData(imageUrl, imageName) {
-            document.querySelector('.upload-content-logo').style.display = 'none';
-            document.querySelector('.image-preview-logo').style.display = 'block';
-            document.getElementById('preview-img-logo').src = imageUrl;
-            document.getElementById('image-name-logo').textContent = imageName || 'Loaded Image';
-            document.querySelector('.upload-area-logo').style.borderColor = '#28a745';
-            document.getElementById('deleteLogoFlag').value = 'false';
-        }
-
-        function previewSignature(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.querySelector('.upload-content-signature').style.display = 'none';
-                    document.querySelector('.image-preview-signature').style.display = 'block';
-                    document.getElementById('preview-img-signature').src = e.target.result;
-                    document.getElementById('image-name-signature').textContent = file.name;
-                    document.querySelector('.upload-area-signature').style.borderColor = '#28a745';
-                    document.getElementById('deleteSignatureFlag').value = 'false';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function removeSignature(event) {
-            event.stopPropagation();
-            document.querySelector('input[name="SignatureFile"]').value = '';
-            document.querySelector('.upload-content-signature').style.display = 'block';
-            document.querySelector('.image-preview-signature').style.display = 'none';
-            document.getElementById('preview-img-signature').src = '';
-            document.getElementById('image-name-signature').textContent = '';
-            document.querySelector('.upload-area-signature').style.borderColor = 'lightgray';
-            document.getElementById('deleteSignatureFlag').value = 'true';
-        }
-
-        // NEW FUNCTION: Set signature from data
-        function setSignatureFromData(imageUrl, imageName) {
-            document.querySelector('.upload-content-signature').style.display = 'none';
-            document.querySelector('.image-preview-signature').style.display = 'block';
-            document.getElementById('preview-img-signature').src = imageUrl;
-            document.getElementById('image-name-signature').textContent = imageName || 'Loaded Image';
-            document.querySelector('.upload-area-signature').style.borderColor = '#28a745';
-            document.getElementById('deleteSignatureFlag').value = 'false';
-        }
-
-            document.addEventListener('DOMContentLoaded', function() {
-            var logoPath = '@Html.Raw(Model.LogoPath ?? "")';
-            var signaturePath = '@Html.Raw(Model.SignaturePath ?? "")';
-
-            // If logo exists, display it
-            if (logoPath && logoPath !== '') {
-                var logoUrl = logoPath.startsWith('/') ? logoPath : '/' + logoPath;
-                var logoFileName = logoPath.split('/').pop();
-                setLogoFromData(logoUrl, logoFileName);
-            }
-
-            // If signature exists, display it
-            if (signaturePath && signaturePath !== '') {
-                var signatureUrl = signaturePath.startsWith('/') ? signaturePath : '/' + signaturePath;
-                var signatureFileName = signaturePath.split('/').pop();
-                setSignatureFromData(signatureUrl, signatureFileName);
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            showProfileToast('@TempData["SuccessMessage"]');
         });
     </script>
-</body>
-</html>
+}
+
+<script>
+    function previewLogo(input) {
+        var file = input.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var placeholder = document.getElementById('profileLogoPlaceholder');
+                if (placeholder) placeholder.style.display = 'none';
+                var img = document.getElementById('profileLogoImg');
+                if (!img) {
+                    img = document.createElement('img');
+                    img.id = 'profileLogoImg';
+                    img.style.width = '80px';
+                    img.style.height = '80px';
+                    img.style.borderRadius = '50%';
+                    img.style.objectFit = 'cover';
+                    img.style.border = '2px solid #dee2e6';
+                    var section = document.querySelector('.profile-logo-section');
+                    section.insertBefore(img, section.firstChild);
+                }
+                img.src = e.target.result;
+                document.getElementById('deleteLogoFlag').value = 'false';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function previewSignature(input) {
+        var file = input.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var placeholder = document.getElementById('signaturePlaceholder');
+                if (placeholder) placeholder.style.display = 'none';
+                var img = document.getElementById('signaturePreview');
+                if (!img) {
+                    img = document.createElement('img');
+                    img.id = 'signaturePreview';
+                    img.style.maxWidth = '100%';
+                    img.style.maxHeight = '90px';
+                    img.style.objectFit = 'contain';
+                    document.querySelector('.profile-signature-box').appendChild(img);
+                }
+                img.src = e.target.result;
+                document.getElementById('deleteSignatureFlag').value = 'false';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function showProfileToast(message, type) {
+        var toast = document.getElementById('profileToast');
+        toast.textContent = message;
+        toast.className = 'profile-toast' + (type === 'error' ? ' error' : '');
+        toast.style.display = 'block';
+        setTimeout(function() { toast.style.display = 'none'; }, 3000);
+    }
+</script>

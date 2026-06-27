@@ -62,4 +62,14 @@ namespace MUNEEMJI.Models.BankAccount
 
         public string Description { get; set; }
     }
+
+    public class BankTransferRequest
+    {
+        public string TransactionType { get; set; }
+        public string FromAccount { get; set; }
+        public string ToAccount { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime TransactionDate { get; set; }
+        public string Description { get; set; }
+    }
 }

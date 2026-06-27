@@ -3,12 +3,29 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid">
-    <h2 class="mb-4">Add Bank Account</h2>
+<style>
+    .bank-add-page { padding: 12px 20px; }
+    .bank-add-page h5 { font-size: 15px; font-weight: 700; color: #1a3353; margin-bottom: 12px; }
+    .bank-add-page .form-label { font-size: 11px; color: #555; font-weight: 500; margin-bottom: 3px; }
+    .bank-add-page .form-control { padding: 5px 8px; font-size: 12px; border: 1px solid #dee2e6; border-radius: 4px; }
+    .bank-add-page .form-control:focus { border-color: #4285f4; box-shadow: 0 0 0 0.15rem rgba(66,133,244,0.15); }
+    .bank-add-page .form-check-label { font-size: 11px; }
+    .bank-add-page .form-check-input { width: 14px; height: 14px; }
+    .bank-add-page .border.rounded { padding: 10px 14px !important; border-color: #dee2e6 !important; }
+    .bank-add-page .btn { padding: 5px 16px; font-size: 12px; font-weight: 600; border-radius: 5px; }
+    .bank-add-page .btn-primary { background-color: #dc3545; border-color: #dc3545; }
+    .bank-add-page .btn-primary:hover { background-color: #c82333; border-color: #c82333; }
+    .bank-add-page .btn-secondary { border: 1.5px solid #dc3545; color: #dc3545; background: #fff; }
+    .bank-add-page .btn-secondary:hover { background: #fff5f5; color: #dc3545; }
+    .bank-add-page .input-group .btn { padding: 5px 10px; }
+</style>
+
+<div class="bank-add-page">
+    <h5>@(Model.Id > 0 ? "Edit Bank Account" : "Add Bank Account")</h5>
     <form method="post">
         <input type="hidden" name="Id" value="@Model.Id" />
         <input type="hidden" name="RequestTypeId" value="@Model.RequestTypeId" />
-        <div class="row g-3 mb-3">
+        <div class="row g-2 mb-2">
             <div class="col-12 col-md-4">
                 <label for="AccountDisplayName" class="form-label">Account Display Name</label>
                 <input type="text" id="AccountDisplayName" name="AccountDisplayName" class="form-control" value="@Model.AccountDisplayName" />
@@ -23,21 +40,21 @@
             </div>
         </div>
 
-        <div class="mb-3">
+        <div class="mb-2">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="PrintUPIQrCode" name="PrintUPIQrCode" value="true" @(Model.PrintUPIQrCode ? "checked" : "") />
                 <input type="hidden" name="PrintUPIQrCode" value="false" />
                 <label class="form-check-label" for="PrintUPIQrCode">Print UPI QR Code on Invoices</label>
             </div>
-            <div class="form-check mt-2">
+            <div class="form-check mt-1">
                 <input class="form-check-input" type="checkbox" id="PrintBankDetails" name="PrintBankDetails" value="true" @(Model.PrintBankDetails ? "checked" : "") />
                 <input type="hidden" name="PrintBankDetails" value="false" />
                 <label class="form-check-label" for="PrintBankDetails">Print bank details on invoices</label>
             </div>
         </div>
 
-        <div class="border rounded p-3 mb-3">
-            <div class="row g-3">
+        <div class="border rounded p-2 mb-2">
+            <div class="row g-2">
                 <div class="col-12 col-md-4">
                     <label for="AccountNumber" class="form-label">Account Number *</label>
                     <input type="text" id="AccountNumber" name="AccountNumber" class="form-control" value="@Model.AccountNumber" required />
@@ -54,7 +71,7 @@
                     <input type="text" id="UPIID" name="UPIID" class="form-control" value="@Model.UPIID" />
                 </div>
             </div>
-            <div class="row g-3 mt-3">
+            <div class="row g-2 mt-1">
                 <div class="col-12 col-md-6">
                     <label for="BankName" class="form-label">Bank Name</label>
                     <input type="text" id="BankName" name="BankName" class="form-control" value="@Model.BankName" />
@@ -66,61 +83,22 @@
             </div>
         </div>
 
-        
-            @if (Model.RequestTypeId == 1)
-            {
-@*                 <button type="submit" class="btn btn-primary"></button>
- *@            }
-            @if (Model.RequestTypeId == 2)
-            {
-            <div class="d-flex justify-content-end gap-2 mt-4">
+        @if (Model.RequestTypeId == 1)
+        {
+        }
+        @if (Model.RequestTypeId == 2)
+        {
+            <div class="d-flex justify-content-end gap-2 mt-2">
                 <a href="@Url.Action("index", "bank")" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Edit</button>
             </div>
-
-            }
-            @if (Model.RequestTypeId == 0)
-            {
-                 <div class="d-flex justify-content-end gap-2 mt-4">
+        }
+        @if (Model.RequestTypeId == 0)
+        {
+            <div class="d-flex justify-content-end gap-2 mt-2">
                 <a href="@Url.Action("index", "bank")" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Save</button>
             </div>
-            }
-            
-
+        }
     </form>
 </div>
-
-<style>
-    /* Ensure proper spacing on mobile */
-    @@media (max-width: 767.98px) {
-        .container-fluid
-
-    {
-        padding: 15px;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    .border.rounded {
-        padding: 15px !important;
-    }
-
-    }
-
-    /* Ensure buttons stack properly on very small screens */
-    @@media (max-width: 575.98px) {
-        .d-flex.gap-2
-
-    {
-        flex-direction: column;
-    }
-
-    .d-flex.gap-2 .btn {
-        width: 100%;
-    }
-
-    }
-</style>

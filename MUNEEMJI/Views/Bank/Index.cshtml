@@ -625,6 +625,18 @@
     }
 </style>
 
+<!-- Toast notification -->
+<div id="bankToast" style="position:fixed;top:20px;right:20px;background:#28a745;color:#fff;padding:12px 20px;border-radius:6px;font-size:13px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.2);z-index:9999;display:none;transition:opacity 0.3s;"></div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showBankToast('@TempData["SuccessMessage"]');
+        });
+    </script>
+}
+
 <div class="bank-page">
     <!-- Top Header -->
     <div class="bank-top-header">
@@ -696,7 +708,7 @@
                 <div class="bank-info-row">
                     <div class="bank-info-item">
                         <div class="info-label">Bank Name</div>
-                        <div class="info-value">@(selectedAccount.BankName ?? selectedAccount.AccountDisplayName ?? "N/A")</div>
+                        <div class="info-value">@(selectedAccount.BankName ?? "N/A")</div>
                     </div>
                     <div class="bank-info-item">
                         <div class="info-label">Account Number</div>
@@ -780,25 +792,25 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">From</label>
-                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                    <select class="form-select" id="bankToCash_from"><option>@(selectedAccount?.BankName ?? selectedAccount?.AccountDisplayName ?? "")</option></select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">To</label>
-                    <select class="form-select"><option>Cash</option></select>
+                    <select class="form-select" id="bankToCash_to"><option>Cash</option></select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Amount</label>
-                    <input type="text" class="form-input" placeholder="0.00">
+                    <input type="number" class="form-input" id="bankToCash_amount" placeholder="0.00" step="0.01">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Date</label>
-                    <input type="date" class="form-input" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    <input type="date" class="form-input" id="bankToCash_date" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                 </div>
             </div>
-            <button class="description-btn">+ Add Description</button>
-            <div class="clearfix" style="overflow:hidden;"><button class="btn-save">Save</button></div>
+            <input type="text" class="form-input" id="bankToCash_desc" placeholder="Add Description (optional)" style="margin-bottom:14px;">
+            <div class="clearfix" style="overflow:hidden;"><button class="btn-save" onclick="saveBankToCash()">Save</button></div>
         </div>
     </div>
 </div>
@@ -814,25 +826,25 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">From</label>
-                    <select class="form-select"><option>Cash</option></select>
+                    <select class="form-select" id="cashToBank_from"><option>Cash</option></select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">To</label>
-                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                    <select class="form-select" id="cashToBank_to"><option>@(selectedAccount?.BankName ?? selectedAccount?.AccountDisplayName ?? "")</option></select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Amount</label>
-                    <input type="text" class="form-input" placeholder="0.00">
+                    <input type="number" class="form-input" id="cashToBank_amount" placeholder="0.00" step="0.01">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Date</label>
-                    <input type="date" class="form-input" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    <input type="date" class="form-input" id="cashToBank_date" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                 </div>
             </div>
-            <button class="description-btn">+ Add Description</button>
-            <div class="clearfix" style="overflow:hidden;"><button class="btn-save">Save</button></div>
+            <input type="text" class="form-input" id="cashToBank_desc" placeholder="Add Description (optional)" style="margin-bottom:14px;">
+            <div class="clearfix" style="overflow:hidden;"><button class="btn-save" onclick="saveCashToBank()">Save</button></div>
         </div>
     </div>
 </div>
@@ -848,25 +860,25 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">From</label>
-                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                    <select class="form-select" id="bankToBank_from"><option>@(selectedAccount?.BankName ?? selectedAccount?.AccountDisplayName ?? "")</option></select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">To</label>
-                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                    <select class="form-select" id="bankToBank_to"><option>@(selectedAccount?.BankName ?? selectedAccount?.AccountDisplayName ?? "")</option></select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Amount</label>
-                    <input type="text" class="form-input" placeholder="0.00">
+                    <input type="number" class="form-input" id="bankToBank_amount" placeholder="0.00" step="0.01">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Date</label>
-                    <input type="date" class="form-input" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    <input type="date" class="form-input" id="bankToBank_date" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                 </div>
             </div>
-            <button class="description-btn">+ Add Description</button>
-            <div class="clearfix" style="overflow:hidden;"><button class="btn-save">Save</button></div>
+            <input type="text" class="form-input" id="bankToBank_desc" placeholder="Add Description (optional)" style="margin-bottom:14px;">
+            <div class="clearfix" style="overflow:hidden;"><button class="btn-save" onclick="saveBankToBank()">Save</button></div>
         </div>
     </div>
 </div>
@@ -882,28 +894,28 @@
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Account Name</label>
-                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                    <select class="form-select" id="adjust_account"><option>@(selectedAccount?.BankName ?? selectedAccount?.AccountDisplayName ?? "")</option></select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Type</label>
-                    <select class="form-select">
-                        <option>Increase balance</option>
-                        <option>Decrease balance</option>
+                    <select class="form-select" id="adjust_type">
+                        <option value="Increase">Increase balance</option>
+                        <option value="Decrease">Decrease balance</option>
                     </select>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Amount</label>
-                    <input type="text" class="form-input" placeholder="0.00">
+                    <input type="number" class="form-input" id="adjust_amount" placeholder="0.00" step="0.01">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Date</label>
-                    <input type="date" class="form-input" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                    <input type="date" class="form-input" id="adjust_date" value="@DateTime.Now.ToString("yyyy-MM-dd")">
                 </div>
             </div>
-            <button class="description-btn">+ Add Description</button>
-            <div class="clearfix" style="overflow:hidden;"><button class="btn-save">Save</button></div>
+            <input type="text" class="form-input" id="adjust_desc" placeholder="Add Description (optional)" style="margin-bottom:14px;">
+            <div class="clearfix" style="overflow:hidden;"><button class="btn-save" onclick="saveAdjustment()">Save</button></div>
         </div>
     </div>
 </div>
@@ -979,5 +991,179 @@
                 }
             }
         });
+    });
+
+    // Save: Bank to Cash Transfer
+    function saveBankToCash() {
+        var amount = parseFloat(document.getElementById('bankToCash_amount').value);
+        var date = document.getElementById('bankToCash_date').value;
+        var desc = document.getElementById('bankToCash_desc').value;
+        var from = document.getElementById('bankToCash_from').value;
+        var to = document.getElementById('bankToCash_to').value;
+
+        if (!amount || amount <= 0) { showBankToast('Please enter a valid amount', 'error'); return; }
+        if (!date) { showBankToast('Please select a date', 'error'); return; }
+
+        var payload = {
+            TransactionType: 'Bank to Cash',
+            FromAccount: from,
+            ToAccount: to,
+            Amount: amount,
+            TransactionDate: date,
+            Description: desc
+        };
+
+        fetch('/Web/Bank/SaveBankTransfer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success) {
+                closeBankModal('bankToCashModal');
+                sessionStorage.setItem('bankToast', 'Bank to Cash transfer saved successfully!');
+                location.reload();
+            } else {
+                showBankToast(data.message || 'Error saving transaction', 'error');
+            }
+        })
+        .catch(function() { showBankToast('Error saving transaction', 'error'); });
+    }
+
+    // Save: Cash to Bank Transfer
+    function saveCashToBank() {
+        var amount = parseFloat(document.getElementById('cashToBank_amount').value);
+        var date = document.getElementById('cashToBank_date').value;
+        var desc = document.getElementById('cashToBank_desc').value;
+        var from = document.getElementById('cashToBank_from').value;
+        var to = document.getElementById('cashToBank_to').value;
+
+        if (!amount || amount <= 0) { showBankToast('Please enter a valid amount', 'error'); return; }
+        if (!date) { showBankToast('Please select a date', 'error'); return; }
+
+        var payload = {
+            TransactionType: 'Cash to Bank',
+            FromAccount: from,
+            ToAccount: to,
+            Amount: amount,
+            TransactionDate: date,
+            Description: desc
+        };
+
+        fetch('/Web/Bank/SaveBankTransfer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success) {
+                closeBankModal('cashToBankModal');
+                sessionStorage.setItem('bankToast', 'Cash to Bank transfer saved successfully!');
+                location.reload();
+            } else {
+                showBankToast(data.message || 'Error saving transaction', 'error');
+            }
+        })
+        .catch(function() { showBankToast('Error saving transaction', 'error'); });
+    }
+
+    // Save: Bank to Bank Transfer
+    function saveBankToBank() {
+        var amount = parseFloat(document.getElementById('bankToBank_amount').value);
+        var date = document.getElementById('bankToBank_date').value;
+        var desc = document.getElementById('bankToBank_desc').value;
+        var from = document.getElementById('bankToBank_from').value;
+        var to = document.getElementById('bankToBank_to').value;
+
+        if (!amount || amount <= 0) { showBankToast('Please enter a valid amount', 'error'); return; }
+        if (!date) { showBankToast('Please select a date', 'error'); return; }
+
+        var payload = {
+            TransactionType: 'Bank to Bank',
+            FromAccount: from,
+            ToAccount: to,
+            Amount: amount,
+            TransactionDate: date,
+            Description: desc
+        };
+
+        fetch('/Web/Bank/SaveBankTransfer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success) {
+                closeBankModal('bankToBankModal');
+                sessionStorage.setItem('bankToast', 'Bank to Bank transfer saved successfully!');
+                location.reload();
+            } else {
+                showBankToast(data.message || 'Error saving transaction', 'error');
+            }
+        })
+        .catch(function() { showBankToast('Error saving transaction', 'error'); });
+    }
+
+    // Save: Adjust Bank Balance
+    function saveAdjustment() {
+        var amount = parseFloat(document.getElementById('adjust_amount').value);
+        var date = document.getElementById('adjust_date').value;
+        var desc = document.getElementById('adjust_desc').value;
+        var account = document.getElementById('adjust_account').value;
+        var type = document.getElementById('adjust_type').value;
+
+        if (!amount || amount <= 0) { showBankToast('Please enter a valid amount', 'error'); return; }
+        if (!date) { showBankToast('Please select a date', 'error'); return; }
+
+        var payload = {
+            TransactionType: 'Adjustment - ' + type,
+            FromAccount: account,
+            ToAccount: account,
+            Amount: amount,
+            TransactionDate: date,
+            Description: desc
+        };
+
+        fetch('/Web/Bank/SaveBankTransfer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.success) {
+                closeBankModal('adjustmentModal');
+                sessionStorage.setItem('bankToast', 'Bank balance adjusted successfully!');
+                location.reload();
+            } else {
+                showBankToast(data.message || 'Error saving transaction', 'error');
+            }
+        })
+        .catch(function() { showBankToast('Error saving transaction', 'error'); });
+    }
+
+    // Toast notification
+    function showBankToast(message, type) {
+        var toast = document.getElementById('bankToast');
+        toast.textContent = message;
+        toast.style.background = (type === 'error') ? '#dc3545' : '#28a745';
+        toast.style.display = 'block';
+        toast.style.opacity = '1';
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            setTimeout(function() { toast.style.display = 'none'; }, 300);
+        }, 3000);
+    }
+
+    // Show pending toast from sessionStorage after page reload
+    document.addEventListener('DOMContentLoaded', function() {
+        var pendingToast = sessionStorage.getItem('bankToast');
+        if (pendingToast) {
+            showBankToast(pendingToast);
+            sessionStorage.removeItem('bankToast');
+        }
     });
 </script>

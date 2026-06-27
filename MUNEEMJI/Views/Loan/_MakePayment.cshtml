@@ -1,7 +1,7 @@
 ﻿<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
     <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
-            <div class="toast-body">
+            <div class="toast-body" style="font-size:12px;">
                 <i class="fas fa-check-circle me-2"></i>
                 Payment has been saved successfully!
             </div>
@@ -10,46 +10,39 @@
     </div>
 </div>
 
-
-
-
-
-
 <div class="modal fade" id="makePaymentModal" tabindex="-1" aria-labelledby="makePaymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="makePaymentModalLabel">Make Payment</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="fas fa-times"></i>
-                </button>
+            <div class="modal-header" style="padding:10px 14px;background:#f8f9fa;border-bottom:1px solid #dee2e6;">
+                <h6 class="modal-title" id="makePaymentModalLabel" style="font-size:13px;font-weight:600;margin:0;">Make Payment</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="font-size:10px;"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="padding:14px;">
                 <form id="makePaymentForm">
                     <input type="hidden" id="paymentLoanAccountId" />
 
-                    <div class="form-group mb-3">
-                        <label class="form-label">Principal Amount</label>
+                    <div class="mb-2">
+                        <label class="form-label" style="font-size:11px;color:#555;margin-bottom:3px;">Principal Amount</label>
                         <input type="number" id="principalAmount" class="form-control-custom" placeholder="0" step="0.01" />
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label class="form-label">Interest Amount</label>
+                    <div class="mb-2">
+                        <label class="form-label" style="font-size:11px;color:#555;margin-bottom:3px;">Interest Amount</label>
                         <input type="number" id="interestAmount" class="form-control-custom" placeholder="0" step="0.01" />
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label class="form-label">Total Amount</label>
-                        <input type="number" id="totalAmount" class="form-control-custom" placeholder="0" step="0.01" readonly style="background-color: #f5f5f5;" />
+                    <div class="mb-2">
+                        <label class="form-label" style="font-size:11px;color:#555;margin-bottom:3px;">Total Amount</label>
+                        <input type="number" id="totalAmount" class="form-control-custom" placeholder="0" step="0.01" readonly style="background-color:#f5f5f5;" />
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label class="form-label">Date</label>
+                    <div class="mb-2">
+                        <label class="form-label" style="font-size:11px;color:#555;margin-bottom:3px;">Date</label>
                         <input type="date" id="paymentDate" class="form-control-custom" />
                     </div>
 
-                    <div class="form-group mb-3">
-                        <label class="form-label">Paid From</label>
+                    <div class="mb-2">
+                        <label class="form-label" style="font-size:11px;color:#555;margin-bottom:3px;">Paid From</label>
                         <select id="paidFrom" class="form-control-custom">
                             <option value="Cash">Cash</option>
                             <option value="Bank">Bank</option>
@@ -58,9 +51,9 @@
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn-save" onclick="saveMakePayment()">Save</button>
+            <div class="modal-footer" style="padding:8px 14px;border-top:1px solid #dee2e6;">
+                <button type="button" class="btn btn-sm" style="font-size:11px;padding:4px 12px;background:#f5f5f5;color:#666;border:1px solid #dee2e6;border-radius:4px;" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-sm" style="font-size:11px;padding:4px 12px;background:#dc3545;color:#fff;border:none;border-radius:4px;" onclick="saveMakePayment()">Save</button>
             </div>
         </div>
     </div>
@@ -68,19 +61,14 @@
 
 <script>
     $(document).ready(function() {
-        // Set current date
         const today = new Date().toISOString().split('T')[0];
         $('#paymentDate').val(today);
-
-        // Set current account ID
         $('#paymentLoanAccountId').val(currentAccountId);
 
-        // Calculate total amount automatically
         $('#principalAmount, #interestAmount').on('input', function() {
             const principal = parseFloat($('#principalAmount').val()) || 0;
             const interest = parseFloat($('#interestAmount').val()) || 0;
-            const total = principal + interest;
-            $('#totalAmount').val(total.toFixed(2));
+            $('#totalAmount').val((principal + interest).toFixed(2));
         });
     });
 
@@ -99,27 +87,23 @@
             return;
         }
 
-        showLoading();
-
         $.ajax({
             url: '@Url.Action("SaveMakePayment")',
             type: 'POST',
             data: JSON.stringify(formData),
             contentType: 'application/json',
             success: function(response) {
-                hideLoading();
                 if (response.success) {
                     var modal = bootstrap.Modal.getInstance(document.getElementById('makePaymentModal'));
                     modal.hide();
-                       var successToast = new bootstrap.Toast(document.getElementById('successToast'));
-                       successToast.show() ;
-                       loadAccountDetails(currentAccountId);
+                    var successToast = new bootstrap.Toast(document.getElementById('successToast'));
+                    successToast.show();
+                    loadAccountDetails(currentAccountId);
                 } else {
                     alert('Error: ' + response.message);
                 }
             },
             error: function(xhr, status, error) {
-                hideLoading();
                 alert('Error saving payment: ' + error);
             }
         });

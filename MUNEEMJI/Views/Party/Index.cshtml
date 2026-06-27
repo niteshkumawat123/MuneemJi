@@ -486,6 +486,19 @@
         window.location.href = '/Web/Party/Index?id=' + partyId;
     }
 
+    // Double-click on party item navigates to edit page
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.party-item').forEach(function(item) {
+            item.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+                var partyId = this.getAttribute('data-party-id');
+                if (partyId) {
+                    window.location.href = '/Web/Party/Add?id=' + partyId;
+                }
+            });
+        });
+    });
+
     function scrollUp() {
         const partyList = document.getElementById('partyList');
         partyList.scrollBy({

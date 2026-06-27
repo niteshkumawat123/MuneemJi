@@ -1,749 +1,937 @@
 ﻿@model List<MUNEEMJI.Models.BankAccount.BankAccountModel>
 @{
     ViewBag.Title = "Bank Accounts";
+    var selectedAccount = Model?.FirstOrDefault();
 }
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
 <style>
-    * {
+    .bank-page {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Top Header */
+    .bank-top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px 0 20px;
+        flex-shrink: 0;
+    }
+
+    .bank-top-header h4 {
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a3353;
         margin: 0;
-        padding: 0;
-        box-sizing: border-box;
     }
 
-
-    .container {
-        max-width: 400px;
-        margin: 0 auto;
-    }
-
-    .dropdown-container {
-        position: absolute;
-        display: inline-block;
-        right: 27px;
-    }
-
-    .dropdown-btn {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 14px;
+    .bank-top-actions {
         display: flex;
         align-items: center;
         gap: 10px;
-        min-width: 150px;
     }
 
-        .dropdown-btn:hover {
-            background-color: #0056b3;
-        }
-
-    .dropdown-arrow {
-        margin-left: auto;
-        transition: transform 0.3s ease;
-    }
-
-        .dropdown-arrow.open {
-            transform: rotate(180deg);
-        }
-
-    .dropdown-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        background: white;
+    .btn-add-bank {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 5px 12px;
         border-radius: 5px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        min-width: 200px;
-        z-index: 100;
-        display: none;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .btn-add-bank:hover {
+        background-color: #c82333;
+        color: #fff;
+    }
+
+    .bank-header-dots {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 4px;
+        border: none;
+        background: none;
+        font-size: 18px;
+        color: #6c757d;
+    }
+
+    .bank-header-dots:hover {
+        background: #f0f0f0;
+    }
+
+    /* Main Content */
+    .bank-content {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        min-height: 0;
+        border: 5px solid #dee2e6;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    /* Left Sidebar */
+    .bank-sidebar {
+        width: 280px;
+        min-width: 240px;
+        border-right: 5px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
         overflow: hidden;
     }
 
-        .dropdown-menu.show {
-            display: block;
-        }
-
-    .dropdown-item {
-        padding: 12px 15px;
-        cursor: pointer;
-        border-bottom: 1px solid #f0f0f0;
-        color: #333;
-        font-size: 14px;
-        transition: background-color 0.2s ease;
+    .bank-sidebar-search {
+        padding: 8px 12px;
+        border-bottom: 1px solid #e9ecef;
     }
 
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
+    .bank-sidebar-search input {
+        width: 100%;
+        padding: 7px 10px 7px 32px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 12px;
+        outline: none;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 16 16'%3E%3Cpath fill='%23999' d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 10px center;
+    }
 
-        .dropdown-item:hover {
-            background-color: #f8f9fa;
-        }
+    .bank-sidebar-search input:focus {
+        border-color: #80bdff;
+    }
 
-    .modal-overlay {
+    .bank-sidebar-header {
+        display: flex;
+        padding: 5px 12px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .bank-sidebar-header .col-name {
+        flex: 1;
+    }
+
+    .bank-sidebar-header .col-amt {
+        width: 80px;
+        text-align: right;
+    }
+
+    .bank-sidebar-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .bank-account-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 10px 14px;
+        border-bottom: 1px solid #f5f5f5;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.15s;
+        position: relative;
+    }
+
+    .bank-account-item:hover {
+        background: #f8f9ff;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .bank-account-item.selected {
+        background: #f0f7ff;
+        border-left: 3px solid #007bff;
+        padding-left: 11px;
+    }
+
+    .bank-account-item .acct-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .bank-account-item .acct-name {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #1a3353;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .bank-account-item .acct-sub {
+        font-size: 11px;
+        color: #888;
+        margin-top: 2px;
+    }
+
+    .bank-account-item .acct-amount {
+        font-size: 13px;
+        font-weight: 700;
+        color: #00a99d;
+        white-space: nowrap;
+        margin-left: 8px;
+    }
+
+    /* Right Panel */
+    .bank-detail-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .bank-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 20px;
+        border-bottom: 1px solid #e9ecef;
+        flex-shrink: 0;
+    }
+
+    .bank-detail-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1a3353;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .bank-detail-name .ext-link {
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+    .bank-detail-name .ext-link:hover {
+        color: #007bff;
+    }
+
+    .btn-deposit-withdraw {
+        border: 1.5px solid #dc3545;
+        color: #dc3545;
+        background: #fff;
+        padding: 6px 16px;
+        border-radius: 5px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-deposit-withdraw:hover {
+        background: #fff5f5;
+    }
+
+    .btn-deposit-dropdown {
+        border: 1.5px solid #dc3545;
+        border-left: none;
+        color: #dc3545;
+        background: #fff;
+        padding: 6px 8px;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-deposit-withdraw {
+        border-radius: 5px 0 0 5px;
+    }
+
+    .btn-deposit-dropdown:hover {
+        background: #fff5f5;
+    }
+
+    .bank-info-row {
+        display: flex;
+        gap: 40px;
+        padding: 12px 20px;
+        border-bottom: 5px solid #dee2e6;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+    }
+
+    .bank-info-item .info-label {
+        font-size: 11px;
+        color: #999;
+        margin-bottom: 2px;
+    }
+
+    .bank-info-item .info-value {
+        font-size: 13px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    /* Transactions */
+    .bank-transactions-area {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 10px 0 0 0;
+    }
+
+    .bank-txn-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        flex-shrink: 0;
+        padding: 0 14px;
+    }
+
+    .bank-txn-header h6 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #333;
+        margin: 0;
+    }
+
+    .bank-txn-search {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+    .bank-txn-search:hover {
+        border-color: #007bff;
+        color: #007bff;
+    }
+
+    .bank-txn-table-wrapper {
+        flex: 1;
+        overflow: auto;
+        border: none;
+        border-radius: 0;
+    }
+
+    .bank-txn-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .bank-txn-table thead th {
+        background: #f8f9fa;
+        padding: 9px 14px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e9ecef;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+    }
+
+    .bank-txn-table thead th .filter-icon {
+        color: #bbb;
+        margin-left: 4px;
+        font-size: 10px;
+    }
+
+    .bank-txn-table thead th .sort-icon {
+        color: #bbb;
+        margin-left: 2px;
+        font-size: 10px;
+    }
+
+    .bank-txn-table tbody tr {
+        border-bottom: 1px solid #f1f3f4;
+    }
+
+    .bank-txn-table tbody tr:nth-child(odd) {
+        background: #f4f9ff;
+    }
+
+    .bank-txn-table tbody tr:nth-child(even) {
+        background: #fff;
+    }
+
+    .bank-txn-table tbody td {
+        padding: 11px 14px;
+        color: #333;
+        white-space: nowrap;
+    }
+
+    .bank-txn-table .amt-cell {
+        color: #00a99d;
+        font-weight: 600;
+    }
+
+    .bank-txn-table .txn-dots {
+        color: #6c757d;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0 6px;
+    }
+
+    .bank-txn-table .txn-dots:hover {
+        color: #333;
+    }
+
+    /* Deposit/Withdraw dropdown */
+    .deposit-dropdown-wrapper {
+        position: relative;
+        display: inline-flex;
+    }
+
+    .deposit-dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+        min-width: 200px;
+        z-index: 100;
+        display: none;
+        margin-top: 4px;
+    }
+
+    .deposit-dropdown-menu.show {
+        display: block;
+    }
+
+    .deposit-dropdown-menu .dd-item {
+        padding: 10px 16px;
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+        border-bottom: 1px solid #f5f5f5;
+        display: block;
+        text-decoration: none;
+    }
+
+    .deposit-dropdown-menu .dd-item:last-child {
+        border-bottom: none;
+    }
+
+    .deposit-dropdown-menu .dd-item:hover {
+        background: #f8f9fa;
+        color: #333;
+        text-decoration: none;
+    }
+
+    /* Modals */
+    .bank-modal-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
+        background: rgba(0,0,0,0.45);
         display: none;
         align-items: center;
         justify-content: center;
-        z-index: 1000;
+        z-index: 1050;
     }
 
-        .modal-overlay.show {
-            display: flex;
-        }
+    .bank-modal-overlay.show {
+        display: flex;
+    }
 
-    .modal {
-        background: white;
+    .bank-modal {
+        background: #fff;
         border-radius: 8px;
         width: 90%;
-        max-width: 500px;
-        max-height: 90vh;
+        max-width: 480px;
+        max-height: 85vh;
         overflow-y: auto;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.18);
     }
 
-    .modal-header {
-        padding: 20px 20px 10px;
+    .bank-modal-header {
+        padding: 16px 20px;
         border-bottom: 1px solid #e9ecef;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    .modal-title {
-        font-size: 18px;
-        font-weight: 500;
+    .bank-modal-header h5 {
+        font-size: 16px;
+        font-weight: 600;
         color: #333;
+        margin: 0;
     }
 
-    .close-btn {
+    .bank-modal-close {
         background: none;
         border: none;
         font-size: 20px;
         color: #999;
         cursor: pointer;
-        padding: 5px;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        padding: 4px 8px;
+        border-radius: 4px;
     }
 
-        .close-btn:hover {
-            background-color: #f0f0f0;
-            color: #666;
-        }
+    .bank-modal-close:hover {
+        background: #f0f0f0;
+        color: #333;
+    }
 
-    .modal-body {
+    .bank-modal-body {
         padding: 20px;
     }
 
-    .form-row {
+    .bank-modal-body .form-row {
         display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
+        gap: 14px;
+        margin-bottom: 16px;
     }
 
-    .form-group {
+    .bank-modal-body .form-group {
         flex: 1;
     }
 
-        .form-group.full-width {
-            flex: none;
-            width: 100%;
-        }
-
-    .form-label {
+    .bank-modal-body .form-label {
         display: block;
-        margin-bottom: 5px;
+        font-size: 11px;
         color: #666;
-        font-size: 12px;
         text-transform: uppercase;
+        margin-bottom: 4px;
+        font-weight: 500;
     }
 
-    .form-input, .form-select {
+    .bank-modal-body .form-input,
+    .bank-modal-body .form-select {
         width: 100%;
-        padding: 10px;
-        border: 2px solid #e9ecef;
+        padding: 8px 10px;
+        border: 1.5px solid #dee2e6;
         border-radius: 4px;
-        font-size: 14px;
+        font-size: 13px;
         outline: none;
-        transition: border-color 0.2s ease;
     }
 
-        .form-input:focus, .form-select:focus {
-            border-color: #007bff;
-        }
-
-        .form-input.amount {
-            border-color: #007bff;
-        }
-
-    .description-btn {
-        width: 100%;
-        padding: 15px;
-        border: 2px dashed #ddd;
-        background: none;
-        border-radius: 4px;
-        color: #999;
-        cursor: pointer;
-        font-size: 14px;
-        margin-bottom: 20px;
+    .bank-modal-body .form-input:focus,
+    .bank-modal-body .form-select:focus {
+        border-color: #007bff;
     }
 
-        .description-btn:hover {
-            border-color: #007bff;
-            color: #007bff;
-        }
-
-    .attachment-icon {
-        width: 30px;
-        height: 30px;
-        background: #f0f0f0;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #999;
-        cursor: pointer;
-        margin-bottom: 20px;
-    }
-
-    .save-btn {
-        background-color: #007bff;
-        color: white;
-        padding: 12px 30px;
+    .bank-modal-body .btn-save {
+        background: #007bff;
+        color: #fff;
         border: none;
+        padding: 9px 24px;
         border-radius: 4px;
+        font-size: 13px;
+        font-weight: 500;
         cursor: pointer;
-        font-size: 14px;
         float: right;
     }
 
-        .save-btn:hover {
-            background-color: #0056b3;
-        }
-
-    .clearfix::after {
-        content: "";
-        display: table;
-        clear: both;
+    .bank-modal-body .btn-save:hover {
+        background: #0056b3;
     }
 
-    /* Three Dots Dropdown Styles */
-    .action-dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .three-dots-btn {
+    .bank-modal-body .description-btn {
+        width: 100%;
+        padding: 12px;
+        border: 1.5px dashed #ddd;
         background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-        .three-dots-btn:hover {
-            background-color: #f0f0f0;
-            border-radius: 4px;
-        }
-
-    .action-dropdown-menu {
-        position: absolute;
-        right: 0;
-        top: 100%;
-        background: white;
-        border: 1px solid #dee2e6;
         border-radius: 4px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        min-width: 120px;
-        z-index: 1000;
-        display: none;
-    }
-
-        .action-dropdown-menu.show {
-            display: block;
-        }
-
-    .action-dropdown-item {
-        padding: 8px 16px;
+        color: #999;
         cursor: pointer;
-        color: #333;
-        text-decoration: none;
-        display: block;
-        transition: background-color 0.2s ease;
-        font-size: 14px;
+        font-size: 13px;
+        margin-bottom: 14px;
     }
 
-        .action-dropdown-item:hover {
-            background-color: #f8f9fa;
-            color: #333;
-        }
-
-        .action-dropdown-item.delete:hover {
-            background-color: #dc3545;
-            color: white;
-        }
-
-    /* Delete Confirmation Modal */
-    .delete-modal {
-        background: white;
-        border-radius: 8px;
-        width: 90%;
-        max-width: 400px;
-        padding: 0;
+    .bank-modal-body .description-btn:hover {
+        border-color: #007bff;
+        color: #007bff;
     }
 
-    .delete-modal-header {
-        padding: 20px;
-        border-bottom: 1px solid #e9ecef;
+    /* Delete modal */
+    .bank-delete-modal {
+        max-width: 380px;
     }
 
-    .delete-modal-body {
-        padding: 20px;
-    }
-
-    .delete-modal-footer {
-        padding: 15px 20px;
+    .bank-delete-modal .delete-footer {
+        padding: 12px 20px;
         border-top: 1px solid #e9ecef;
         display: flex;
         justify-content: flex-end;
         gap: 10px;
     }
 
-    .btn-cancel {
-        background-color: #6c757d;
-        color: white;
-        padding: 8px 20px;
+    .bank-delete-modal .btn-cancel {
+        background: #6c757d;
+        color: #fff;
         border: none;
+        padding: 7px 18px;
         border-radius: 4px;
+        font-size: 13px;
         cursor: pointer;
-        font-size: 14px;
     }
 
-        .btn-cancel:hover {
-            background-color: #5a6268;
-        }
-
-    .btn-delete {
-        background-color: #dc3545;
-        color: white;
-        padding: 8px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
+    .bank-delete-modal .btn-cancel:hover {
+        background: #5a6268;
     }
 
-        .btn-delete:hover {
-            background-color: #c82333;
-        }
+    .bank-delete-modal .btn-delete {
+        background: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 7px 18px;
+        border-radius: 4px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .bank-delete-modal .btn-delete:hover {
+        background: #c82333;
+    }
+
+    .bank-empty-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        color: #999;
+        font-size: 14px;
+    }
 </style>
-<div class="container-fluid mt-4">
-    <div class="row">
-        <!-- Left column: Account list and search/add -->
-        <div class="col-md-3 bg-light p-3">
-            <!-- Search bar -->
-            <div class="input-group mb-3">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control" placeholder="Search accounts..." />
-            </div>
-            <!-- Add Bank button -->
-            <button class="btn btn-warning w-100 mb-3">
-                <a href="/Web/Bank/AddBankAccount" class="text-decoration-none text-dark">
-                    <i class="bi bi-plus"></i> Add Bank
-                </a>
+
+<div class="bank-page">
+    <!-- Top Header -->
+    <div class="bank-top-header">
+        <h4>Banks</h4>
+        <div class="bank-top-actions">
+            <a href="/Web/Bank/AddBankAccount" class="btn-add-bank">+ Add Bank</a>
+            <button class="bank-header-dots" id="bankHeaderDotsBtn">
+                <i class="bi bi-three-dots-vertical"></i>
             </button>
-            <!-- Accounts table -->
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>ACCOUNT NAME</th>
-                        <th>AMOUNT</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
+        </div>
+    </div>
 
-                    @if (Model != null && Model.Any())
+    <!-- Main Content -->
+    <div class="bank-content">
+        <!-- Left Sidebar -->
+        <div class="bank-sidebar">
+            <div class="bank-sidebar-search">
+                <input type="text" id="bankSearchInput" placeholder="Search by Account/Amount" oninput="filterBankAccounts(this.value)">
+            </div>
+            <div class="bank-sidebar-header">
+                <span class="col-name">Account Name <i class="bi bi-chevron-expand" style="font-size:9px;"></i></span>
+                <span class="col-amt">Amount</span>
+            </div>
+            <div class="bank-sidebar-list" id="bankAccountList">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var acc in Model)
                     {
-                        foreach (var acc in Model)
-                        {
-                            var isSelected = (acc.Id == Model[0].Id);
-                            <tr class="@(isSelected ? "table-active" : "")">
-                                <td>
-                                    <i class="bi bi-bank"></i>
-                                    <a href="/Web/Bank/Index?id=@acc.Id">
-                                        @(acc.AccountDisplayName ?? "N/A")
-                                    </a>
-                                </td>
-                                <td>₹@((acc.OpeningBalance?.ToString("N2")) ?? "0.00")</td>
-                                <td>
-                                    <div class="action-dropdown">
-                                        <button class="three-dots-btn" onclick="toggleActionDropdown(event, @acc.Id)">
-                                            <img src="~/images/ThreeDots.png" alt="More" style="width: 16px; height: 16px;">
-                                        </button>
-                                        <div class="action-dropdown-menu" id="actionMenu-@acc.Id">
-                                            <a class="action-dropdown-item" href="/Web/Bank/AddBankAccount?id=@acc.Id&typeid=1">View</a>
-                                            <a class="action-dropdown-item" href="/Web/Bank/AddBankAccount?id=@acc.Id&typeid=2">Edit</a>
-                                            <a class="action-dropdown-item delete" href="javascript:void(0)" onclick="confirmDelete(@acc.Id, '@(acc.AccountDisplayName ?? "Account")')">Delete</a>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
+                        var isSelected = (acc.Id == selectedAccount?.Id);
+                        <a href="/Web/Bank/Index?id=@acc.Id" class="bank-account-item @(isSelected ? "selected" : "")" data-name="@(acc.AccountDisplayName ?? "")" data-amount="@((acc.OpeningBalance ?? 0).ToString("N2"))">
+                            <div class="acct-info">
+                                <div class="acct-name">@(acc.AccountDisplayName ?? "N/A")</div>
+                                <div class="acct-sub">Online Payment | Printing</div>
+                            </div>
+                            <div class="acct-amount">@((acc.OpeningBalance ?? 0).ToString("N2"))</div>
+                        </a>
                     }
-                    else
-                    {
-                        <tr>
-                            <td colspan="3" class="text-center text-muted">
-                                No bank accounts found
-                            </td>
-                        </tr>
-                    }
-
-                </tbody>
-            </table>
+                }
+                else
+                {
+                    <div style="padding:30px 14px; text-align:center; color:#999; font-size:13px;">No bank accounts found</div>
+                }
+            </div>
         </div>
 
-        <!-- Right column: Selected account details and transactions -->
-        <div class="col-md-9 p-3">
-            @if (Model != null && Model.Any())
+        <!-- Right Panel -->
+        <div class="bank-detail-panel">
+            @if (selectedAccount != null)
             {
-                <div class="d-flex justify-content-between align-items-start mb-3">
-                    <div>
-                        <h5>
-                            Bank Name: @(Model[0].AccountDisplayName ?? "N/A")
-                            <i class="bi bi-box-arrow-up-right"></i>
-                        </h5>
-                        <p><strong>Account Number:</strong> @(Model[0].AccountNumber ?? "N/A")</p>
-                        <p><strong>IFSC Code:</strong> @(Model[0].IFSCCode ?? "N/A")</p>
-                        <p><strong>UPI ID:</strong> @(Model[0].UPIID ?? "N/A")</p>
+                <!-- Account header -->
+                <div class="bank-detail-header">
+                    <div class="bank-detail-name">
+                        @(selectedAccount.AccountDisplayName ?? "N/A")
+                        <a href="#" class="ext-link"><i class="bi bi-box-arrow-up-right"></i></a>
                     </div>
-                    <div class="container">
-                        <div class="dropdown-container">
-                            <button class="dropdown-btn" onclick="toggleDropdown()">
-                                Deposit / Withdraw
-                                <span class="dropdown-arrow" id="dropdownArrow">▼</span>
-                            </button>
-                            <div class="dropdown-menu" id="dropdownMenu">
-                                <div class="dropdown-item" onclick="openModal('bankToCash')">Bank to Cash Transfer</div>
-                                <div class="dropdown-item" onclick="openModal('cashToBank')">Cash to Bank Transfer</div>
-                                <div class="dropdown-item" onclick="openModal('bankToBank')">Bank to Bank Transfer</div>
-                                <div class="dropdown-item" onclick="openModal('adjustment')">Adjust Bank Balance</div>
-                            </div>
+                    <div class="deposit-dropdown-wrapper">
+                        <button class="btn-deposit-withdraw" onclick="toggleDepositDropdown()">Deposit / Withdraw</button>
+                        <button class="btn-deposit-dropdown" onclick="toggleDepositDropdown()"><i class="bi bi-chevron-down" style="font-size:11px;"></i></button>
+                        <div class="deposit-dropdown-menu" id="depositDropdownMenu">
+                            <a class="dd-item" href="javascript:void(0)" onclick="openBankModal('bankToCashModal')">Bank to Cash Transfer</a>
+                            <a class="dd-item" href="javascript:void(0)" onclick="openBankModal('cashToBankModal')">Cash to Bank Transfer</a>
+                            <a class="dd-item" href="javascript:void(0)" onclick="openBankModal('bankToBankModal')">Bank to Bank Transfer</a>
+                            <a class="dd-item" href="javascript:void(0)" onclick="openBankModal('adjustmentModal')">Adjust Bank Balance</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Transactions header and search -->
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">TRANSACTIONS</h6>
-                    <div class="input-group" style="max-width: 300px;">
-                        <span class="input-group-text"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control" placeholder="Search transactions..." />
+                <!-- Bank info -->
+                <div class="bank-info-row">
+                    <div class="bank-info-item">
+                        <div class="info-label">Bank Name</div>
+                        <div class="info-value">@(selectedAccount.BankName ?? selectedAccount.AccountDisplayName ?? "N/A")</div>
+                    </div>
+                    <div class="bank-info-item">
+                        <div class="info-label">Account Number</div>
+                        <div class="info-value">@(selectedAccount.AccountNumber ?? "N/A")</div>
+                    </div>
+                    <div class="bank-info-item">
+                        <div class="info-label">IFSC Code</div>
+                        <div class="info-value">@(selectedAccount.IFSCCode ?? "N/A")</div>
                     </div>
                 </div>
 
-                <!-- Transactions table -->
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>TYPE</th>
-                            <th>NAME</th>
-                            <th>DATE</th>
-                            <th>AMOUNT</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Opening Balance</td>
-                            <td>Opening Balance</td>
-                            <td>@(Model[0].AsOfDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
-                            <td>₹@((Model[0].OpeningBalance?.ToString("N2")) ?? "0.00")</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <!-- Transactions -->
+                <div class="bank-transactions-area">
+                    <div class="bank-txn-header">
+                        <h6>Transactions</h6>
+                        <button class="bank-txn-search"><i class="bi bi-search"></i></button>
+                    </div>
+                    <div class="bank-txn-table-wrapper">
+                        <table class="bank-txn-table">
+                            <thead>
+                                <tr>
+                                    <th>Type <i class="bi bi-funnel filter-icon"></i></th>
+                                    <th>Name <i class="bi bi-funnel filter-icon"></i></th>
+                                    <th>Date <i class="bi bi-chevron-expand sort-icon"></i> <i class="bi bi-funnel filter-icon"></i></th>
+                                    <th>Amount <i class="bi bi-funnel filter-icon"></i></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sale</td>
+                                    <td>@(selectedAccount.AccountDisplayName ?? "N/A")</td>
+                                    <td>@(selectedAccount.AsOfDate?.ToString("dd/MM/yyyy") ?? DateTime.Now.ToString("dd/MM/yyyy"))</td>
+                                    <td class="amt-cell">₹ @((selectedAccount.OpeningBalance ?? 0).ToString("N2"))</td>
+                                    <td><span class="txn-dots">⋮</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             }
             else
             {
-                <div class="text-center text-muted p-5">
-                    <p>No bank account selected</p>
+                <div class="bank-empty-state">
+                    <div style="text-align:center;">
+                        <i class="bi bi-bank" style="font-size:40px; display:block; margin-bottom:10px; color:#ccc;"></i>
+                        <p>No bank account selected</p>
+                    </div>
                 </div>
             }
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div class="modal-overlay" id="deleteConfirmModal">
-        <div class="delete-modal">
-            <div class="delete-modal-header">
-                <h5 class="modal-title">Confirm Delete</h5>
-            </div>
-            <div class="delete-modal-body">
-                <p>Are you sure you want to delete <strong id="deleteAccountName"></strong>?</p>
-                <p class="text-muted small">This action cannot be undone.</p>
-            </div>
-            <div class="delete-modal-footer">
-                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-                <button class="btn-delete" onclick="deleteAccount()">Delete</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bank to Cash Transfer Modal -->
-    <div class="modal-overlay" id="bankToCashModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Bank To Cash Transfer</h3>
-                <button class="close-btn" onclick="closeModal('bankToCashModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">From</label>
-                        <select class="form-select">
-                            <option>lokesh saini</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">To</label>
-                        <select class="form-select">
-                            <option>Cash</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Amount</label>
-                        <input type="text" class="form-input amount" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Adjustment Date</label>
-                        <input type="date" class="form-input" value="2025-06-14">
-                    </div>
-                </div>
-                <button class="description-btn">📎 Add Description</button>
-                <div class="attachment-icon">📎</div>
-                <div class="clearfix">
-                    <button class="save-btn">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Cash to Bank Transfer Modal -->
-    <div class="modal-overlay" id="cashToBankModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Cash To Bank Transfer</h3>
-                <button class="close-btn" onclick="closeModal('cashToBankModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">From</label>
-                        <select class="form-select">
-                            <option>Cash</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">To</label>
-                        <select class="form-select">
-                            <option>lokesh saini</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Amount</label>
-                        <input type="text" class="form-input amount" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Adjustment Date</label>
-                        <input type="date" class="form-input" value="2025-06-14">
-                    </div>
-                </div>
-                <button class="description-btn">📎 Add Description</button>
-                <div class="attachment-icon">📎</div>
-                <div class="clearfix">
-                    <button class="save-btn">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bank to Bank Transfer Modal -->
-    <div class="modal-overlay" id="bankToBankModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Bank To Bank Transfer</h3>
-                <button class="close-btn" onclick="closeModal('bankToBankModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">From</label>
-                        <select class="form-select">
-                            <option>lokesh saini</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">To</label>
-                        <select class="form-select">
-                            <option>lokesh saini</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Amount</label>
-                        <input type="text" class="form-input amount" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Adjustment Date</label>
-                        <input type="date" class="form-input" value="2025-06-14">
-                    </div>
-                </div>
-                <button class="description-btn">📎 Add Description</button>
-                <div class="attachment-icon">📎</div>
-                <div class="clearfix">
-                    <button class="save-btn">Save</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bank Adjustment Modal -->
-    <div class="modal-overlay" id="adjustmentModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 class="modal-title">Bank Adjustment Entry</h3>
-                <button class="close-btn" onclick="closeModal('adjustmentModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Account Name</label>
-                        <select class="form-select">
-                            <option>lokesh saini</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Type</label>
-                        <select class="form-select">
-                            <option>Increase balance</option>
-                            <option>Decrease balance</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Amount</label>
-                        <input type="text" class="form-input amount" placeholder="">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Adjustment Date</label>
-                        <input type="date" class="form-input" value="2025-06-14">
-                    </div>
-                </div>
-                <button class="description-btn">📎 Add Description</button>
-                <div class="attachment-icon">📎</div>
-                <div class="clearfix">
-                    <button class="save-btn">Save</button>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Delete Confirmation Modal -->
+<div class="bank-modal-overlay" id="deleteConfirmModal">
+    <div class="bank-modal bank-delete-modal">
+        <div class="bank-modal-header">
+            <h5>Confirm Delete</h5>
+            <button class="bank-modal-close" onclick="closeDeleteModal()">&times;</button>
+        </div>
+        <div class="bank-modal-body">
+            <p>Are you sure you want to delete <strong id="deleteAccountName"></strong>?</p>
+            <p style="color:#999; font-size:12px;">This action cannot be undone.</p>
+        </div>
+        <div class="delete-footer">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn-delete" onclick="deleteAccount()">Delete</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bank to Cash Transfer Modal -->
+<div class="bank-modal-overlay" id="bankToCashModal">
+    <div class="bank-modal">
+        <div class="bank-modal-header">
+            <h5>Bank To Cash Transfer</h5>
+            <button class="bank-modal-close" onclick="closeBankModal('bankToCashModal')">&times;</button>
+        </div>
+        <div class="bank-modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">From</label>
+                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">To</label>
+                    <select class="form-select"><option>Cash</option></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="text" class="form-input" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+            </div>
+            <button class="description-btn">+ Add Description</button>
+            <div class="clearfix" style="overflow:hidden;"><button class="btn-save">Save</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Cash to Bank Transfer Modal -->
+<div class="bank-modal-overlay" id="cashToBankModal">
+    <div class="bank-modal">
+        <div class="bank-modal-header">
+            <h5>Cash To Bank Transfer</h5>
+            <button class="bank-modal-close" onclick="closeBankModal('cashToBankModal')">&times;</button>
+        </div>
+        <div class="bank-modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">From</label>
+                    <select class="form-select"><option>Cash</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">To</label>
+                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="text" class="form-input" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+            </div>
+            <button class="description-btn">+ Add Description</button>
+            <div class="clearfix" style="overflow:hidden;"><button class="btn-save">Save</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Bank to Bank Transfer Modal -->
+<div class="bank-modal-overlay" id="bankToBankModal">
+    <div class="bank-modal">
+        <div class="bank-modal-header">
+            <h5>Bank To Bank Transfer</h5>
+            <button class="bank-modal-close" onclick="closeBankModal('bankToBankModal')">&times;</button>
+        </div>
+        <div class="bank-modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">From</label>
+                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">To</label>
+                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="text" class="form-input" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+            </div>
+            <button class="description-btn">+ Add Description</button>
+            <div class="clearfix" style="overflow:hidden;"><button class="btn-save">Save</button></div>
+        </div>
+    </div>
+</div>
+
+<!-- Bank Adjustment Modal -->
+<div class="bank-modal-overlay" id="adjustmentModal">
+    <div class="bank-modal">
+        <div class="bank-modal-header">
+            <h5>Adjust Bank Balance</h5>
+            <button class="bank-modal-close" onclick="closeBankModal('adjustmentModal')">&times;</button>
+        </div>
+        <div class="bank-modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Account Name</label>
+                    <select class="form-select"><option>@(selectedAccount?.AccountDisplayName ?? "")</option></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-select">
+                        <option>Increase balance</option>
+                        <option>Decrease balance</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Amount</label>
+                    <input type="text" class="form-input" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+            </div>
+            <button class="description-btn">+ Add Description</button>
+            <div class="clearfix" style="overflow:hidden;"><button class="btn-save">Save</button></div>
+        </div>
+    </div>
+</div>
+
 <script>
-    let isDropdownOpen = false;
     let currentDeleteId = null;
 
-    function toggleDropdown() {
-        const menu = document.getElementById('dropdownMenu');
-        const arrow = document.getElementById('dropdownArrow');
-
-        isDropdownOpen = !isDropdownOpen;
-
-        if (isDropdownOpen) {
-            menu.classList.add('show');
-            arrow.classList.add('open');
-        } else {
-            menu.classList.remove('show');
-            arrow.classList.remove('open');
-        }
-    }
-
-    function openModal(type) {
-        // Close dropdown first
-        toggleDropdown();
-
-        // Open appropriate modal
-        let modalId;
-        switch (type) {
-            case 'bankToCash':
-                modalId = 'bankToCashModal';
-                break;
-            case 'cashToBank':
-                modalId = 'cashToBankModal';
-                break;
-            case 'bankToBank':
-                modalId = 'bankToBankModal';
-                break;
-            case 'adjustment':
-                modalId = 'adjustmentModal';
-                break;
-        }
-
-        document.getElementById(modalId).classList.add('show');
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('show');
-    }
-
-    // Three dots dropdown functionality
-    function toggleActionDropdown(event, accountId) {
-        event.stopPropagation();
-
-        // Close all other dropdowns
-        document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
-            if (menu.id !== `actionMenu-${accountId}`) {
-                menu.classList.remove('show');
-            }
-        });
-
-        // Toggle current dropdown
-        const menu = document.getElementById(`actionMenu-${accountId}`);
+    // Deposit / Withdraw dropdown
+    function toggleDepositDropdown() {
+        const menu = document.getElementById('depositDropdownMenu');
         menu.classList.toggle('show');
     }
 
-    // Delete confirmation functions
+    // Bank modals
+    function openBankModal(modalId) {
+        document.getElementById('depositDropdownMenu').classList.remove('show');
+        document.getElementById(modalId).classList.add('show');
+    }
+
+    function closeBankModal(modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+
+    // Delete
     function confirmDelete(accountId, accountName) {
         currentDeleteId = accountId;
         document.getElementById('deleteAccountName').textContent = accountName;
         document.getElementById('deleteConfirmModal').classList.add('show');
-
-        // Close the action dropdown
-        document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
-            menu.classList.remove('show');
-        });
     }
 
     function closeDeleteModal() {
@@ -753,32 +941,42 @@
 
     function deleteAccount() {
         if (currentDeleteId) {
-            // Redirect to delete action
-            window.location.href = `/Web/Bank/DeleteConfirmed?id=${currentDeleteId}`;
+            window.location.href = '/Web/Bank/DeleteConfirmed?id=' + currentDeleteId;
         }
     }
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function (event) {
-        const dropdown = document.querySelector('.dropdown-container');
-        if (dropdown && !dropdown.contains(event.target) && isDropdownOpen) {
-            toggleDropdown();
-        }
+    // Search filter
+    function filterBankAccounts(term) {
+        term = term.toLowerCase();
+        document.querySelectorAll('.bank-account-item').forEach(function(item) {
+            var name = (item.getAttribute('data-name') || '').toLowerCase();
+            var amount = (item.getAttribute('data-amount') || '').toLowerCase();
+            item.style.display = (name.includes(term) || amount.includes(term) || term === '') ? '' : 'none';
+        });
+    }
 
-        // Close action dropdowns when clicking outside
-        if (!event.target.closest('.action-dropdown')) {
-            document.querySelectorAll('.action-dropdown-menu').forEach(menu => {
-                menu.classList.remove('show');
-            });
+    // Close dropdowns on outside click
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.deposit-dropdown-wrapper')) {
+            var menu = document.getElementById('depositDropdownMenu');
+            if (menu) menu.classList.remove('show');
+        }
+        // Close modals on backdrop click
+        if (e.target.classList.contains('bank-modal-overlay')) {
+            e.target.classList.remove('show');
         }
     });
 
-    // Close modal when clicking outside
-    document.addEventListener('click', function (event) {
-        const modals = document.querySelectorAll('.modal-overlay');
-        modals.forEach(modal => {
-            if (event.target === modal) {
-                modal.classList.remove('show');
+    // Double-click on account item to edit
+    document.querySelectorAll('.bank-account-item').forEach(function(item) {
+        item.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+            var href = this.getAttribute('href');
+            if (href) {
+                var idMatch = href.match(/id=(\d+)/);
+                if (idMatch) {
+                    window.location.href = '/Web/Bank/AddBankAccount?id=' + idMatch[1] + '&typeid=2';
+                }
             }
         });
     });

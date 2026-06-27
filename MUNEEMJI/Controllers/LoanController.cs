@@ -572,6 +572,42 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpPost]
+        public IActionResult DeleteLoanAccount(int id)
+        {
+            try
+            {
+                var companyId = _companyTenancy.GetCurrentCompanyId();
+
+                using var conn = new NpgsqlConnection(_connStr);
+                conn.Open();
+
+                // Delete transactions first
+                var delTxn = "DELETE FROM loantransactions WHERE loanaccountid = @id AND companyid = @p_companyid";
+                using (var cmd = new NpgsqlCommand(delTxn, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    cmd.Parameters.AddWithValue("@p_companyid", companyId);
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Delete the loan account
+                var delAcc = "DELETE FROM loan_accounts WHERE id = @id AND companyid = @p_companyid";
+                using (var cmd2 = new NpgsqlCommand(delAcc, conn))
+                {
+                    cmd2.Parameters.AddWithValue("@id", id);
+                    cmd2.Parameters.AddWithValue("@p_companyid", companyId);
+                    cmd2.ExecuteNonQuery();
+                }
+
+                return Json(new { success = true, message = "Loan account deleted successfully" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
         public IActionResult SaveChargesOnLoan([FromBody] ChargesOnLoanModel model)
         {
             var companyId = _companyTenancy.GetCurrentCompanyId();

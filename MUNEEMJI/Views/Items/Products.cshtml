@@ -1028,6 +1028,11 @@
                 this.classList.add('selected');
                 loadProductDetails(itemId);
             });
+            entry.addEventListener('dblclick', function (e) {
+                if (e.target.closest('.item-dots') || e.target.closest('[data-bs-toggle="popover"]') || e.target.closest('.popover') || e.target.closest('.dropdown-menu')) return;
+                const itemId = this.getAttribute('data-item-id');
+                window.location.href = '/Web/Items/Create?id=' + itemId;
+            });
         });
     }
 

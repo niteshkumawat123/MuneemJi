@@ -775,6 +775,13 @@
                 this.classList.add('selected');
                 selectUnit(unitId, fullName);
             });
+            entry.addEventListener('dblclick', function (e) {
+                if (e.target.closest('.u-dots') || e.target.closest('[data-bs-toggle="popover"]') || e.target.closest('.popover')) return;
+                const unitId = this.getAttribute('data-unit-id');
+                const fullName = this.getAttribute('data-unit-fullname');
+                const shortName = this.getAttribute('data-unit-shortname');
+                editUnit(parseInt(unitId), fullName, shortName);
+            });
         });
     }
 

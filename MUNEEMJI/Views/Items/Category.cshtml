@@ -857,6 +857,14 @@
                 this.classList.add('selected');
                 selectCategory(catId, catName);
             });
+            entry.addEventListener('dblclick', function (e) {
+                if (e.target.closest('.cat-dots') || e.target.closest('[data-bs-toggle="popover"]') || e.target.closest('.popover')) return;
+                const catId = this.getAttribute('data-cat-id');
+                const catName = this.getAttribute('data-cat-name');
+                if (catId && catId !== '0') {
+                    editCategory(parseInt(catId), catName);
+                }
+            });
         });
     }
 

@@ -1,1157 +1,1225 @@
 ﻿@model List<LoanAccountModel>
 @{
     ViewData["Title"] = "Loan Accounts";
+    var selectedAccount = Model?.FirstOrDefault();
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        .main-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 300px;
-            background-color: #e9ecef;
-            padding: 20px 0;
-            border-right: 1px solid #dee2e6;
-        }
-
-            .sidebar .search-box {
-                padding: 0 20px;
-                margin-bottom: 20px;
-            }
-
-                .sidebar .search-box input {
-                    background-color: white;
-                    border: 1px solid #ced4da;
-                    border-radius: 4px;
-                    padding: 8px 12px;
-                    width: 100%;
-                }
-
-            .sidebar .add-loan-btn {
-                margin: 0 20px 20px 20px;
-            }
-
-            .sidebar .account-section {
-                padding: 0 20px;
-            }
-
-            .sidebar .account-header {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 10px;
-            }
-
-            .sidebar .account-header-label {
-                font-size: 12px;
-                color: #666;
-                text-transform: uppercase;
-                font-weight: 600;
-            }
-
-            .sidebar .account-item {
-                background-color: #b3d9ff;
-                padding: 12px 15px;
-                border-radius: 4px;
-                margin-bottom: 10px;
-                cursor: pointer;
-                transition: background-color 0.2s;
-            }
-
-                .sidebar .account-item:hover {
-                    background-color: #99ccff;
-                }
-
-                .sidebar .account-item.active {
-                    background-color: #2196f3;
-                }
-
-                    .sidebar .account-item.active .account-name,
-                    .sidebar .account-item.active .account-amount {
-                        color: white;
-                    }
-
-            .sidebar .account-item-content {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .sidebar .account-name {
-                font-weight: 500;
-                color: #333;
-            }
-
-            .sidebar .account-amount {
-                color: #d32f2f;
-                font-weight: 500;
-                font-size: 14px;
-            }
-
-        .content-area {
-            flex: 1;
-            padding: 0;
-        }
-
-        .header-section {
-            background-color: white;
-            padding: 20px 30px;
-            border-bottom: 1px solid #dee2e6;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .account-info h4 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #333;
-        }
-
-        .account-details {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        .balance-amount {
-            color: #d32f2f;
-            font-weight: 500;
-        }
-
-        .header-actions {
-            position: relative;
-        }
-
-        .make-payment-btn {
-            background-color: #2196f3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-            .make-payment-btn:hover {
-                background-color: #1976d2;
-                color: white;
-            }
-
-            .make-payment-btn:focus {
-                box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
-                color: white;
-                outline: none;
-            }
-
-        .view-statement-link {
-            color: #2196f3;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-            .view-statement-link:hover {
-                text-decoration: underline;
-                color: #1976d2;
-            }
-
-        /* Custom Dropdown Styles */
-        .custom-dropdown-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .custom-dropdown-menu {
-            display: none;
-            position: absolute;
-            top: 100%;
-            right: 0;
-            left: auto;
-            z-index: 1050;
-            min-width: 180px;
-            padding: 0.5rem 0;
-            margin: 0.125rem 0 0;
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-            .custom-dropdown-menu.show {
-                display: block;
-            }
-
-        .custom-dropdown-item {
-            display: block;
-            width: 100%;
-            padding: 10px 16px;
-            clear: both;
-            font-size: 14px;
-            color: #333;
-            text-align: left;
-            text-decoration: none;
-            white-space: nowrap;
-            background-color: transparent;
-            border: 0;
-            cursor: pointer;
-        }
-
-            .custom-dropdown-item:hover {
-                background-color: #f8f9fa;
-                color: #333;
-                text-decoration: none;
-            }
-
-        .transactions-section {
-            padding: 20px 30px;
-            background-color: white;
-        }
-
-        .transactions-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .transactions-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin: 0;
-        }
-
-        .search-transactions {
-            width: 300px;
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .transactions-table {
-            width: 100%;
-            border-collapse: collapse;
-            background-color: white;
-        }
-
-            .transactions-table th {
-                background-color: #f8f9fa;
-                padding: 12px 15px;
-                text-align: left;
-                font-size: 12px;
-                font-weight: 600;
-                color: #666;
-                text-transform: uppercase;
-                border-bottom: 1px solid #dee2e6;
-            }
-
-            .transactions-table td {
-                padding: 12px 15px;
-                border-bottom: 1px solid #f1f1f1;
-                font-size: 14px;
-                color: #333;
-            }
-
-            .transactions-table tbody tr:hover {
-                background-color: #f8f9fa;
-            }
-
-        .amount-cell {
-            font-weight: 500;
-        }
-
-        .amount-positive {
-            color: #4caf50;
-        }
-
-        .amount-negative {
-            color: #d32f2f;
-        }
-
-        .actions-cell {
-            text-align: center;
-        }
-
-        .actions-btn {
-            background: none;
-            border: none;
-            color: #666;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 5px;
-        }
-
-            .actions-btn:hover {
-                color: #333;
-            }
-
-        .dropdown-menu {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border: 1px solid #e0e0e0;
-            min-width: 160px;
-        }
-
-        .dropdown-item {
-            padding: 10px 16px;
-            font-size: 14px;
-            color: #333;
-            cursor: pointer;
-        }
-
-            .dropdown-item:hover,
-            .dropdown-item:focus {
-                background-color: #f8f9fa;
-                color: #333;
-                text-decoration: none;
-            }
-
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-            padding: 16px 20px;
-        }
-
-        .modal-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .loading-spinner {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 9999;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        .form-group-full {
-            grid-column: 1 / -1;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-
-        .required-asterisk {
-            color: #dc3545;
-            margin-left: 2px;
-        }
-
-        .form-control-custom {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 14px;
-            transition: border-color 0.15s ease-in-out;
-        }
-
-            .form-control-custom:focus {
-                outline: none;
-                border-color: #2196f3;
-                box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.15);
-            }
-
-            .form-control-custom::placeholder {
-                color: #999;
-            }
-
-        .input-with-label {
-            position: relative;
-        }
-
-        .input-suffix {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #666;
-            font-size: 13px;
-            pointer-events: none;
-        }
-
-        .modal-footer {
-            padding: 16px 24px;
-            border-top: 1px solid #dee2e6;
-        }
-
-        .btn-save {
-            background-color: #2196f3;
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-            .btn-save:hover {
-                background-color: #1976d2;
-            }
-
-        .btn-close {
-            background: transparent;
-            border: none;
-            font-size: 24px;
-            color: #666;
-            cursor: pointer;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-        }
-
-            .btn-close:hover {
-                background-color: #e9ecef;
-                color: #333;
-            }
-    </style>
-</head>
-<body>
-    <div class="main-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="search-box">
-                <input type="text" placeholder="Search by Account/Amount" class="form-control" id="sidebarSearch" />
+<style>
+    .loan-page {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 60px);
+        overflow: hidden;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .loan-top-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        flex-shrink: 0;
+    }
+
+    .loan-top-header h4 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1a3353;
+        margin: 0;
+    }
+
+    .loan-top-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .btn-add-loan {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .btn-add-loan:hover {
+        background-color: #c82333;
+        color: #fff;
+    }
+
+    .loan-header-dots {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border-radius: 4px;
+        border: none;
+        background: none;
+        font-size: 16px;
+        color: #6c757d;
+    }
+
+    .loan-header-dots:hover {
+        background: #f0f0f0;
+    }
+
+    .loan-content {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        min-height: 0;
+        border: 5px solid #dee2e6;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    /* Left Sidebar */
+    .loan-sidebar {
+        width: 260px;
+        min-width: 220px;
+        border-right: 5px solid #dee2e6;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .loan-sidebar-search {
+        padding: 8px 10px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .loan-sidebar-search input {
+        width: 100%;
+        padding: 6px 10px 6px 28px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        font-size: 11px;
+        outline: none;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%23999' d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E") no-repeat 8px center;
+    }
+
+    .loan-sidebar-search input:focus {
+        border-color: #80bdff;
+    }
+
+    .loan-sidebar-header {
+        display: flex;
+        padding: 5px 10px;
+        font-size: 10px;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .loan-sidebar-header .col-name {
+        flex: 1;
+    }
+
+    .loan-sidebar-header .col-amt {
+        width: 80px;
+        text-align: right;
+    }
+
+    .loan-sidebar-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .loan-account-item {
+        display: flex;
+        align-items: center;
+        padding: 9px 12px;
+        border-bottom: 1px solid #f5f5f5;
+        cursor: pointer;
+        transition: background 0.15s;
+    }
+
+    .loan-account-item:hover {
+        background: #f8f9ff;
+    }
+
+    .loan-account-item.selected {
+        background: #f0f7ff;
+        border-left: 3px solid #007bff;
+        padding-left: 9px;
+    }
+
+    .loan-account-item .acct-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .loan-account-item .acct-name {
+        font-size: 12px;
+        font-weight: 600;
+        color: #1a3353;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .loan-account-item .acct-amount {
+        font-size: 12px;
+        font-weight: 700;
+        color: #dc3545;
+        white-space: nowrap;
+        margin-left: 8px;
+    }
+
+    /* Right Panel */
+    .loan-detail-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        min-width: 0;
+    }
+
+    .loan-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        border-bottom: 1px solid #e9ecef;
+        flex-shrink: 0;
+    }
+
+    .loan-detail-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a3353;
+    }
+
+    .loan-detail-sub {
+        font-size: 11px;
+        color: #666;
+        margin-top: 2px;
+    }
+
+    .loan-detail-sub .balance-amt {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    /* Payment button */
+    .btn-make-payment {
+        border: 1.5px solid #dc3545;
+        color: #dc3545;
+        background: #fff;
+        padding: 5px 14px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-make-payment:hover {
+        background: #fff5f5;
+    }
+
+    .btn-payment-dropdown {
+        border: 1.5px solid #dc3545;
+        border-left: none;
+        color: #dc3545;
+        background: #fff;
+        padding: 5px 8px;
+        border-radius: 0 5px 5px 0;
+        font-size: 10px;
+        cursor: pointer;
+    }
+
+    .btn-make-payment {
+        border-radius: 5px 0 0 5px;
+    }
+
+    .loan-payment-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        min-width: 150px;
+        z-index: 100;
+        display: none;
+    }
+
+    .loan-payment-dropdown.show {
+        display: block;
+    }
+
+    .loan-payment-dropdown a {
+        display: block;
+        padding: 7px 12px;
+        font-size: 12px;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .loan-payment-dropdown a:hover {
+        background: #f5f5f5;
+    }
+
+    /* Info row */
+    .loan-info-row {
+        display: flex;
+        gap: 24px;
+        padding: 10px 18px;
+        border-bottom: 5px solid #dee2e6;
+        flex-shrink: 0;
+        font-size: 11px;
+        color: #555;
+    }
+
+    .loan-info-row .info-item label {
+        color: #888;
+        font-size: 10px;
+    }
+
+    .loan-info-row .info-item span {
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* Transactions */
+    .loan-txn-section {
+        flex: 1;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .loan-txn-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 18px;
+        border-bottom: 1px solid #e9ecef;
+        flex-shrink: 0;
+    }
+
+    .loan-txn-header h5 {
+        font-size: 12px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .loan-txn-header .search-icon {
+        cursor: pointer;
+        color: #6c757d;
+        font-size: 13px;
+    }
+
+    .loan-txn-table-wrapper {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .loan-txn-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+    }
+
+    .loan-txn-table thead {
+        background: #f8f9fa;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
+
+    .loan-txn-table th {
+        padding: 7px 12px;
+        text-align: left;
+        font-size: 10px;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        border-bottom: 1px solid #dee2e6;
+        white-space: nowrap;
+    }
+
+    .loan-txn-table td {
+        padding: 8px 12px;
+        font-size: 12px;
+        color: #333;
+        border-bottom: 1px solid #f5f5f5;
+        vertical-align: middle;
+    }
+
+    .loan-txn-table tbody tr:nth-child(odd) {
+        background: #f0f7ff;
+    }
+
+    .loan-txn-table tbody tr:hover {
+        background: #e3f2fd;
+    }
+
+    .loan-txn-table .amount-cell {
+        font-weight: 500;
+    }
+
+    .loan-txn-table .text-success { color: #2e7d32; }
+    .loan-txn-table .text-primary { color: #1565c0; }
+    .loan-txn-table .text-danger { color: #dc3545; }
+
+    .actions-cell {
+        text-align: center;
+        position: relative;
+        width: 40px;
+    }
+
+    .actions-btn {
+        background: none;
+        border: none;
+        color: #666;
+        font-size: 14px;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+
+    .actions-btn:hover {
+        color: #333;
+        background: #f0f0f0;
+    }
+
+    .action-dropdown {
+        position: absolute;
+        right: 10px;
+        top: 100%;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        min-width: 130px;
+        z-index: 100;
+        display: none;
+    }
+
+    .action-dropdown.show {
+        display: block;
+    }
+
+    .action-dropdown a {
+        display: block;
+        padding: 7px 12px;
+        font-size: 11px;
+        color: #333;
+        text-decoration: none;
+    }
+
+    .action-dropdown a:hover {
+        background: #f5f5f5;
+    }
+
+    .action-dropdown a.delete-item:hover {
+        background: #ffeaea;
+        color: #dc3545;
+    }
+
+    /* Modal Styles */
+    .loan-modal-backdrop {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.5);
+        z-index: 1000;
+    }
+
+    .loan-modal-container {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1001;
+        pointer-events: none;
+    }
+
+    .loan-modal-content {
+        background: white;
+        border-radius: 6px;
+        width: 92%;
+        max-width: 520px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        pointer-events: auto;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .loan-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e0e0e0;
+        position: sticky;
+        top: 0;
+        background: #f8f9fa;
+        z-index: 2;
+    }
+
+    .loan-modal-header h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .loan-modal-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #999;
+        cursor: pointer;
+        line-height: 1;
+    }
+
+    .loan-modal-close:hover { color: #333; }
+
+    .loan-modal-body {
+        padding: 14px 16px;
+    }
+
+    .loan-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .loan-form-group {
+        margin-bottom: 0;
+    }
+
+    .loan-form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .loan-form-label {
+        display: block;
+        font-size: 11px;
+        color: #555;
+        margin-bottom: 3px;
+        font-weight: 500;
+    }
+
+    .loan-form-label .required {
+        color: #dc3545;
+    }
+
+    .loan-form-input {
+        width: 100%;
+        padding: 5px 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: inherit;
+    }
+
+    .loan-form-input:focus {
+        outline: none;
+        border-color: #4285f4;
+    }
+
+    .loan-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding: 10px 16px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .loan-btn {
+        padding: 5px 14px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        border: none;
+    }
+
+    .loan-btn-cancel {
+        background-color: #f5f5f5;
+        color: #666;
+    }
+
+    .loan-btn-cancel:hover { background-color: #e0e0e0; }
+
+    .loan-btn-save {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .loan-btn-save:hover { background-color: #c82333; }
+    .loan-btn-save:disabled { background-color: #ccc; cursor: not-allowed; }
+
+    .loan-btn-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .loan-btn-delete:hover { background-color: #c82333; }
+
+    /* Delete confirm */
+    .loan-delete-body {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .loan-delete-body .delete-icon {
+        font-size: 36px;
+        color: #dc3545;
+        margin-bottom: 10px;
+    }
+
+    .loan-delete-body .delete-msg {
+        font-size: 13px;
+        color: #333;
+        margin-bottom: 6px;
+    }
+
+    .loan-delete-body .delete-warn {
+        font-size: 11px;
+        color: #666;
+    }
+
+    /* Toast */
+    .loan-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #4caf50;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 4px;
+        font-size: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 2000;
+        animation: loanSlideIn 0.3s ease;
+    }
+
+    @@keyframes loanSlideIn {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+
+    .loan-toast.error { background-color: #dc3545; }
+</style>
+
+<div class="loan-page">
+    <div class="loan-top-header">
+        <h4>Loan Accounts</h4>
+        <div class="loan-top-actions">
+            <button class="btn-add-loan" onclick="openAddLoanModal()">+ Add Loan Account</button>
+            <button class="loan-header-dots">⋮</button>
+        </div>
+    </div>
+
+    <div class="loan-content">
+        <!-- Left Sidebar -->
+        <div class="loan-sidebar">
+            <div class="loan-sidebar-search">
+                <input type="text" placeholder="Search by Account/Amount" id="loanSidebarSearch" />
             </div>
-
-            <div class="add-loan-btn">
-                <button class="btn btn-warning w-100" style="background-color: #ff9800; border: none; font-weight: 500;" onclick="openAddLoanModal()">
-                    <i class="fas fa-plus"></i> Add Loan A/C
-                </button>
+            <div class="loan-sidebar-header">
+                <span class="col-name">Account Name</span>
+                <span class="col-amt">Amount</span>
             </div>
-
-            <div class="account-section">
-                <div class="account-header">
-                    <div class="account-header-label">Account Name</div>
-                    <div class="account-header-label">Amount</div>
-                </div>
-
+            <div class="loan-sidebar-list">
                 @if (Model != null && Model.Count() > 0)
                 {
                     foreach (var item in Model)
                     {
-                        <div class="account-item @(item == Model.First() ? "active" : "")"
+                        <div class="loan-account-item @(item == Model.First() ? "selected" : "")"
                              data-account-id="@item.Id"
-                             onclick="selectAccount(@item.Id)">
-                            <div class="account-item-content">
-                                <div class="account-name">@item.AccountName</div>
-                                <div class="account-amount">₹ @item.CurrentBalance.Value.ToString("N2")</div>
+                             onclick="selectAccount(@item.Id)"
+                             ondblclick="editLoanAccount(@item.Id)">
+                            <div class="acct-info">
+                                <div class="acct-name">@item.AccountName</div>
                             </div>
+                            <div class="acct-amount">₹ @((item.CurrentBalance ?? 0).ToString("N2"))</div>
                         </div>
                     }
                 }
                 else
                 {
-                    <div style="text-align: center; color: #999; padding: 20px; font-size: 14px;">
-                        No loan accounts found
-                    </div>
+                    <div style="text-align:center;color:#999;padding:20px;font-size:12px;">No loan accounts found</div>
                 }
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="content-area">
-            <!-- Header Section -->
-            <div class="header-section">
-                <div class="account-info">
-                    <h4 id="selectedAccountName">
-                        @if (Model != null && Model.Count() > 0)
+        <!-- Right Panel -->
+        <div class="loan-detail-panel">
+            <div class="loan-detail-header">
+                <div>
+                    <div class="loan-detail-name" id="selectedAccountName">
+                        @(selectedAccount?.AccountName ?? "Select an account")
+                    </div>
+                    <div class="loan-detail-sub" id="selectedAccountDetails">
+                        @if (selectedAccount != null)
                         {
-                            @Model.FirstOrDefault()?.AccountName
-                        }
-                        else
-                        {
-                            @:Select an account
-                        }
-                    </h4>
-                    <div class="account-details" id="selectedAccountDetails">
-                        @if (Model != null && Model.Count() > 0)
-                        {
-                            var firstAccount = Model.FirstOrDefault();
-                            @if (!string.IsNullOrEmpty(firstAccount.LenderBank))
+                            if (!string.IsNullOrEmpty(selectedAccount.LenderBank))
                             {
-                                @:Lending Bank / Agency: @firstAccount.LenderBank <br>
-                                @:Account Number: @firstAccount.AccountNumber<br>
-                                <span class="balance-amount">Balance Amount: ₹ @firstAccount.CurrentBalance.Value.ToString("N2")</span>
+                                <text>Lending Bank: @selectedAccount.LenderBank</text><br />
                             }
+                            <span class="balance-amt">Balance Amount: ₹ @((selectedAccount.CurrentBalance ?? 0).ToString("N2"))</span>
                         }
                     </div>
                 </div>
-
-                <!-- Custom Dropdown -->
-                <div class="header-actions">
-                    <div class="custom-dropdown-wrapper">
-                        <button class="btn make-payment-btn"
-                                type="button"
-                                id="paymentDropdownBtn"
-                                onclick="toggleCustomDropdown(event)">
-                            <i class="fas fa-credit-card"></i> Make Payment
-                            <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 10px;"></i>
-                        </button>
-                        <div class="custom-dropdown-menu" id="paymentCustomDropdown">
-                            <a class="custom-dropdown-item" href="#" onclick="event.preventDefault(); hideCustomDropdown(); openMakePaymentModal();">
-                                Make Payment
-                            </a>
-                            <a class="custom-dropdown-item" href="#" onclick="event.preventDefault(); hideCustomDropdown(); openTakeMoreLoanModal();">
-                                Take more loan
-                            </a>
-                            <a class="custom-dropdown-item" href="#" onclick="event.preventDefault(); hideCustomDropdown(); openChargesOnLoanModal();">
-                                Charges on Loan
-                            </a>
-                        </div>
+                <div style="position:relative;">
+                    <span style="display:inline-flex;align-items:center;">
+                        <button class="btn-make-payment" onclick="togglePaymentDropdown(event)">Make Payment</button>
+                        <button class="btn-payment-dropdown" onclick="togglePaymentDropdown(event)">▾</button>
+                    </span>
+                    <div class="loan-payment-dropdown" id="paymentDropdown">
+                        <a href="javascript:void(0);" onclick="hidePaymentDropdown(); openMakePaymentModal();">Make Payment</a>
+                        <a href="javascript:void(0);" onclick="hidePaymentDropdown(); openTakeMoreLoanModal();">Take more loan</a>
+                        <a href="javascript:void(0);" onclick="hidePaymentDropdown(); openChargesOnLoanModal();">Charges on Loan</a>
                     </div>
-                   @*  <div style="margin-top: 10px;">
-                        <a href="@Url.Action("ViewLoanStatement")" class="view-statement-link">View Loan Statement</a>
-                    </div> *@
                 </div>
             </div>
 
-            <!-- Transactions Section -->
-            <div class="transactions-section">
-                <div class="transactions-header">
-                    <h5 class="transactions-title">TRANSACTIONS</h5>
-                    <input type="text" placeholder="Search transactions..." class="search-transactions" id="transactionSearch" />
-                </div>
-
-                <table class="transactions-table">
-                    <thead>
-                        <tr>
-                            <th>TYPE <i class="fas fa-sort"></i></th>
-                            <th>DATE <i class="fas fa-sort"></i></th>
-                            <th>PRINCIPAL <i class="fas fa-sort"></i></th>
-                            <th>INTEREST & OTHER CHARGES <i class="fas fa-sort"></i></th>
-                            <th>TOTAL AMOUNT <i class="fas fa-sort"></i></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactionsTableBody">
-                        <tr>
-                            <td colspan="6" style="text-align: center; color: #999; padding: 40px;">
-                                Loading transactions...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="loan-info-row" id="loanInfoRow">
+                @if (selectedAccount != null)
+                {
+                    if (!string.IsNullOrEmpty(selectedAccount.AccountNumber))
+                    {
+                        <div class="info-item"><label>A/C No:</label> <span>@selectedAccount.AccountNumber</span></div>
+                    }
+                    if (selectedAccount.InterestRate.HasValue && selectedAccount.InterestRate > 0)
+                    {
+                        <div class="info-item"><label>Interest:</label> <span>@selectedAccount.InterestRate% p.a.</span></div>
+                    }
+                    if (selectedAccount.TermDuration.HasValue && selectedAccount.TermDuration > 0)
+                    {
+                        <div class="info-item"><label>Term:</label> <span>@selectedAccount.TermDuration months</span></div>
+                    }
+                }
             </div>
-        </div>
-    </div>
 
-    <!-- Loading Spinner -->
-    <div class="loading-spinner">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
-        </div>
-    </div>
-
-    <!-- Add Loan Account Modal -->
-    <div class="modal fade" id="addLoanModal" tabindex="-1" aria-labelledby="addLoanModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 580px;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addLoanModalLabel">Add Loan Account</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
+            <!-- Transactions -->
+            <div class="loan-txn-section">
+                <div class="loan-txn-header">
+                    <h5>Transactions</h5>
+                    <span class="search-icon">🔍</span>
                 </div>
-                <div class="modal-body">
-                    <form id="addLoanForm">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Account Name<span class="required-asterisk">*</span></label>
-                                <input type="text" class="form-control-custom" placeholder="Account Name *" required />
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Lender Bank</label>
-                                <input type="text" class="form-control-custom" placeholder="Lender Bank" />
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Account Number</label>
-                                <input type="text" class="form-control-custom" placeholder="Account Number" />
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Description</label>
-                                <input type="text" class="form-control-custom" placeholder="Description" />
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Current Balance<span class="required-asterisk">*</span></label>
-                                <input type="number" class="form-control-custom" placeholder="Current Balance *" step="0.01" required />
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Balance as of</label>
-                                <input type="date" class="form-control-custom" />
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group form-group-full">
-                                <label class="form-label">Loan received In</label>
-                                <select class="form-control-custom">
-                                    <option value="Cash">Cash</option>
-                                    <option value="Bank">Bank</option>
-                                    <option value="Cheque">Cheque</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Interest Rate</label>
-                                <div class="input-with-label">
-                                    <input type="number" class="form-control-custom" placeholder="Interest Rate" step="0.01" style="padding-right: 80px;" />
-                                    <span class="input-suffix">% per annum</span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Term Duration (in Months)</label>
-                                <input type="number" class="form-control-custom" placeholder="Term Duration(in Months)" />
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Processing Fee</label>
-                                <input type="number" class="form-control-custom" placeholder="Processing Fee" step="0.01" />
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Processing Fee Paid from</label>
-                                <select class="form-control-custom">
-                                    <option value="Cash">Cash</option>
-                                    <option value="Bank">Bank</option>
-                                    <option value="Cheque">Cheque</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-save" onclick="saveLoanAccount()">SAVE</button>
+                <div class="loan-txn-table-wrapper">
+                    <table class="loan-txn-table">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Date ↕</th>
+                                <th>Principal</th>
+                                <th>Interest & Other Charges</th>
+                                <th>Total Amount</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center;color:#999;padding:30px;">Loading transactions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Modals Container for dynamic modals -->
-    <div id="modalContainer"></div>
+<!-- Add/Edit Loan Account Modal -->
+<div id="loanModalBackdrop" class="loan-modal-backdrop" style="display:none;" onclick="hideLoanModal()"></div>
+<div id="loanModalContainer" class="loan-modal-container" style="display:none;">
+    <div class="loan-modal-content">
+        <div class="loan-modal-header">
+            <h3 id="loanModalTitle">Add Loan Account</h3>
+            <button class="loan-modal-close" onclick="hideLoanModal()">&times;</button>
+        </div>
+        <div class="loan-modal-body">
+            <form id="addLoanForm">
+                <input type="hidden" id="loanAccountId" value="0" />
+                <div class="loan-form-row">
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Account Name<span class="required">*</span></label>
+                        <input type="text" class="loan-form-input" id="loanAccName" placeholder="Account Name" required />
+                    </div>
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Lender Bank</label>
+                        <input type="text" class="loan-form-input" id="loanLenderBank" placeholder="Lender Bank" />
+                    </div>
+                </div>
+                <div class="loan-form-row">
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Account Number</label>
+                        <input type="text" class="loan-form-input" id="loanAccNumber" placeholder="Account Number" />
+                    </div>
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Description</label>
+                        <input type="text" class="loan-form-input" id="loanDescription" placeholder="Description" />
+                    </div>
+                </div>
+                <div class="loan-form-row">
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Current Balance<span class="required">*</span></label>
+                        <input type="number" class="loan-form-input" id="loanBalance" placeholder="Current Balance" step="0.01" required />
+                    </div>
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Balance as of</label>
+                        <input type="date" class="loan-form-input" id="loanBalanceDate" />
+                    </div>
+                </div>
+                <div class="loan-form-row">
+                    <div class="loan-form-group full-width">
+                        <label class="loan-form-label">Loan received In</label>
+                        <select class="loan-form-input" id="loanReceivedIn">
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="loan-form-row">
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Interest Rate (% p.a.)</label>
+                        <input type="number" class="loan-form-input" id="loanInterestRate" placeholder="Interest Rate" step="0.01" />
+                    </div>
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Term Duration (Months)</label>
+                        <input type="number" class="loan-form-input" id="loanTermDuration" placeholder="Term Duration" />
+                    </div>
+                </div>
+                <div class="loan-form-row">
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Processing Fee</label>
+                        <input type="number" class="loan-form-input" id="loanProcessingFee" placeholder="Processing Fee" step="0.01" />
+                    </div>
+                    <div class="loan-form-group">
+                        <label class="loan-form-label">Processing Fee Paid from</label>
+                        <select class="loan-form-input" id="loanFeePaidFrom">
+                            <option value="Cash">Cash</option>
+                            <option value="Bank">Bank</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="loan-modal-footer">
+            <button class="loan-btn loan-btn-cancel" onclick="hideLoanModal()">Cancel</button>
+            <button class="loan-btn loan-btn-save" id="loanSaveBtn" onclick="saveLoanAccount()">Save</button>
+        </div>
+    </div>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<!-- Delete Loan Account Modal -->
+<div id="deleteLoanBackdrop" class="loan-modal-backdrop" style="display:none;" onclick="hideDeleteLoanModal()"></div>
+<div id="deleteLoanContainer" class="loan-modal-container" style="display:none;">
+    <div class="loan-modal-content" style="max-width:380px;">
+        <div class="loan-modal-header">
+            <h3>Confirm Delete</h3>
+            <button class="loan-modal-close" onclick="hideDeleteLoanModal()">&times;</button>
+        </div>
+        <div class="loan-delete-body">
+            <div class="delete-icon">⚠️</div>
+            <div class="delete-msg">Are you sure you want to delete this loan account?</div>
+            <div class="delete-warn">This action cannot be undone. All transactions will be removed.</div>
+        </div>
+        <div class="loan-modal-footer">
+            <button class="loan-btn loan-btn-cancel" onclick="hideDeleteLoanModal()">Cancel</button>
+            <button class="loan-btn loan-btn-delete" id="deleteLoanBtn" onclick="confirmDeleteLoanAccount()">Delete</button>
+        </div>
+    </div>
+</div>
 
-    <script>
-        var currentAccountId = @(Model != null && Model.Count() > 0 ? Model.First().Id : 0);
+<!-- Modals Container for payment modals -->
+<div id="modalContainer"></div>
 
-        // Custom dropdown functionality
-        function toggleCustomDropdown(event) {
-            event.stopPropagation();
-            const dropdown = document.getElementById('paymentCustomDropdown');
-            dropdown.classList.toggle('show');
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+    var currentAccountId = @(selectedAccount?.Id ?? 0);
+    var deleteAccountId = null;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (currentAccountId > 0) {
+            loadTransactions(currentAccountId);
         }
 
-        function hideCustomDropdown() {
-            const dropdown = document.getElementById('paymentCustomDropdown');
-            dropdown.classList.remove('show');
+        const pendingToast = sessionStorage.getItem('loanToast');
+        if (pendingToast) {
+            const data = JSON.parse(pendingToast);
+            showLoanToast(data.message, data.type || 'success');
+            sessionStorage.removeItem('loanToast');
         }
+    });
 
-        function toggleActionDropdown(event, btn) {
-            event.stopPropagation();
-            document.querySelectorAll('.actions-cell .custom-dropdown-menu.show').forEach(function(menu) {
-                if (menu !== btn.nextElementSibling) {
-                    menu.classList.remove('show');
+    // Sidebar search
+    document.getElementById('loanSidebarSearch').addEventListener('input', function () {
+        const term = this.value.toLowerCase();
+        document.querySelectorAll('.loan-account-item').forEach(function (item) {
+            const name = item.querySelector('.acct-name').textContent.toLowerCase();
+            const amt = item.querySelector('.acct-amount').textContent.toLowerCase();
+            item.style.display = (name.includes(term) || amt.includes(term)) ? '' : 'none';
+        });
+    });
+
+    function selectAccount(accountId) {
+        currentAccountId = accountId;
+        document.querySelectorAll('.loan-account-item').forEach(i => i.classList.remove('selected'));
+        document.querySelector('.loan-account-item[data-account-id="' + accountId + '"]').classList.add('selected');
+        loadAccountDetails(accountId);
+    }
+
+    function loadAccountDetails(accountId) {
+        $.ajax({
+            url: '@Url.Action("GetLoanAccountDetails")',
+            type: 'GET',
+            data: { id: accountId },
+            success: function (r) {
+                document.getElementById('selectedAccountName').textContent = r.accountName || '';
+                var details = '';
+                if (r.lenderBank) details += 'Lending Bank: ' + r.lenderBank + '<br>';
+                if (r.accountNumber) details += 'A/C: ' + r.accountNumber + '<br>';
+                details += '<span class="balance-amt">Balance: ₹ ' + parseFloat(r.currentBalance || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</span>';
+                document.getElementById('selectedAccountDetails').innerHTML = details;
+
+                var info = '';
+                if (r.accountNumber) info += '<div class="info-item"><label>A/C No:</label> <span>' + r.accountNumber + '</span></div>';
+                if (r.interestRate > 0) info += '<div class="info-item"><label>Interest:</label> <span>' + r.interestRate + '% p.a.</span></div>';
+                if (r.termDuration > 0) info += '<div class="info-item"><label>Term:</label> <span>' + r.termDuration + ' months</span></div>';
+                document.getElementById('loanInfoRow').innerHTML = info;
+
+                loadTransactions(accountId);
+            },
+            error: function () { showLoanToast('Error loading account details', 'error'); }
+        });
+    }
+
+    function loadTransactions(accountId) {
+        $.ajax({
+            url: '@Url.Action("GetLoanTransactions")',
+            type: 'GET',
+            data: { accountId: accountId },
+            success: function (transactions) {
+                var tbody = document.getElementById('transactionsTableBody');
+                tbody.innerHTML = '';
+
+                if (transactions && transactions.length > 0) {
+                    transactions.forEach(function (t) {
+                        var typeClass = t.transactionType === 'EMI Paid' ? 'text-success' : (t.transactionType === 'Loan Adjustment' ? 'text-primary' : 'text-danger');
+                        var row = '<tr>' +
+                            '<td><span class="' + typeClass + '"><strong>' + t.transactionType + '</strong></span></td>' +
+                            '<td>' + formatDate(t.transactionDate) + '</td>' +
+                            '<td class="amount-cell">₹ ' + parseFloat(t.principalAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</td>' +
+                            '<td class="amount-cell">₹ ' + parseFloat(t.interestAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</td>' +
+                            '<td class="amount-cell"><strong>₹ ' + parseFloat(t.totalAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 }) + '</strong></td>' +
+                            '<td class="actions-cell">' +
+                                '<button class="actions-btn" onclick="toggleTxnMenu(event, this)">⋮</button>' +
+                                '<div class="action-dropdown">' +
+                                    '<a href="javascript:void(0);" onclick="viewTransactionDetails(' + t.id + ')">View Details</a>' +
+                                    '<a href="javascript:void(0);" onclick="printTransaction(' + t.id + ')">Print</a>' +
+                                '</div>' +
+                            '</td>' +
+                        '</tr>';
+                        tbody.insertAdjacentHTML('beforeend', row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:30px;">No transactions found</td></tr>';
                 }
-            });
-            hideCustomDropdown();
-            var menu = btn.nextElementSibling;
-            menu.classList.toggle('show');
-        }
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            const dropdown = document.getElementById('paymentCustomDropdown');
-            const button = document.getElementById('paymentDropdownBtn');
-
-            if (dropdown && !dropdown.contains(event.target) && !button.contains(event.target)) {
-                dropdown.classList.remove('show');
-            }
-
-            if (!event.target.closest('.custom-dropdown-wrapper')) {
-                document.querySelectorAll('.actions-cell .custom-dropdown-menu.show').forEach(function(menu) {
-                    menu.classList.remove('show');
-                });
+            },
+            error: function () {
+                document.getElementById('transactionsTableBody').innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;padding:30px;">Error loading transactions</td></tr>';
             }
         });
+    }
 
-        // Close dropdown on ESC key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                hideCustomDropdown();
-                document.querySelectorAll('.actions-cell .custom-dropdown-menu.show').forEach(function(menu) {
-                    menu.classList.remove('show');
-                });
+    function formatDate(dateString) {
+        if (!dateString) return '-';
+        var d = new Date(dateString);
+        return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+    }
+
+    // Payment dropdown
+    function togglePaymentDropdown(event) {
+        event.stopPropagation();
+        document.getElementById('paymentDropdown').classList.toggle('show');
+    }
+
+    function hidePaymentDropdown() {
+        document.getElementById('paymentDropdown').classList.remove('show');
+    }
+
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.btn-make-payment') && !e.target.closest('.btn-payment-dropdown')) {
+            hidePaymentDropdown();
+        }
+        if (!e.target.closest('.actions-cell')) {
+            document.querySelectorAll('.action-dropdown.show').forEach(m => m.classList.remove('show'));
+        }
+    });
+
+    function toggleTxnMenu(event, btn) {
+        event.stopPropagation();
+        document.querySelectorAll('.action-dropdown.show').forEach(m => m.classList.remove('show'));
+        hidePaymentDropdown();
+        btn.nextElementSibling.classList.toggle('show');
+    }
+
+    // Add/Edit Loan modal
+    function openAddLoanModal() {
+        document.getElementById('loanModalTitle').textContent = 'Add Loan Account';
+        document.getElementById('addLoanForm').reset();
+        document.getElementById('loanAccountId').value = '0';
+        document.getElementById('loanBalanceDate').value = new Date().toISOString().split('T')[0];
+        showLoanModal();
+    }
+
+    function editLoanAccount(accountId) {
+        $.ajax({
+            url: '@Url.Action("GetLoanAccountDetails")',
+            type: 'GET',
+            data: { id: accountId },
+            success: function (r) {
+                document.getElementById('loanModalTitle').textContent = 'Edit Loan Account';
+                document.getElementById('loanAccountId').value = r.id;
+                document.getElementById('loanAccName').value = r.accountName || '';
+                document.getElementById('loanLenderBank').value = r.lenderBank || '';
+                document.getElementById('loanAccNumber').value = r.accountNumber || '';
+                document.getElementById('loanDescription').value = r.description || '';
+                document.getElementById('loanBalance').value = r.currentBalance || '';
+                document.getElementById('loanInterestRate').value = r.interestRate || '';
+                document.getElementById('loanTermDuration').value = r.termDuration || '';
+                showLoanModal();
+            },
+            error: function () { showLoanToast('Error loading account', 'error'); }
+        });
+    }
+
+    function showLoanModal() {
+        document.getElementById('loanModalBackdrop').style.display = 'block';
+        document.getElementById('loanModalContainer').style.display = 'flex';
+    }
+
+    function hideLoanModal() {
+        document.getElementById('loanModalBackdrop').style.display = 'none';
+        document.getElementById('loanModalContainer').style.display = 'none';
+    }
+
+    function saveLoanAccount() {
+        var accName = document.getElementById('loanAccName').value.trim();
+        var balance = document.getElementById('loanBalance').value;
+
+        if (!accName || !balance) {
+            showLoanToast('Please fill in all required fields', 'error');
+            return;
+        }
+
+        var btn = document.getElementById('loanSaveBtn');
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        var formData = {
+            Id: parseInt(document.getElementById('loanAccountId').value) || 0,
+            AccountName: accName,
+            LenderBank: document.getElementById('loanLenderBank').value,
+            AccountNumber: document.getElementById('loanAccNumber').value,
+            Description: document.getElementById('loanDescription').value,
+            CurrentBalance: parseFloat(balance),
+            BalanceAsOf: document.getElementById('loanBalanceDate').value || null,
+            LoanReceivedIn: document.getElementById('loanReceivedIn').value,
+            InterestRate: parseFloat(document.getElementById('loanInterestRate').value) || null,
+            TermDuration: parseInt(document.getElementById('loanTermDuration').value) || null,
+            ProcessingFee: parseFloat(document.getElementById('loanProcessingFee').value) || null,
+            ProcessingFeePaidFrom: document.getElementById('loanFeePaidFrom').value
+        };
+
+        $.ajax({
+            url: '@Url.Action("SaveLoanAccount")',
+            type: 'POST',
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function () {
+                var msg = formData.Id > 0 ? 'Loan account updated successfully!' : 'Loan account added successfully!';
+                sessionStorage.setItem('loanToast', JSON.stringify({ message: msg, type: 'success' }));
+                hideLoanModal();
+                location.reload();
+            },
+            error: function () {
+                showLoanToast('Error saving loan account', 'error');
+            },
+            complete: function () {
+                btn.disabled = false;
+                btn.textContent = 'Save';
             }
         });
+    }
 
-        // Initialize Bootstrap components
-        document.addEventListener('DOMContentLoaded', function () {
-            // Set today's date in the date input
-            const today = new Date().toISOString().split('T')[0];
-            $('#addLoanModal input[type="date"]').val(today);
+    // Delete loan account
+    function promptDeleteLoanAccount() {
+        if (!currentAccountId || currentAccountId <= 0) return;
+        deleteAccountId = currentAccountId;
+        document.getElementById('deleteLoanBackdrop').style.display = 'block';
+        document.getElementById('deleteLoanContainer').style.display = 'flex';
+    }
 
-            // Load transactions for the first account
-            if (currentAccountId > 0) {
-                loadAccountDetails(currentAccountId);
-            }
+    function hideDeleteLoanModal() {
+        document.getElementById('deleteLoanBackdrop').style.display = 'none';
+        document.getElementById('deleteLoanContainer').style.display = 'none';
+        deleteAccountId = null;
+    }
+
+    function confirmDeleteLoanAccount() {
+        if (!deleteAccountId) return;
+        var btn = document.getElementById('deleteLoanBtn');
+        btn.disabled = true;
+        btn.textContent = 'Deleting...';
+
+        $.ajax({
+            url: '@Url.Action("DeleteLoanAccount")',
+            type: 'POST',
+            data: { id: deleteAccountId },
+            success: function (r) {
+                if (r.success) {
+                    sessionStorage.setItem('loanToast', JSON.stringify({ message: 'Loan account deleted!', type: 'success' }));
+                    hideDeleteLoanModal();
+                    location.reload();
+                } else {
+                    showLoanToast(r.message || 'Error deleting account', 'error');
+                }
+            },
+            error: function () { showLoanToast('Error deleting account', 'error'); },
+            complete: function () { btn.disabled = false; btn.textContent = 'Delete'; }
         });
+    }
 
-        function showLoading() {
-            $('.loading-spinner').show();
-        }
+    // Payment modals
+    function openMakePaymentModal() {
+        $.get('@Url.Action("MakePayment")').done(function (data) {
+            $('#modalContainer').html(data);
+            var el = $('#modalContainer').find('.modal').first();
+            if (el.length) { new bootstrap.Modal(el[0]).show(); }
+        }).fail(function () { showLoanToast('Error loading payment modal', 'error'); });
+    }
 
-        function hideLoading() {
-            $('.loading-spinner').hide();
-        }
+    function openTakeMoreLoanModal() {
+        $.get('@Url.Action("TakeMoreLoan")').done(function (data) {
+            $('#modalContainer').html(data);
+            var el = $('#modalContainer').find('.modal').first();
+            if (el.length) { new bootstrap.Modal(el[0]).show(); }
+        }).fail(function () { showLoanToast('Error loading modal', 'error'); });
+    }
 
-        // Select account from sidebar
-        function selectAccount(accountId) {
-            console.log('Selected account ID:', accountId);
-            currentAccountId = accountId;
+    function openChargesOnLoanModal() {
+        $.get('@Url.Action("ChargesOnLoan")').done(function (data) {
+            $('#modalContainer').html(data);
+            var el = $('#modalContainer').find('.modal').first();
+            if (el.length) { new bootstrap.Modal(el[0]).show(); }
+        }).fail(function () { showLoanToast('Error loading modal', 'error'); });
+    }
 
-            // Update active state in sidebar
-            $('.account-item').removeClass('active');
-            $('.account-item[data-account-id="' + accountId + '"]').addClass('active');
+    // Transaction details
+    function viewTransactionDetails(transactionId) {
+        document.querySelectorAll('.action-dropdown.show').forEach(m => m.classList.remove('show'));
+        var row = findTxnRow(transactionId);
+        if (!row) return;
+        var cells = row.querySelectorAll('td');
+        var html = '<div style="padding:10px 0;">' +
+            '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:12px;"><span style="font-weight:600;color:#666;">Type</span><span>' + cells[0].textContent.trim() + '</span></div>' +
+            '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:12px;"><span style="font-weight:600;color:#666;">Date</span><span>' + cells[1].textContent.trim() + '</span></div>' +
+            '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:12px;"><span style="font-weight:600;color:#666;">Principal</span><span>' + cells[2].textContent.trim() + '</span></div>' +
+            '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:12px;"><span style="font-weight:600;color:#666;">Interest & Charges</span><span>' + cells[3].textContent.trim() + '</span></div>' +
+            '<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12px;"><span style="font-weight:600;color:#666;">Total</span><span style="font-weight:700;">' + cells[4].textContent.trim() + '</span></div>' +
+        '</div>';
 
-            // Load account details and transactions
-            loadAccountDetails(accountId);
-        }
+        var existing = document.getElementById('txnDetailModal');
+        if (existing) existing.remove();
 
-        // Load account details via AJAX
-        function loadAccountDetails(accountId) {
-            showLoading();
-
-            $.ajax({
-                url: '@Url.Action("GetLoanAccountDetails")',
-                type: 'GET',
-                data: { id: accountId },
-                success: function(response) {
-                    console.log('Account details loaded:', response);
-
-                    // Update header section
-                    $('#selectedAccountName').text(response.accountName);
-
-                    var detailsHtml = '';
-                    if (response.lenderBank) {
-                        detailsHtml += 'Lending Bank / Agency: ' + response.lenderBank + '<br>';
-                    }
-                    if (response.accountNumber) {
-                        detailsHtml += 'Account Number: ' + response.accountNumber + '<br>';
-                    }
-                    if (response.currentBalance) {
-                        detailsHtml += '<span class="balance-amount">Balance Amount: ₹ ' + parseFloat(response.currentBalance).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</span>';
-                    }
-
-                    $('#selectedAccountDetails').html(detailsHtml);
-
-                    // Load transactions
-                    loadTransactions(accountId);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error loading account details:', error);
-                    hideLoading();
-                    alert('Error loading account details: ' + error);
-                }
-            });
-        }
-
-        // Load transactions for selected account
-        function loadTransactions(accountId) {
-            $.ajax({
-                url: '@Url.Action("GetLoanTransactions")',
-                type: 'GET',
-                data: { accountId: accountId },
-                success: function(transactions) {
-                    console.log('Transactions loaded:', transactions);
-
-                    var tbody = $('#transactionsTableBody');
-                    tbody.empty();
-
-                    if (transactions && transactions.length > 0) {
-
-                        transactions.forEach(function(transaction) {
-                            // Determine transaction type display
-                            var typeDisplay = transaction.transactionType;
-                            var typeClass = '';
-
-                            switch(transaction.transactionType) {
-                                case 'EMI Paid':
-                                    typeClass = 'text-success';
-                                    break;
-                                case 'Loan Adjustment':                                 
-                                    typeClass = 'text-primary';
-                                    break;                               
-                                default:
-                                    typeClass = 'text-danger';
-                            }
-
-                            var row = '<tr>' +
-                                '<td><span class="' + typeClass + '">' + typeDisplay + '</span></td>' +
-                                '<td>' + formatDate(transaction.transactionDate) + '</td>' +
-                                '<td class="amount-cell">₹ ' + parseFloat(transaction.principalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
-                                '<td class="amount-cell">₹ ' + parseFloat(transaction.interestAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
-                                '<td class="amount-cell amount-' + (transaction.transactionType === 'Payment' ? 'negative' : 'positive') + '">₹ ' + parseFloat(transaction.totalAmount || 0).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</td>' +
-                                '<td class="actions-cell">' +
-                                    '<div class="custom-dropdown-wrapper">' +
-                                        '<button class="actions-btn" type="button" onclick="toggleActionDropdown(event, this)">' +
-                                            '<i class="fas fa-ellipsis-v"></i>' +
-                                        '</button>' +
-                                        '<div class="custom-dropdown-menu">' +
-                                            '<a class="custom-dropdown-item" href="javascript:void(0);" onclick="viewTransactionDetails(' + transaction.id + ')">View Details</a>' +
-                                            '<a class="custom-dropdown-item" href="javascript:void(0);" onclick="downloadReceipt(' + transaction.id + ')">Download Receipt</a>' +
-                                            '<a class="custom-dropdown-item" href="javascript:void(0);" onclick="printTransaction(' + transaction.id + ')">Print</a>' +
-                                        '</div>' +
-                                    '</div>' +
-                                '</td>' +
-                            '</tr>';
-                            tbody.append(row);
-                        });
-                    } else {
-                        tbody.html('<tr><td colspan="6" style="text-align: center; color: #999; padding: 40px;">No transactions found</td></tr>');
-                    }
-
-                    hideLoading();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error loading transactions:', error);
-                    $('#transactionsTableBody').html('<tr><td colspan="6" style="text-align: center; color: #999; padding: 40px;">Error loading transactions</td></tr>');
-                    hideLoading();
-                }
-            });
-        }
-
-        function getTransactionFromTable(transactionId) {
-            var row = null;
-            $('#transactionsTableBody tr').each(function() {
-                var btn = $(this).find('.actions-btn');
-                if (btn.length) {
-                    var onclick = $(this).find('.custom-dropdown-item').first().attr('onclick');
-                    if (onclick && onclick.indexOf('(' + transactionId + ')') > -1) {
-                        row = $(this);
-                        return false;
-                    }
-                }
-            });
-            if (!row) return null;
-            var cells = row.find('td');
-            return {
-                id: transactionId,
-                type: $(cells[0]).text().trim(),
-                date: $(cells[1]).text().trim(),
-                principal: $(cells[2]).text().trim(),
-                interest: $(cells[3]).text().trim(),
-                total: $(cells[4]).text().trim()
-            };
-        }
-
-        function viewTransactionDetails(transactionId) {
-            var txn = getTransactionFromTable(transactionId);
-            if (!txn) return;
-
-            var existingModal = document.getElementById('transactionDetailModal');
-            if (existingModal) existingModal.remove();
-
-            var modalHtml = '<div class="modal fade" id="transactionDetailModal" tabindex="-1" aria-hidden="true">' +
-                '<div class="modal-dialog modal-dialog-centered">' +
-                    '<div class="modal-content">' +
-                        '<div class="modal-header">' +
-                            '<h5 class="modal-title">Transaction Details</h5>' +
-                            '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>' +
-                        '</div>' +
-                        '<div class="modal-body">' +
-                            '<table class="table table-bordered">' +
-                                '<tr><th style="width:40%">Transaction ID</th><td>' + txn.id + '</td></tr>' +
-                                '<tr><th>Type</th><td>' + txn.type + '</td></tr>' +
-                                '<tr><th>Date</th><td>' + txn.date + '</td></tr>' +
-                                '<tr><th>Principal</th><td>' + txn.principal + '</td></tr>' +
-                                '<tr><th>Interest & Charges</th><td>' + txn.interest + '</td></tr>' +
-                                '<tr><th>Total Amount</th><td>' + txn.total + '</td></tr>' +
-                            '</table>' +
-                        '</div>' +
-                    '</div>' +
+        var backdrop = document.createElement('div');
+        backdrop.id = 'txnDetailModal';
+        backdrop.innerHTML = '<div class="loan-modal-backdrop" onclick="closeTxnDetail()"></div>' +
+            '<div class="loan-modal-container" style="display:flex;">' +
+                '<div class="loan-modal-content" style="max-width:380px;">' +
+                    '<div class="loan-modal-header"><h3>Transaction Details</h3><button class="loan-modal-close" onclick="closeTxnDetail()">&times;</button></div>' +
+                    '<div class="loan-modal-body">' + html + '</div>' +
+                    '<div class="loan-modal-footer"><button class="loan-btn loan-btn-cancel" onclick="closeTxnDetail()">Close</button></div>' +
                 '</div>' +
             '</div>';
+        document.body.appendChild(backdrop);
+    }
 
-            $('body').append(modalHtml);
-            var modal = new bootstrap.Modal(document.getElementById('transactionDetailModal'));
-            modal.show();
-        }
+    function closeTxnDetail() {
+        var el = document.getElementById('txnDetailModal');
+        if (el) el.remove();
+    }
 
-        function buildReceiptHtml(txn, accountName) {
-            return '<html><head><title>Receipt</title>' +
-                '<style>' +
-                    'body { font-family: Arial, sans-serif; padding: 30px; color: #333; }' +
-                    '.receipt { max-width: 600px; margin: 0 auto; border: 1px solid #ccc; padding: 30px; }' +
-                    '.receipt-header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }' +
-                    '.receipt-header h2 { margin: 0 0 5px 0; }' +
-                    '.receipt-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }' +
-                    '.receipt-label { font-weight: 600; color: #555; }' +
-                    '.receipt-total { font-size: 18px; font-weight: 700; margin-top: 15px; text-align: right; color: #d32f2f; }' +
-                    '.receipt-footer { text-align: center; margin-top: 30px; font-size: 12px; color: #999; }' +
-                '</style>' +
-                '</head><body>' +
-                '<div class="receipt">' +
-                    '<div class="receipt-header"><h2>MuneemJI</h2><p>Loan Transaction Receipt</p></div>' +
-                    '<div class="receipt-row"><span class="receipt-label">Account</span><span>' + accountName + '</span></div>' +
-                    '<div class="receipt-row"><span class="receipt-label">Transaction ID</span><span>' + txn.id + '</span></div>' +
-                    '<div class="receipt-row"><span class="receipt-label">Type</span><span>' + txn.type + '</span></div>' +
-                    '<div class="receipt-row"><span class="receipt-label">Date</span><span>' + txn.date + '</span></div>' +
-                    '<div class="receipt-row"><span class="receipt-label">Principal</span><span>' + txn.principal + '</span></div>' +
-                    '<div class="receipt-row"><span class="receipt-label">Interest & Charges</span><span>' + txn.interest + '</span></div>' +
-                    '<div class="receipt-total">Total: ' + txn.total + '</div>' +
-                    '<div class="receipt-footer">Generated on ' + new Date().toLocaleDateString('en-IN') + '</div>' +
-                '</div>' +
-                '</body></html>';
-        }
-
-        function downloadReceipt(transactionId) {
-            var txn = getTransactionFromTable(transactionId);
-            if (!txn) return;
-            var accountName = $('#selectedAccountName').text().trim();
-            var html = buildReceiptHtml(txn, accountName);
-            var blob = new Blob([html], { type: 'text/html' });
-            var url = URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'Receipt_' + transactionId + '.html';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function printTransaction(transactionId) {
-            var txn = getTransactionFromTable(transactionId);
-            if (!txn) return;
-            var accountName = $('#selectedAccountName').text().trim();
-            var html = buildReceiptHtml(txn, accountName);
-            var printWin = window.open('', '_blank', 'width=700,height=600');
-            printWin.document.write(html);
-            printWin.document.close();
-            printWin.focus();
-            printWin.print();
-        }
-
-        function formatDate(dateString) {
-            var date = new Date(dateString);
-            var day = String(date.getDate()).padStart(2, '0');
-            var month = String(date.getMonth() + 1).padStart(2, '0');
-            var year = date.getFullYear();
-            return day + '/' + month + '/' + year;
-        }
-
-        // Sidebar search functionality
-        $('#sidebarSearch').on('input', function() {
-            var searchTerm = $(this).val().toLowerCase();
-            $('.account-item').each(function() {
-                var accountName = $(this).find('.account-name').text().toLowerCase();
-                var accountAmount = $(this).find('.account-amount').text().toLowerCase();
-                if (accountName.indexOf(searchTerm) > -1 || accountAmount.indexOf(searchTerm) > -1) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
+    function findTxnRow(transactionId) {
+        var rows = document.querySelectorAll('#transactionsTableBody tr');
+        for (var i = 0; i < rows.length; i++) {
+            var btn = rows[i].querySelector('.actions-btn');
+            if (btn) {
+                var links = rows[i].querySelectorAll('.action-dropdown a');
+                for (var j = 0; j < links.length; j++) {
+                    if (links[j].getAttribute('onclick') && links[j].getAttribute('onclick').indexOf('(' + transactionId + ')') > -1) {
+                        return rows[i];
+                    }
                 }
-            });
-        });
-
-        // Open Add Loan Account Modal
-        function openAddLoanModal() {
-            console.log('Opening Add Loan Account modal');
-            var modal = new bootstrap.Modal(document.getElementById('addLoanModal'));
-            modal.show();
-        }
-
-        // Save Loan Account
-        function saveLoanAccount() {
-            console.log('Saving loan account');
-
-            var formData = {
-                AccountName: $('#addLoanForm input').eq(0).val(),
-                LenderBank: $('#addLoanForm input').eq(1).val(),
-                AccountNumber: $('#addLoanForm input').eq(2).val(),
-                Description: $('#addLoanForm input').eq(3).val(),
-                CurrentBalance: $('#addLoanForm input').eq(4).val(),
-                BalanceAsOf: $('#addLoanForm input[type="date"]').val(),
-                LoanReceivedIn: $('#addLoanForm select').eq(0).val(),
-                InterestRate: $('#addLoanForm input').eq(6).val(),
-                TermDuration: $('#addLoanForm input').eq(7).val(),
-                ProcessingFee: $('#addLoanForm input').eq(8).val(),
-                ProcessingFeePaidFrom: $('#addLoanForm select').eq(1).val()
-            };
-
-            if (!formData.AccountName || !formData.CurrentBalance) {
-                alert('Please fill in all required fields');
-                return;
             }
-
-            showLoading();
-
-            $.ajax({
-                url: '@Url.Action("SaveLoanAccount")',
-                type: 'POST',
-                data: JSON.stringify(formData),
-                contentType: 'application/json',
-                success: function(response) {
-                    console.log('Loan account saved successfully');
-                    hideLoading();
-
-                    var modal = bootstrap.Modal.getInstance(document.getElementById('addLoanModal'));
-                    modal.hide();
-
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error saving loan account:', error);
-                    hideLoading();
-                    alert('Error saving loan account: ' + error);
-                }
-            });
         }
+        return null;
+    }
 
-        function openMakePaymentModal() {
-            console.log('Make Payment clicked');
-            showLoading();
+    function printTransaction(transactionId) {
+        document.querySelectorAll('.action-dropdown.show').forEach(m => m.classList.remove('show'));
+        var row = findTxnRow(transactionId);
+        if (!row) return;
+        var cells = row.querySelectorAll('td');
+        var accountName = document.getElementById('selectedAccountName').textContent.trim();
+        var html = '<html><head><title>Receipt<' + '/title><style>body{font-family:Arial;padding:30px;}.receipt{max-width:500px;margin:0 auto;border:1px solid #ccc;padding:20px;}.row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:13px;}.label{font-weight:600;color:#555;}<' + '/style><' + '/head><body><div class="receipt"><h3 style="text-align:center;">MuneemJI - Loan Receipt<' + '/h3><div class="row"><span class="label">Account<' + '/span><span>' + accountName + '<' + '/span><' + '/div><div class="row"><span class="label">Type<' + '/span><span>' + cells[0].textContent.trim() + '<' + '/span><' + '/div><div class="row"><span class="label">Date<' + '/span><span>' + cells[1].textContent.trim() + '<' + '/span><' + '/div><div class="row"><span class="label">Principal<' + '/span><span>' + cells[2].textContent.trim() + '<' + '/span><' + '/div><div class="row"><span class="label">Interest<' + '/span><span>' + cells[3].textContent.trim() + '<' + '/span><' + '/div><div class="row"><span class="label">Total<' + '/span><span>' + cells[4].textContent.trim() + '<' + '/span><' + '/div><' + '/div><' + '/body><' + '/html>';
+        var w = window.open('', '_blank', 'width=600,height=500');
+        w.document.write(html);
+        w.document.close();
+        w.focus();
+        w.print();
+    }
 
-            $.get('@Url.Action("MakePayment")')
-                .done(function(data) {
-                    console.log('Modal data received');
-                    $('#modalContainer').html(data);
-                    var modalElement = $('#modalContainer').find('.modal').first();
-                    if (modalElement.length) {
-                        var modal = new bootstrap.Modal(modalElement[0]);
-                        modal.show();
-                    } else {
-                        console.error('Modal element not found in response');
-                        alert('Error: Modal content is invalid');
-                    }
-                })
-                .fail(function(xhr, status, error) {
-                    console.error('Error loading modal:', error);
-                    alert('Error loading payment modal: ' + error);
-                })
-                .always(function() {
-                    hideLoading();
-                });
+    function showLoanToast(message, type) {
+        var t = document.createElement('div');
+        t.className = 'loan-toast' + (type === 'error' ? ' error' : '');
+        t.textContent = message;
+        document.body.appendChild(t);
+        setTimeout(function () { t.remove(); }, 3000);
+    }
+
+    // ESC key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            hideLoanModal();
+            hideDeleteLoanModal();
+            hidePaymentDropdown();
+            closeTxnDetail();
+            document.querySelectorAll('.action-dropdown.show').forEach(m => m.classList.remove('show'));
         }
+    });
 
-        function openTakeMoreLoanModal() {
-            console.log('Take More Loan clicked');
-            showLoading();
-
-            $.get('@Url.Action("TakeMoreLoan")')
-                .done(function(data) {
-                    $('#modalContainer').html(data);
-                    var modalElement = $('#modalContainer').find('.modal').first();
-                    if (modalElement.length) {
-                        var modal = new bootstrap.Modal(modalElement[0]);
-                        modal.show();
-                    } else {
-                        alert('Error: Modal content is invalid');
-                    }
-                })
-                .fail(function(xhr, status, error) {
-                    console.error('Error loading modal:', error);
-                    alert('Error loading take more loan modal: ' + error);
-                })
-                .always(function() {
-                    hideLoading();
-                });
-        }
-
-        function openChargesOnLoanModal() {
-            console.log('Charges on Loan clicked');
-            showLoading();
-
-            $.get('@Url.Action("ChargesOnLoan")')
-                .done(function(data) {
-                    $('#modalContainer').html(data);
-                    var modalElement = $('#modalContainer').find('.modal').first();
-                    if (modalElement.length) {
-                        var modal = new bootstrap.Modal(modalElement[0]);
-                        modal.show();
-                    } else {
-                        alert('Error: Modal content is invalid');
-                    }
-                })
-                .fail(function(xhr, status, error) {
-                    console.error('Error loading modal:', error);
-                    alert('Error loading charges modal: ' + error);
-                })
-                .always(function() {
-                    hideLoading();
-                });
-        }
-
-        // Transaction search functionality
-        $('#transactionSearch').on('input', function() {
-            var searchTerm = $(this).val().toLowerCase();
-            $('.transactions-table tbody tr').each(function() {
-                var text = $(this).text().toLowerCase();
-                if (text.indexOf(searchTerm) > -1) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
-        });
-
-        // Handle modal cleanup
-        $(document).on('hidden.bs.modal', '.modal', function () {
-            console.log('Modal hidden, cleaning up');
-            if ($(this).attr('id') !== 'addLoanModal') {
-                $(this).remove();
-            }
-        });
-    </script>
-</body>
-</html>
+    // Handle bootstrap modal cleanup
+    $(document).on('hidden.bs.modal', '.modal', function () {
+        $(this).remove();
+    });
+</script>

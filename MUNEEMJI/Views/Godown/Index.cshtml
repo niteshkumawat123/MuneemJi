@@ -70,7 +70,7 @@
                                 <tbody>
                                     @foreach (var godown in Model.Godowns)
                                         {
-                                            <tr>
+                                            <tr data-godown-id="@godown.Id" ondblclick="editGodown(@godown.Id)" style="cursor:pointer;">
                                                 <td class="fw-semibold">@godown.GodownName</td>
                                                 <td>@godown.GodownType</td>
                                                 <td>@godown.PhoneNo</td>

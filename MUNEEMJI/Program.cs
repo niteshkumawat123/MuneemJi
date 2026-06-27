@@ -96,8 +96,8 @@ builder.Services.AddSession(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
+        options.LoginPath = "/Web/Account/Login";
+        options.LogoutPath = "/Web/Account/Logout";
         options.SlidingExpiration = false;
         options.ExpireTimeSpan = TimeSpan.FromDays(365 * 10); 
         options.Cookie.IsEssential = true;

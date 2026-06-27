@@ -80,7 +80,7 @@
 
         // Function to load a tab's partial view via AJAX
         function loadTab(tabName) {
-            $.get('/Inventory/' + tabName, function (data) {
+            $.get('/Web/Inventory/' + tabName, function (data) {
                 $('#tabContent').html(data);
 
                 // Initialize UI behaviors for each tab after loading
@@ -118,7 +118,7 @@
             $('#btnAddProduct').on('click', function () {
                 //clearProductForm();
                 //$('#productModal').data('id', null).modal('show');
-            window.location.href = "/items/create";
+            window.location.href = "/Web/items/create";
             });
 
             // Delete product
@@ -126,7 +126,7 @@
                 e.stopPropagation();
                 var prodId = $(this).data('id');
                 if (confirm('Delete this item?')) {
-                    $.post('/Products/Delete', { id: prodId }, function () {
+                    $.post('/Web/Products/Delete', { id: prodId }, function () {
                         loadTab('Products');
                     });
                 }
@@ -136,7 +136,7 @@
             $('#btnEditProduct').on('click', function () {
                 if (selectedProductId) {
                     // Load product details into form
-                    $.getJSON('/Products/Get/' + selectedProductId, function (prod) {
+                    $.getJSON('/Web/Products/Get/' + selectedProductId, function (prod) {
                         $('#productModal input[name="Name"]').val(prod.Name);
                         $('#productModal input[name="SalePrice"]').val(prod.SalePrice);
                         $('#productModal input[name="PurchasePrice"]').val(prod.PurchasePrice);
@@ -159,12 +159,12 @@
                 };
                 if (id) {
                     formData.Id = id;
-                    $.post('/Products/Update', formData, function () {
+                    $.post('/Web/Products/Update', formData, function () {
                         $('#productModal').modal('hide');
                         loadTab('Products');
                     });
                 } else {
-                    $.post('/Products/Add', formData, function () {
+                    $.post('/Web/Products/Add', formData, function () {
                         $('#productModal').modal('hide');
                         loadTab('Products');
                     });
@@ -174,7 +174,7 @@
 
         // Load product details into the right panel
         function loadProductDetails(id) {
-            $.getJSON('/Products/Get/' + id, function (prod) {
+            $.getJSON('/Web/Products/Get/' + id, function (prod) {
                 $('#detailName').text(prod.Name);
                 $('#detailSalePrice').text('₹ ' + prod.SalePrice.toFixed(2));
                 $('#detailPurchasePrice').text('₹ ' + prod.PurchasePrice.toFixed(2));
@@ -198,7 +198,7 @@
             $('#btnAddService, #btnAddFirstService').on('click', function () {
                 // $('#serviceModal input').val('');
                 // $('#serviceModal').data('id', null).modal('show');
-            window.location.href = "/items/create";
+            window.location.href = "/Web/items/create";
             });
 
             // Edit and Delete buttons
@@ -215,7 +215,7 @@
             $('.delete-service').on('click', function () {
                 var servId = $(this).data('id');
                 if (confirm('Delete this service?')) {
-                    $.post('/Services/Delete', { id: servId }, function () {
+                    $.post('/Web/Services/Delete', { id: servId }, function () {
                         loadTab('Services');
                     });
                 }
@@ -240,7 +240,7 @@
                 //         loadTab('Services');
                 //     });
                 // }
-            window.location.href = "/items/create";
+            window.location.href = "/Web/items/create";
             });
         }
 
@@ -273,7 +273,7 @@
             });
             $('#btnSaveCategory').on('click', function () {
                 var name = $('#categoryModal input[name="Name"]').val();
-                $.post('/Category/Add', { name: name }, function () {
+                $.post('/Web/Category/Add', { name: name }, function () {
                     $('#categoryModal').modal('hide');
                     loadTab('Category');
                 });
@@ -293,7 +293,7 @@
                     return;
                 }
                 var prodId = $selectedItem.data('id');
-                $.post('/Category/MoveProduct', { productId: prodId, categoryId: selectedCategoryId }, function () {
+                $.post('/Web/Category/MoveProduct', { productId: prodId, categoryId: selectedCategoryId }, function () {
                     loadTab('Category?id=' + selectedCategoryId);
                 });
             });
@@ -329,7 +329,7 @@
                     FullName: $('#unitModal input[name="FullName"]').val(),
                     ShortName: $('#unitModal input[name="ShortName"]').val()
                 };
-                $.post('/Units/AddUnit', formData, function () {
+                $.post('/Web/Units/AddUnit', formData, function () {
                     $('#unitModal').modal('hide');
                     loadTab('Units');
                 });
@@ -340,7 +340,7 @@
                 e.stopPropagation();
                 var unitId = $(this).data('id');
                 if (confirm('Delete this unit?')) {
-                    $.post('/Units/DeleteUnit', { id: unitId }, function () {
+                    $.post('/Web/Units/DeleteUnit', { id: unitId }, function () {
                         loadTab('Units');
                     });
                 }
@@ -364,7 +364,7 @@
             $('#btnSaveConversion').on('click', function () {
                 var toId = $('#conversionModal select[name="ToUnitId"]').val();
                 var factor = $('#conversionModal input[name="Factor"]').val();
-                $.post('/Units/AddConversion', { fromUnitId: selectedUnitId, toUnitId: toId, factor: factor }, function () {
+                $.post('/Web/Units/AddConversion', { fromUnitId: selectedUnitId, toUnitId: toId, factor: factor }, function () {
                     $('#conversionModal').modal('hide');
                     loadTab('Units?id=' + selectedUnitId);
                 });
@@ -374,7 +374,7 @@
             $('.delete-conv').on('click', function () {
                 var convId = $(this).data('id');
                 if (confirm('Delete this conversion?')) {
-                    $.post('/Units/DeleteConversion', { id: convId }, function () {
+                    $.post('/Web/Units/DeleteConversion', { id: convId }, function () {
                         loadTab('Units?id=' + selectedUnitId);
                     });
                 }

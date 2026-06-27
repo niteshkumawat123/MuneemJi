@@ -262,7 +262,7 @@
 
     <script>
         function openAdjustCashModal() {
-            $.get('/Cashadjustment/GetCashAdjustmentModal', function(data) {
+            $.get('/Web/Cashadjustment/GetCashAdjustmentModal', function(data) {
                 $('#modalBody').html(data);
                 $('#cashAdjustmentModal').modal('show');
             });
@@ -276,7 +276,7 @@
                 Description: $('#Description').val()
             };
 
-            $.post('/Cashadjustment/AdjustCash', formData, function(response) {
+            $.post('/Web/Cashadjustment/AdjustCash', formData, function(response) {
                 if (response.success) {
                     $('#cashAmount').text(response.newCashAmount.toFixed(2));
                     $('#cashAdjustmentModal').modal('hide');
@@ -291,7 +291,7 @@
         $('#searchInput').on('keyup', function(e) {
             if (e.key === 'Enter') {
                 var searchTerm = $(this).val();
-                window.location.href = '/Cashadjustment?searchTerm=' + encodeURIComponent(searchTerm);
+                window.location.href = '/Web/Cashadjustment?searchTerm=' + encodeURIComponent(searchTerm);
             }
         });
     </script>

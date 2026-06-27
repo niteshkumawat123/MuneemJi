@@ -266,7 +266,7 @@
                 </form>
 
                 <div class="switch-text">
-                    Already have an account? <a href="/Account/Login">Login here</a>
+                    Already have an account? <a href="/Web/Account/Login">Login here</a>
                 </div>
             </div>
 
@@ -400,7 +400,7 @@
             formData.append('Email', email);
             formData.append('AcceptTerms', 'true');
 
-            fetch('/Account/Register', {
+            fetch('/Web/Account/Register', {
                 method: 'POST',
                 body: formData,
                 redirect: 'manual'
@@ -435,7 +435,7 @@
             const formData = new FormData();
             formData.append('Email', registeredEmail);
 
-            fetch('/Account/SendOtp', {
+            fetch('/Web/Account/SendOtp', {
                 method: 'POST',
                 body: formData,
                 redirect: 'manual'
@@ -487,7 +487,7 @@
             formData.append('otp', otp);
             formData.append('email', registeredEmail);
 
-            fetch('/Account/VerifyOtp', {
+            fetch('/Web/Account/VerifyOtp', {
                 method: 'POST',
                 body: formData,
                 redirect: 'follow'
@@ -522,7 +522,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             const p = new URLSearchParams(window.location.search);
             if (p.get('form') === 'login') {
-                window.location.href = '/Account/Login';
+                window.location.href = '/Web/Account/Login';
             }
             setTimeout(() => {
                 const first = document.querySelector('.form-section.active input');

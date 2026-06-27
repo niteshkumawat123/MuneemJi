@@ -14,7 +14,7 @@
             <h4 class="page-title mb-0">Purchase Bills</h4>
         </div>
         <div class="col-md-6 text-end">
-            <a href="/PurchaseBill/Create">
+            <a href="/Web/PurchaseBill/Create">
                 <button class="btn btn-primary">
                     <i class="fa fa-plus"></i> Add Purchase
                 </button>
@@ -206,8 +206,8 @@
                                                 <i class="bi bi-three-dots-vertical"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="/PurchaseBill/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)"><i class="bi bi-eye me-2"></i>View</a></li>
-                                                <li><a class="dropdown-item" href="/PurchaseBill/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                                <li><a class="dropdown-item" href="/Web/PurchaseBill/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.View)"><i class="bi bi-eye me-2"></i>View</a></li>
+                                                <li><a class="dropdown-item" href="/Web/PurchaseBill/GetById?id=@(bill.Id)&typeid=@((int)ViewTypeEnum.Edit)"><i class="bi bi-pencil me-2"></i>Edit</a></li>
                                                 <li><a class="dropdown-item" href="/Web/PdfDownload/PurchaseBill/@bill.Id" target="_blank"><i class="bi bi-download me-2"></i>Download PDF</a></li>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li>
@@ -722,7 +722,7 @@
         confirmModal.hide();
 
         // Call delete API
-        fetch(`/PurchaseBill/DeleteConfirmed?id=${id}`, {
+        fetch(`/Web/PurchaseBill/DeleteConfirmed?id=${id}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

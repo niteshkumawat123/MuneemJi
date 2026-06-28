@@ -10,6 +10,7 @@ using NuGet.Protocol.Plugins;
 using SkiaSharp;
 using System.ComponentModel.Design;
 using System.Globalization;
+using ClosedXML.Excel;
 using static MUNEEMJI.Models.ItemModel;
 using Category = MUNEEMJI.Models.Category;
 
@@ -1619,6 +1620,128 @@ namespace MUNEEMJI.Controllers
             catch (Exception ex)
             {
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult ImportItems()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ImportItemsFromExcel(IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                    return Json(new { success = false, message = "No file uploaded." });
+
+                var ext = Path.GetExtension(file.FileName).ToLower();
+                if (ext != ".xls" && ext != ".xlsx")
+                    return Json(new { success = false, message = "Only .xls and .xlsx files are allowed." });
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var errors = new List<string>();
+                int importedCount = 0;
+
+                using (var stream = file.OpenReadStream())
+                using (var workbook = new XLWorkbook(stream))
+                {
+                    var worksheet = workbook.Worksheets.First();
+                    var lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
+
+                    if (lastRow < 2)
+                        return Json(new { success = false, message = "The Excel file is empty or has no data rows." });
+
+                    using var connection = new NpgsqlConnection(_connectionString);
+                    connection.Open();
+
+                    for (int row = 2; row <= lastRow; row++)
+                    {
+                        try
+                        {
+                            var itemName = worksheet.Cell(row, 1).GetString()?.Trim();
+                            if (string.IsNullOrWhiteSpace(itemName))
+                            {
+                                errors.Add($"Row {row}: Item Name is required, skipped.");
+                                continue;
+                            }
+
+                            var itemCode = worksheet.Cell(row, 2).GetString()?.Trim();
+                            var hsn = worksheet.Cell(row, 3).GetString()?.Trim();
+                            decimal salePrice = 0;
+                            decimal.TryParse(worksheet.Cell(row, 4).GetString()?.Trim(), out salePrice);
+                            decimal purchasePrice = 0;
+                            decimal.TryParse(worksheet.Cell(row, 5).GetString()?.Trim(), out purchasePrice);
+                            int openingQty = 0;
+                            int.TryParse(worksheet.Cell(row, 6).GetString()?.Trim(), out openingQty);
+                            int minStock = 0;
+                            int.TryParse(worksheet.Cell(row, 7).GetString()?.Trim(), out minStock);
+                            var location = worksheet.Cell(row, 8).GetString()?.Trim();
+                            var taxRate = worksheet.Cell(row, 9).GetString()?.Trim();
+                            var taxInclusive = worksheet.Cell(row, 10).GetString()?.Trim();
+
+                            if (string.IsNullOrWhiteSpace(taxRate)) taxRate = "None";
+
+                            var salePriceTaxType = "Without Tax";
+                            if (!string.IsNullOrWhiteSpace(taxInclusive) && (taxInclusive.Equals("Y", StringComparison.OrdinalIgnoreCase) || taxInclusive.Equals("Yes", StringComparison.OrdinalIgnoreCase)))
+                            {
+                                salePriceTaxType = "With Tax";
+                            }
+
+                            string insertSql = @"
+                                INSERT INTO billitem (
+                                    item_type, item_name, item_hsn, item_code,
+                                    sale_price, sale_price_tax_type,
+                                    purchase_price, purchase_price_tax_type, tax_rate,
+                                    opening_quantity, min_stock_to_maintain, location,
+                                    created_at, updated_at, companyid
+                                ) VALUES (
+                                    @item_type, @item_name, @item_hsn, @item_code,
+                                    @sale_price, @sale_price_tax_type,
+                                    @purchase_price, @purchase_price_tax_type, @tax_rate,
+                                    @opening_quantity, @min_stock_to_maintain, @location,
+                                    @created_at, @updated_at, @companyid
+                                )";
+
+                            using var cmd = new NpgsqlCommand(insertSql, connection);
+                            cmd.Parameters.AddWithValue("@item_type", "product");
+                            cmd.Parameters.AddWithValue("@item_name", itemName);
+                            cmd.Parameters.AddWithValue("@item_hsn", (object)hsn ?? DBNull.Value);
+                            cmd.Parameters.AddWithValue("@item_code", (object)itemCode ?? DBNull.Value);
+                            cmd.Parameters.AddWithValue("@sale_price", salePrice);
+                            cmd.Parameters.AddWithValue("@sale_price_tax_type", salePriceTaxType);
+                            cmd.Parameters.AddWithValue("@purchase_price", purchasePrice);
+                            cmd.Parameters.AddWithValue("@purchase_price_tax_type", salePriceTaxType);
+                            cmd.Parameters.AddWithValue("@tax_rate", taxRate);
+                            cmd.Parameters.AddWithValue("@opening_quantity", openingQty);
+                            cmd.Parameters.AddWithValue("@min_stock_to_maintain", minStock);
+                            cmd.Parameters.AddWithValue("@location", (object)location ?? DBNull.Value);
+                            cmd.Parameters.AddWithValue("@created_at", DateTime.UtcNow);
+                            cmd.Parameters.AddWithValue("@updated_at", DateTime.UtcNow);
+                            cmd.Parameters.AddWithValue("@companyid", companyId);
+
+                            cmd.ExecuteNonQuery();
+                            importedCount++;
+                        }
+                        catch (Exception rowEx)
+                        {
+                            errors.Add($"Row {row}: {rowEx.Message}");
+                        }
+                    }
+                }
+
+                if (importedCount > 0 && errors.Count == 0)
+                    return Json(new { success = true, message = $"{importedCount} item(s) imported successfully." });
+                else if (importedCount > 0 && errors.Count > 0)
+                    return Json(new { success = true, message = $"{importedCount} item(s) imported. {errors.Count} row(s) had errors.", errors });
+                else
+                    return Json(new { success = false, message = "No items were imported.", errors });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Import failed: {ex.Message}" });
             }
         }
     }

@@ -520,7 +520,9 @@ namespace MUNEEMJI.Controllers
                                          td.final_amount as ""FinalAmount"",
                                          td.invoicenumber as ""InvoiceNumber"",
                                          td.IsCredit as ""IsCredit"",
-                                         td.tradedocumenttypesid
+                                         td.tradedocumenttypesid,
+                                         td.duedate AS ""DueDate"",
+                                         td.orderstatusid
                                      FROM public.tradedocuments as td 
                                      LEFT JOIN parties as pt ON td.partyid = pt.id  
                                      WHERE  td.companyid = @p_companyid and td.partyid = @p_partyid;";

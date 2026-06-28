@@ -1909,11 +1909,12 @@
             const row = document.querySelector(`tr[data-index="${index}"]`);
             if (!row) return;
 
-            const quantity = parseFloat(row.querySelector('.qty-input').value) || 0;
-            const pricePerUnit = parseFloat(row.querySelector('.price-input').value) || 0;
-            const discountPercentage = parseFloat(row.querySelector('.discount-input').value) || 0;
-            const CessAmount = parseFloat(row.querySelector('.cess-input').value) || 0;
-            const taxSelect = row.querySelector('.tax-select').value;
+            const quantity = parseFloat(row.querySelector('.qty-input')?.value) || 0;
+            const pricePerUnit = parseFloat(row.querySelector('.price-input')?.value) || 0;
+            const discountPercentage = parseFloat(row.querySelector('.discount-input')?.value) || 0;
+            const CessAmount = parseFloat(row.querySelector('.cess-input')?.value) || 0;
+            const taxSelectEl = row.querySelector('.tax-select');
+            const taxSelect = taxSelectEl ? taxSelectEl.value : '0';
 
             const subtotal = quantity * pricePerUnit;
             const discountAmount = subtotal * (discountPercentage / 100);

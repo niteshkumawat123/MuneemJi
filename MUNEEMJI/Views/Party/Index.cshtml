@@ -141,11 +141,11 @@
                                 <input type="text" id="transactionSearchInput" class="form-control form-control-sm" placeholder="Search transactions..." style="width: 180px; height: 30px; padding-left: 28px; font-size: 12px;" />
                                 <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 11px;"></i>
                             </div>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="window.print()" title="Print">
                                 <i class="bi bi-printer"></i>
                             </button>
                             <a href="/Web/PaymentIn/ExcelReport" download>
-                                <button type="button" class="btn btn-success btn-sm" title="Download Excel" style="height: 38px;">
+                                <button type="button" class="btn btn-success btn-sm" title="Download Excel" style="height: 30px;">
                                     <i class="bi bi-file-earmark-excel"></i>
                                 </button>
                             </a>
@@ -159,40 +159,52 @@
 
                     <!-- Transactions Table -->
                     <div class="table-responsive">
-                        <table class="table table-sm">
-                            <thead class="table-light">
+                        <table class="table table-sm table-bordered" style="font-size: 12px;">
+                            <thead style="background-color: #f8f9fa;">
                                 <tr>
-                                    <th class="border-0">
+                                    <th class="border-0" style="font-weight: 500; color: #6c757d; font-size: 11px;">
                                         <div class="d-flex align-items-center">
                                             <span>Type</span>
-                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                            <i class="bi bi-funnel ms-1 text-muted" style="font-size: 10px;"></i>
                                         </div>
                                     </th>
-                                    <th class="border-0">
+                                    <th class="border-0" style="font-weight: 500; color: #6c757d; font-size: 11px;">
                                         <div class="d-flex align-items-center">
                                             <span>Number</span>
-                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                            <i class="bi bi-funnel ms-1 text-muted" style="font-size: 10px;"></i>
                                         </div>
                                     </th>
-                                    <th class="border-0">
+                                    <th class="border-0" style="font-weight: 500; color: #6c757d; font-size: 11px;">
                                         <div class="d-flex align-items-center">
                                             <span>Date</span>
-                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                            <i class="bi bi-funnel ms-1 text-muted" style="font-size: 10px;"></i>
                                         </div>
                                     </th>
-                                    <th class="border-0">
+                                    <th class="border-0" style="font-weight: 500; color: #6c757d; font-size: 11px;">
                                         <div class="d-flex align-items-center">
                                             <span>Total</span>
-                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                            <i class="bi bi-funnel ms-1 text-muted" style="font-size: 10px;"></i>
                                         </div>
                                     </th>
-                                    <th class="border-0">
+                                    <th class="border-0" style="font-weight: 500; color: #6c757d; font-size: 11px;">
                                         <div class="d-flex align-items-center">
-                                            <span>Balance</span>
-                                            <i class="bi bi-funnel ms-1 text-muted"></i>
+                                            <span>Balance/ Unused</span>
+                                            <i class="bi bi-funnel ms-1 text-muted" style="font-size: 10px;"></i>
                                         </div>
                                     </th>
-                                    <th class="border-0"></th>
+                                    <th class="border-0" style="font-weight: 500; color: #6c757d; font-size: 11px;">
+                                        <div class="d-flex align-items-center">
+                                            <span>Due Date</span>
+                                            <i class="bi bi-funnel ms-1 text-muted" style="font-size: 10px;"></i>
+                                        </div>
+                                    </th>
+                                    <th class="border-0" style="font-weight: 500; color: #6c757d; font-size: 11px;">
+                                        <div class="d-flex align-items-center">
+                                            <span>Status</span>
+                                            <i class="bi bi-funnel ms-1 text-muted" style="font-size: 10px;"></i>
+                                        </div>
+                                    </th>
+                                    <th class="border-0" style="width: 30px;"></th>
                                 </tr>
                             </thead>
                             <tbody id="transactionTableBody">
@@ -200,27 +212,43 @@
                                 {
                                     foreach (var item in Model.PartyTransection)
                                     {
+                                        var typeName = Enum.GetName(typeof(TradeDocumentTypes), item.tradedocumenttypesid) ?? "-";
+                                        var balanceAmount = item.FinalAmount != 0 ? item.FinalAmount.ToString("N2") : "0.00";
+                                        var totalAmount = item.Total != 0 ? item.Total.ToString("N2") : "0.00";
+                                        var dueDateStr = item.DueDate != default(DateTime) ? item.DueDate.ToString("dd/MM/yyyy") : "";
+                                        var isPaid = item.paidReciveamount >= item.FinalAmount && item.FinalAmount > 0;
+                                        var statusText = isPaid ? "Paid" : "Unpaid";
+                                        var statusColor = isPaid ? "#2e7d32" : "#e53935";
                                         <tr class="transaction-row">
-                                            <td style="color: #3e4245;" data-type="@Enum.GetName(typeof(TradeDocumentTypes), item.tradedocumenttypesid)">
-                                                @Enum.GetName(typeof(TradeDocumentTypes), item.tradedocumenttypesid)
-                                            </td>
+                                            <td style="color: #3e4245;" data-type="@typeName">@typeName</td>
                                             <td style="color: #3e4245;" data-invoice="@(item?.InvoiceNumber)">@(item?.InvoiceNumber)</td>
-                                            <td style="color: #3e4245;" data-date="@(item?.CreatedDate != null ? item.CreatedDate.ToString("dd-MM-yyyy") : "-")">@(item?.CreatedDate != null ? item.CreatedDate.ToString("dd-MM-yyyy") : "-")</td>
-                                            <td style="color: #3e4245;" data-total="@(item?.Total != null ? item.Total.ToString("0.00") : "0.00")"> @(item?.Total != null ? item.Total.ToString("0.00") : "0.00")</td>
-                                            <td style="color: #3e4245;" data-balance="@(item?.FinalAmount != null ? item.FinalAmount.ToString("0.00") : "0.00")"> @(item?.FinalAmount != null ? item.FinalAmount.ToString("0.00") : "0.00")</td>
+                                            <td style="color: #3e4245;" data-date="@(item?.CreatedDate != default(DateTime) ? item.CreatedDate.ToString("dd/MM/yyyy") : "-")">@(item?.CreatedDate != default(DateTime) ? item.CreatedDate.ToString("dd/MM/yyyy") : "-")</td>
+                                            <td style="color: #3e4245;" data-total="@totalAmount">₹ @totalAmount</td>
+                                            <td style="color: #3e4245;" data-balance="@balanceAmount">₹ @balanceAmount</td>
+                                            <td style="color: #3e4245;">@dueDateStr</td>
+                                            <td style="color: @statusColor; font-weight: 500;">@statusText</td>
+                                            <td class="text-center">
+                                                <i class="bi bi-three-dots-vertical text-muted" style="cursor: pointer; font-size: 14px;"></i>
+                                            </td>
                                         </tr>
                                     }
                                 }
                                 else
                                 {
-                                    @if (Model.SelectedParty.Balance != 0)
+                                    @if (Model.SelectedParty != null && Model.SelectedParty.OpeningBalance != null && Model.SelectedParty.OpeningBalance != 0)
                                     {
-                                        <tr class="bg-light transaction-row">
-                                            <td>-</td>
-                                            <td></td>
-                                            <td>-</td>
-                                            <td>-</td>
-                                            <td>-</td>
+                                        var obAmount = Model.SelectedParty.OpeningBalance?.ToString("N2") ?? "0.00";
+                                        <tr class="transaction-row">
+                                            <td style="color: #3e4245;">Receivable Opening B.</td>
+                                            <td style="color: #3e4245;"></td>
+                                            <td style="color: #3e4245;">@(Model.SelectedParty.AsOfDate != null ? Model.SelectedParty.AsOfDate.Value.ToString("dd/MM/yyyy") : DateTime.Today.ToString("dd/MM/yyyy"))</td>
+                                            <td style="color: #3e4245;">₹ @obAmount</td>
+                                            <td style="color: #3e4245;">₹ @obAmount</td>
+                                            <td style="color: #3e4245;"></td>
+                                            <td style="color: #e53935; font-weight: 500;">Unpaid</td>
+                                            <td class="text-center">
+                                                <i class="bi bi-three-dots-vertical text-muted" style="cursor: pointer; font-size: 14px;"></i>
+                                            </td>
                                         </tr>
                                     }
                                 }

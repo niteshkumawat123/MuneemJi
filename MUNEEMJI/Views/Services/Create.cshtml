@@ -511,27 +511,15 @@
 
                         <div class="form-group small">
                             <label class="form-label">Unit</label>
+                            @{
+                                var allUnits = MUNEEMJI.Repositories.UnitDataAccess.GetAll();
+                            }
                             <select name="Unit" class="form-select">
                                 <option value="">--Select Unit--</option>
-                                <option value="pcs">Pieces (pcs)</option>
-                                <option value="kg">Kilogram (kg)</option>
-                                <option value="gm">Gram (gm)</option>
-                                <option value="ltr">Liter (ltr)</option>
-                                <option value="ml">Milliliter (ml)</option>
-                                <option value="mtr">Meter (mtr)</option>
-                                <option value="cm">Centimeter (cm)</option>
-                                <option value="ft">Feet (ft)</option>
-                                <option value="inch">Inch (inch)</option>
-                                <option value="sqft">Square Feet (sqft)</option>
-                                <option value="sqmtr">Square Meter (sqmtr)</option>
-                                <option value="box">Box</option>
-                                <option value="dozen">Dozen</option>
-                                <option value="pair">Pair</option>
-                                <option value="set">Set</option>
-                                <option value="pack">Pack</option>
-                                <option value="bundle">Bundle</option>
-                                <option value="roll">Roll</option>
-                                <option value="sheet">Sheet</option>
+                                @foreach (var u in allUnits)
+                                {
+                                    <option value="@u.ShortName">@u.FullName (@u.ShortName)</option>
+                                }
                             </select>
                         </div>
 

@@ -58,6 +58,7 @@ builder.Services.AddScoped<IEnquiryService, EnquiryService>();
 builder.Services.AddScoped<IGstTaxService, GstTaxService>();
 builder.Services.AddScoped<IDropdownService, DropdownService>();
 builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
+builder.Services.AddScoped<IStockAndBalanceService, StockAndBalanceService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<MUNEEMJI.Services.IGstSettingsService, MUNEEMJI.Services.GstSettingsService>();
 

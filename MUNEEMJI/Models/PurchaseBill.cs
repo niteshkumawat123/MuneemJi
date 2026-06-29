@@ -124,10 +124,36 @@ namespace MUNEEMJI.Models
     public class PurchaseBillViewModel
     {
         public PurchaseBill Bill { get; set; } = new PurchaseBill();
-        public List<string> UnitOptions { get; set; } = new List<string> { "NONE", "KG", "PIECE", "LITER", "METER" };
+        public List<string> UnitOptions { get; set; } = LoadUnitsFromDb();
         public List<string> TaxOptions { get; set; } = new List<string> { "Select", "0%", "5%", "12%", "18%", "28%" };
         public List<string> PaymentTypes { get; set; } = new List<string> { "Cash", "Credit", "Debit Card", "UPI", "Net Banking" };
         public List<string> StateOptions { get; set; } = LoadStatesFromDb();
+
+        private static List<string> LoadUnitsFromDb()
+        {
+            var units = new List<string> { "NONE" };
+            try
+            {
+                using (var conn = new NpgsqlConnection(MUNEEMJI.DbConfig.ConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand("SELECT shortname FROM units ORDER BY name", conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var shortName = reader.GetString(0);
+                            if (!string.IsNullOrWhiteSpace(shortName) && !units.Any(u => u.Equals(shortName, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                units.Add(shortName);
+                            }
+                        }
+                    }
+                }
+            }
+            catch { }
+            return units;
+        }
 
         private static List<string> LoadStatesFromDb()
         {

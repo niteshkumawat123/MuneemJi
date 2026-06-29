@@ -19,10 +19,12 @@ namespace MUNEEMJI.Controllers
         private readonly IParty partyController;
         private readonly IGstTaxService _gstTaxService;
         private readonly IErrorLogService _errorLogService;
+        private readonly IStockAndBalanceService _stockAndBalanceService;
 
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
 
-        public PurchaseBillController(IPurchaseBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy CompayTenancy, IParty partyController, IGstTaxService gstTaxService, IErrorLogService errorLogService)
+        public PurchaseBillController(IPurchaseBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService, ICompanyTenancy CompayTenancy, IParty partyController, IGstTaxService gstTaxService, IErrorLogService errorLogService,
+            IStockAndBalanceService stockAndBalanceService)
         {
             _billService = billService;
             _environment = environment;
@@ -31,6 +33,7 @@ namespace MUNEEMJI.Controllers
             this.partyController = partyController;
             _gstTaxService = gstTaxService;
             _errorLogService = errorLogService;
+            _stockAndBalanceService = stockAndBalanceService;
         }
 
         // GET: Bill
@@ -217,6 +220,29 @@ namespace MUNEEMJI.Controllers
 
                 var billId = await _billService.CreateBillAsync(viewModel.Bill, companyId);
 
+                // After successful save: update stock (increase) and party balance (decrease)
+                if (billId > 0)
+                {
+                    using var connection = new NpgsqlConnection(_connectionString);
+                    await connection.OpenAsync();
+                    using var transaction = await connection.BeginTransactionAsync();
+                    try
+                    {
+                        await _stockAndBalanceService.UpdateStockAndBalanceForPurchaseAsync(
+                            connection, transaction,
+                            viewModel.Bill.BillItems,
+                            viewModel.Bill.PartyId,
+                            viewModel.Bill.Total,
+                            companyId);
+                        await transaction.CommitAsync();
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                }
+
                 return Json(new { success = true, message = "Data saved successfully!" });
 
 
@@ -382,6 +408,11 @@ namespace MUNEEMJI.Controllers
 
         private void CalculateBillTotals(PurchaseBill bill)
         {
+            // If Total is already set from client-side (form binding), keep it
+            if (bill.Total > 0)
+                return;
+
+            // Fallback: calculate from items if Total was not bound from form
             decimal total = 0;
 
             foreach (var item in bill.BillItems)
@@ -397,7 +428,7 @@ namespace MUNEEMJI.Controllers
                 total += item.Amount;
             }
 
-            if (bill.RoundOff)
+            if (bill.IsRoundOff)
             {
                 bill.Total = Math.Round(total);
             }

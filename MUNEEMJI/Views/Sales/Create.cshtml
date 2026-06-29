@@ -1914,6 +1914,23 @@
             const CessAmount = parseFloat(row.querySelector('.cess-input').value) || 0;
             const taxSelect = row.querySelector('.tax-select').value;
 
+            // Stock validation warning
+            const hiddenSelect = row.querySelector('select[id^="hiddenSelectPopdorp-"]');
+            if (hiddenSelect && hiddenSelect.value) {
+                const selectedItem = itemOptions.find(item => item.id == hiddenSelect.value);
+                if (selectedItem) {
+                    const availableQty = selectedItem.openingQuantity || 0;
+                    const qtyInput = row.querySelector('.qty-input');
+                    if (quantity > availableQty) {
+                        qtyInput.style.border = '2px solid #dc3545';
+                        qtyInput.title = `Insufficient stock! Available: ${availableQty}`;
+                    } else {
+                        qtyInput.style.border = '';
+                        qtyInput.title = '';
+                    }
+                }
+            }
+
             const subtotal = quantity * pricePerUnit;
             const discountAmount = subtotal * (discountPercentage / 100);
             const afterDiscount = subtotal - discountAmount;
@@ -2455,30 +2472,108 @@
             const row = document.querySelector(`tr[data-index="${rowIndex}"]`);
             if (!row) return;
 
-            // Auto-fill the fields based on item data
+            // Auto-fill Item Code
             const itemCodeInput = row.querySelector('input[name*="ItemCode"]');
             if (itemCodeInput && selectedItem.itemCode) {
                 itemCodeInput.value = selectedItem.itemCode;
             }
 
+            // Auto-fill HSN Code
             const hsnCodeInput = row.querySelector('input[name*="HSNCode"]');
             if (hsnCodeInput && selectedItem.itemHsn) {
                 hsnCodeInput.value = selectedItem.itemHsn;
             }
 
+            // Auto-fill MRP
             const mrpInput = row.querySelector('input[name*="MRP"]');
             if (mrpInput && selectedItem.mrp) {
                 mrpInput.value = selectedItem.mrp;
             }
 
-            // Only auto-fill price if current value is empty or 0
+            // Auto-fill Size
+            const sizeInput = row.querySelector('input[name*="Size"]');
+            if (sizeInput && selectedItem.size) {
+                sizeInput.value = selectedItem.size;
+            }
+
+            // Auto-fill Description
+            const descInput = row.querySelector('input[name*="Description"]');
+            if (descInput && selectedItem.description) {
+                descInput.value = selectedItem.description;
+            }
+
+            // Auto-fill Unit
+            const unitSelect = row.querySelector('select[name*="Unit"]');
+            if (unitSelect && selectedItem.unit) {
+                const unitValue = selectedItem.unit.toUpperCase();
+                const unitOption = Array.from(unitSelect.options).find(opt => opt.value.toUpperCase() === unitValue);
+                if (unitOption) {
+                    unitSelect.value = unitOption.value;
+                }
+            }
+
+            // Auto-fill Category
+            const categorySelect = row.querySelector('select[name*="categoryid"]');
+            if (categorySelect && selectedItem.category) {
+                const catOption = Array.from(categorySelect.options).find(opt => opt.textContent.trim().toLowerCase() === selectedItem.category.toLowerCase());
+                if (catOption) {
+                    categorySelect.value = catOption.value;
+                }
+            }
+
+            // Auto-fill Expiry Date
+            const expDateInput = row.querySelector('input[name*="ExpiryDate"]');
+            if (expDateInput && selectedItem.expDate) {
+                const expDate = new Date(selectedItem.expDate);
+                if (!isNaN(expDate.getTime())) {
+                    expDateInput.value = expDate.toISOString().split('T')[0];
+                }
+            }
+
+            // Auto-fill Manufacturing Date
+            const mfgDateInput = row.querySelector('input[name*="ManufacturingDate"]');
+            if (mfgDateInput && selectedItem.mfgDate) {
+                const mfgDate = new Date(selectedItem.mfgDate);
+                if (!isNaN(mfgDate.getTime())) {
+                    mfgDateInput.value = mfgDate.toISOString().split('T')[0];
+                }
+            }
+
+            // Auto-fill Discount Percentage
+            const discountInput = row.querySelector('input[name*="DiscountPercentage"]');
+            if (discountInput && selectedItem.discountOnSalePrice && parseFloat(selectedItem.discountOnSalePrice) > 0) {
+                if (!discountInput.value || parseFloat(discountInput.value) === 0) {
+                    discountInput.value = selectedItem.discountOnSalePrice;
+                }
+            }
+
+            // Auto-fill Additional Cess
+            const cessInput = row.querySelector('input[name*="AddCessAmount"]');
+            if (cessInput && selectedItem.additionalCess && parseFloat(selectedItem.additionalCess) > 0) {
+                if (!cessInput.value || parseFloat(cessInput.value) === 0) {
+                    cessInput.value = selectedItem.additionalCess;
+                }
+            }
+
+            // Auto-fill Tax Rate
+            const taxSelect = row.querySelector('select[name*="TaxPercentage"]');
+            if (taxSelect && selectedItem.taxRate && selectedItem.taxRate !== 'None' && selectedItem.taxRate !== 'none') {
+                const taxValue = parseFloat(selectedItem.taxRate);
+                if (!isNaN(taxValue)) {
+                    const taxOption = Array.from(taxSelect.options).find(opt => parseFloat(opt.value) === taxValue);
+                    if (taxOption) {
+                        taxSelect.value = taxOption.value;
+                    }
+                }
+            }
+
+            // Auto-fill Price/Unit (only if current value is empty or 0)
             const priceInput = row.querySelector('input[name*="PricePerUnit"]');
             if (priceInput) {
                 const currentPrice = parseFloat(priceInput.value) || 0;
                 if (currentPrice === 0 && selectedItem.salePrice) {
                     priceInput.value = selectedItem.salePrice;
                 }
-                // If currentPrice is not 0, keep the existing value from database
             }
 
             // Only set quantity to 1 if it's empty or 0
@@ -2852,6 +2947,31 @@
             };
         }
                 function submitForm() {
+            // Client-side stock validation before submitting
+            const stockErrors = [];
+            document.querySelectorAll('.item-row').forEach((row) => {
+                const hiddenSelect = row.querySelector('select[id^="hiddenSelectPopdorp-"]');
+                const qtyInput = row.querySelector('.qty-input');
+                if (hiddenSelect && qtyInput) {
+                    const selectedItemId = hiddenSelect.value;
+                    const requestedQty = parseFloat(qtyInput.value) || 0;
+                    if (selectedItemId && requestedQty > 0) {
+                        const selectedItem = itemOptions.find(item => item.id == selectedItemId);
+                        if (selectedItem) {
+                            const availableQty = selectedItem.openingQuantity || 0;
+                            if (requestedQty > availableQty) {
+                                stockErrors.push(`Item '${selectedItem.itemName}': Available stock = ${availableQty}, Requested = ${requestedQty}`);
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (stockErrors.length > 0) {
+                showMessageModal(false, 'Insufficient stock:\n' + stockErrors.join('\n'));
+                return;
+            }
+
             const form = document.getElementById('billForm');
             const formData = new FormData(form);
 

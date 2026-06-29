@@ -23,10 +23,12 @@ namespace MUNEEMJI.Controllers
         private readonly ISalesInvoicesPdf _salesInvoicesPdf;
         private readonly IGstTaxService _gstTaxService;
         private readonly IErrorLogService _errorLogService;
+        private readonly IStockAndBalanceService _stockAndBalanceService;
 
         string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         public SalesController(ISalesBillService billService, IWebHostEnvironment environment, IBillItemService iBillItemService,
-            ICompanyTenancy companyTenancy, IParty _partyController, ISalesInvoicesPdf salesInvoicesPdf, IGstTaxService gstTaxService, IErrorLogService errorLogService)
+            ICompanyTenancy companyTenancy, IParty _partyController, ISalesInvoicesPdf salesInvoicesPdf, IGstTaxService gstTaxService, IErrorLogService errorLogService,
+            IStockAndBalanceService stockAndBalanceService)
         {
             _billService = billService;
             _environment = environment;
@@ -36,6 +38,7 @@ namespace MUNEEMJI.Controllers
             _salesInvoicesPdf = salesInvoicesPdf;
             _gstTaxService = gstTaxService;
             _errorLogService = errorLogService;
+            _stockAndBalanceService = stockAndBalanceService;
         }
         public async Task<IActionResult> Index()
         {
@@ -186,7 +189,12 @@ namespace MUNEEMJI.Controllers
 
             try
             {
-
+                // Validate stock availability before creating the sale
+                var stockError = await _stockAndBalanceService.ValidateStockForSaleAsync(viewModel.Bill.BillItems, companyId);
+                if (stockError != null)
+                {
+                    return Json(new { success = false, message = stockError });
+                }
 
                 if (viewModel.Bill.imageFile != null && viewModel.Bill.imageFile.Length > 0)
                 {
@@ -229,6 +237,29 @@ namespace MUNEEMJI.Controllers
                 CalculateBillTotals(viewModel.Bill);
 
                 var billId = await _billService.CreateBillAsync(viewModel.Bill, companyId);
+
+                // After successful save: update stock (decrease) and party balance (increase)
+                if (billId > 0)
+                {
+                    using var connection = new NpgsqlConnection(_connectionString);
+                    await connection.OpenAsync();
+                    using var transaction = await connection.BeginTransactionAsync();
+                    try
+                    {
+                        await _stockAndBalanceService.UpdateStockAndBalanceForSaleAsync(
+                            connection, transaction,
+                            viewModel.Bill.BillItems,
+                            viewModel.Bill.PartyId,
+                            viewModel.Bill.Total,
+                            companyId);
+                        await transaction.CommitAsync();
+                    }
+                    catch
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                }
 
                 string pdfPath = string.Empty;
                 if (billId > 0)
@@ -310,29 +341,34 @@ namespace MUNEEMJI.Controllers
 
         private void CalculateBillTotals(PurchaseBill bill)
         {
+            // If Total is already set from client-side (form binding), keep it
+            if (bill.Total > 0)
+                return;
+
+            // Fallback: calculate from items if Total was not bound from form
             decimal total = 0;
 
-            //foreach (var item in bill.BillItems)
-            //{
-            //    var subtotal = item.Quantity * item.PricePerUnit;
-            //    item.DiscountAmount = subtotal * (item.DiscountPercentage / 100);
-            //    var afterDiscount = subtotal - item.DiscountAmount;
+            foreach (var item in bill.BillItems)
+            {
+                var subtotal = item.Quantity * item.PricePerUnit;
+                item.DiscountAmount = subtotal * (item.DiscountPercentage / 100);
+                var afterDiscount = subtotal - item.DiscountAmount;
 
-            //    var taxRate = ExtractTaxRate(item.Tax);
-            //    item.TaxAmount = afterDiscount * (taxRate / 100);
-            //    item.Amount = afterDiscount + item.TaxAmount;
+                var taxRate = ExtractTaxRate(item.Tax);
+                item.TaxAmount = afterDiscount * (taxRate / 100);
+                item.Amount = afterDiscount + item.TaxAmount;
 
-            //    total += item.Amount;
-            //}
+                total += item.Amount;
+            }
 
-            //if (bill.RoundOff)
-            //{
-            //    bill.Total = Math.Round(total);
-            //}
-            //else
-            //{
-            //    bill.Total = Math.Round(total, 2);
-            //}
+            if (bill.IsRoundOff)
+            {
+                bill.Total = Math.Round(total);
+            }
+            else
+            {
+                bill.Total = Math.Round(total, 2);
+            }
         }
 
         private decimal ExtractTaxRate(string tax)

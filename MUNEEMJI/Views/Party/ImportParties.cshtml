@@ -1,0 +1,294 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Import Excel - Parties</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fff; min-height: 100vh; }
+
+        .import-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .import-header h5 {
+            font-weight: 600;
+            color: #222;
+            margin: 0;
+            font-size: 18px;
+        }
+        .import-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: #eee;
+            color: #888;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .import-close:hover { background: #ddd; color: #333; }
+
+        .import-body {
+            display: flex;
+            flex: 1;
+            min-height: calc(100vh - 65px);
+            padding: 40px 32px;
+            gap: 40px;
+        }
+
+        /* Left: Download section */
+        .import-download {
+            flex: 0 0 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+        }
+        .import-download p {
+            color: #1a73e8;
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .xls-icon {
+            width: 120px;
+            height: 140px;
+            background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 30px;
+            position: relative;
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.15);
+        }
+        .xls-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, transparent 50%, rgba(255,255,255,0.3) 50%);
+            border-radius: 0 8px 0 0;
+        }
+        .download-btn {
+            background: #1a73e8;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 36px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .download-btn:hover { background: #1565c0; }
+
+        /* Right: Upload section */
+        .import-upload {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .import-upload > p {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .upload-dropzone {
+            width: 100%;
+            max-width: 700px;
+            min-height: 350px;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+            position: relative;
+        }
+        .upload-dropzone.dragover {
+            border-color: #1a73e8;
+            background: #e8f0fe;
+        }
+        .upload-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.12);
+        }
+        .upload-icon i { font-size: 36px; color: #fff; }
+        .upload-dropzone p {
+            font-size: 14px;
+            color: #555;
+            text-align: center;
+        }
+        .upload-dropzone p a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .upload-dropzone p a:hover { text-decoration: underline; }
+        .upload-dropzone input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+        }
+
+        /* Progress / result */
+        .import-result {
+            margin-top: 24px;
+            width: 100%;
+            max-width: 700px;
+        }
+        .import-result .alert { font-size: 13px; }
+        .import-result ul { font-size: 12px; margin-top: 6px; max-height: 200px; overflow-y: auto; }
+
+        .uploading-spinner {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+            color: #1a73e8;
+            font-size: 14px;
+        }
+        .uploading-spinner i { font-size: 24px; }
+    </style>
+</head>
+<body>
+    <div class="import-header">
+        <h5>Import Excel</h5>
+        <button class="import-close" onclick="window.location.href='/Web/Party/Index'" title="Close">&times;</button>
+    </div>
+
+    <div class="import-body">
+        <!-- Left: Download Template -->
+        <div class="import-download">
+            <p>Download .xls/.xlsx (excel sheet)<br>template file to enter Data</p>
+            <div class="xls-icon">xls</div>
+            <button class="download-btn" onclick="downloadTemplate()">Download</button>
+        </div>
+
+        <!-- Right: Upload -->
+        <div class="import-upload">
+            <p>Upload your .xls/ .xlsx (excel sheet)</p>
+            <div class="upload-dropzone" id="dropzone">
+                <div class="upload-icon">
+                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                </div>
+                <p>Drag and drop or <a href="#" onclick="document.getElementById('fileInput').click(); return false;">Click here to Browse</a><br>formatted excel file to continue</p>
+                <input type="file" id="fileInput" accept=".xls,.xlsx" onchange="uploadFile(this.files[0])">
+            </div>
+            <div class="uploading-spinner" id="uploadingSpinner">
+                <i class="bi bi-arrow-repeat spin"></i> Uploading and processing...
+            </div>
+            <div class="import-result" id="importResult"></div>
+        </div>
+    </div>
+
+    <script>
+        // Drag & drop
+        var dropzone = document.getElementById('dropzone');
+        dropzone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        dropzone.addEventListener('dragleave', function () {
+            dropzone.classList.remove('dragover');
+        });
+        dropzone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files.length > 0) {
+                uploadFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function downloadTemplate() {
+            window.location.href = '/Import/party/Import Parties Template.xlsx';
+        }
+
+        function uploadFile(file) {
+            if (!file) return;
+            var ext = file.name.split('.').pop().toLowerCase();
+            if (ext !== 'xls' && ext !== 'xlsx') {
+                document.getElementById('importResult').innerHTML = '<div class="alert alert-danger">Only .xls and .xlsx files are allowed.</div>';
+                return;
+            }
+
+            var formData = new FormData();
+            formData.append('file', file);
+
+            document.getElementById('uploadingSpinner').style.display = 'block';
+            document.getElementById('importResult').innerHTML = '';
+
+            $.ajax({
+                url: '/Web/Party/ImportPartiesFromExcel',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    document.getElementById('uploadingSpinner').style.display = 'none';
+                    var html = '';
+                    if (res.success) {
+                        html = '<div class="alert alert-success">' + res.message + '</div>';
+                    } else {
+                        html = '<div class="alert alert-danger">' + res.message + '</div>';
+                    }
+                    if (res.errors && res.errors.length > 0) {
+                        html += '<div class="alert alert-warning"><strong>Warnings:</strong><ul>';
+                        res.errors.forEach(function (err) {
+                            html += '<li>' + err + '</li>';
+                        });
+                        html += '</ul></div>';
+                    }
+                    document.getElementById('importResult').innerHTML = html;
+                },
+                error: function () {
+                    document.getElementById('uploadingSpinner').style.display = 'none';
+                    document.getElementById('importResult').innerHTML = '<div class="alert alert-danger">Upload failed. Please try again.</div>';
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .spin { animation: spin 1s linear infinite; display: inline-block; }
+        @@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</body>
+</html>

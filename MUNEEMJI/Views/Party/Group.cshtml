@@ -1,0 +1,439 @@
+@model MUNEEMJI.Models.PartyGroupViewModel
+@{
+    ViewData["Title"] = "Groups";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<div class="container-fluid" style="padding: 0; font-size: 13px;">
+    <!-- Header Section -->
+    <div class="d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+        <div class="d-flex align-items-center position-relative">
+            <div class="dropdown">
+                <h5 class="mb-0 me-2 dropdown-toggle" style="font-size: 16px; font-weight: 600; cursor: pointer;" data-bs-toggle="dropdown" aria-expanded="false">
+                    Groups
+                </h5>
+                <ul class="dropdown-menu" style="font-size: 13px;">
+                    <li><a class="dropdown-item" href="/Web/Party/Index">Parties</a></li>
+                    <li><a class="dropdown-item active" href="/Web/Party/Group"><i class="bi bi-check me-1"></i>Groups</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-danger btn-sm" style="font-size: 12px; padding: 4px 12px;" onclick="showAddGroupModal()">
+                <i class="bi bi-plus"></i> Add Party Group
+            </button>
+            <button type="button" class="bi bi-gear" onclick="window.location.href='/Web/Settings/Party/Index?returnUrl=' + encodeURIComponent(window.location.href)" style="font-size: 16px; color: #fff; background-color:#007bff;border: 1px solid #89bcf3;border-radius: 15%; padding: 2px 5px;">
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-0">
+        <!-- Left Sidebar: Groups List -->
+        <div class="col-md-3 border-end" style="height: calc(100vh - 100px); display: flex; flex-direction: column;">
+            <!-- Search -->
+            <div class="p-2 border-bottom">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 12px;"></i>
+                    <input type="text" id="groupSearchInput" class="form-control form-control-sm ps-4" placeholder="Search Group" autocomplete="off" style="font-size: 12px;" />
+                </div>
+            </div>
+
+            <!-- Group List Header -->
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-light small text-muted border-bottom" style="font-size: 11px;">
+                <div class="d-flex align-items-center">
+                    <span>GROUP</span>
+                    <i class="bi bi-arrow-up ms-1"></i>
+                </div>
+                <span>PARTY</span>
+            </div>
+
+            <!-- Group List -->
+            <div class="list-group list-group-flush" id="groupList" style="flex: 1; overflow-y: auto;">
+                @if (Model.Groups != null)
+                {
+                    @foreach (var group in Model.Groups)
+                    {
+                        <div class="list-group-item border-0 d-flex justify-content-between align-items-center py-2 px-2 group-item @(group.Id == Model.SelectedGroupId ? "group-selected" : "")"
+                             data-group-id="@group.Id" data-group-name="@group.GroupName" style="font-size: 12px; cursor: pointer;">
+                            <span class="group-name-text text-truncate" style="max-width: 55%;" title="@group.GroupName" onclick="selectGroup(@group.Id)">@group.GroupName</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="fw-bold" style="font-size: 11px;">@group.PartyCount</span>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm p-0 border-0" data-bs-toggle="dropdown" style="line-height: 1;">
+                                        <i class="bi bi-three-dots-vertical text-muted" style="font-size: 13px;"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" style="font-size: 12px;">
+                                        <li><a class="dropdown-item" href="#" onclick="viewGroup(@group.Id); return false;"><i class="bi bi-eye me-2"></i>View</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="editGroup(@group.Id, '@group.GroupName.Replace("'", "\\'")'); return false;"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                        <li><a class="dropdown-item text-danger" href="#" onclick="deleteGroup(@group.Id); return false;"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Right Panel: Group Details -->
+        <div class="col-md-9">
+            @if (Model.SelectedGroupId > 0)
+            {
+                <!-- Group Header -->
+                <div class="p-3 border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 fw-bold" style="font-size: 14px;">@Model.SelectedGroupName</h6>
+                            <span style="font-size: 12px;">
+                                Parties(@(Model.PartiesInGroup?.Count ?? 0))
+                                <span class="text-success ms-2">? @Model.TotalAmount.ToString("N2")</span>
+                            </span>
+                        </div>
+                        <button class="btn btn-primary btn-sm" style="font-size: 12px; padding: 4px 12px;" onclick="showMoveToGroupModal()">
+                            Move To This Group
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Parties Section -->
+                <div class="p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0 fw-bold" style="font-size: 13px;">PARTIES</h6>
+                        <div class="position-relative">
+                            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 11px;"></i>
+                            <input type="text" id="partySearchInGroup" class="form-control form-control-sm ps-4" placeholder="Search..." style="width: 160px; font-size: 12px;" />
+                        </div>
+                    </div>
+
+                    <!-- Parties Table -->
+                    <div class="table-responsive">
+                        <table class="table table-sm" id="groupPartiesTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="border-0" style="font-size: 11px;">
+                                        <span>PARTY</span>
+                                        <i class="bi bi-arrow-up ms-1"></i>
+                                        <i class="bi bi-funnel ms-1 text-muted"></i>
+                                    </th>
+                                    <th class="border-0 text-end" style="font-size: 11px;">AMOUNT</th>
+                                    <th class="border-0" style="width: 30px;"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.PartiesInGroup != null && Model.PartiesInGroup.Any())
+                                {
+                                    @foreach (var party in Model.PartiesInGroup)
+                                    {
+                                        var amt = (party.OpeningBalance ?? 0).ToString("N2");
+                                        <tr class="party-row-in-group">
+                                            <td style="font-size: 12px; font-weight: 500;">@party.PartyName</td>
+                                            <td class="text-end" style="font-size: 12px; color: #28a745;">@amt</td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm p-0 border-0" data-bs-toggle="dropdown" style="line-height: 1;">
+                                                        <i class="bi bi-three-dots-vertical text-muted" style="font-size: 13px;"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-end" style="font-size: 12px;">
+                                                        <li><a class="dropdown-item" href="/Web/Party/Add/@party.Id"><i class="bi bi-pencil me-2"></i>Edit Party</a></li>
+                                                        <li><a class="dropdown-item" href="/Web/Party/Index?id=@party.Id"><i class="bi bi-eye me-2"></i>View Party</a></li>
+                                                        <li><a class="dropdown-item text-danger" href="#" onclick="removePartyFromGroup(@party.Id); return false;"><i class="bi bi-x-circle me-2"></i>Remove from Group</a></li>
+                                                        <li><a class="dropdown-item text-danger" href="#" onclick="deletePartyConfirm(@party.Id); return false;"><i class="bi bi-trash me-2"></i>Delete Party</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted py-4">No parties in this group</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <div class="text-center text-muted">
+                        <i class="bi bi-collection" style="font-size: 3rem;"></i>
+                        <div class="mt-2">Select a group to view details</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Group Modal -->
+<div class="modal fade" id="groupModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title" id="groupModalTitle" style="font-size: 13px;">Add Party Group</h6>
+                <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-2">
+                <input type="hidden" id="editGroupId" value="0" />
+                <input type="text" class="form-control form-control-sm" id="groupNameInput" placeholder="Enter group name" style="font-size: 12px;" />
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" style="font-size: 11px;">Cancel</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="saveGroup()" style="font-size: 11px;">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Move Parties to Group Modal -->
+<div class="modal fade" id="moveToGroupModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+        <div class="modal-content" style="border-radius: 6px; overflow: hidden;">
+            <div class="modal-header py-2 px-3" style="background: #f8f9fa; border-bottom: 1px solid #dee2e6;">
+                <h6 class="modal-title fw-bold mb-0" style="font-size: 15px;">Select Parties</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" style="font-size: 10px;"></button>
+            </div>
+            <div class="px-3 pt-3 pb-2">
+                <div class="position-relative">
+                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 12px;"></i>
+                    <input type="text" class="form-control ps-4" id="movePartySearch" placeholder="" style="font-size: 13px; height: 36px; border: 1px solid #ccc;" />
+                </div>
+            </div>
+            <div class="px-3 py-2 border-bottom d-flex align-items-center" style="background: #f1f3f5;">
+                <input class="form-check-input me-3" type="checkbox" id="selectAllParties" onclick="toggleSelectAll(this)" style="width: 16px; height: 16px;">
+                <label class="form-check-label fw-bold" for="selectAllParties" style="font-size: 12px; color: #555;">NAME</label>
+            </div>
+            <div id="movePartyList" style="max-height: 380px; overflow-y: auto;"></div>
+            <div class="px-3 py-2 text-end" style="border-top: 1px solid #dee2e6;">
+                <button type="button" class="btn btn-sm text-white" onclick="saveMovedParties()" style="font-size: 12px; padding: 6px 18px; background-color: #1a8a7d; border: none;">MOVE TO THIS GROUP</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title" style="font-size: 13px;">Confirm Delete</h6>
+                <button type="button" class="btn-close btn-close-sm" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body py-2" id="deleteConfirmBody" style="font-size: 12px;">
+                Are you sure you want to delete?
+            </div>
+            <div class="modal-footer py-2">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal" style="font-size: 11px;">No</button>
+                <button type="button" class="btn btn-sm btn-danger" id="confirmDeleteBtn" style="font-size: 11px;">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .group-item { transition: background-color 0.2s; }
+    .group-item:hover { background-color: #f0f0f0; }
+    .group-selected { background-color: #e3f0ff !important; border-left: 3px solid #4da3ff !important; }
+    .table th { font-weight: 500; color: #6c757d; }
+    .party-row-in-group:first-child { background-color: #e8f4fd; }
+</style>
+
+<script>
+    toastr.options = { closeButton: true, progressBar: true, positionClass: 'toast-top-right', timeOut: 2500 };
+
+    var selectedGroupId = @Model.SelectedGroupId;
+
+    function selectGroup(id) {
+        window.location.href = '/Web/Party/Group?id=' + id;
+    }
+
+    function viewGroup(id) {
+        selectGroup(id);
+    }
+
+    // Add Group
+    function showAddGroupModal() {
+        document.getElementById('editGroupId').value = '0';
+        document.getElementById('groupNameInput').value = '';
+        document.getElementById('groupModalTitle').textContent = 'Add Party Group';
+        var modal = new bootstrap.Modal(document.getElementById('groupModal'));
+        modal.show();
+    }
+
+    // Edit Group
+    function editGroup(id, name) {
+        document.getElementById('editGroupId').value = id;
+        document.getElementById('groupNameInput').value = name;
+        document.getElementById('groupModalTitle').textContent = 'Edit Party Group';
+        var modal = new bootstrap.Modal(document.getElementById('groupModal'));
+        modal.show();
+    }
+
+    // Save Group (Add or Edit)
+    function saveGroup() {
+        var id = parseInt(document.getElementById('editGroupId').value);
+        var name = document.getElementById('groupNameInput').value.trim();
+        if (!name) { toastr.error('Please enter a group name'); return; }
+
+        if (id > 0) {
+            fetch('/Web/Party/UpdatePartyGroup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id, name: name })
+            }).then(r => r.json()).then(data => {
+                if (data.success) { toastr.success(data.message); setTimeout(() => location.reload(), 1000); }
+                else { toastr.error(data.message); }
+            });
+        } else {
+            fetch('/Web/Party/CreatePartyGroup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'name=' + encodeURIComponent(name)
+            }).then(r => r.json()).then(data => {
+                if (data.success) { toastr.success('Group created!'); setTimeout(() => location.reload(), 1000); }
+                else { toastr.error('Error creating group'); }
+            });
+        }
+    }
+
+    // Delete Group
+    function deleteGroup(id) {
+        document.getElementById('deleteConfirmBody').textContent = 'Are you sure you want to delete this group? Parties will be unassigned.';
+        var modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
+        document.getElementById('confirmDeleteBtn').onclick = function () {
+            fetch('/Web/Party/DeletePartyGroup?id=' + id, { method: 'POST' })
+                .then(r => r.json()).then(data => {
+                    modal.hide();
+                    if (data.success) { toastr.success(data.message); setTimeout(() => { window.location.href = '/Web/Party/Group'; }, 1000); }
+                    else { toastr.error(data.message); }
+                });
+        };
+    }
+
+    // Move Parties Modal
+    function showMoveToGroupModal() {
+        var modal = new bootstrap.Modal(document.getElementById('moveToGroupModal'));
+        document.getElementById('movePartyList').innerHTML = '<div class="text-center py-3"><span class="spinner-border spinner-border-sm"></span></div>';
+        document.getElementById('selectAllParties').checked = false;
+        document.getElementById('movePartySearch').value = '';
+        modal.show();
+
+        fetch('/Web/Party/GetPartiesNotInGroup?groupId=' + selectedGroupId)
+            .then(r => r.json()).then(data => {
+                if (data.success && data.parties.length > 0) {
+                    var html = data.parties.map(p =>
+                        `<div class="d-flex align-items-center px-3 py-2 move-party-item" style="border-bottom: 1px solid #eee; cursor: pointer;" onclick="toggleRowCheck(this)">
+                            <input class="form-check-input me-3 move-party-check" type="checkbox" value="${p.id}" id="mp_${p.id}" style="width: 16px; height: 16px;" onclick="event.stopPropagation(); updateSelectAll()">
+                            <label class="form-check-label mb-0" for="mp_${p.id}" style="font-size: 13px; cursor: pointer;">${p.partyName}</label>
+                        </div>`
+                    ).join('');
+                    document.getElementById('movePartyList').innerHTML = html;
+                } else {
+                    document.getElementById('movePartyList').innerHTML = '<div class="text-muted text-center py-4">No parties available to move</div>';
+                }
+            });
+    }
+
+    function toggleSelectAll(masterCheckbox) {
+        var checkboxes = document.querySelectorAll('.move-party-check');
+        checkboxes.forEach(function (cb) {
+            var item = cb.closest('.move-party-item');
+            if (item && item.style.display !== 'none') {
+                cb.checked = masterCheckbox.checked;
+            }
+        });
+    }
+
+    function toggleRowCheck(row) {
+        var cb = row.querySelector('.move-party-check');
+        if (cb) { cb.checked = !cb.checked; updateSelectAll(); }
+    }
+
+    function updateSelectAll() {
+        var visible = document.querySelectorAll('.move-party-item:not([style*="display: none"]) .move-party-check');
+        var allChecked = visible.length > 0 && Array.from(visible).every(c => c.checked);
+        document.getElementById('selectAllParties').checked = allChecked;
+    }
+
+    // Search in Move Modal
+    document.addEventListener('DOMContentLoaded', function () {
+        var moveSearch = document.getElementById('movePartySearch');
+        if (moveSearch) {
+            moveSearch.addEventListener('input', function () {
+                var val = this.value.toLowerCase();
+                document.querySelectorAll('.move-party-item').forEach(function (item) {
+                    var text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(val) ? '' : 'none';
+                });
+                updateSelectAll();
+            });
+        }
+
+        // Search in group list
+        var groupSearch = document.getElementById('groupSearchInput');
+        if (groupSearch) {
+            groupSearch.addEventListener('input', function () {
+                var val = this.value.toLowerCase();
+                document.querySelectorAll('.group-item').forEach(function (item) {
+                    var name = item.getAttribute('data-group-name').toLowerCase();
+                    item.style.display = name.includes(val) ? '' : 'none';
+                });
+            });
+        }
+
+        // Search in parties table
+        var partySearch = document.getElementById('partySearchInGroup');
+        if (partySearch) {
+            partySearch.addEventListener('input', function () {
+                var val = this.value.toLowerCase();
+                document.querySelectorAll('.party-row-in-group').forEach(function (row) {
+                    var text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(val) ? '' : 'none';
+                });
+            });
+        }
+    });
+
+    // Save Moved Parties
+    function saveMovedParties() {
+        var checked = document.querySelectorAll('.move-party-check:checked');
+        var ids = Array.from(checked).map(c => parseInt(c.value));
+        if (ids.length === 0) { toastr.error('Please select at least one party'); return; }
+
+        fetch('/Web/Party/MovePartiesToGroup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ groupId: selectedGroupId, partyIds: ids })
+        }).then(r => r.json()).then(data => {
+            if (data.success) { toastr.success(data.message); setTimeout(() => location.reload(), 1000); }
+            else { toastr.error(data.message); }
+        });
+    }
+
+    // Remove Party from Group
+    function removePartyFromGroup(partyId) {
+        fetch('/Web/Party/RemovePartyFromGroup?partyId=' + partyId, { method: 'POST' })
+            .then(r => r.json()).then(data => {
+                if (data.success) { toastr.success(data.message); setTimeout(() => location.reload(), 1000); }
+                else { toastr.error(data.message); }
+            });
+    }
+
+    // Delete Party
+    function deletePartyConfirm(partyId) {
+        document.getElementById('deleteConfirmBody').textContent = 'Are you sure you want to delete this party?';
+        var modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
+        document.getElementById('confirmDeleteBtn').onclick = function () {
+            fetch('/Web/Party/DeleteParty?id=' + partyId, { method: 'POST' })
+                .then(r => { if (r.ok) { modal.hide(); toastr.success('Party deleted'); setTimeout(() => location.reload(), 1000); } else { toastr.error('Error deleting party'); } });
+        };
+    }
+</script>

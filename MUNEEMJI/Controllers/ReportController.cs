@@ -462,11 +462,111 @@ namespace MUNEEMJI.Controllers
         }
 
         // Party Statement - Returns Partial View
-        public IActionResult PartyStatement()
+        public async Task<IActionResult> PartyStatement()
         {
-            ViewBag.ReportTitle = "Party Statement";
-            ViewBag.ReportType = "partystatement";
-            return PartialView("_ReportTemplate");
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            var PartyList = await partyController.GetPartyDropDownAsync(companyId);
+            ViewBag.PartyList = PartyList;
+            return PartialView("Party_Statement");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPartyStatementData(int partyId, string startDate, string endDate)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                using var connection = new NpgsqlConnection(_connectionString);
+
+                var query = @"
+                    SELECT 
+                        td.id AS ""Id"",
+                        td.created_date AS ""CreatedDate"",
+                        td.tradedocumenttypesid AS ""tradedocumenttypesid"",
+                        td.invoicenumber AS ""InvoiceNumber"",
+                        td.payment_type AS ""PaymentType"",
+                        td.total AS ""Total"",
+                        td.paidreciveamount AS ""paidReciveamount"",
+                        td.final_amount AS ""FinalAmount"",
+                        td.partyid AS ""PartyId"",
+                        pt.party_name AS ""PartyName""
+                    FROM public.tradedocuments AS td
+                    LEFT JOIN parties AS pt ON td.partyid = pt.id
+                    WHERE td.companyid = @p_companyid
+                      AND td.partyid = @p_partyid
+                      AND td.created_date >= @p_startdate
+                      AND td.created_date <= @p_enddate
+                    ORDER BY td.created_date DESC;";
+
+                DateTime sDate = DateTime.Parse(startDate);
+                DateTime eDate = DateTime.Parse(endDate).AddDays(1);
+
+                var transactions = connection.QuerySql<PurchaseBill>(query, new
+                {
+                    p_companyid = companyId,
+                    p_partyid = partyId,
+                    p_startdate = sDate,
+                    p_enddate = eDate
+                }).ToList();
+
+                decimal totalSale = transactions.Where(x => x.tradedocumenttypesid == (int)TradeDocumentTypes.SalesChallan).Sum(x => x.Total);
+                decimal totalPurchase = transactions.Where(x => x.tradedocumenttypesid == (int)TradeDocumentTypes.PurchaseChallan).Sum(x => x.Total);
+                decimal totalPaymentIn = transactions.Where(x => x.tradedocumenttypesid == (int)TradeDocumentTypes.PaymentIn).Sum(x => x.Total);
+                decimal totalPaymentOut = transactions.Where(x => x.tradedocumenttypesid == (int)TradeDocumentTypes.PaymentOut).Sum(x => x.Total);
+                decimal totalCreditNote = transactions.Where(x => x.tradedocumenttypesid == (int)TradeDocumentTypes.CreditNote).Sum(x => x.Total);
+                decimal totalDebitNote = transactions.Where(x => x.tradedocumenttypesid == (int)TradeDocumentTypes.DebitNote).Sum(x => x.Total);
+
+                decimal totalReceivable = totalSale - totalCreditNote - totalPaymentIn;
+                decimal totalPayable = totalPurchase - totalDebitNote - totalPaymentOut;
+
+                return Json(new
+                {
+                    success = true,
+                    transactions = transactions.Select(t => new
+                    {
+                        date = t.CreatedDate.ToString("dd MMM yyyy"),
+                        type = GetTransactionTypeName(t.tradedocumenttypesid),
+                        refNo = t.InvoiceNumber?.ToString() ?? "-",
+                        paymentType = t.PaymentType ?? "-",
+                        total = t.Total,
+                        received = t.paidReciveamount,
+                        txnType = t.tradedocumenttypesid,
+                        receivableBalance = 0m,
+                        payableBalance = 0m
+                    }),
+                    summary = new
+                    {
+                        totalSale,
+                        totalPurchase,
+                        totalPaymentIn,
+                        totalPaymentOut,
+                        totalReceivable = Math.Max(totalReceivable, 0),
+                        totalPayable = Math.Max(totalPayable, 0)
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        private string GetTransactionTypeName(int typeId)
+        {
+            return typeId switch
+            {
+                1 => "Purchase Order",
+                2 => "Sales Order",
+                3 => "Delivery Challan",
+                4 => "Purchase",
+                5 => "Sale",
+                6 => "Debit Note",
+                7 => "Credit Note",
+                8 => "Estimate",
+                9 => "Payment In",
+                10 => "Payment Out",
+                _ => "Other"
+            };
         }
 
         // Party Wise Profit & Loss - Returns Partial View

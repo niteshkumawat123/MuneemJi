@@ -120,6 +120,24 @@
             overflow-y: auto;
             position: relative;
         }
+
+        /* Vertical spacing for all setting rows */
+        .main-content .form-check,
+        .main-content .form-group,
+        .main-content .setting-row,
+        .main-content .setting-item,
+        .main-content .s-check,
+        .main-content .s-form-group,
+        .main-content .checkbox-row,
+        .main-content div > label:has(input[type="checkbox"]) {
+            margin-bottom: 14px !important;
+        }
+
+        .main-content .s-section,
+        .main-content .row,
+        .main-content .form-row {
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
@@ -168,8 +186,14 @@
     <script>
         function navigateWithReturn(url) {
             if (url === '#') return;
-            const returnUrl = encodeURIComponent(window.location.href);
-            window.location.href = url + '?returnUrl=' + returnUrl;
+            // Use the original returnUrl (from when user first entered settings), not the current growing URL
+            var params = new URLSearchParams(window.location.search);
+            var originalReturn = params.get('returnUrl');
+            if (originalReturn) {
+                window.location.href = url + '?returnUrl=' + encodeURIComponent(originalReturn);
+            } else {
+                window.location.href = url;
+            }
         }
     </script>
 </body>

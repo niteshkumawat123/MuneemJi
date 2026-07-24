@@ -1,0 +1,382 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Share Contacts - MuneemJi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; min-height: 100vh; }
+
+        .header {
+            background: #fff;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .header h3 { font-size: 18px; color: #222; font-weight: 600; }
+        .selected-count { font-size: 14px; color: #1a73e8; font-weight: 600; }
+
+        .info-bar {
+            background: #e8f0fe;
+            padding: 12px 20px;
+            font-size: 13px;
+            color: #555;
+            border-bottom: 1px solid #d0e0f0;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            padding: 12px 20px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+        .filter-chip {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            font-size: 13px;
+            color: #333;
+            cursor: pointer;
+            background: #fff;
+        }
+        .filter-chip.active { background: #e8f0fe; border-color: #1a73e8; color: #1a73e8; }
+        .filter-chip .check { color: #1a73e8; font-weight: bold; }
+
+        .contact-list { padding: 0; }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            background: #fff;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .contact-item:active { background: #f5f5f5; }
+        .contact-item.selected { background: #e8f0fe; }
+
+        .contact-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            margin-right: 14px;
+            flex-shrink: 0;
+        }
+        .contact-info { flex: 1; min-width: 0; }
+        .contact-name { font-size: 15px; font-weight: 600; color: #222; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .contact-phone { font-size: 13px; color: #888; margin-top: 2px; }
+        .contact-check {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+        }
+        .contact-item.selected .contact-check {
+            background: #1a73e8;
+            border-color: #1a73e8;
+            color: #fff;
+        }
+
+        .done-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            padding: 14px 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        .done-btn {
+            background: #1a73e8;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 10px 32px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .done-btn:disabled { background: #ccc; }
+        .select-all-btn {
+            background: none;
+            border: 1px solid #1a73e8;
+            color: #1a73e8;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .status-msg {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555;
+            font-size: 15px;
+        }
+        .status-msg.success { color: #4caf50; }
+        .status-msg.error { color: #e53935; }
+        .status-msg i { font-size: 48px; display: block; margin-bottom: 16px; }
+
+        .manual-entry {
+            padding: 20px;
+            background: #fff;
+        }
+        .manual-entry input {
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .manual-entry button {
+            background: #1a73e8;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 13px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+        .manual-rows { margin-bottom: 16px; }
+        .manual-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+        .manual-row .remove-btn {
+            background: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 14px;
+            cursor: pointer;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+
+<div id="mainContent">
+    <div class="header">
+        <h3>Share Contacts</h3>
+        <span class="selected-count" id="selectedCount">0 selected</span>
+    </div>
+
+    <div class="info-bar">
+        The contacts that you select will be shared with MuneemJi.
+    </div>
+
+    <!-- Contact Picker supported -->
+    <div id="pickerSection" style="display:none;">
+        <div style="text-align:center; padding:40px 20px;">
+            <div style="margin-bottom:16px;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="7" y="2" width="10" height="20" rx="2" stroke="#1a73e8" stroke-width="1.5" fill="#e8f0fe"/><line x1="10" y1="19" x2="14" y2="19" stroke="#1a73e8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            <h4 style="font-weight:600; margin-bottom:8px;">Select Contacts</h4>
+            <p style="color:#888; font-size:14px; margin-bottom:24px;">Tap the button below to open your phone contacts and select the ones you want to import.</p>
+            <button onclick="openContactPicker()" style="background:#1a73e8; color:#fff; border:none; border-radius:24px; padding:14px 36px; font-size:16px; font-weight:600; cursor:pointer;">
+                Open Contacts
+            </button>
+        </div>
+        <div id="pickedContactsList" class="contact-list"></div>
+    </div>
+
+    <!-- Manual fallback -->
+    <div id="manualSection" style="display:none;">
+        <div style="padding:16px 20px; background:#fff3e0; font-size:13px; color:#e65100;">
+            Your browser doesn't support automatic contact selection. Please add contacts manually below.
+        </div>
+        <div class="manual-entry">
+            <div class="manual-rows" id="manualRows"></div>
+            <input type="text" id="manualName" placeholder="Contact Name" />
+            <input type="text" id="manualPhone" placeholder="Phone Number" />
+            <button onclick="addManualContact()">Add Contact</button>
+        </div>
+    </div>
+
+    <div id="submitSection" style="display:none;">
+        <div class="done-bar">
+            <span id="bottomCount" style="font-size:14px; color:#555;">0 contacts ready</span>
+            <button class="done-btn" id="submitBtn" onclick="submitContacts()" disabled>Send Contacts</button>
+        </div>
+    </div>
+
+    <div id="resultSection" style="display:none;">
+        <div class="status-msg" id="resultMsg"></div>
+    </div>
+</div>
+
+<script>
+    var token = '@ViewBag.Token';
+    var selectedContacts = [];
+    var manualContacts = [];
+    var contactPickerSupported = ('contacts' in navigator && 'ContactsManager' in window);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (contactPickerSupported) {
+            document.getElementById('pickerSection').style.display = 'block';
+        } else {
+            document.getElementById('manualSection').style.display = 'block';
+        }
+        document.getElementById('submitSection').style.display = 'block';
+    });
+
+    async function openContactPicker() {
+        try {
+            var props = ['name', 'tel'];
+            var opts = { multiple: true };
+            var contacts = await navigator.contacts.select(props, opts);
+
+            selectedContacts = contacts.map(function(c) {
+                return {
+                    Name: (c.name && c.name[0]) || '',
+                    Phone: (c.tel && c.tel[0]) || ''
+                };
+            }).filter(function(c) { return c.Name || c.Phone; });
+
+            renderPickedContacts();
+            updateCounts();
+        } catch (ex) {
+            if (ex.name !== 'InvalidStateError') {
+                console.error('Contact picker error:', ex);
+            }
+        }
+    }
+
+    function renderPickedContacts() {
+        var html = '';
+        var colors = ['#ef5350','#42a5f5','#66bb6a','#ffa726','#ab47bc','#26c6da','#8d6e63','#78909c'];
+        selectedContacts.forEach(function(c, i) {
+            var initial = (c.Name || c.Phone || '?')[0].toUpperCase();
+            var color = colors[i % colors.length];
+            html += '<div class="contact-item selected">';
+            html += '<div class="contact-avatar" style="background:' + color + '">' + initial + '</div>';
+            html += '<div class="contact-info"><div class="contact-name">' + escHtml(c.Name || 'Unknown') + '</div>';
+            html += '<div class="contact-phone">' + escHtml(c.Phone || '') + '</div></div>';
+            html += '<div class="contact-check">?</div>';
+            html += '</div>';
+        });
+        document.getElementById('pickedContactsList').innerHTML = html;
+    }
+
+    function addManualContact() {
+        var name = document.getElementById('manualName').value.trim();
+        var phone = document.getElementById('manualPhone').value.trim();
+        if (!name && !phone) return;
+
+        manualContacts.push({ Name: name, Phone: phone });
+        document.getElementById('manualName').value = '';
+        document.getElementById('manualPhone').value = '';
+        renderManualContacts();
+        updateCounts();
+    }
+
+    function removeManualContact(idx) {
+        manualContacts.splice(idx, 1);
+        renderManualContacts();
+        updateCounts();
+    }
+
+    function renderManualContacts() {
+        var html = '';
+        manualContacts.forEach(function(c, i) {
+            html += '<div class="manual-row">';
+            html += '<span style="flex:1">' + escHtml(c.Name || 'Unknown') + '</span>';
+            html += '<span style="flex:1; color:#888">' + escHtml(c.Phone || '') + '</span>';
+            html += '<button class="remove-btn" onclick="removeManualContact(' + i + ')">&times;</button>';
+            html += '</div>';
+        });
+        document.getElementById('manualRows').innerHTML = html;
+    }
+
+    function updateCounts() {
+        var total = selectedContacts.length + manualContacts.length;
+        document.getElementById('selectedCount').textContent = total + ' selected';
+        document.getElementById('bottomCount').textContent = total + ' contacts ready';
+        document.getElementById('submitBtn').disabled = total === 0;
+    }
+
+    function submitContacts() {
+        var all = selectedContacts.concat(manualContacts);
+        if (all.length === 0) return;
+
+        document.getElementById('submitBtn').disabled = true;
+        document.getElementById('submitBtn').textContent = 'Sending...';
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '/Web/Party/SubmitPhoneContacts', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onload = function() {
+            var res;
+            try { res = JSON.parse(xhr.responseText); } catch(e) { res = { success: false, message: 'Invalid response' }; }
+
+            document.getElementById('pickerSection').style.display = 'none';
+            document.getElementById('manualSection').style.display = 'none';
+            document.getElementById('submitSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
+
+            if (res.success) {
+                var html = '<div class="status-msg success">';
+                html += '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#4caf50"/><path d="M7 12.5l3 3 7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+                html += '<h4 style="margin:16px 0 8px; font-weight:700;">Success!</h4>';
+                html += '<p>' + res.message + '</p>';
+                if (res.errors && res.errors.length > 0) {
+                    html += '<div style="text-align:left; margin-top:16px; font-size:12px; color:#e65100;">';
+                    html += '<strong>Warnings:</strong><ul style="padding-left:18px;">';
+                    res.errors.forEach(function(e) { html += '<li>' + escHtml(e) + '</li>'; });
+                    html += '</ul></div>';
+                }
+                html += '<p style="margin-top:20px; font-size:13px; color:#888;">You can close this page now.</p>';
+                html += '</div>';
+                document.getElementById('resultMsg').innerHTML = html;
+            } else {
+                document.getElementById('resultMsg').innerHTML =
+                    '<div class="status-msg error"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#e53935"/><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg><h4 style="margin:16px 0 8px;">Error</h4><p>' + escHtml(res.message) + '</p></div>';
+            }
+        };
+        xhr.onerror = function() {
+            document.getElementById('resultMsg').innerHTML =
+                '<div class="status-msg error"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="12" fill="#e53935"/><path d="M8 8l8 8M16 8l-8 8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg><h4>Network Error</h4><p>Please check your connection and try again.</p></div>';
+            document.getElementById('resultSection').style.display = 'block';
+        };
+        xhr.send(JSON.stringify({ Token: token, Contacts: all }));
+    }
+
+    function escHtml(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+</script>
+</body>
+</html>

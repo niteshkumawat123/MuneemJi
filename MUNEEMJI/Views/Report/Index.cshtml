@@ -66,10 +66,10 @@
             <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyReport", "Report")">
                 Party report
             </a>
-@* 
+
             <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyStatement", "Report")">
                 Party Statement
-            </a> *@
+            </a>
 
           @*   <a href="javascript:void(0);" class="menu-item" data-url="@Url.Action("PartyWiseProfitLoss", "Report")">
                 Party wise Profit & Loss
@@ -227,14 +227,14 @@
         display: flex;
         height: 100vh;
         overflow: hidden;
-        background-color: #f9fafb;
+        background-color: #ffffff;
     }
 
     /* Transaction Slider (Left Panel) */
     .transaction-slider {
         width: 280px;
         background-color: #ffffff;
-        border-right: 1px solid #e5e7eb;
+        border-right: 1px solid #d0dce7;
         height: 100vh;
         overflow-y: auto;
         flex-shrink: 0;
@@ -260,7 +260,7 @@
     /* Slider Header */
     .slider-header {
         padding: 15px;
-        border-bottom: 1px solid #e5e7eb;
+        border-bottom: 1px solid #d0dce7;
         position: sticky;
         top: 0;
         background-color: #ffffff;
@@ -337,7 +337,7 @@
     .content-area {
         flex: 1;
         overflow-y: auto;
-        background-color: #f9fafb;
+        background-color: #ffffff;
     }
 
         .content-area::-webkit-scrollbar {
@@ -471,6 +471,7 @@
 @section Scripts {
     <link rel="stylesheet" href="~/css/report-common.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/report-table-enhance.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script>
@@ -508,6 +509,8 @@
                         contentArea.html(result);
                         // Scroll to top of content area
                         contentArea.scrollTop(0);
+                        // Enhance report tables with column filters & resize
+                        if (window.enhanceReportTables) window.enhanceReportTables();
                     },
                     error: function (xhr, status, error) {
                         console.error('Error loading content:', error);
@@ -550,6 +553,17 @@
             // Optional: Load default report on page load (e.g., Sale)
             // Uncomment the line below to auto-load the first report
             // menuItems.first().trigger('click');
+
+            // Auto-load report if navigated from another page
+            var autoLoad = sessionStorage.getItem('autoLoadReport');
+            if (autoLoad) {
+                sessionStorage.removeItem('autoLoadReport');
+                var target = menuItems.filter(function() {
+                    var url = $(this).data('url') || '';
+                    return url.indexOf(autoLoad) > -1;
+                });
+                if (target.length) target.first().trigger('click');
+            }
         });
     </script>
 }

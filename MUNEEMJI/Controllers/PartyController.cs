@@ -8,7 +8,7 @@ using MUNEEMJI.Services;
 using Npgsql;
 using Npgsql.Replication.PgOutput.Messages;
 using NuGet.Protocol.Plugins;
-using SkiaSharp;
+using ClosedXML.Excel;
 using System.Drawing;
 using System.IO;
 using System.Reflection;
@@ -1113,6 +1113,347 @@ namespace MUNEEMJI.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult ImportParties()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult GeneratePhoneImportToken()
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var token = Guid.NewGuid().ToString("N");
+
+                using var conn = new NpgsqlConnection(_connectionString);
+                conn.Open();
+
+                // Clean up old sessions (older than 30 minutes)
+                using (var cleanCmd = new NpgsqlCommand("DELETE FROM phone_import_sessions WHERE created_at < @cutoff", conn))
+                {
+                    cleanCmd.Parameters.AddWithValue("cutoff", DateTime.UtcNow.AddMinutes(-30));
+                    cleanCmd.ExecuteNonQuery();
+                }
+
+                using var cmd = new NpgsqlCommand("INSERT INTO phone_import_sessions (token, companyid, status, created_at) VALUES (@token, @cid, 'pending', @now)", conn);
+                cmd.Parameters.AddWithValue("token", token);
+                cmd.Parameters.AddWithValue("cid", companyId);
+                cmd.Parameters.AddWithValue("now", DateTime.UtcNow);
+                cmd.ExecuteNonQuery();
+
+                var baseUrl = $"{Request.Scheme}://{Request.Host}";
+                var mobileUrl = $"{baseUrl}/Web/Party/PhoneContacts?token={token}";
+
+                return Json(new { success = true, token, mobileUrl });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult PhoneContacts(string token)
+        {
+            if (string.IsNullOrWhiteSpace(token))
+                return Content("Invalid link.");
+
+            using var conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
+            using var cmd = new NpgsqlCommand("SELECT status FROM phone_import_sessions WHERE token = @t AND created_at > @cutoff", conn);
+            cmd.Parameters.AddWithValue("t", token);
+            cmd.Parameters.AddWithValue("cutoff", DateTime.UtcNow.AddMinutes(-30));
+            var status = cmd.ExecuteScalar() as string;
+
+            if (status == null)
+                return Content("This link has expired. Please generate a new QR code.");
+
+            if (status != "pending")
+                return Content("Contacts have already been submitted.");
+
+            ViewBag.Token = token;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult SubmitPhoneContacts([FromBody] PhoneContactsSubmission model)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(model?.Token) || model.Contacts == null || model.Contacts.Count == 0)
+                    return Json(new { success = false, message = "No contacts provided." });
+
+                using var conn = new NpgsqlConnection(_connectionString);
+                conn.Open();
+
+                // Verify token
+                using var checkCmd = new NpgsqlCommand("SELECT companyid FROM phone_import_sessions WHERE token = @t AND status = 'pending' AND created_at > @cutoff", conn);
+                checkCmd.Parameters.AddWithValue("t", model.Token);
+                checkCmd.Parameters.AddWithValue("cutoff", DateTime.UtcNow.AddMinutes(-30));
+                var companyIdObj = checkCmd.ExecuteScalar();
+
+                if (companyIdObj == null)
+                    return Json(new { success = false, message = "Session expired or already used." });
+
+                var companyId = (int)companyIdObj;
+                var contactsJson = System.Text.Json.JsonSerializer.Serialize(model.Contacts);
+
+                // Save contacts and mark completed
+                using var updateCmd = new NpgsqlCommand("UPDATE phone_import_sessions SET contacts_json = @json, status = 'completed', completed_at = @now WHERE token = @t", conn);
+                updateCmd.Parameters.AddWithValue("json", contactsJson);
+                updateCmd.Parameters.AddWithValue("now", DateTime.UtcNow);
+                updateCmd.Parameters.AddWithValue("t", model.Token);
+                updateCmd.ExecuteNonQuery();
+
+                // Import contacts as parties
+                int imported = 0;
+                var errors = new List<string>();
+                foreach (var contact in model.Contacts)
+                {
+                    try
+                    {
+                        var name = contact.Name?.Trim();
+                        var phone = contact.Phone?.Trim();
+                        if (string.IsNullOrWhiteSpace(name) && string.IsNullOrWhiteSpace(phone)) continue;
+                        if (string.IsNullOrWhiteSpace(name)) name = phone;
+
+                        // Check duplicate name
+                        using (var dupCmd = new NpgsqlCommand("SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(party_name)) = LOWER(TRIM(@pn)) AND companyid = @cid", conn))
+                        {
+                            dupCmd.Parameters.AddWithValue("pn", name);
+                            dupCmd.Parameters.AddWithValue("cid", companyId);
+                            if ((long)(dupCmd.ExecuteScalar() ?? 0) > 0) { errors.Add($"'{name}' already exists."); continue; }
+                        }
+
+                        // Check duplicate phone
+                        if (!string.IsNullOrWhiteSpace(phone))
+                        {
+                            using var dupCmd = new NpgsqlCommand("SELECT COUNT(*) FROM parties WHERE TRIM(phone_number) = TRIM(@ph) AND companyid = @cid AND phone_number IS NOT NULL AND phone_number != ''", conn);
+                            dupCmd.Parameters.AddWithValue("ph", phone);
+                            dupCmd.Parameters.AddWithValue("cid", companyId);
+                            if ((long)(dupCmd.ExecuteScalar() ?? 0) > 0) { errors.Add($"Phone '{phone}' already exists."); continue; }
+                        }
+
+                        var insertSql = @"INSERT INTO parties (party_name, phone_number, email, gstin, billing_address, opening_balance, companyid,
+                            gst_type, state, shipping_address, is_shipping_disabled, has_custom_credit_limit,
+                            additional_field1_enabled, additional_field2_enabled, additional_field3_enabled, additional_field4_enabled,
+                            PartyGroupId, PartyGroup)
+                            VALUES (@pn, @ph, '', '', '', 0, @cid,
+                            '', '', '', false, false,
+                            false, false, false, false, 0, '')";
+                        using var insCmd = new NpgsqlCommand(insertSql, conn);
+                        insCmd.Parameters.AddWithValue("pn", name);
+                        insCmd.Parameters.AddWithValue("ph", phone ?? "");
+                        insCmd.Parameters.AddWithValue("cid", companyId);
+                        insCmd.ExecuteNonQuery();
+                        imported++;
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add($"'{contact.Name}': {ex.Message}");
+                    }
+                }
+
+                return Json(new { success = true, message = $"{imported} contact(s) imported as parties.", imported, errors });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        public IActionResult CheckPhoneImportStatus(string token)
+        {
+            try
+            {
+                using var conn = new NpgsqlConnection(_connectionString);
+                conn.Open();
+                using var cmd = new NpgsqlCommand("SELECT status, contacts_json FROM phone_import_sessions WHERE token = @t", conn);
+                cmd.Parameters.AddWithValue("t", token);
+                using var reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    var status = reader.GetString(0);
+                    var contactsJson = reader.IsDBNull(1) ? null : reader.GetString(1);
+                    int count = 0;
+                    if (!string.IsNullOrEmpty(contactsJson))
+                    {
+                        var contacts = System.Text.Json.JsonSerializer.Deserialize<List<PhoneContact>>(contactsJson);
+                        count = contacts?.Count ?? 0;
+                    }
+                    return Json(new { status, contactCount = count });
+                }
+                return Json(new { status = "expired" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = "error", message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        public IActionResult ImportPartiesFromExcel(IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length == 0)
+                    return Json(new { success = false, message = "No file uploaded." });
+
+                var ext = Path.GetExtension(file.FileName).ToLower();
+                if (ext != ".xls" && ext != ".xlsx")
+                    return Json(new { success = false, message = "Only .xls and .xlsx files are allowed." });
+
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var errors = new List<string>();
+                int importedCount = 0;
+
+                using (var stream = file.OpenReadStream())
+                using (var workbook = new XLWorkbook(stream))
+                {
+                    var worksheet = workbook.Worksheets.First();
+                    var lastRow = worksheet.LastRowUsed()?.RowNumber() ?? 0;
+
+                    if (lastRow < 2)
+                        return Json(new { success = false, message = "The Excel file is empty or has no data rows." });
+
+                    using var conn = new NpgsqlConnection(_connectionString);
+                    conn.Open();
+
+                    for (int row = 2; row <= lastRow; row++)
+                    {
+                        try
+                        {
+                            var partyName = worksheet.Cell(row, 1).GetString()?.Trim();
+                            if (string.IsNullOrWhiteSpace(partyName))
+                            {
+                                errors.Add($"Row {row}: Party Name is required. Skipped.");
+                                continue;
+                            }
+
+                            var phoneNumber = worksheet.Cell(row, 2).GetString()?.Trim();
+                            var email = worksheet.Cell(row, 3).GetString()?.Trim();
+                            var gstin = worksheet.Cell(row, 4).GetString()?.Trim();
+                            var billingAddress = worksheet.Cell(row, 5).GetString()?.Trim();
+                            var openingBalanceStr = worksheet.Cell(row, 6).GetString()?.Trim();
+                            decimal openingBalance = 0;
+                            if (!string.IsNullOrWhiteSpace(openingBalanceStr))
+                                decimal.TryParse(openingBalanceStr, out openingBalance);
+
+                            // Validate email format
+                            if (!string.IsNullOrWhiteSpace(email))
+                            {
+                                try { var addr = new System.Net.Mail.MailAddress(email); }
+                                catch
+                                {
+                                    errors.Add($"Row {row}: Invalid email '{email}'. Skipped.");
+                                    continue;
+                                }
+                            }
+
+                            // Validate phone number (digits only, 10-15 chars)
+                            if (!string.IsNullOrWhiteSpace(phoneNumber))
+                            {
+                                var digitsOnly = new string(phoneNumber.Where(char.IsDigit).ToArray());
+                                if (digitsOnly.Length < 10 || digitsOnly.Length > 15)
+                                {
+                                    errors.Add($"Row {row}: Invalid phone number '{phoneNumber}'. Must be 10-15 digits. Skipped.");
+                                    continue;
+                                }
+                            }
+
+                            // Check duplicate party name
+                            using (var checkCmd = new NpgsqlCommand("SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(party_name)) = LOWER(TRIM(@pn)) AND companyid = @cid", conn))
+                            {
+                                checkCmd.Parameters.AddWithValue("pn", partyName);
+                                checkCmd.Parameters.AddWithValue("cid", companyId);
+                                if ((long)(checkCmd.ExecuteScalar() ?? 0) > 0)
+                                {
+                                    errors.Add($"Row {row}: Party '{partyName}' already exists. Skipped.");
+                                    continue;
+                                }
+                            }
+
+                            // Check duplicate phone
+                            if (!string.IsNullOrWhiteSpace(phoneNumber))
+                            {
+                                using var checkCmd = new NpgsqlCommand("SELECT COUNT(*) FROM parties WHERE TRIM(phone_number) = TRIM(@ph) AND companyid = @cid AND phone_number IS NOT NULL AND phone_number != ''", conn);
+                                checkCmd.Parameters.AddWithValue("ph", phoneNumber);
+                                checkCmd.Parameters.AddWithValue("cid", companyId);
+                                if ((long)(checkCmd.ExecuteScalar() ?? 0) > 0)
+                                {
+                                    errors.Add($"Row {row}: Phone '{phoneNumber}' already exists. Skipped.");
+                                    continue;
+                                }
+                            }
+
+                            // Check duplicate email
+                            if (!string.IsNullOrWhiteSpace(email))
+                            {
+                                using var checkCmd = new NpgsqlCommand("SELECT COUNT(*) FROM parties WHERE LOWER(TRIM(email)) = LOWER(TRIM(@em)) AND companyid = @cid AND email IS NOT NULL AND email != ''", conn);
+                                checkCmd.Parameters.AddWithValue("em", email);
+                                checkCmd.Parameters.AddWithValue("cid", companyId);
+                                if ((long)(checkCmd.ExecuteScalar() ?? 0) > 0)
+                                {
+                                    errors.Add($"Row {row}: Email '{email}' already exists. Skipped.");
+                                    continue;
+                                }
+                            }
+
+                            // Insert party
+                            var insertQuery = @"INSERT INTO parties (party_name, phone_number, email, gstin, billing_address, opening_balance, companyid, 
+                                gst_type, state, shipping_address, is_shipping_disabled, has_custom_credit_limit,
+                                additional_field1_enabled, additional_field2_enabled, additional_field3_enabled, additional_field4_enabled,
+                                PartyGroupId, PartyGroup)
+                                VALUES (@pn, @ph, @em, @gs, @ba, @ob, @cid,
+                                '', '', '', false, false,
+                                false, false, false, false,
+                                0, '')";
+                            using var cmd = new NpgsqlCommand(insertQuery, conn);
+                            cmd.Parameters.AddWithValue("pn", partyName);
+                            cmd.Parameters.AddWithValue("ph", phoneNumber ?? "");
+                            cmd.Parameters.AddWithValue("em", email ?? "");
+                            cmd.Parameters.AddWithValue("gs", gstin ?? "");
+                            cmd.Parameters.AddWithValue("ba", billingAddress ?? "");
+                            cmd.Parameters.AddWithValue("ob", openingBalance);
+                            cmd.Parameters.AddWithValue("cid", companyId);
+                            cmd.ExecuteNonQuery();
+                            importedCount++;
+                        }
+                        catch (Exception ex)
+                        {
+                            errors.Add($"Row {row}: {ex.Message}");
+                        }
+                    }
+                }
+
+                if (importedCount > 0)
+                    return Json(new { success = true, message = $"{importedCount} party(ies) imported successfully.", errors });
+                else
+                    return Json(new { success = false, message = "No parties were imported.", errors });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Import failed: {ex.Message}" });
+            }
+        }
+
+    }
+
+    public class PhoneContact
+    {
+        public string Name { get; set; }
+        public string Phone { get; set; }
+    }
+
+    public class PhoneContactsSubmission
+    {
+        public string Token { get; set; }
+        public List<PhoneContact> Contacts { get; set; }
     }
 
 }

@@ -1624,6 +1624,92 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
+        public IActionResult BulkUpdateItems()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetBulkUpdateItemsData()
+        {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            var items = GetItemsAsync(companyId);
+            var result = items.Select(i => new
+            {
+                i.Id,
+                i.ItemName,
+                i.Category,
+                i.ItemHsn,
+                i.ItemCode,
+                PurchasePrice = i.PurchasePrice ?? 0,
+                PurchasePriceTaxType = i.PurchasePriceTaxType ?? "Excluded",
+                SalePrice = i.SalePrice ?? 0,
+                SalePriceTaxType = i.SalePriceTaxType ?? "Excluded",
+                DiscountOnSalePrice = i.DiscountOnSalePrice ?? 0,
+                i.DiscountType,
+                i.TaxRate,
+                i.OpeningQuantity,
+                AtPrice = i.AtPrice ?? 0,
+                i.AsOfDate,
+                i.MinStockToMaintain,
+                i.Location,
+                i.Description
+            });
+            return Json(result);
+        }
+
+        [HttpPost]
+        public IActionResult BulkUpdateItemsSave([FromBody] List<BulkUpdateItemRequest> items)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                using var conn = new NpgsqlConnection(_connectionString);
+                conn.Open();
+                int updated = 0;
+                foreach (var item in items)
+                {
+                    var sql = @"UPDATE billitem SET 
+                        item_name = @p_name, category = @p_category, item_hsn = @p_hsn, item_code = @p_code,
+                        purchase_price = @p_pp, purchase_price_tax_type = @p_pptt,
+                        sale_price = @p_sp, sale_price_tax_type = @p_sptt,
+                        discount_on_sale_price = @p_disc, discount_type = @p_dt, tax_rate = @p_tr,
+                        opening_quantity = @p_oq, at_price = @p_ap, as_of_date = @p_aod,
+                        min_stock_to_maintain = @p_ms, location = @p_loc, description = @p_desc,
+                        updated_at = @p_ua
+                        WHERE id = @p_id AND companyid = @p_cid";
+                    using var cmd = new NpgsqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("p_id", item.Id);
+                    cmd.Parameters.AddWithValue("p_cid", companyId);
+                    cmd.Parameters.AddWithValue("p_name", item.ItemName ?? "");
+                    cmd.Parameters.AddWithValue("p_category", (object)item.Category ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_hsn", (object)item.ItemHsn ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_code", (object)item.ItemCode ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_pp", item.PurchasePrice);
+                    cmd.Parameters.AddWithValue("p_pptt", item.PurchasePriceTaxType ?? "Excluded");
+                    cmd.Parameters.AddWithValue("p_sp", item.SalePrice);
+                    cmd.Parameters.AddWithValue("p_sptt", item.SalePriceTaxType ?? "Excluded");
+                    cmd.Parameters.AddWithValue("p_disc", item.DiscountOnSalePrice);
+                    cmd.Parameters.AddWithValue("p_dt", item.DiscountType ?? "Percentage");
+                    cmd.Parameters.AddWithValue("p_tr", item.TaxRate ?? "None");
+                    cmd.Parameters.AddWithValue("p_oq", item.OpeningQuantity);
+                    cmd.Parameters.AddWithValue("p_ap", item.AtPrice);
+                    cmd.Parameters.AddWithValue("p_aod", item.AsOfDate.HasValue ? (object)item.AsOfDate.Value : DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_ms", item.MinStockToMaintain);
+                    cmd.Parameters.AddWithValue("p_loc", (object)item.Location ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_desc", (object)item.Description ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_ua", DateTime.UtcNow);
+                    updated += cmd.ExecuteNonQuery();
+                }
+                return Json(new { success = true, message = $"{updated} item(s) updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet]
         public IActionResult ImportItems()
         {
             return View();
@@ -1776,6 +1862,28 @@ namespace MUNEEMJI.Controllers
         public decimal AtPrice { get; set; }
         public string AdjustmentDate { get; set; }
         public string Details { get; set; }
+    }
+
+    public class BulkUpdateItemRequest
+    {
+        public int Id { get; set; }
+        public string ItemName { get; set; }
+        public string Category { get; set; }
+        public string ItemHsn { get; set; }
+        public string ItemCode { get; set; }
+        public decimal PurchasePrice { get; set; }
+        public string PurchasePriceTaxType { get; set; }
+        public decimal SalePrice { get; set; }
+        public string SalePriceTaxType { get; set; }
+        public decimal DiscountOnSalePrice { get; set; }
+        public string DiscountType { get; set; }
+        public string TaxRate { get; set; }
+        public int OpeningQuantity { get; set; }
+        public decimal AtPrice { get; set; }
+        public DateTime? AsOfDate { get; set; }
+        public int MinStockToMaintain { get; set; }
+        public string Location { get; set; }
+        public string Description { get; set; }
     }
 }
 

@@ -35,6 +35,10 @@
                     <li><a class="dropdown-item" href="/Web/Party/ImportParties"><i class="bi bi-file-earmark-arrow-down me-2"></i>Import from Excel</a></li>
                     <li><a class="dropdown-item" href="#" onclick="openPhoneImportModal(); return false;"><i class="bi bi-phone me-2"></i>Import from Phone</a></li>
                     <li><a class="dropdown-item" href="#"><i class="bi bi-google me-2"></i>Import Via Google Contacts</a></li>
+                    @if (Model.ManagePartyStatus)
+                    {
+                        <li><a class="dropdown-item" href="#" onclick="openManagePartyStatus(); return false;"><i class="bi bi-toggle2-on me-2"></i>Manage Party Status</a></li>
+                    }
                     <li><a class="dropdown-item" href="/Web/Report/Index" onclick="sessionStorage.setItem('autoLoadReport','PartyStatement')"><i class="bi bi-file-earmark-text me-2"></i>Party Statement (Report)</a></li>
                     <li><a class="dropdown-item" href="/Web/Report/Index" onclick="sessionStorage.setItem('autoLoadReport','AllParties')"><i class="bi bi-people me-2"></i>All Parties (Report)</a></li>
                 </ul>
@@ -45,55 +49,71 @@
     <div class="row g-0">
         <!-- Left Sidebar: Party Search and List -->
         <div class="col-md-3 border-end" style="height: calc(100vh - 100px); display: flex; flex-direction: column;">
-            <!-- Search Box with Dropdown -->
+            <!-- Search Box -->
             <div class="p-2 border-bottom">
                 <div class="position-relative">
                     <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted" style="font-size: 12px;"></i>
-                    <input type="text" id="searchInput" class="form-control form-control-sm ps-4" placeholder="Search Party Name" autocomplete="off" style="font-size: 12px;" />
-                    <div id="searchDropdown" class="position-absolute w-100 bg-white border rounded mt-1" style="display: none; max-height: 300px; overflow-y: auto; z-index: 1000; left: 0; top: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    </div>
+                    <input type="text" id="searchInput" class="form-control form-control-sm ps-4" placeholder="Search Party Name" autocomplete="off" style="font-size: 12px;" value="@ViewBag.CurrentSearch" oninput="debounceSearch()" />
                 </div>
             </div>
 
-            <!-- Party List Header -->
-            <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-light small text-muted border-bottom" style="font-size: 11px;">
-                <div class="d-flex align-items-center">
-                    <span>Party Name</span>
-                    <i class="bi bi-funnel ms-1"></i>
+            <!-- Party List Header with Sort & Filter -->
+            <div class="d-flex align-items-center px-3 py-2 bg-light border-bottom" style="font-size: 11px;">
+                <div class="d-flex align-items-center" style="cursor:pointer; flex:1;" onclick="togglePartySort()">
+                    <span style="font-weight:600; color:#333;">Party Name</span>
+                    <i class="bi bi-arrow-down-up ms-1" id="partySortIcon" style="font-size:10px; color:#333;"></i>
+                </div>
+                <div class="position-relative d-inline-block" style="margin:0 8px;">
+                    <i class="bi bi-funnel" style="font-size:11px; cursor:pointer; color:#e53e3e;" onclick="toggleFilterDropdown()"></i>
+                    <div id="partyFilterDropdown" style="display:none; position:absolute; top:calc(100% + 6px); right:-40px; background:#fff; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.15); z-index:1000; padding:12px 16px; min-width:160px;">
+                        <label style="display:flex; align-items:center; gap:6px; margin-bottom:8px; font-size:12px; color:#333; cursor:pointer;">
+                            <input type="checkbox" value="All" onchange="handleFilterCheck(this)" style="accent-color:#e53e3e;"> All
+                        </label>
+                        <label style="display:flex; align-items:center; gap:6px; margin-bottom:8px; font-size:12px; color:#333; cursor:pointer;">
+                            <input type="checkbox" value="Active" onchange="handleFilterCheck(this)" style="accent-color:#e53e3e;"> Active
+                        </label>
+                        <label style="display:flex; align-items:center; gap:6px; margin-bottom:8px; font-size:12px; color:#333; cursor:pointer;">
+                            <input type="checkbox" value="Inactive" onchange="handleFilterCheck(this)" style="accent-color:#e53e3e;"> Inactive
+                        </label>
+                        <label style="display:flex; align-items:center; gap:6px; margin-bottom:8px; font-size:12px; color:#333; cursor:pointer;">
+                            <input type="checkbox" value="ToReceive" onchange="handleFilterCheck(this)" style="accent-color:#e53e3e;"> To Receive
+                        </label>
+                        <label style="display:flex; align-items:center; gap:6px; margin-bottom:12px; font-size:12px; color:#333; cursor:pointer;">
+                            <input type="checkbox" value="ToPay" onchange="handleFilterCheck(this)" style="accent-color:#e53e3e;"> To Pay
+                        </label>
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <button onclick="clearPartyFilter()" style="padding:4px 14px; border:1px solid #ddd; border-radius:4px; background:#fff; font-size:11px; cursor:pointer;">Clear</button>
+                            <button onclick="applyPartyFilter()" style="padding:4px 14px; border:none; border-radius:4px; background:#e53e3e; color:#fff; font-size:11px; font-weight:600; cursor:pointer;">Apply</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <span>Amount</span>
-                    <i class="bi bi-funnel ms-1"></i>
+                    <span style="font-weight:600; color:#333;">Amount</span>
                 </div>
             </div>
 
             <!-- Party List with scrollbar -->
-            <div class="list-group list-group-flush" id="partyList" style="flex: 1; overflow-y: scroll; overflow-x: hidden;">
+            <div class="list-group list-group-flush" id="partyList" style="flex: 1; overflow-y: auto; overflow-x: hidden;">
                 @foreach (var party in Model.Parties)
-                    {
-                        var amtDisplay = (party?.OpeningBalance ?? 0) > 0
-                            ? party?.OpeningBalance?.ToString("N2") ?? "0.00"
-                            : "0.00";
-                        <a class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center py-2 px-2 party-item @(party.Id == Model.SelectedParty?.Id ? "party-selected" : "")"
-                           href="#" data-party-id="@party.Id" data-party-name="@party.PartyName" onclick="selectParty('@party.Id'); return false;" style="font-size: 12px;">
-                            <span class="party-name text-truncate-party" title="@party.PartyName">@party.PartyName</span>
-                            <span class="fw-bold text-truncate-amount" title="₹ @amtDisplay" style="font-size: 11px;">
-                                @amtDisplay
-                            </span>
-                        </a>
-                    }
+                {
+                    var amtDisplay = (party?.OpeningBalance ?? 0) > 0
+                        ? party?.OpeningBalance?.ToString("N2") ?? "0.00"
+                        : "0.00";
+                    var isToPay = party?.BalanceDirection == "ToPay";
+                    var amtColor = (party?.OpeningBalance ?? 0) > 0 ? (isToPay ? "color:#e53e3e;" : "color:#2e7d32;") : "color:#666;";
+                    <a class="list-group-item list-group-item-action border-0 d-flex justify-content-between align-items-center py-2 px-2 party-item @(party.Id == Model.SelectedParty?.Id ? "party-selected" : "")"
+                       href="#" data-party-id="@party.Id" data-party-name="@party.PartyName"
+                       data-balance-direction="@party.BalanceDirection" data-is-active="@party.IsActive.ToString().ToLower()"
+                       onclick="selectParty('@party.Id'); return false;" style="font-size: 12px;">
+                        <span class="party-name text-truncate-party" title="@party.PartyName">@party.PartyName</span>
+                        <span class="fw-bold text-truncate-amount" title="₹ @amtDisplay" style="font-size: 11px; @amtColor">
+                            @amtDisplay
+                        </span>
+                    </a>
+                }
             </div>
 
-            <!-- Slider Control -->
-            <div class="p-2 border-top bg-light d-flex align-items-center justify-content-between">
-                <button class="btn btn-sm btn-outline-secondary" onclick="scrollUp()" title="Scroll Up">
-                    <i class="bi bi-chevron-up"></i>
-                </button>
-                <span id="scrollIndicator" class="small text-muted">1/10</span>
-                <button class="btn btn-sm btn-outline-secondary" onclick="scrollDown()" title="Scroll Down">
-                    <i class="bi bi-chevron-down"></i>
-                </button>
-            </div>
+
         </div>
 
         <!-- Right Panel: Party Details and Transactions -->
@@ -313,6 +333,14 @@
             background-color: #f0f0f0;
         }
 
+        .party-item:not(.party-selected):nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .party-item:not(.party-selected):nth-child(odd) {
+            background-color: #ffffff;
+        }
+
     /* Truncate long party names */
     .text-truncate-party {
         display: inline-block;
@@ -427,42 +455,15 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('searchInput');
-        const searchDropdown = document.getElementById('searchDropdown');
         const partyList = document.getElementById('partyList');
         const transactionSearchInput = document.getElementById('transactionSearchInput');
 
-        
+
         allParties = Array.from(document.querySelectorAll('.party-item')).map(item => ({
             id: item.getAttribute('data-party-id'),
             name: item.getAttribute('data-party-name'),
             element: item
         }));
-
-       
-        searchInput.addEventListener('input', function() {
-            const searchValue = this.value.toLowerCase().trim();
-
-            if (searchValue === '') {
-                searchDropdown.style.display = 'none';
-                return;
-            }
-
-            const filtered = allParties.filter(party =>
-                party.name.toLowerCase().includes(searchValue)
-            );
-
-            if (filtered.length > 0) {
-                searchDropdown.innerHTML = filtered.map(party =>
-                    `<div class="p-2 border-bottom" style="cursor: pointer;" onclick="selectPartyFromSearch('${party.id}')">
-                        <small>${party.name}</small>
-                    </div>`
-                ).join('');
-                searchDropdown.style.display = 'block';
-            } else {
-                searchDropdown.innerHTML = '<div class="p-2 text-muted"><small>No parties found</small></div>';
-                searchDropdown.style.display = 'block';
-            }
-        });
 
         if (transactionSearchInput) {
             transactionSearchInput.addEventListener('input', function() {
@@ -508,15 +509,8 @@
             });
         }
 
-       
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.position-relative')) {
-                searchDropdown.style.display = 'none';
-            }
-        });
 
-        updateScrollIndicator();
-    });
+        });
 
     function selectPartyFromSearch(partyId) {
         selectParty(partyId);
@@ -537,38 +531,163 @@
                 }
             });
         });
+        // Close filter dropdown on outside click
+        document.addEventListener('click', function(e) {
+            var dd = document.getElementById('partyFilterDropdown');
+            if (dd && dd.style.display !== 'none' && !dd.contains(e.target) && !e.target.classList.contains('bi-funnel')) {
+                dd.style.display = 'none';
+            }
+        });
     });
 
-    function scrollUp() {
-        const partyList = document.getElementById('partyList');
-        partyList.scrollBy({
-            top: -150,
-            behavior: 'smooth'
+    // Debounced backend search
+    var _searchTimer = null;
+    function debounceSearch() {
+        clearTimeout(_searchTimer);
+        _searchTimer = setTimeout(function() {
+            navigateWithParams();
+        }, 400);
+    }
+
+    function navigateWithParams(filterVal) {
+        var search = document.getElementById('searchInput').value.trim();
+        var filter = filterVal !== undefined ? filterVal : '@ViewBag.CurrentFilter';
+        var url = '/Web/Party/Index?';
+        var params = [];
+        if (search) params.push('search=' + encodeURIComponent(search));
+        if (filter && filter !== 'All') params.push('filter=' + encodeURIComponent(filter));
+        window.location.href = url + params.join('&');
+    }
+
+    // Sort toggle (client-side, no reload needed)
+    var partySortAsc = true;
+    function togglePartySort() {
+        partySortAsc = !partySortAsc;
+        var list = document.getElementById('partyList');
+        var items = Array.from(list.querySelectorAll('.party-item'));
+        items.sort(function(a, b) {
+            var na = (a.getAttribute('data-party-name') || '').toLowerCase();
+            var nb = (b.getAttribute('data-party-name') || '').toLowerCase();
+            return partySortAsc ? na.localeCompare(nb) : nb.localeCompare(na);
         });
-        setTimeout(updateScrollIndicator, 300);
+        items.forEach(function(item) { list.appendChild(item); });
+        document.getElementById('partySortIcon').className = partySortAsc ? 'bi bi-arrow-down-up ms-1' : 'bi bi-arrow-up-down ms-1';
     }
 
-    function scrollDown() {
-        const partyList = document.getElementById('partyList');
-        partyList.scrollBy({
-            top: 150,
-            behavior: 'smooth'
+    // Filter dropdown
+    function toggleFilterDropdown() {
+        var dd = document.getElementById('partyFilterDropdown');
+        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function handleFilterCheck(el) {
+        // Radio-style: only one filter at a time
+        var checks = el.closest('#partyFilterDropdown').querySelectorAll('input[type=checkbox]');
+        checks.forEach(function(c) { if (c !== el) c.checked = false; });
+    }
+
+    function clearPartyFilter() {
+        document.querySelectorAll('#partyFilterDropdown input[type=checkbox]').forEach(function(c) { c.checked = false; });
+        document.getElementById('partyFilterDropdown').style.display = 'none';
+        navigateWithParams('');
+    }
+
+    function applyPartyFilter() {
+        var selected = '';
+        document.querySelectorAll('#partyFilterDropdown input[type=checkbox]:checked').forEach(function(c) { selected = c.value; });
+        document.getElementById('partyFilterDropdown').style.display = 'none';
+        navigateWithParams(selected || '');
+    }
+
+    // Pre-select current filter checkbox on load
+    document.addEventListener('DOMContentLoaded', function() {
+        var currentFilter = '@ViewBag.CurrentFilter';
+        if (currentFilter) {
+            var cb = document.querySelector('#partyFilterDropdown input[value="' + currentFilter + '"]');
+            if (cb) cb.checked = true;
+        }
+    });
+
+        // ---- Phone Import ----
+        var phoneImportPollTimer = null;
+
+    function openManagePartyStatus() {
+        document.getElementById('partyStatusModal').style.display = 'flex';
+        loadPartyStatuses();
+    }
+
+    function closePartyStatusModal() {
+        document.getElementById('partyStatusModal').style.display = 'none';
+    }
+
+    function loadPartyStatuses() {
+        fetch('/Web/Party/GetPartiesWithStatus')
+            .then(r => r.json())
+            .then(data => {
+                window._partyStatuses = data;
+                window._partyStatusesOriginal = data.map(p => ({ id: p.id, isActive: p.isActive }));
+                renderPartyStatusList(data);
+            });
+    }
+
+    function renderPartyStatusList(parties) {
+        const search = document.getElementById('partyStatusSearch').value.toLowerCase();
+        const filtered = parties.filter(p => p.partyName.toLowerCase().includes(search));
+        const tbody = document.getElementById('partyStatusBody');
+        tbody.innerHTML = filtered.map(p => `
+            <tr style="border-bottom:1px solid #f0f0f0;">
+                <td style="padding:12px 16px; font-size:13px; font-weight:500; color:#333;">${p.partyName}</td>
+                <td style="padding:12px 16px; font-size:13px; color:#666;">${p.phoneNumber}</td>
+                <td style="padding:12px 16px; text-align:center;">
+                    <label class="party-status-toggle">
+                        <input type="checkbox" ${p.isActive ? 'checked' : ''} data-party-id="${p.id}" onchange="togglePartyActive(this)">
+                        <span class="party-status-slider"></span>
+                    </label>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function togglePartyActive(el) {
+        const id = parseInt(el.dataset.partyId);
+        const party = window._partyStatuses.find(p => p.id === id);
+        if (party) party.isActive = el.checked;
+    }
+
+    function savePartyStatuses() {
+        // Only send changed statuses
+        const updates = window._partyStatuses
+            .filter(p => {
+                const orig = window._partyStatusesOriginal.find(o => o.id === p.id);
+                return orig && orig.isActive !== p.isActive;
+            })
+            .map(p => ({ partyId: p.id, isActive: p.isActive }));
+
+        if (updates.length === 0) {
+            closePartyStatusModal();
+            toastr.info('No changes to save.');
+            return;
+        }
+
+        // Show loader
+        document.getElementById('partyStatusLoader').style.display = 'flex';
+        document.getElementById('partyStatusSaveBtn').disabled = true;
+
+        fetch('/Web/Party/SavePartyStatuses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updates)
+        }).then(r => r.json()).then(res => {
+            document.getElementById('partyStatusLoader').style.display = 'none';
+            document.getElementById('partyStatusSaveBtn').disabled = false;
+            if (res.success) {
+                closePartyStatusModal();
+                toastr.success(res.message);
+            } else {
+                toastr.error(res.message);
+            }
         });
-        setTimeout(updateScrollIndicator, 300);
     }
-
-    function updateScrollIndicator() {
-        const partyList = document.getElementById('partyList');
-        const items = partyList.querySelectorAll('.party-item');
-        const itemHeight = 48;
-        const scrollTop = partyList.scrollTop;
-        const visibleIndex = Math.floor(scrollTop / itemHeight) + 1;
-
-        document.getElementById('scrollIndicator').textContent = visibleIndex + '/' + items.length;
-    }
-
-    // ---- Phone Import ----
-    var phoneImportPollTimer = null;
 
     function openPhoneImportModal() {
         document.getElementById('phoneImportStep1').style.display = 'flex';
@@ -669,5 +788,77 @@
             <p id="phoneImportResultText" style="color:#555; font-size:14px; text-align:center;"></p>
             <button onclick="closePhoneImportModal(); window.location.reload();" style="background:#4caf50; color:#fff; border:none; border-radius:20px; padding:10px 32px; font-size:14px; font-weight:600; cursor:pointer; margin-top:16px;">Done</button>
         </div>
+    </div>
+</div>
+
+<!-- Manage Party Status Modal -->
+<style>
+    .party-status-toggle { position:relative; display:inline-block; width:40px; height:22px; }
+    .party-status-toggle input { opacity:0; width:0; height:0; }
+    .party-status-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#ccc; border-radius:22px; transition:.3s; }
+    .party-status-slider:before { content:""; position:absolute; height:16px; width:16px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
+    .party-status-toggle input:checked + .party-status-slider { background:#2196F3; }
+    .party-status-toggle input:checked + .party-status-slider:before { transform:translateX(18px); }
+    .ps-tooltip-wrap { position:relative; display:inline-flex; }
+    .ps-tooltip-icon { color:#999; font-size:16px; cursor:pointer; }
+    .ps-tooltip-box { display:none; position:absolute; top:calc(100% + 10px); left:50%; transform:translateX(-50%); width:300px; background:#2d3748; color:#fff; border-radius:8px; padding:16px; z-index:10001; box-shadow:0 8px 24px rgba(0,0,0,0.3); font-size:12px; line-height:1.5; }
+    .ps-tooltip-box::before { content:''; position:absolute; top:-6px; left:50%; transform:translateX(-50%); width:12px; height:12px; background:#2d3748; rotate:45deg; }
+    .ps-tooltip-box h6 { font-size:13px; font-weight:700; margin:0 0 10px; color:#fff; background:#2d3748; padding:0; }
+    .ps-tooltip-box .tt-section { margin-bottom:10px; }
+    .ps-tooltip-box .tt-section:last-child { margin-bottom:0; }
+    .ps-tooltip-box .tt-label { font-weight:600; margin-bottom:4px; }
+    .ps-tooltip-wrap:hover .ps-tooltip-box { display:block; }
+</style>
+<div id="partyStatusModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:8px; width:700px; max-width:90vw; max-height:85vh; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
+        <!-- Header -->
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:18px 24px; border-bottom:1px solid #e0e0e0;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <h5 style="margin:0; font-size:16px; font-weight:700; color:#222;">Manage Party Status</h5>
+                <div class="ps-tooltip-wrap">
+                    <span class="ps-tooltip-icon">&#9432;</span>
+                    <div class="ps-tooltip-box">
+                        <h6>Manage Party Status</h6>
+                        <div class="tt-section">
+                            <div class="tt-label">What is this?</div>
+                            <div>Manage the active status of a party without deleting their transactions.</div>
+                        </div>
+                        <div class="tt-section">
+                            <div class="tt-label">How is it used?</div>
+                            <div>If you deactivate a party, they will move to the bottom of your list. All transactions will be retained with no changes to your reports, and the party will be removed from the billing list dropdown. However, you can still create bills for them if needed.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <span onclick="closePartyStatusModal()" style="font-size:22px; cursor:pointer; color:#666; line-height:1;">&times;</span>
+        </div>
+        <!-- Search -->
+        <div style="padding:12px 24px; border-bottom:1px solid #e0e0e0;">
+            <div style="position:relative;">
+                <i class="bi bi-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#999; font-size:13px;"></i>
+                <input type="text" id="partyStatusSearch" placeholder="Search Parties" oninput="renderPartyStatusList(window._partyStatuses)" style="width:100%; padding:8px 12px 8px 34px; border:1px solid #e0e0e0; border-radius:6px; font-size:13px; outline:none;">
+            </div>
+        </div>
+        <!-- Table Header -->
+        <div style="display:flex; padding:10px 24px; background:#fafafa; border-bottom:1px solid #e0e0e0; font-size:11px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:0.5px;">
+            <div style="flex:2;">Parties</div>
+            <div style="flex:1.5;">Phone No</div>
+            <div style="flex:1; text-align:center;">Party Active Status</div>
+        </div>
+        <!-- Table Body -->
+        <div style="flex:1; overflow-y:auto;">
+            <table style="width:100%; border-collapse:collapse;">
+                <tbody id="partyStatusBody"></tbody>
+            </table>
+        </div>
+        <!-- Footer -->
+        <div style="padding:14px 24px; border-top:1px solid #e0e0e0; display:flex; justify-content:flex-end; align-items:center; gap:12px;">
+            <div id="partyStatusLoader" style="display:none; align-items:center; gap:8px;">
+                <div style="width:18px; height:18px; border:3px solid #e0e0e0; border-top:3px solid #e53e3e; border-radius:50%; animation:psSpin .6s linear infinite;"></div>
+                <span style="font-size:12px; color:#666;">Saving...</span>
+            </div>
+            <button id="partyStatusSaveBtn" onclick="savePartyStatuses()" style="background:#e53e3e; color:#fff; border:none; border-radius:6px; padding:9px 24px; font-size:13px; font-weight:600; cursor:pointer;">Save Changes</button>
+        </div>
+        <style>@@keyframes psSpin { to { transform:rotate(360deg); } }</style>
     </div>
 </div>

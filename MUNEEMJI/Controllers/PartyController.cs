@@ -173,7 +173,8 @@ namespace MUNEEMJI.Controllers
                                     additional_field4_enabled = @additional_field4_enabled,
                                     additional_field4_value = @additional_field4_value,
                                     PartyGroupId            = @p_PartyGroupId,
-                                    PartyGroup              = @p_PartyGroup
+                                    PartyGroup              = @p_PartyGroup,
+                                    balance_direction        = @balance_direction
                                   WHERE id = @id;";
                     }
                     else
@@ -189,7 +190,8 @@ namespace MUNEEMJI.Controllers
                                     additional_field4_enabled, additional_field4_value,
                                     companyid,
                                     PartyGroupId,
-                                    PartyGroup
+                                    PartyGroup,
+                                    balance_direction
                                      ) VALUES (
                                     @party_name, @gstin, @phone_number, @gst_type, @state, @email, @billing_address, @shipping_address, @is_shipping_disabled,
                                     @opening_balance, @as_of_date, @has_custom_credit_limit, @credit_limit,
@@ -199,7 +201,8 @@ namespace MUNEEMJI.Controllers
                                     @additional_field4_enabled, @additional_field4_value,
                                     @p_companyid,
                                     @p_PartyGroupId,
-                                    @p_PartyGroup
+                                    @p_PartyGroup,
+                                    @balance_direction
                                   );";
                     }
 
@@ -240,6 +243,7 @@ namespace MUNEEMJI.Controllers
                         cmd.Parameters.AddWithValue("p_companyid", companyId);
                         cmd.Parameters.AddWithValue("p_PartyGroupId", model.PartyGroupId);
                         cmd.Parameters.AddWithValue("p_PartyGroup", model.PartyGroup!=null ? model.PartyGroup:"");
+                        cmd.Parameters.AddWithValue("balance_direction", (object)model.BalanceDirection ?? DBNull.Value);
 
                         if (model.Id > 0)
                         {
@@ -326,7 +330,8 @@ namespace MUNEEMJI.Controllers
                                 AdditionalField3Enabled = Convert.ToBoolean(reader["additional_field3_enabled"]),
                                 AdditionalField3Value = reader["additional_field3_value"]?.ToString(),
                                 AdditionalField4Enabled = Convert.ToBoolean(reader["additional_field4_enabled"]),
-                                AdditionalField4Value = reader["additional_field4_value"] != DBNull.Value ? Convert.ToDateTime(reader["additional_field4_value"]) : (DateTime?)null
+                                AdditionalField4Value = reader["additional_field4_value"] != DBNull.Value ? Convert.ToDateTime(reader["additional_field4_value"]) : (DateTime?)null,
+                                BalanceDirection = reader["balance_direction"] != DBNull.Value ? reader["balance_direction"].ToString() : null
                             };
                         }
                     }
@@ -434,21 +439,48 @@ namespace MUNEEMJI.Controllers
         }
 
 
-        public IActionResult Index(int? id)
+        public IActionResult Index(int? id, string search = null, string filter = null)
         {
             var model = new PartyViewModel();
             model.Parties = new List<PartyModel>();
             var companyId = _CompayTenancy.GetCurrentCompanyId();
+
+            ViewBag.CurrentSearch = search ?? "";
+            ViewBag.CurrentFilter = filter ?? "";
+
+            // Read ManagePartyStatus from party_settings
+            using (var settConn = new NpgsqlConnection(_connectionString))
+            {
+                settConn.Open();
+                using var cmd = new NpgsqlCommand("SELECT manage_party_status FROM party_settings WHERE firm_id = 1 LIMIT 1", settConn);
+                var result = cmd.ExecuteScalar();
+                model.ManagePartyStatus = result != null && result != DBNull.Value && (bool)result;
+            }
             List<PurchaseBill> TransectionList = new List<PurchaseBill>();
 
             using (var conn = new NpgsqlConnection(_connectionString))
             {
-                conn.Open();  // establish PostgreSQL connection:contentReference[oaicite:3]{index=3}
-                              // 1) Query all parties
-                string sql = "SELECT id, party_name,opening_balance FROM parties where companyid = @p_companyid ORDER BY party_name";
+                conn.Open();
+                // 1) Query parties with optional search and filter
+                var conditions = new List<string> { "companyid = @p_companyid" };
+                if (!string.IsNullOrWhiteSpace(search))
+                    conditions.Add("LOWER(party_name) LIKE @p_search");
+                if (!string.IsNullOrWhiteSpace(filter))
+                {
+                    switch (filter)
+                    {
+                        case "Active": conditions.Add("COALESCE(is_active, true) = true"); break;
+                        case "Inactive": conditions.Add("COALESCE(is_active, true) = false"); break;
+                        case "ToPay": conditions.Add("COALESCE(balance_direction,'') = 'ToPay'"); break;
+                        case "ToReceive": conditions.Add("COALESCE(balance_direction,'') = 'ToReceive'"); break;
+                    }
+                }
+                string sql = "SELECT id, party_name, opening_balance, COALESCE(balance_direction,'') as balance_direction, COALESCE(is_active, true) as is_active FROM parties WHERE " + string.Join(" AND ", conditions) + " ORDER BY COALESCE(is_active, true) DESC, party_name";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 {
                     cmd.Parameters.AddWithValue("p_companyid", companyId);
+                    if (!string.IsNullOrWhiteSpace(search))
+                        cmd.Parameters.AddWithValue("p_search", "%" + search.Trim().ToLower() + "%");
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -460,6 +492,8 @@ namespace MUNEEMJI.Controllers
                                 PartyName = reader.GetString(1),
                                 Balance = reader.IsDBNull(2) ? (decimal?)null : reader.GetDecimal(2),
                                 OpeningBalance = reader.IsDBNull(2) ? (decimal?)null : reader.GetDecimal(2),
+                                BalanceDirection = reader.GetString(3),
+                                IsActive = reader.GetBoolean(4),
                             });
                         }
                     }
@@ -539,6 +573,68 @@ namespace MUNEEMJI.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult GetPartiesWithStatus()
+        {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            using var conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
+            string sql = "SELECT id, party_name, phone_number, COALESCE(is_active, true) as is_active FROM parties WHERE companyid = @cid ORDER BY party_name";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("cid", companyId);
+            var list = new List<object>();
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                list.Add(new
+                {
+                    id = reader.GetInt32(0),
+                    partyName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                    phoneNumber = reader.IsDBNull(2) ? "-" : (string.IsNullOrEmpty(reader.GetString(2)) ? "-" : reader.GetString(2)),
+                    isActive = reader.GetBoolean(3)
+                });
+            }
+            return Json(list);
+        }
+
+        [HttpPost]
+        public IActionResult SavePartyStatuses([FromBody] List<PartyStatusUpdate> updates)
+        {
+            if (updates == null || !updates.Any())
+                return Json(new { success = false, message = "No data provided." });
+
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            using var conn = new NpgsqlConnection(_connectionString);
+            conn.Open();
+
+            // Batch update: activate and deactivate in two queries
+            var activateIds = updates.Where(u => u.IsActive).Select(u => u.PartyId).ToArray();
+            var deactivateIds = updates.Where(u => !u.IsActive).Select(u => u.PartyId).ToArray();
+
+            try
+            {
+                if (activateIds.Length > 0)
+                {
+                    using var cmd = new NpgsqlCommand("UPDATE parties SET is_active = TRUE WHERE id = ANY(@ids) AND companyid = @cid", conn);
+                    cmd.Parameters.AddWithValue("ids", activateIds);
+                    cmd.Parameters.AddWithValue("cid", companyId);
+                    cmd.ExecuteNonQuery();
+                }
+                if (deactivateIds.Length > 0)
+                {
+                    using var cmd = new NpgsqlCommand("UPDATE parties SET is_active = FALSE WHERE id = ANY(@ids) AND companyid = @cid", conn);
+                    cmd.Parameters.AddWithValue("ids", deactivateIds);
+                    cmd.Parameters.AddWithValue("cid", companyId);
+                    cmd.ExecuteNonQuery();
+                }
+                return Json(new { success = true, message = "Party statuses updated successfully." });
+            }
+            catch
+            {
+                return Json(new { success = false, message = "Failed to update party statuses." });
+            }
         }
 
 

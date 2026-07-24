@@ -42,6 +42,7 @@ namespace MUNEEMJI.Models
         public string  StateName { get; set; }
         public string  StateCode { get; set; }
         public int StateId { get; set; }
+        public bool IsActive { get; set; } = true;
     }
 
     public class PartyViewModel
@@ -49,6 +50,7 @@ namespace MUNEEMJI.Models
         public List<PartyModel> Parties { get; set; }
         public PartyModel SelectedParty { get; set; }
         public List<PurchaseBill> PartyTransection { get; set; }
+        public bool ManagePartyStatus { get; set; }
     }
     public class PartyDropDownModel
     {
@@ -92,6 +94,12 @@ namespace MUNEEMJI.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+    }
+
+    public class PartyStatusUpdate
+    {
+        public int PartyId { get; set; }
+        public bool IsActive { get; set; }
     }
 
 }

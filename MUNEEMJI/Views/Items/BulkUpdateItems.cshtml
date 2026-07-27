@@ -1,0 +1,806 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Bulk Update Items";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<style>
+    .bulk-update-wrapper {
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 65px);
+        overflow: hidden;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Header */
+    .bu-header {
+        display: flex;
+        align-items: center;
+        padding: 18px 24px 14px 24px;
+        border-bottom: 1px solid #e9ecef;
+        gap: 18px;
+        flex-shrink: 0;
+    }
+    .bu-header h4 {
+        font-weight: 700;
+        color: #222;
+        margin: 0;
+        font-size: 20px;
+        white-space: nowrap;
+    }
+    .bu-search-box {
+        display: flex;
+        align-items: center;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        padding: 6px 16px;
+        flex: 0 1 320px;
+        gap: 8px;
+    }
+    .bu-search-box i { color: #999; font-size: 15px; }
+    .bu-search-box input {
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 13px;
+        width: 100%;
+        color: #555;
+    }
+    .bu-radio-group {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-left: auto;
+    }
+    .bu-radio-group label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: #333;
+        cursor: pointer;
+        font-weight: 500;
+    }
+    .bu-radio-group input[type="radio"] {
+        accent-color: #c0392b;
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Subheader */
+    .bu-subheader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 24px;
+        background: #eef1f7;
+        flex-shrink: 0;
+    }
+    .bu-selected-count {
+        font-size: 13px;
+        color: #555;
+        font-style: italic;
+    }
+    .bu-tax-slab-btn {
+        background: #3a3a5c;
+        color: #fff;
+        border: none;
+        border-radius: 20px;
+        padding: 6px 18px;
+        font-size: 13px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .bu-tax-slab-btn:hover { background: #2d2d4a; }
+
+    /* Table area */
+    .bu-table-wrapper {
+        flex: 1;
+        overflow: auto;
+        position: relative;
+    }
+    .bu-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        min-width: 900px;
+    }
+    .bu-table thead {
+        position: sticky;
+        top: 0;
+        z-index: 5;
+    }
+    .bu-table thead th {
+        background: #fff;
+        color: #8b2d2d;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 8px;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        white-space: nowrap;
+        position: relative;
+        user-select: none;
+    }
+    .bu-table thead th .th-content {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .bu-table thead th .filter-icon {
+        cursor: pointer;
+        color: #bbb;
+        font-size: 12px;
+        transition: color 0.2s;
+    }
+    .bu-table thead th .filter-icon.active { color: #c0392b; }
+    .bu-table thead th .filter-icon:hover { color: #c0392b; }
+
+    /* Column resize handle */
+    .bu-table thead th .col-resize-handle {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 5px;
+        cursor: col-resize;
+        background: transparent;
+        z-index: 6;
+    }
+    .bu-table thead th .col-resize-handle:hover,
+    .bu-table thead th .col-resize-handle.resizing {
+        background: #c0392b;
+    }
+
+    .bu-table tbody tr:hover { background: #fafbfd; }
+    .bu-table tbody td {
+        padding: 9px 8px;
+        font-size: 13px;
+        color: #333;
+        vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        border: 1px solid #e0e0e0;
+    }
+    .bu-table tbody td.item-name { color: #c0392b; font-weight: 600; }
+    .bu-table tbody td.price-col { color: #c0392b; }
+    .bu-table tbody td input,
+    .bu-table tbody td select {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 3px 6px;
+        font-size: 12px;
+        width: 100%;
+        background: #fff;
+    }
+    .bu-table tbody td input:focus,
+    .bu-table tbody td select:focus {
+        border-color: #c0392b;
+        outline: none;
+    }
+    .bu-table .cb-col { width: 36px; text-align: center; }
+    .bu-table .num-col { width: 36px; text-align: center; }
+
+    /* Footer */
+    .bu-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 24px;
+        background: #fdf6e3;
+        border-top: 1px solid #e9e0c8;
+        flex-shrink: 0;
+    }
+    .bu-footer-info { font-size: 13px; color: #555; }
+    .bu-footer-info strong { font-weight: 700; }
+    .bu-update-btn {
+        background: #d5d0c8;
+        color: #888;
+        border: none;
+        border-radius: 4px;
+        padding: 8px 28px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .bu-update-btn.enabled {
+        background: #c0392b;
+        color: #fff;
+        cursor: pointer;
+    }
+    .bu-update-btn.enabled:hover { background: #a93226; }
+
+    /* Filter popup */
+    .bu-filter-popup {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+        padding: 14px 16px;
+        z-index: 100;
+        min-width: 210px;
+        display: none;
+    }
+    .bu-filter-popup.show { display: block; }
+    .bu-filter-popup label {
+        font-size: 12px;
+        color: #333;
+        font-weight: 600;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .bu-filter-popup select,
+    .bu-filter-popup input[type="text"] {
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 6px 8px;
+        font-size: 12px;
+        margin-bottom: 10px;
+    }
+    .bu-filter-popup .filter-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    .bu-filter-popup .filter-clear-btn {
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 16px;
+        padding: 5px 18px;
+        font-size: 12px;
+        cursor: pointer;
+        color: #555;
+    }
+    .bu-filter-popup .filter-apply-btn {
+        background: #c0392b;
+        color: #fff;
+        border: none;
+        border-radius: 16px;
+        padding: 5px 18px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+    .bu-filter-popup .filter-apply-btn:hover { background: #a93226; }
+    .bu-filter-popup .filter-clear-btn:hover { background: #f5f5f5; }
+
+    /* Checkbox styling */
+    .bu-table input[type="checkbox"] {
+        accent-color: #c0392b;
+        width: 15px;
+        height: 15px;
+    }
+
+    /* Category dropdown in cell */
+    .cat-dropdown {
+        border: none;
+        background: transparent;
+        color: #333;
+        font-size: 13px;
+        cursor: pointer;
+        padding: 2px 4px;
+    }
+</style>
+
+<div class="bulk-update-wrapper" id="bulkUpdateApp">
+    <!-- Header -->
+    <div class="bu-header">
+        <h4>Bulk Update Items</h4>
+        <div class="bu-search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search by item name / HSN Code" id="buSearchInput" oninput="applyAllFilters()">
+        </div>
+        <div class="bu-radio-group">
+            <label><input type="radio" name="buTab" value="pricing" checked onchange="switchTab('pricing')"> Pricing</label>
+            <label><input type="radio" name="buTab" value="stock" onchange="switchTab('stock')"> Stock</label>
+            <label><input type="radio" name="buTab" value="info" onchange="switchTab('info')"> Item Information</label>
+        </div>
+    </div>
+
+    <!-- Subheader -->
+    <div class="bu-subheader">
+        <span class="bu-selected-count" id="buSelectedCount">0 items selected</span>
+        <button class="bu-tax-slab-btn" id="buTaxSlabBtn" style="display:none;">
+            Update Tax Slab <i class="bi bi-chevron-down"></i>
+        </button>
+    </div>
+
+    <!-- Table -->
+    <div class="bu-table-wrapper">
+        <table class="bu-table" id="buTable">
+            <thead id="buThead"></thead>
+            <tbody id="buTbody"></tbody>
+        </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="bu-footer">
+        <div class="bu-footer-info">
+            <strong>Pricing</strong> - <span id="pricingUpdates">0</span> Updates,
+            <strong>Stock</strong> - <span id="stockUpdates">0</span> Updates,
+            <strong>Item Information</strong> - <span id="infoUpdates">0</span> Updates
+        </div>
+        <button class="bu-update-btn" id="buUpdateBtn" onclick="submitBulkUpdate()">Update</button>
+    </div>
+</div>
+
+<script>
+    let allItems = [];
+    let filteredItems = [];
+    let currentTab = 'pricing';
+    let columnFilters = {};
+    let taxRateOptions = ['None'];
+    let changedItems = { pricing: new Set(), stock: new Set(), info: new Set() };
+    let originalData = {};
+    let resizingCol = null;
+
+    const tabColumns = {
+        pricing: [
+            { key: 'cb', label: '', type: 'checkbox', width: 36 },
+            { key: 'num', label: '#', type: 'num', width: 36 },
+            { key: 'ItemName', label: 'ITEM NAME*', type: 'text', width: 150, filterable: true, filterType: 'text' },
+            { key: 'Category', label: 'CATEGORY', type: 'category', width: 130, filterable: true, filterType: 'categoryList' },
+            { key: 'ItemHsn', label: 'ITEM HSN', type: 'text', width: 110, filterable: true, filterType: 'text' },
+            { key: 'PurchasePrice', label: 'PURCHASE PRICE', type: 'price', width: 130, filterable: true, filterType: 'numeric' },
+            { key: 'PurchasePriceTaxType', label: 'TAX TYPE', type: 'taxtype', width: 110, filterable: true, filterType: 'optionList', filterOptions: ['Included','Excluded'] },
+            { key: 'SalePrice', label: 'SALE PRICE', type: 'price', width: 110, filterable: true, filterType: 'numeric' },
+            { key: 'SalePriceTaxType', label: 'TAX TYPE', type: 'taxtype', width: 110, filterable: true, filterType: 'optionList', filterOptions: ['Included','Excluded'] },
+            { key: 'DiscountOnSalePrice', label: 'DISCOUNT', type: 'number', width: 100, filterable: true, filterType: 'numeric' },
+            { key: 'DiscountType', label: 'DISC. TYPE', type: 'disctype', width: 100, filterable: true, filterType: 'optionList', filterOptions: ['Percentage','Amount'] },
+            { key: 'TaxRate', label: 'TAX RATE', type: 'taxrate', width: 100, filterable: true, filterType: 'categoryList' }
+        ],
+        stock: [
+            { key: 'cb', label: '', type: 'checkbox', width: 36 },
+            { key: 'num', label: '#', type: 'num', width: 36 },
+            { key: 'ItemName', label: 'ITEM NAME', type: 'readonly', width: 180, filterable: true },
+            { key: 'OpeningQuantity', label: 'OPENING QUANTITY', type: 'number', width: 140, filterable: true },
+            { key: 'AtPrice', label: 'AT PRICE', type: 'price', width: 110, filterable: true },
+            { key: 'AsOfDate', label: 'AS OF DATE', type: 'date', width: 130, filterable: true },
+            { key: 'MinStockToMaintain', label: 'MIN STOCK TO MAINTAIN', type: 'number', width: 170, filterable: true },
+            { key: 'Location', label: 'LOCATION', type: 'text', width: 130, filterable: true }
+        ],
+        info: [
+            { key: 'cb', label: '', type: 'checkbox', width: 36 },
+            { key: 'num', label: '#', type: 'num', width: 36 },
+            { key: 'ItemName', label: 'ITEM NAME', type: 'readonly', width: 180, filterable: true, filterType: 'text' },
+            { key: 'Category', label: 'CATEGORY', type: 'category', width: 150, filterable: true, filterType: 'categoryList' },
+            { key: 'ItemHsn', label: 'ITEM HSN', type: 'text', width: 130, filterable: true, filterType: 'text' },
+            { key: 'ItemCode', label: 'ITEM CODE', type: 'text', width: 130, filterable: true, filterType: 'text' },
+            { key: 'Description', label: 'DESCRIPTION', type: 'text', width: 200, filterable: true, filterType: 'text' }
+        ]
+    };
+
+    // Load data
+    if (typeof $ !== 'undefined') {
+        $(document).ready(function () {
+            loadItems();
+        });
+    } else {
+        document.addEventListener('DOMContentLoaded', function () {
+            var checkJQuery = setInterval(function () {
+                if (typeof $ !== 'undefined') {
+                    clearInterval(checkJQuery);
+                    loadItems();
+                }
+            }, 100);
+        });
+    }
+
+    function loadItems() {
+        $.ajax({
+            url: '/Web/Items/GetTaxRatesForBulkUpdate',
+            type: 'GET',
+            dataType: 'json',
+            success: function (rates) {
+                taxRateOptions = rates || ['None'];
+            },
+            async: false
+        });
+        $.ajax({
+            url: '/Web/Items/GetBulkUpdateItemsData',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                allItems = data || [];
+                allItems.forEach(item => {
+                    originalData[item.id] = JSON.parse(JSON.stringify(item));
+                });
+                applyAllFilters();
+            },
+            error: function (xhr, status, error) {
+                console.error('Failed to load items:', error);
+                allItems = [];
+                applyAllFilters();
+            }
+        });
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        columnFilters = {};
+        document.getElementById('buTaxSlabBtn').style.display = tab === 'pricing' ? '' : 'none';
+        applyAllFilters();
+    }
+
+    function applyAllFilters() {
+        let search = (document.getElementById('buSearchInput').value || '').toLowerCase();
+        filteredItems = allItems.filter(item => {
+            if (search) {
+                let name = (item.itemName || '').toLowerCase();
+                let hsn = (item.itemHsn || '').toLowerCase();
+                if (!name.includes(search) && !hsn.includes(search)) return false;
+            }
+            for (let key in columnFilters) {
+                let f = columnFilters[key];
+                if (!f) continue;
+                let rawVal = getItemVal(item, key);
+                if (f.filterType === 'categoryList' || f.filterType === 'optionList') {
+                    if (!f.values || f.values.length === 0) continue;
+                    let v = (rawVal + '').toLowerCase();
+                    if (!f.values.some(sv => sv.toLowerCase() === v)) return false;
+                } else if (f.filterType === 'numeric') {
+                    if (f.value === '' || f.value === undefined) continue;
+                    let num = parseFloat(rawVal) || 0;
+                    let fv = parseFloat(f.value) || 0;
+                    if (f.mode === 'equal' && num !== fv) return false;
+                    if (f.mode === 'less' && num >= fv) return false;
+                    if (f.mode === 'greater' && num <= fv) return false;
+                } else {
+                    if (!f.value) continue;
+                    let val = (rawVal + '').toLowerCase();
+                    let fv = f.value.toLowerCase();
+                    if (f.mode === 'exact') { if (val !== fv) return false; }
+                    else { if (!val.includes(fv)) return false; }
+                }
+            }
+            return true;
+        });
+        renderTable();
+    }
+
+    function getItemVal(item, key) {
+        // camelCase mapping
+        let k = key.charAt(0).toLowerCase() + key.slice(1);
+        return item[k] !== undefined ? item[k] : '';
+    }
+
+    function setItemVal(item, key, val) {
+        let k = key.charAt(0).toLowerCase() + key.slice(1);
+        item[k] = val;
+    }
+
+    function renderTable() {
+        let cols = tabColumns[currentTab];
+        // Render thead
+        let thHtml = '<tr>';
+        cols.forEach((col, ci) => {
+            let w = col._userWidth || col.width;
+            let style = `width:${w}px;min-width:40px;max-width:600px;`;
+            if (col.type === 'checkbox') {
+                thHtml += `<th class="cb-col" style="${style}"><input type="checkbox" id="buSelectAll" onchange="toggleSelectAll(this)"><div class="col-resize-handle" data-ci="${ci}" onmousedown="startResize(event,${ci})"></div></th>`;
+            } else if (col.type === 'num') {
+                thHtml += `<th class="num-col" style="${style}">#<div class="col-resize-handle" data-ci="${ci}" onmousedown="startResize(event,${ci})"></div></th>`;
+            } else {
+                let filterActive = isFilterActive(col.key) ? 'active' : '';
+                let filterIcon = col.filterable ? `<i class="bi bi-funnel-fill filter-icon ${filterActive}" onclick="toggleFilter(event,'${col.key}',${ci})"></i>` : '';
+                thHtml += `<th style="${style}"><div class="th-content">${col.label} ${filterIcon}</div><div class="col-resize-handle" data-ci="${ci}" onmousedown="startResize(event,${ci})"></div></th>`;
+            }
+        });
+        thHtml += '</tr>';
+        document.getElementById('buThead').innerHTML = thHtml;
+
+        // Render tbody
+        let tbHtml = '';
+        filteredItems.forEach((item, idx) => {
+            tbHtml += '<tr>';
+            cols.forEach(col => {
+                let val = getItemVal(item, col.key);
+                switch (col.type) {
+                    case 'checkbox':
+                        tbHtml += `<td class="cb-col"><input type="checkbox" class="bu-row-cb" data-id="${item.id}" onchange="updateSelectedCount()"></td>`;
+                        break;
+                    case 'num':
+                        tbHtml += `<td class="num-col">${idx + 1}</td>`;
+                        break;
+                    case 'readonly':
+                        tbHtml += `<td class="item-name">${escHtml(val)}</td>`;
+                        break;
+                    case 'text':
+                        tbHtml += `<td><input type="text" value="${escAttr(val)}" onchange="onCellChange(${item.id},'${col.key}',this.value)"></td>`;
+                        break;
+                    case 'number':
+                        tbHtml += `<td><input type="number" value="${val}" onchange="onCellChange(${item.id},'${col.key}',parseFloat(this.value)||0)"></td>`;
+                        break;
+                    case 'price':
+                        tbHtml += `<td class="price-col">\u20B9 <input type="number" step="0.01" value="${val}" style="width:calc(100% - 16px);display:inline-block;" onchange="onCellChange(${item.id},'${col.key}',parseFloat(this.value)||0)"></td>`;
+                        break;
+                    case 'category':
+                        tbHtml += `<td><select class="cat-dropdown" onchange="onCellChange(${item.id},'${col.key}',this.value)">${getCategoryOptions(val)}</select></td>`;
+                        break;
+                    case 'taxtype':
+                        tbHtml += `<td><select onchange="onCellChange(${item.id},'${col.key}',this.value)">
+                            <option value="Excluded" ${val === 'Excluded' ? 'selected' : ''}>Excluded</option>
+                            <option value="Included" ${val === 'Included' ? 'selected' : ''}>Included</option>
+                        </select></td>`;
+                        break;
+                    case 'disctype':
+                        tbHtml += `<td><select onchange="onCellChange(${item.id},'${col.key}',this.value)">
+                            <option value="Percentage" ${val === 'Percentage' ? 'selected' : ''}>%</option>
+                            <option value="Amount" ${val === 'Amount' ? 'selected' : ''}>\u20B9</option>
+                        </select></td>`;
+                        break;
+                    case 'taxrate':
+                        let trOpts = taxRateOptions.map(r => `<option value="${r}" ${val === r ? 'selected' : ''}>${r}</option>`).join('');
+                        tbHtml += `<td><select onchange="onCellChange(${item.id},'${col.key}',this.value)">${trOpts}</select></td>`;
+                        break;
+                    case 'date':
+                        let dv = val ? new Date(val).toISOString().split('T')[0] : '';
+                        tbHtml += `<td><input type="date" value="${dv}" onchange="onCellChange(${item.id},'${col.key}',this.value)"></td>`;
+                        break;
+                    default:
+                        tbHtml += `<td>${escHtml(val)}</td>`;
+                }
+            });
+            tbHtml += '</tr>';
+        });
+        document.getElementById('buTbody').innerHTML = tbHtml;
+        updateSelectedCount();
+        updateFooterCounts();
+    }
+
+    function getCategoryOptions(selected) {
+        let cats = [...new Set(allItems.map(i => i.category).filter(c => c))];
+        let html = '<option value="">---</option>';
+        cats.forEach(c => {
+            html += `<option value="${escAttr(c)}" ${c === selected ? 'selected' : ''}>${escHtml(c)}</option>`;
+        });
+        return html;
+    }
+
+    function onCellChange(id, key, val) {
+        let item = allItems.find(i => i.id === id);
+        if (!item) return;
+        setItemVal(item, key, val);
+        // Track changes
+        let orig = originalData[id];
+        let k = key.charAt(0).toLowerCase() + key.slice(1);
+        let changed = (orig[k] + '') !== (val + '');
+
+        // Determine which tab this field belongs to
+        let pricingKeys = ['itemName', 'category', 'itemHsn', 'purchasePrice', 'purchasePriceTaxType', 'salePrice', 'salePriceTaxType', 'discountOnSalePrice', 'discountType', 'taxRate'];
+        let stockKeys = ['openingQuantity', 'atPrice', 'asOfDate', 'minStockToMaintain', 'location'];
+        let infoKeys = ['itemName', 'category', 'itemHsn', 'itemCode', 'description'];
+
+        if (pricingKeys.includes(k)) { changed ? changedItems.pricing.add(id) : changedItems.pricing.delete(id); }
+        if (stockKeys.includes(k)) { changed ? changedItems.stock.add(id) : changedItems.stock.delete(id); }
+        if (infoKeys.includes(k)) { changed ? changedItems.info.add(id) : changedItems.info.delete(id); }
+
+        updateFooterCounts();
+    }
+
+    function updateFooterCounts() {
+        document.getElementById('pricingUpdates').textContent = changedItems.pricing.size;
+        document.getElementById('stockUpdates').textContent = changedItems.stock.size;
+        document.getElementById('infoUpdates').textContent = changedItems.info.size;
+        let total = changedItems.pricing.size + changedItems.stock.size + changedItems.info.size;
+        let btn = document.getElementById('buUpdateBtn');
+        if (total > 0) { btn.classList.add('enabled'); } else { btn.classList.remove('enabled'); }
+    }
+
+    function toggleSelectAll(el) {
+        document.querySelectorAll('.bu-row-cb').forEach(cb => cb.checked = el.checked);
+        updateSelectedCount();
+    }
+
+    function updateSelectedCount() {
+        let count = document.querySelectorAll('.bu-row-cb:checked').length;
+        document.getElementById('buSelectedCount').textContent = count + ' items selected';
+    }
+
+    function isFilterActive(key) {
+        let f = columnFilters[key];
+        if (!f) return false;
+        if (f.filterType === 'categoryList' || f.filterType === 'optionList') return f.values && f.values.length > 0;
+        return !!f.value;
+    }
+
+    // Filter popup
+    function toggleFilter(event, key, ci) {
+        event.stopPropagation();
+        document.querySelectorAll('.bu-filter-popup').forEach(p => p.remove());
+        let th = event.target.closest('th');
+        let col = tabColumns[currentTab].find(c => c.key === key);
+        let ft = col.filterType || 'text';
+        let existing = columnFilters[key] || {};
+        let popup = document.createElement('div');
+        popup.className = 'bu-filter-popup show';
+
+        if (ft === 'categoryList') {
+            let cats = [...new Set(allItems.map(i => getItemVal(i, key)).filter(c => c !== '' && c !== undefined && c !== null))];
+            cats.sort((a, b) => (a + '').localeCompare(b + ''));
+            if (cats.length === 0) cats = ['---'];
+            let selVals = existing.values || [];
+            let cbHtml = cats.map(c => {
+                let checked = selVals.some(sv => sv.toLowerCase() === (c + '').toLowerCase()) ? 'checked' : '';
+                return `<label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px;color:#333;cursor:pointer;"><input type="checkbox" class="bu-cat-filter-cb" value="${escAttr(c)}" ${checked} style="accent-color:#c0392b;"> ${escHtml(c)}</label>`;
+            }).join('');
+            popup.innerHTML = `<div style="max-height:200px;overflow-y:auto;margin-bottom:10px;">${cbHtml}</div>
+                <div class="filter-actions"><button class="filter-clear-btn" onclick="clearFilter('${key}')">Clear</button><button class="filter-apply-btn" onclick="applyCategoryFilter('${key}')">Apply</button></div>`;
+        } else if (ft === 'numeric') {
+            let mode = existing.mode || 'equal';
+            let val = existing.value || '';
+            popup.innerHTML = `
+                <label>Select ${col.label}</label>
+                <select id="filterMode_${key}">
+                    <option value="equal" ${mode === 'equal' ? 'selected' : ''}>Equal to</option>
+                    <option value="less" ${mode === 'less' ? 'selected' : ''}>Less Than</option>
+                    <option value="greater" ${mode === 'greater' ? 'selected' : ''}>Greater Than</option>
+                </select>
+                <label>${col.label}*</label>
+                <input type="number" id="filterVal_${key}" value="${escAttr(val)}" placeholder="" step="any">
+                <div class="filter-actions">
+                    <button class="filter-clear-btn" onclick="clearFilter('${key}')">Clear</button>
+                    <button class="filter-apply-btn" onclick="applyFilter('${key}','numeric')">Apply</button>
+                </div>`;
+        } else if (ft === 'optionList') {
+            let options = col.filterOptions || [];
+            let selVals = existing.values || [];
+            let cbHtml = options.map(o => {
+                let checked = selVals.some(sv => sv.toLowerCase() === o.toLowerCase()) ? 'checked' : '';
+                return `<label style="display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:12px;color:#333;cursor:pointer;"><input type="checkbox" class="bu-cat-filter-cb" value="${escAttr(o)}" ${checked} style="accent-color:#c0392b;"> ${escHtml(o)}</label>`;
+            }).join('');
+            popup.innerHTML = `<label style="font-size:12px;font-weight:600;margin-bottom:8px;display:block;">Select ${col.label}</label>
+                <div style="margin-bottom:10px;">${cbHtml}</div>
+                <div class="filter-actions"><button class="filter-clear-btn" onclick="clearFilter('${key}')">Clear</button><button class="filter-apply-btn" onclick="applyCategoryFilter('${key}')">Apply</button></div>`;
+        } else {
+            let mode = existing.mode || 'contains';
+            let val = existing.value || '';
+            popup.innerHTML = `
+                <label>Select ${col.label}</label>
+                <select id="filterMode_${key}">
+                    <option value="contains" ${mode === 'contains' ? 'selected' : ''}>Contains</option>
+                    <option value="exact" ${mode === 'exact' ? 'selected' : ''}>Exact Match</option>
+                </select>
+                <label>${col.label}*</label>
+                <input type="text" id="filterVal_${key}" value="${escAttr(val)}" placeholder="">
+                <div class="filter-actions">
+                    <button class="filter-clear-btn" onclick="clearFilter('${key}')">Clear</button>
+                    <button class="filter-apply-btn" onclick="applyFilter('${key}','text')">Apply</button>
+                </div>`;
+        }
+        th.style.position = 'relative';
+        th.appendChild(popup);
+        setTimeout(() => {
+            document.addEventListener('click', function closePopup(e) {
+                if (!popup.contains(e.target)) {
+                    popup.remove();
+                    document.removeEventListener('click', closePopup);
+                }
+            });
+        }, 10);
+    }
+
+    function applyFilter(key, filterType) {
+        let mode = document.getElementById('filterMode_' + key).value;
+        let val = document.getElementById('filterVal_' + key).value;
+        columnFilters[key] = { mode, value: val, filterType: filterType || 'text' };
+        document.querySelectorAll('.bu-filter-popup').forEach(p => p.remove());
+        applyAllFilters();
+    }
+
+    function applyCategoryFilter(key) {
+        let cbs = document.querySelectorAll('.bu-cat-filter-cb:checked');
+        let values = Array.from(cbs).map(cb => cb.value);
+        columnFilters[key] = { filterType: 'categoryList', values: values };
+        document.querySelectorAll('.bu-filter-popup').forEach(p => p.remove());
+        applyAllFilters();
+    }
+
+    function clearFilter(key) {
+        delete columnFilters[key];
+        document.querySelectorAll('.bu-filter-popup').forEach(p => p.remove());
+        applyAllFilters();
+    }
+
+    // Column resizing
+    function startResize(e, ci) {
+        e.preventDefault();
+        e.stopPropagation();
+        resizingCol = ci;
+        let cols = tabColumns[currentTab];
+        let startX = e.clientX;
+        let startW = cols[ci]._userWidth || cols[ci].width;
+        let handle = e.target;
+        handle.classList.add('resizing');
+
+        function onMove(ev) {
+            let diff = ev.clientX - startX;
+            let newW = Math.max(40, Math.min(600, startW + diff));
+            cols[ci]._userWidth = newW;
+            // Update th width live
+            let ths = document.querySelectorAll('#buThead th');
+            if (ths[ci]) ths[ci].style.width = newW + 'px';
+        }
+        function onUp() {
+            handle.classList.remove('resizing');
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            resizingCol = null;
+            renderTable();
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    }
+
+    // Submit
+    function submitBulkUpdate() {
+        let allChanged = new Set([...changedItems.pricing, ...changedItems.stock, ...changedItems.info]);
+        if (allChanged.size === 0) return;
+        let payload = [];
+        allChanged.forEach(id => {
+            let item = allItems.find(i => i.id === id);
+            if (item) {
+                payload.push({
+                    Id: item.id,
+                    ItemName: item.itemName,
+                    Category: item.category,
+                    ItemHsn: item.itemHsn,
+                    ItemCode: item.itemCode,
+                    PurchasePrice: item.purchasePrice || 0,
+                    PurchasePriceTaxType: item.purchasePriceTaxType || 'Excluded',
+                    SalePrice: item.salePrice || 0,
+                    SalePriceTaxType: item.salePriceTaxType || 'Excluded',
+                    DiscountOnSalePrice: item.discountOnSalePrice || 0,
+                    DiscountType: item.discountType || 'Percentage',
+                    TaxRate: item.taxRate || 'None',
+                    OpeningQuantity: item.openingQuantity || 0,
+                    AtPrice: item.atPrice || 0,
+                    AsOfDate: item.asOfDate || null,
+                    MinStockToMaintain: item.minStockToMaintain || 0,
+                    Location: item.location || '',
+                    Description: item.description || ''
+                });
+            }
+        });
+        $.ajax({
+            url: '/Web/Items/BulkUpdateItemsSave',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(payload),
+            success: function (res) {
+                if (res.success) {
+                    toastr.success(res.message);
+                    changedItems = { pricing: new Set(), stock: new Set(), info: new Set() };
+                    // Refresh original data
+                    allItems.forEach(item => {
+                        originalData[item.id] = JSON.parse(JSON.stringify(item));
+                    });
+                    updateFooterCounts();
+                } else {
+                    toastr.error(res.message);
+                }
+            },
+            error: function () { toastr.error('Failed to update items.'); }
+        });
+    }
+
+    function escHtml(s) { let d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+    function escAttr(s) { return (s || '').toString().replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+</script>

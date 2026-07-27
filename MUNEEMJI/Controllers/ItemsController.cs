@@ -349,7 +349,7 @@ namespace MUNEEMJI.Controllers
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
                                     FROM billitem where  item_type = @p_itemtype and companyid = @p_companyid and (is_active = true OR is_active IS NULL)
-                                    ORDER BY id;
+                                    ORDER BY item_name;
                                     ";
 
                 // ? Fetch bill items
@@ -402,7 +402,8 @@ namespace MUNEEMJI.Controllers
                     conn.Open();
                     string query = @"SELECT id, name 
                      FROM categorieses 
-                     WHERE companyid = @p_companyid";
+                     WHERE companyid = @p_companyid
+                     ORDER BY name";
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
@@ -453,7 +454,8 @@ namespace MUNEEMJI.Controllers
                     string query = @"SELECT c.id, c.name, 
                         COALESCE((SELECT COUNT(*) FROM billitem b WHERE b.companyid = @p_companyid AND b.category = CAST(c.id AS TEXT)), 0) as item_count
                      FROM categorieses c
-                     WHERE c.companyid = @p_companyid";
+                     WHERE c.companyid = @p_companyid
+                     ORDER BY c.name";
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {
@@ -735,7 +737,7 @@ namespace MUNEEMJI.Controllers
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
                                     FROM billitem where item_type = @p_itemtype and (@p_companyid = 0 OR companyid = @p_companyid)
-                                    ORDER BY id;
+                                    ORDER BY item_name;
                                     ";
 
                     // ? Fetch bill items

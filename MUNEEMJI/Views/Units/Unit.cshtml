@@ -543,7 +543,7 @@
             <!-- Unit List -->
             <div class="unit-items-container">
                 <div class="unit-list-header">
-                    <div class="unit-list-header-fullname">FULLNAME</div>
+                    <div class="unit-list-header-fullname" style="cursor:pointer;" onclick="toggleUnitSort()">FULLNAME <i class="bi bi-arrow-down-up" id="unitSortIcon" style="font-size:10px;"></i></div>
                     <div class="unit-list-header-shortname">SHORTNAME</div>
                     <div class="unit-list-header-dots"></div>
                 </div>
@@ -737,6 +737,20 @@
                 }
             });
         }
+    }
+
+    let unitSortAsc = true;
+    function toggleUnitSort() {
+        unitSortAsc = !unitSortAsc;
+        var container = document.querySelector('.unit-items-container');
+        var entries = Array.from(container.querySelectorAll('.unit-entry'));
+        entries.sort(function(a, b) {
+            var na = (a.querySelector('.u-fullname')?.textContent || '').toLowerCase();
+            var nb = (b.querySelector('.u-fullname')?.textContent || '').toLowerCase();
+            return unitSortAsc ? na.localeCompare(nb) : nb.localeCompare(na);
+        });
+        entries.forEach(function(e) { container.appendChild(e); });
+        document.getElementById('unitSortIcon').className = unitSortAsc ? 'bi bi-arrow-down-up' : 'bi bi-arrow-up-down';
     }
 
     function initializePopovers() {

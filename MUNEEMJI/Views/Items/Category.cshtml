@@ -562,7 +562,7 @@
             <!-- Category List -->
             <div class="cat-items-container">
                 <div class="cat-list-header">
-                    <div class="cat-list-header-name">CATEGORY</div>
+                    <div class="cat-list-header-name" style="cursor:pointer;" onclick="toggleCatSort()">CATEGORY <i class="bi bi-arrow-down-up" id="catSortIcon" style="font-size:10px;"></i></div>
                     <div class="cat-list-header-count">ITEM</div>
                     <div class="cat-list-header-dots"></div>
                 </div>
@@ -816,6 +816,24 @@
                 }
             });
         }
+    }
+
+    let catSortAsc = true;
+    function toggleCatSort() {
+        catSortAsc = !catSortAsc;
+        var container = document.querySelector('.cat-items-container');
+        var entries = Array.from(container.querySelectorAll('.cat-entry'));
+        // Keep "Items not in any Category" (data-cat-id=0) at the top
+        var pinned = entries.filter(function(e) { return e.getAttribute('data-cat-id') === '0'; });
+        var sortable = entries.filter(function(e) { return e.getAttribute('data-cat-id') !== '0'; });
+        sortable.sort(function(a, b) {
+            var na = (a.querySelector('.cat-name')?.textContent || '').toLowerCase();
+            var nb = (b.querySelector('.cat-name')?.textContent || '').toLowerCase();
+            return catSortAsc ? na.localeCompare(nb) : nb.localeCompare(na);
+        });
+        pinned.forEach(function(e) { container.appendChild(e); });
+        sortable.forEach(function(e) { container.appendChild(e); });
+        document.getElementById('catSortIcon').className = catSortAsc ? 'bi bi-arrow-down-up' : 'bi bi-arrow-up-down';
     }
 
     function initializePopovers() {

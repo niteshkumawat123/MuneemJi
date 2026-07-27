@@ -784,7 +784,7 @@
             <!-- Item List -->
             <div class="products-items-container">
                 <div class="products-list-header">
-                    <div class="products-item-name-col">ITEM <i class="bi bi-funnel" style="font-size:10px;"></i></div>
+                    <div class="products-item-name-col" style="cursor:pointer;" onclick="toggleItemSort()">ITEM <i class="bi bi-arrow-down-up" id="itemSortIcon" style="font-size:10px;"></i></div>
                     <div class="products-item-qty-col">QUANTITY</div>
                     <div class="products-item-dots-col"></div>
                 </div>
@@ -798,7 +798,7 @@
                                 data-bs-placement="left"
                                 data-bs-trigger="click"
                                 data-bs-html="true"
-                                data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'>
+                                data-bs-content='<a href="#" class="popover-action" onclick="viewItem(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="editItem(@item.Id); return false;">Edit</a><a href="#" class="popover-action" onclick="deleteItem(@item.Id); return false;">Delete</a>'>
                             <i class="bi bi-three-dots-vertical" style="font-size:14px;"></i>
                         </button>
                     </div>
@@ -988,6 +988,20 @@
         }
     }
 
+    let itemSortAsc = true;
+    function toggleItemSort() {
+        itemSortAsc = !itemSortAsc;
+        var container = document.querySelector('.products-items-container');
+        var entries = Array.from(container.querySelectorAll('.products-item-entry'));
+        entries.sort(function(a, b) {
+            var na = (a.querySelector('.item-name')?.textContent || '').toLowerCase();
+            var nb = (b.querySelector('.item-name')?.textContent || '').toLowerCase();
+            return itemSortAsc ? na.localeCompare(nb) : nb.localeCompare(na);
+        });
+        entries.forEach(function(e) { container.appendChild(e); });
+        document.getElementById('itemSortIcon').className = itemSortAsc ? 'bi bi-arrow-down-up' : 'bi bi-arrow-up-down';
+    }
+
     function initializePopovers() {
         const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
         popoverTriggerList.forEach(function (popoverTriggerEl) {
@@ -1162,6 +1176,11 @@
     function viewItem(itemId) {
         hideAllPopovers();
         window.location.href = `/Web/items/Create?id=${itemId}&isview=true`;
+    }
+
+    function editItem(itemId) {
+        hideAllPopovers();
+        window.location.href = `/Web/items/Create?id=${itemId}`;
     }
 
     function deleteItem(itemId) {

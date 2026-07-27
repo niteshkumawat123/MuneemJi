@@ -742,7 +742,7 @@
             <!-- Item List -->
             <div class="services-items-container">
                 <div class="services-list-header">
-                    <div class="services-item-name-col">SERVICE <i class="bi bi-funnel" style="font-size:10px;"></i></div>
+                    <div class="services-item-name-col" style="cursor:pointer;" onclick="toggleServiceSort()">SERVICE <i class="bi bi-arrow-down-up" id="serviceSortIcon" style="font-size:10px;"></i></div>
                     <div class="services-item-dots-col"></div>
                 </div>
                 @foreach (var item in Model.ItemView)
@@ -754,7 +754,7 @@
                                 data-bs-placement="left"
                                 data-bs-trigger="click"
                                 data-bs-html="true"
-                                data-bs-content='<a href="#" class="popover-action" onclick="viewService(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="deleteService(@item.Id); return false;">Delete</a>'>
+                                data-bs-content='<a href="#" class="popover-action" onclick="viewService(@item.Id); return false;">View</a><a href="#" class="popover-action" onclick="editService(@item.Id); return false;">Edit</a><a href="#" class="popover-action" onclick="deleteService(@item.Id); return false;">Delete</a>'>
                             <i class="bi bi-three-dots-vertical" style="font-size:14px;"></i>
                         </button>
                     </div>
@@ -912,6 +912,20 @@
         }
     }
 
+    let serviceSortAsc = true;
+    function toggleServiceSort() {
+        serviceSortAsc = !serviceSortAsc;
+        var container = document.querySelector('.services-items-container');
+        var entries = Array.from(container.querySelectorAll('.services-item-entry'));
+        entries.sort(function(a, b) {
+            var na = (a.querySelector('.item-name')?.textContent || '').toLowerCase();
+            var nb = (b.querySelector('.item-name')?.textContent || '').toLowerCase();
+            return serviceSortAsc ? na.localeCompare(nb) : nb.localeCompare(na);
+        });
+        entries.forEach(function(e) { container.appendChild(e); });
+        document.getElementById('serviceSortIcon').className = serviceSortAsc ? 'bi bi-arrow-down-up' : 'bi bi-arrow-up-down';
+    }
+
     function initializePopovers() {
         const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
         popoverTriggerList.forEach(function (popoverTriggerEl) {
@@ -1063,6 +1077,11 @@
     function viewService(itemId) {
         hideAllPopovers();
         window.location.href = `/Web/Services/Create?id=${itemId}&isview=true`;
+    }
+
+    function editService(itemId) {
+        hideAllPopovers();
+        window.location.href = `/Web/Services/Create?id=${itemId}`;
     }
 
     function deleteService(itemId) {

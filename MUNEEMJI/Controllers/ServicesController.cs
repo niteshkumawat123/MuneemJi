@@ -269,7 +269,7 @@ namespace MUNEEMJI.Controllers
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
                                     FROM billitem where Companyid = @p_companyid
-                                    ORDER BY id;
+                                    ORDER BY item_name;
                                     ";
 
                 // ? Fetch bill items
@@ -477,7 +477,7 @@ namespace MUNEEMJI.Controllers
                                         created_at AS ""CreatedAt"",
                                         updated_at AS ""UpdatedAt""
                                     FROM billitem where item_type = @p_itemtye and companyid = @p_companyId and (is_active = true OR is_active IS NULL)
-                                                    ORDER BY id;
+                                                    ORDER BY item_name;
                                     ";
 
                     // ? Fetch bill items

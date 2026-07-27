@@ -102,7 +102,7 @@ namespace MUNEEMJI.Controllers
                 {
                     conn.Open();
                     string query = @"SELECT id, fullname , shortname , name
-                     FROM units ";
+                     FROM units ORDER BY fullname";
 
                     using (var cmd = new NpgsqlCommand(query, conn))
                     {

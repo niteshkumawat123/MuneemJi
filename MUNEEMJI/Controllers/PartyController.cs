@@ -22,13 +22,15 @@ namespace MUNEEMJI.Controllers
 
         private readonly string _connectionString = MUNEEMJI.DbConfig.ConnectionString;
         private readonly ICompanyTenancy _CompayTenancy;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         public IParty _party;
         private readonly IErrorLogService _errorLogService;
-        public PartyController(ICompanyTenancy companyTenancy, IParty party, IErrorLogService errorLogService)
+        public PartyController(ICompanyTenancy companyTenancy, IParty party, IErrorLogService errorLogService, IWebHostEnvironment webHostEnvironment)
         {
             _CompayTenancy = companyTenancy;
             _party = party;
             _errorLogService = errorLogService;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -1213,6 +1215,16 @@ namespace MUNEEMJI.Controllers
         public IActionResult ImportParties()
         {
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult DownloadPartiesTemplate()
+        {
+            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Import", "party", "Import Parties Template.xlsx");
+            if (!System.IO.File.Exists(filePath))
+                return NotFound("Template file not found.");
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Import Parties Template.xlsx");
         }
 
         [HttpPost]

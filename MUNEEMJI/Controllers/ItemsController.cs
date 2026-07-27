@@ -24,15 +24,17 @@ namespace MUNEEMJI.Controllers
         private readonly IBillItemService _billItemService;
         private readonly ICompanyTenancy _CompayTenancy;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IGstSettingsService _gstSettingsService;
 
 
-        public ItemsController(IWebHostEnvironment webHostEnv, IBillItemService billItemService, ICompanyTenancy CompayTenancy, IWebHostEnvironment webHostEnvironment)
+        public ItemsController(IWebHostEnvironment webHostEnv, IBillItemService billItemService, ICompanyTenancy CompayTenancy, IWebHostEnvironment webHostEnvironment, IGstSettingsService gstSettingsService)
         {
             _webHostEnv = webHostEnv;
             _connectionString = MUNEEMJI.DbConfig.ConnectionString;
             _billItemService = billItemService;
             _CompayTenancy = CompayTenancy;
             _webHostEnvironment = webHostEnvironment;
+            _gstSettingsService = gstSettingsService;
 
         }
 
@@ -1630,6 +1632,16 @@ namespace MUNEEMJI.Controllers
         }
 
         [HttpGet]
+        public IActionResult GetTaxRatesForBulkUpdate()
+        {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            var taxRates = _gstSettingsService.GetTaxRates(companyId);
+            var result = taxRates.Select(t => t.Name).ToList();
+            result.Insert(0, "None");
+            return Json(result);
+        }
+
+        [HttpGet]
         public IActionResult GetBulkUpdateItemsData()
         {
             var companyId = _CompayTenancy.GetCurrentCompanyId();
@@ -1713,6 +1725,16 @@ namespace MUNEEMJI.Controllers
         public IActionResult ImportItems()
         {
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult DownloadItemsTemplate()
+        {
+            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "Import", "Item", "Import Items Template.xlsx");
+            if (!System.IO.File.Exists(filePath))
+                return NotFound("Template file not found.");
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Import Items Template.xlsx");
         }
 
         [HttpPost]

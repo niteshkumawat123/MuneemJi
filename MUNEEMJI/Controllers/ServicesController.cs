@@ -15,13 +15,15 @@ namespace MUNEEMJI.Controllers
         private readonly IBillItemService _billItemService;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICompanyTenancy _CompayTenancy;
+        private readonly IGstSettingsService _gstSettingsService;
 
 
-        public ServicesController(IBillItemService billItem, IWebHostEnvironment webHostEnvironment, ICompanyTenancy companyTenancy) 
+        public ServicesController(IBillItemService billItem, IWebHostEnvironment webHostEnvironment, ICompanyTenancy companyTenancy, IGstSettingsService gstSettingsService) 
         {
             _billItemService = billItem;
             _webHostEnvironment = webHostEnvironment;
             _CompayTenancy = companyTenancy;
+            _gstSettingsService = gstSettingsService;
 
         }
 
@@ -977,5 +979,119 @@ namespace MUNEEMJI.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult BulkUpdateServices()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GetTaxRatesForBulkUpdate()
+        {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            var taxRates = _gstSettingsService.GetTaxRates(companyId);
+            var result = taxRates.Select(t => t.Name).ToList();
+            result.Insert(0, "None");
+            return Json(result);
+        }
+
+        [HttpGet]
+        public IActionResult GetBulkUpdateServicesData()
+        {
+            var companyId = _CompayTenancy.GetCurrentCompanyId();
+            var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+            var items = new List<object>();
+
+            using (var conn = new NpgsqlConnection(_connectionString))
+            {
+                conn.Open();
+                var sql = @"SELECT id, item_name, item_hsn, item_code, category, 
+                            sale_price, sale_price_tax_type, 
+                            discount_on_sale_price, discount_type, tax_rate, description
+                            FROM billitem 
+                            WHERE item_type = 'service' AND companyid = @p_cid AND (is_active = true OR is_active IS NULL)
+                            ORDER BY item_name";
+                using var cmd = new NpgsqlCommand(sql, conn);
+                cmd.Parameters.AddWithValue("p_cid", companyId);
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    items.Add(new
+                    {
+                        id = reader.GetInt32(0),
+                        itemName = reader.IsDBNull(1) ? "" : reader.GetString(1),
+                        itemHsn = reader.IsDBNull(2) ? "" : reader.GetString(2),
+                        itemCode = reader.IsDBNull(3) ? "" : reader.GetString(3),
+                        category = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                        salePrice = reader.IsDBNull(5) ? 0m : reader.GetDecimal(5),
+                        salePriceTaxType = reader.IsDBNull(6) ? "Excluded" : reader.GetString(6),
+                        discountOnSalePrice = reader.IsDBNull(7) ? 0m : reader.GetDecimal(7),
+                        discountType = reader.IsDBNull(8) ? "Percentage" : reader.GetString(8),
+                        taxRate = reader.IsDBNull(9) ? "None" : reader.GetString(9),
+                        description = reader.IsDBNull(10) ? "" : reader.GetString(10)
+                    });
+                }
+            }
+            return Json(items);
+        }
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public IActionResult BulkUpdateServicesSave([FromBody] List<BulkUpdateServiceRequest> items)
+        {
+            try
+            {
+                var companyId = _CompayTenancy.GetCurrentCompanyId();
+                var _connectionString = MUNEEMJI.DbConfig.ConnectionString;
+                using var conn = new NpgsqlConnection(_connectionString);
+                conn.Open();
+                int updated = 0;
+                foreach (var item in items)
+                {
+                    var sql = @"UPDATE billitem SET 
+                        item_name = @p_name, category = @p_category, item_hsn = @p_hsn, item_code = @p_code,
+                        sale_price = @p_sp, sale_price_tax_type = @p_sptt,
+                        discount_on_sale_price = @p_disc, discount_type = @p_dt, tax_rate = @p_tr,
+                        description = @p_desc, updated_at = @p_ua
+                        WHERE id = @p_id AND companyid = @p_cid AND item_type = 'service'";
+                    using var cmd = new NpgsqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("p_id", item.Id);
+                    cmd.Parameters.AddWithValue("p_cid", companyId);
+                    cmd.Parameters.AddWithValue("p_name", item.ItemName ?? "");
+                    cmd.Parameters.AddWithValue("p_category", (object)item.Category ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_hsn", (object)item.ItemHsn ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_code", (object)item.ItemCode ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_sp", item.SalePrice);
+                    cmd.Parameters.AddWithValue("p_sptt", item.SalePriceTaxType ?? "Excluded");
+                    cmd.Parameters.AddWithValue("p_disc", item.DiscountOnSalePrice);
+                    cmd.Parameters.AddWithValue("p_dt", item.DiscountType ?? "Percentage");
+                    cmd.Parameters.AddWithValue("p_tr", item.TaxRate ?? "None");
+                    cmd.Parameters.AddWithValue("p_desc", (object)item.Description ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("p_ua", DateTime.UtcNow);
+                    updated += cmd.ExecuteNonQuery();
+                }
+                return Json(new { success = true, message = $"{updated} service(s) updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+    }
+
+    public class BulkUpdateServiceRequest
+    {
+        public int Id { get; set; }
+        public string ItemName { get; set; }
+        public string Category { get; set; }
+        public string ItemHsn { get; set; }
+        public string ItemCode { get; set; }
+        public decimal SalePrice { get; set; }
+        public string SalePriceTaxType { get; set; }
+        public decimal DiscountOnSalePrice { get; set; }
+        public string DiscountType { get; set; }
+        public string TaxRate { get; set; }
+        public string Description { get; set; }
     }
 }

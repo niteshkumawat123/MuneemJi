@@ -561,7 +561,10 @@
                                     data-bs-placement="left"
                                     data-bs-trigger="click"
                                     data-bs-html="true"
-                                    data-bs-content='<a href="#" class="popover-action" onclick="editUnit(@unit.Id, &quot;@unit.FullName&quot;, &quot;@unit.ShortName&quot;); return false;">Edit</a><a href="#" class="popover-action" onclick="deleteUnit(@unit.Id); return false;">Delete</a>'>
+                                    data-unit-id="@unit.Id"
+                                    data-unit-fullname="@unit.FullName"
+                                    data-unit-shortname="@unit.ShortName"
+                                    data-bs-content='<a href="javascript:void(0)" class="popover-action popover-edit-btn">Edit</a><a href="javascript:void(0)" class="popover-action popover-delete-btn">Delete</a>'>
                                 <i class="bi bi-three-dots-vertical" style="font-size:14px;"></i>
                             </button>
                         </div>
@@ -746,7 +749,28 @@
             });
         });
 
+        // Delegated click for popover Edit/Delete actions
         document.addEventListener('click', function (e) {
+            var editBtn = e.target.closest('.popover-edit-btn');
+            if (editBtn) {
+                var popoverEl = document.querySelector('[data-bs-toggle="popover"][aria-describedby]');
+                if (popoverEl) {
+                    var id = parseInt(popoverEl.getAttribute('data-unit-id'));
+                    var fullName = popoverEl.getAttribute('data-unit-fullname') || '';
+                    var shortName = popoverEl.getAttribute('data-unit-shortname') || '';
+                    editUnit(id, fullName, shortName);
+                }
+                return;
+            }
+            var deleteBtn = e.target.closest('.popover-delete-btn');
+            if (deleteBtn) {
+                var popoverEl2 = document.querySelector('[data-bs-toggle="popover"][aria-describedby]');
+                if (popoverEl2) {
+                    var id2 = parseInt(popoverEl2.getAttribute('data-unit-id'));
+                    deleteUnit(id2);
+                }
+                return;
+            }
             if (!e.target.closest('[data-bs-toggle="popover"]') && !e.target.closest('.popover')) {
                 const popovers = document.querySelectorAll('[data-bs-toggle="popover"]');
                 popovers.forEach(popover => {
@@ -812,7 +836,8 @@
 
     // Open Add Unit Modal
     function openAddUnitModal() {
-        const modal = new bootstrap.Modal(document.getElementById('addUnitModal'));
+        var modalEl = document.getElementById('addUnitModal');
+        var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         document.getElementById('unitIdInput').value = '0';
         document.getElementById('unitFullNameInput').value = '';
         document.getElementById('unitShortNameInput').value = '';
@@ -828,7 +853,8 @@
     // Edit Unit
     function editUnit(id, fullName, shortName) {
         hideAllPopovers();
-        const modal = new bootstrap.Modal(document.getElementById('addUnitModal'));
+        var modalEl = document.getElementById('addUnitModal');
+        var modal = bootstrap.Modal.getOrCreateInstance(modalEl);
         document.getElementById('unitIdInput').value = id;
         document.getElementById('unitFullNameInput').value = fullName;
         document.getElementById('unitShortNameInput').value = shortName;

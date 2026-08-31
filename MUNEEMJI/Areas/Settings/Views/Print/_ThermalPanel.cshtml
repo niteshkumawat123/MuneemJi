@@ -1,0 +1,249 @@
+@using MUNEEMJI.Models.Setting
+@model PrintSettingsModel
+@{
+    var pfx = "Thermal";
+    var themes = ViewData["Themes"] as List<PrintThemeModel> ?? new List<PrintThemeModel>();
+    var paper = string.IsNullOrWhiteSpace(Model.PaperSize) ? "3 Inch" : Model.PaperSize.Trim();
+
+    bool IsPaper(string key) => string.Equals(paper.Replace(" ", ""), key.Replace(" ", ""), StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="p-panel" id="panel-Thermal" data-printer="Thermal">
+
+    <div class="p-subtabs">
+        <button type="button" class="p-subtab active" data-sub="layout">Change Layout</button>
+    </div>
+
+    <div class="p-sub" data-sub="layout">
+
+        <!-- ---------- Theme carousel ---------- -->
+        <div class="p-section">
+            <div class="p-themes">
+                @foreach (var theme in themes)
+                {
+                    <div class="p-theme @(theme.Id == Model.ThemeId ? "selected" : "")"
+                         data-theme-id="@theme.Id"
+                         onclick="applyTheme('Thermal', @theme.Id)">
+                        <div class="p-theme-thumb thermal">
+                            <div class="p-theme-bar" style="background:@theme.PrimaryColor;"></div>
+                            <div class="p-theme-line"></div>
+                            <div class="p-theme-line"></div>
+                            <div class="p-theme-line short"></div>
+                            <div class="p-theme-line"></div>
+                        </div>
+                        <div class="p-theme-name">@theme.DisplayName</div>
+                    </div>
+                }
+            </div>
+            <input type="hidden" data-field="ThemeId" id="Thermal_ThemeId" value="@Model.ThemeId" />
+            <input type="hidden" data-field="PrinterType" value="Thermal" />
+            <input type="hidden" data-field="Id" value="@Model.Id" />
+            <input type="hidden" data-field="Orientation" value="Portrait" />
+        </div>
+
+        <!-- ---------- Default + page size ---------- -->
+        <div class="p-section">
+            <div class="p-check">
+                <input type="checkbox" data-field="MakeDefault" id="Thermal_MakeDefault" @(Model.MakeDefault ? "checked" : "") />
+                <label for="Thermal_MakeDefault">Make Thermal Printer Default</label>
+                <span class="p-info" title="New prints open on the Thermal layout instead of Regular.">i</span>
+            </div>
+
+            <div class="p-field p-field-top">
+                <label>Page Size</label>
+                <div class="p-seg" id="thermalPaperSeg">
+                    <button type="button" class="p-seg-btn @(IsPaper("2 Inch") ? "on" : "")" data-paper="2 Inch" onclick="setPaper('2 Inch')">
+                        <span class="p-seg-main">2 Inch</span><span class="p-seg-sub">58mm</span>
+                    </button>
+                    <button type="button" class="p-seg-btn @(IsPaper("3 Inch") ? "on" : "")" data-paper="3 Inch" onclick="setPaper('3 Inch')">
+                        <span class="p-seg-main">3 Inch</span><span class="p-seg-sub">68mm</span>
+                    </button>
+                    <button type="button" class="p-seg-btn @(IsPaper("4 Inch") ? "on" : "")" data-paper="4 Inch" onclick="setPaper('4 Inch')">
+                        <span class="p-seg-main">4 Inch</span><span class="p-seg-sub">88mm</span>
+                    </button>
+                    <button type="button" class="p-seg-btn @(IsPaper("Custom") ? "on" : "")" data-paper="Custom" onclick="setPaper('Custom')">
+                        <span class="p-seg-main">Custom</span>
+                        <input type="number" class="p-seg-num" data-field="CustomChars" id="Thermal_CustomChars"
+                               value="@Model.CustomChars" min="20" max="120" step="1" onclick="event.stopPropagation();" />
+                        <span class="p-seg-sub">(Chars)</span>
+                    </button>
+                </div>
+                <input type="hidden" data-field="PaperSize" id="Thermal_PaperSize" value="@paper" />
+                <span class="p-info" title="Roll width. Custom sizes the page from characters per line.">i</span>
+            </div>
+        </div>
+
+        <!-- ---------- Driver options ---------- -->
+        <div class="p-section">
+            <div class="p-field">
+                <label>Printing Type</label>
+                <select class="p-select" data-field="PrintingType" id="Thermal_PrintingType">
+                    <option value="Text Printing" selected="@(string.Equals(Model.PrintingType, "Text Printing", StringComparison.OrdinalIgnoreCase))">Text Printing</option>
+                    <option value="Graphics Printing" selected="@(string.Equals(Model.PrintingType, "Graphics Printing", StringComparison.OrdinalIgnoreCase))">Graphics Printing</option>
+                </select>
+                <span class="p-info" title="Sent to the printer driver. The generated PDF looks the same either way.">i</span>
+            </div>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="UseTextStyling" id="Thermal_UseTextStyling" @(Model.UseTextStyling ? "checked" : "") />
+                <label for="Thermal_UseTextStyling">Use Text Styling(<b>Bold</b>)</label>
+                <span class="p-info" title="Bold on company name, title, column headers and Total.">i</span>
+            </div>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="AutoCutPaper" id="Thermal_AutoCutPaper" @(Model.AutoCutPaper ? "checked" : "") />
+                <label for="Thermal_AutoCutPaper">Auto Cut Paper After Printing</label>
+                <span class="p-info" title="Printer command. Stored for the POS layer; no effect on the PDF.">i</span>
+            </div>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="OpenCashDrawer" id="Thermal_OpenCashDrawer" @(Model.OpenCashDrawer ? "checked" : "") />
+                <label for="Thermal_OpenCashDrawer">Open Cash Drawer After Printing</label>
+                <span class="p-info" title="Printer command. Stored for the POS layer; no effect on the PDF.">i</span>
+            </div>
+
+            <div class="p-field">
+                <label>Extra lines at the end</label>
+                <input type="number" class="p-input p-num" data-field="ExtraLinesEnd" value="@Model.ExtraLinesEnd" min="0" max="20" step="1" />
+                <span class="p-info" title="Blank feed lines so the receipt clears the tear bar.">i</span>
+            </div>
+
+            <div class="p-field">
+                <label>Number of copies</label>
+                <input type="number" class="p-input p-num" data-field="NumberOfCopies" value="@Model.NumberOfCopies" min="1" max="5" step="1" />
+                <span class="p-info" title="Repeats the whole receipt in the same file.">i</span>
+            </div>
+        </div>
+
+        <!-- ---------- Company info ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Print Company Info / Header</h3>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintCompanyName" id="Thermal_PrintCompanyName" @(Model.PrintCompanyName ? "checked" : "") />
+                <input type="text" class="p-input p-grow p-float" data-field="CompanyNameText" id="Thermal_CompanyNameText"
+                       value="@Model.CompanyNameText" placeholder="@(ViewData["CompanyName"])" data-label="Company Name" />
+                <span class="p-info" title="Leave blank to use the company name from Business Profile.">i</span>
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintLogo" id="Thermal_PrintLogo" @(Model.PrintLogo ? "checked" : "") />
+                <label for="Thermal_PrintLogo">Company Logo</label>
+                <a href="#" class="p-link" onclick="pickImage('logo'); return false;">(Change)</a>
+                <img id="Thermal_LogoPreview" class="p-thumb" src="@(ViewData["LogoUrl"])" alt="" onerror="this.style.display='none'" />
+                <span class="p-info" title="Centred at the top of the receipt.">i</span>
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintAddress" id="Thermal_PrintAddress" @(Model.PrintAddress ? "checked" : "") />
+                <input type="text" class="p-input p-grow p-float" data-field="AddressText" id="Thermal_AddressText"
+                       value="@Model.AddressText" placeholder="@(ViewData["CompanyAddress"])" data-label="Address" />
+                <span class="p-info" title="Leave blank to use the address from Business Profile.">i</span>
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintEmail" id="Thermal_PrintEmail" @(Model.PrintEmail ? "checked" : "") />
+                <input type="text" class="p-input p-grow p-float" data-field="EmailText" id="Thermal_EmailText"
+                       value="@Model.EmailText" placeholder="@(ViewData["CompanyEmail"])" data-label="Email" />
+                <span class="p-info" title="Leave blank to use the email from Business Profile.">i</span>
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintPhone" id="Thermal_PrintPhone" @(Model.PrintPhone ? "checked" : "") />
+                <input type="text" class="p-input p-grow p-float" data-field="PhoneText" id="Thermal_PhoneText"
+                       value="@Model.PhoneText" placeholder="@(ViewData["CompanyPhone"])" data-label="Phone Number" />
+                <span class="p-info" title="Leave blank to use the phone from Business Profile.">i</span>
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintGstin" id="Thermal_PrintGstin" @(Model.PrintGstin ? "checked" : "") />
+                <input type="text" class="p-input p-grow p-float" data-field="GstinText" id="Thermal_GstinText"
+                       value="@Model.GstinText" placeholder="@(ViewData["CompanyGstin"])" data-label="GSTIN on Sale" />
+                <span class="p-info" title="Leave blank to use the GSTIN from Business Profile.">i</span>
+            </div>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="PrintState" id="Thermal_PrintState" @(Model.PrintState ? "checked" : "") />
+                <label for="Thermal_PrintState">State Name and Code</label>
+            </div>
+
+            <a href="#" class="p-link p-link-block" onclick="openTransactionNames(); return false;">Change Transaction Names &gt;</a>
+        </div>
+
+        <!-- ---------- Item table ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Item table</h3>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintItemSrNo" id="Thermal_PrintItemSrNo" @(Model.PrintItemSrNo ? "checked" : "") /><label for="Thermal_PrintItemSrNo">S.No</label><span class="p-info" title="Line number column on the left.">i</span></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemHsn" id="Thermal_PrintItemHsn" @(Model.PrintItemHsn ? "checked" : "") /><label for="Thermal_PrintItemHsn">HSN/SAC Code</label><span class="p-info" title="Printed in brackets after the item name.">i</span></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemUom" id="Thermal_PrintItemUom" @(Model.PrintItemUom ? "checked" : "") /><label for="Thermal_PrintItemUom">Units of Measurement</label><span class="p-info" title="Suffixed to the quantity, e.g. 100Box.">i</span></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemMrp" id="Thermal_PrintItemMrp" @(Model.PrintItemMrp ? "checked" : "") /><label for="Thermal_PrintItemMrp">MRP</label><span class="p-info" title="Adds an MRP column between Qty and Price.">i</span></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemDescription" id="Thermal_PrintItemDescription" @(Model.PrintItemDescription ? "checked" : "") /><label for="Thermal_PrintItemDescription">Description</label><span class="p-info" title="Item description from the item master.">i</span></div>
+        </div>
+
+        <!-- ---------- Additional item details ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Additional Item Details</h3>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintItemBatchNo" id="Thermal_PrintItemBatchNo" @(Model.PrintItemBatchNo ? "checked" : "") /><label for="Thermal_PrintItemBatchNo">Batch No.</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemExpDate" id="Thermal_PrintItemExpDate" @(Model.PrintItemExpDate ? "checked" : "") /><label for="Thermal_PrintItemExpDate">Exp. Date</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemMfgDate" id="Thermal_PrintItemMfgDate" @(Model.PrintItemMfgDate ? "checked" : "") /><label for="Thermal_PrintItemMfgDate">Mfg. Date</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemModelNo" id="Thermal_PrintItemModelNo" @(Model.PrintItemModelNo ? "checked" : "") /><label for="Thermal_PrintItemModelNo">Model No.</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemSize" id="Thermal_PrintItemSize" @(Model.PrintItemSize ? "checked" : "") /><label for="Thermal_PrintItemSize">Size</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintItemSerialNo" id="Thermal_PrintItemSerialNo" @(Model.PrintItemSerialNo ? "checked" : "") /><label for="Thermal_PrintItemSerialNo">Serial No.</label></div>
+        </div>
+
+        <!-- ---------- Totals ---------- -->
+        <div class="p-section">
+            <div class="p-check"><input type="checkbox" data-field="PrintTotalItemQuantity" id="Thermal_PrintTotalItemQuantity" @(Model.PrintTotalItemQuantity ? "checked" : "") /><label for="Thermal_PrintTotalItemQuantity">Total Item Quantity</label><span class="p-info" title="The Qty: line above the totals.">i</span></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintAmountWithDecimal" id="Thermal_PrintAmountWithDecimal" @(Model.PrintAmountWithDecimal ? "checked" : "") /><label for="Thermal_PrintAmountWithDecimal">Amount with Decimal</label><span class="p-hint" style="margin-left:5px;">e.g. 0.00</span><span class="p-info" title="Round to whole rupees when off.">i</span></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintReceivedAmount" id="Thermal_PrintReceivedAmount" @(Model.PrintReceivedAmount ? "checked" : "") /><label for="Thermal_PrintReceivedAmount">Received Amount</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintBalanceAmount" id="Thermal_PrintBalanceAmount" @(Model.PrintBalanceAmount ? "checked" : "") /><label for="Thermal_PrintBalanceAmount">Balance Amount</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintCurrentBalanceParty" id="Thermal_PrintCurrentBalanceParty" @(Model.PrintCurrentBalanceParty ? "checked" : "") /><label for="Thermal_PrintCurrentBalanceParty">Current Balance of Party</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintTaxDetails" id="Thermal_PrintTaxDetails" @(Model.PrintTaxDetails ? "checked" : "") /><label for="Thermal_PrintTaxDetails">Tax Details</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintYouSaved" id="Thermal_PrintYouSaved" @(Model.PrintYouSaved ? "checked" : "") /><label for="Thermal_PrintYouSaved">You Saved</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintAmountWithGrouping" id="Thermal_PrintAmountWithGrouping" @(Model.PrintAmountWithGrouping ? "checked" : "") /><label for="Thermal_PrintAmountWithGrouping">Print Amount with Grouping</label><span class="p-info" title="1,23,456.00 instead of 123456.00">i</span></div>
+
+            <div class="p-field">
+                <label>Amount in Words</label>
+                <select class="p-select" data-field="AmountInWordsFormat" id="Thermal_AmountInWordsFormat">
+                    <option value="Indian" selected="@(string.Equals(Model.AmountInWordsFormat, "Indian", StringComparison.OrdinalIgnoreCase))">Indian</option>
+                    <option value="International" selected="@(string.Equals(Model.AmountInWordsFormat, "International", StringComparison.OrdinalIgnoreCase))">International</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ---------- Footer ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Footer</h3>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintDescription" id="Thermal_PrintDescription" @(Model.PrintDescription ? "checked" : "") /><label for="Thermal_PrintDescription">Print Description</label><span class="p-info" title="The note saved on the transaction.">i</span></div>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintTermsConditions" id="Thermal_PrintTermsConditions" @(Model.PrintTermsConditions ? "checked" : "") /><label for="Thermal_PrintTermsConditions">Print Terms and Conditions</label><span class="p-info" title="The fixed terms below.">i</span></div>
+            <div class="p-nested">
+                <textarea class="p-textarea" data-field="DefaultTermsText" rows="2" placeholder="Terms printed on every receipt">@Model.DefaultTermsText</textarea>
+            </div>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintPaymentMode" id="Thermal_PrintPaymentMode" @(Model.PrintPaymentMode ? "checked" : "") /><label for="Thermal_PrintPaymentMode">Payment Mode</label></div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintSignatureText" id="Thermal_PrintSignatureText" @(Model.PrintSignatureText ? "checked" : "") />
+                <label for="Thermal_PrintSignatureText">Print Signature Text</label>
+                <input type="text" class="p-input p-grow" data-field="SignatureText" value="@Model.SignatureText" />
+            </div>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintAcknowledgement" id="Thermal_PrintAcknowledgement" @(Model.PrintAcknowledgement ? "checked" : "") /><label for="Thermal_PrintAcknowledgement">Print Acknowledgement</label></div>
+        </div>
+
+        <!-- ---------- Fields the thermal layout does not use, kept so a save
+                       never wipes the values shared with the Regular row ---------- -->
+        <input type="hidden" data-field="CompanyNameTextSize" value="@Model.CompanyNameTextSize" />
+        <input type="hidden" data-field="InvoiceTextSize" value="@Model.InvoiceTextSize" />
+        <input type="hidden" data-field="RepeatHeader" value="@Model.RepeatHeader.ToString().ToLowerInvariant()" data-bool="1" />
+        <input type="hidden" data-field="FontFamily" value="@Model.FontFamily" />
+        <input type="hidden" data-field="ExtraSpaceTop" value="@Model.ExtraSpaceTop" data-num="1" />
+        <input type="hidden" data-field="MarginLeft" value="@Model.MarginLeft" data-num="1" />
+        <input type="hidden" data-field="MarginRight" value="@Model.MarginRight" data-num="1" />
+        <input type="hidden" data-field="MarginBottom" value="@Model.MarginBottom" data-num="1" />
+    </div>
+</div>

@@ -1,0 +1,720 @@
+@using MUNEEMJI.Models.Setting
+@model PrintSettingsViewModel
+@{
+    ViewData["Title"] = "Print Settings";
+    Layout = "~/Areas/Settings/Views/Shared/_SettingsLayout.cshtml";
+
+    var docTypes = ViewBag.DocumentTypes as Dictionary<int, string> ?? new Dictionary<int, string>();
+    var catalog = ViewBag.ColumnCatalog as List<PrintItemColumnCatalog.Definition> ?? new List<PrintItemColumnCatalog.Definition>();
+
+    string ToWebUrl(string stored)
+    {
+        if (string.IsNullOrWhiteSpace(stored)) return "";
+        var s = stored.Replace('\\', '/').TrimStart('/');
+        if (s.StartsWith("Web/", StringComparison.OrdinalIgnoreCase)) s = s.Substring(4);
+        return "/Web/" + s;
+    }
+
+    ViewData["Themes"] = Model.Themes;
+    ViewData["CompanyName"] = Model.Company?.BusinessName;
+    ViewData["CompanyAddress"] = Model.Company?.Address;
+    ViewData["CompanyEmail"] = Model.Company?.Email;
+    ViewData["CompanyPhone"] = Model.Company?.PhoneNumber;
+    ViewData["CompanyGstin"] = Model.Company?.Gstin;
+    ViewData["LogoUrl"] = ToWebUrl(Model.Company?.LogoPath);
+    ViewData["SignatureUrl"] = ToWebUrl(Model.Company?.SignaturePath);
+}
+
+<script type="text/javascript">
+    function navigateBack() {
+        try {
+            var urlParams = new URLSearchParams(window.location.search);
+            var returnUrl = urlParams.get('returnUrl');
+            if (!returnUrl || returnUrl === '') { window.location.href = '/Web/Home/Index'; return; }
+            var decoded = decodeURIComponent(returnUrl);
+            if (decoded.indexOf('returnUrl=') !== -1) { window.location.href = '/Web/Home/Index'; }
+            else { window.location.href = returnUrl; }
+        } catch (e) { window.location.href = '/Web/Home/Index'; }
+    }
+</script>
+
+<style>
+    /* This screen is preview-heavy, so claw back the shell's top padding. */
+    .main-content { padding-top: 6px !important; }
+
+    .p-wrap { padding: 0 14px 10px 14px; background: #fff; }
+
+    .p-tabs { display: flex; align-items: center; gap: 4px; border-bottom: 2px solid #e9ecef; margin-bottom: 8px; }
+    .p-close-btn { margin-left: auto; }
+    .p-tab { background: none; border: none; padding: 7px 16px; font-size: 12px; font-weight: 600; color: #777; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+    .p-tab.active { color: #1a3353; border-bottom-color: #e53e3e; }
+
+    .p-layout { display: flex; gap: 16px; align-items: flex-start; }
+    /* Options stay a fixed, readable column; the preview takes everything else. */
+    .p-left { flex: 0 0 400px; max-width: 400px; min-width: 0; max-height: calc(100vh - 96px); overflow-y: auto; padding-right: 8px; }
+    .p-right { flex: 1 1 auto; min-width: 0; position: sticky; top: 10px; }
+
+    @@media (max-width: 1200px) {
+        .p-left { flex-basis: 340px; max-width: 340px; }
+    }
+
+    .p-subtabs { display: flex; gap: 6px; margin-bottom: 10px; }
+    .p-subtab { background: #f1f3f5; border: 1px solid #dee2e6; border-radius: 4px; padding: 5px 12px; font-size: 11px; font-weight: 600; color: #555; cursor: pointer; }
+    .p-subtab.active { background: #1a3353; border-color: #1a3353; color: #fff; }
+
+    .p-section { margin-bottom: 16px; }
+    .p-title { font-size: 12px; font-weight: 700; color: #1a3353; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid #e9ecef; text-transform: uppercase; }
+    .p-desc { font-size: 10px; color: #666; margin-bottom: 8px; }
+
+    .p-check { display: flex; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+    .p-check input[type="checkbox"] { width: 14px; height: 14px; margin-right: 6px; cursor: pointer; accent-color: #007bff; }
+    .p-check label { font-size: 11px; color: #444; margin: 0; cursor: pointer; }
+    .p-check-inline label { min-width: 96px; }
+    .p-info { margin-left: 5px; color: #aaa; font-size: 9px; background: #f0f0f0; border-radius: 50%; width: 13px; height: 13px; display: inline-flex; align-items: center; justify-content: center; cursor: help; }
+
+    .p-nested { margin-left: 20px; margin-bottom: 6px; }
+
+    .p-field { display: flex; align-items: center; margin-bottom: 6px; gap: 6px; flex-wrap: wrap; }
+    .p-field > label { font-size: 11px; color: #555; min-width: 112px; margin: 0; }
+
+    .p-input, .p-select { padding: 4px 8px; border: 1px solid #dee2e6; border-radius: 3px; font-size: 11px; outline: none; background: #fff; }
+    .p-input:focus, .p-select:focus { border-color: #007bff; }
+    .p-num { width: 60px; }
+    .p-grow { flex: 1; min-width: 120px; }
+    .p-textarea { width: 100%; padding: 5px 8px; border: 1px solid #dee2e6; border-radius: 3px; font-size: 11px; outline: none; resize: vertical; font-family: inherit; }
+    .p-color { width: 42px; height: 24px; padding: 0; border: 1px solid #dee2e6; border-radius: 3px; cursor: pointer; background: #fff; }
+    .p-unit, .p-hint { font-size: 10px; color: #888; }
+
+    .p-link { font-size: 11px; color: #007bff; text-decoration: none; margin-left: 8px; cursor: pointer; }
+    .p-link:hover { text-decoration: underline; }
+    .p-link-block { display: inline-block; margin: 6px 0 0 0; font-weight: 600; }
+
+    .p-thumb { height: 26px; max-width: 80px; margin-left: 8px; border: 1px solid #e9ecef; border-radius: 3px; object-fit: contain; }
+
+    .p-btn { background: #1a3353; color: #fff; border: none; border-radius: 4px; padding: 6px 14px; font-size: 11px; font-weight: 600; cursor: pointer; }
+    .p-btn:hover { background: #24476f; }
+    .p-btn.secondary { background: #6c757d; }
+
+    .p-themes { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px 2px; }
+    .p-theme { flex: 0 0 auto; width: 86px; cursor: pointer; text-align: center; padding: 4px; border: 2px solid transparent; border-radius: 5px; }
+    .p-theme.selected { border-color: #e53e3e; background: #fff8f8; }
+    .p-theme-thumb { height: 62px; border: 1px solid #ccc; border-radius: 3px; padding: 4px; display: flex; flex-direction: column; gap: 3px; }
+    .p-theme-bar { height: 8px; border-radius: 1px; }
+    .p-theme-line { height: 4px; background: rgba(0,0,0,.18); border-radius: 1px; }
+    .p-theme-line.short { width: 60%; }
+    .p-theme-total { height: 7px; margin-top: auto; border-radius: 1px; }
+    .p-theme-name { font-size: 9px; font-weight: 600; color: #333; margin-top: 4px; line-height: 1.2; }
+    .p-theme-meta { font-size: 8px; color: #999; }
+    /* accent palette on the Change Colors tab */
+    .p-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(24px, 1fr)); gap: 7px; padding: 4px 2px 8px 2px; }
+    .p-swatch { width: 24px; height: 24px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); cursor: pointer; padding: 0; outline: none; }
+    .p-swatch:hover { transform: scale(1.12); }
+    .p-swatch.on { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #f5c518; }
+    .p-advanced-colors { border-top: 1px solid #e9ecef; padding-top: 8px; margin-top: 6px; }
+
+    .p-theme-thumb.thermal { background: #fff; border-color: #ccc; }
+    .p-theme-thumb.thermal .p-theme-line { background: rgba(0,0,0,.22); }
+
+    /* segmented Page Size control (thermal) */
+    .p-field-top { align-items: flex-start; }
+    .p-seg { display: inline-flex; border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; }
+    .p-seg-btn { background: #fff; border: none; border-right: 1px solid #dee2e6; padding: 6px 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 62px; }
+    .p-seg-btn:last-child { border-right: none; }
+    .p-seg-btn.on { background: #007bff; }
+    .p-seg-main { font-size: 11px; font-weight: 600; color: #333; }
+    .p-seg-btn.on .p-seg-main, .p-seg-btn.on .p-seg-sub { color: #fff; }
+    .p-seg-sub { font-size: 9px; color: #888; }
+    .p-seg-num { width: 34px; padding: 1px 3px; border: 1px solid #dee2e6; border-radius: 3px; font-size: 10px; text-align: center; }
+
+    /* floating-label text input used on the thermal header rows */
+    .p-float { padding-top: 9px; }
+    .p-float-wrap { position: relative; flex: 1; }
+    .p-float-wrap > span { position: absolute; top: -6px; left: 7px; background: #fff; padding: 0 3px; font-size: 9px; color: #888; }
+
+    .p-preview-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .p-preview-head h3 { font-size: 12px; font-weight: 700; color: #1a3353; margin: 0; text-transform: uppercase; }
+    .p-preview-box { border: 1px solid #dee2e6; border-radius: 5px; background: #f8f9fa; height: calc(100vh - 126px); min-height: 480px; position: relative; overflow: hidden; }
+    .p-preview-box iframe { width: 100%; height: 100%; border: none; background: #fff; }
+    .p-preview-mask { position: absolute; inset: 0; background: rgba(255,255,255,.75); display: none; align-items: center; justify-content: center; font-size: 11px; color: #555; }
+    .p-preview-mask.on { display: flex; }
+
+    .p-toast { position: fixed; top: 16px; right: 16px; background: #28a745; color: #fff; padding: 10px 16px; border-radius: 5px; font-size: 12px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,.2); z-index: 9999; display: none; }
+    .p-toast.error { background: #dc3545; }
+
+    .p-modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 9000; display: none; align-items: center; justify-content: center; }
+    .p-modal.on { display: flex; }
+    .p-modal-box { background: #fff; border-radius: 6px; width: 760px; max-width: 94vw; max-height: 88vh; display: flex; flex-direction: column; }
+    .p-modal-head { padding: 10px 14px; border-bottom: 1px solid #e9ecef; display: flex; align-items: center; justify-content: space-between; }
+    .p-modal-head h3 { margin: 0; font-size: 13px; font-weight: 700; color: #1a3353; }
+    .p-modal-body { padding: 12px 14px; overflow-y: auto; }
+    .p-modal-foot { padding: 10px 14px; border-top: 1px solid #e9ecef; display: flex; justify-content: flex-end; gap: 8px; }
+
+    .p-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .p-table th { text-align: left; background: #f1f3f5; padding: 6px; font-weight: 700; color: #444; border: 1px solid #e9ecef; }
+    .p-table td { padding: 4px 6px; border: 1px solid #e9ecef; }
+    .p-table input[type="text"], .p-table input[type="number"] { width: 100%; padding: 3px 5px; border: 1px solid #dee2e6; border-radius: 3px; font-size: 11px; }
+    .p-drag { cursor: grab; color: #aaa; user-select: none; }
+</style>
+
+<div class="p-wrap">
+    <div id="printToast" class="p-toast"></div>
+
+    <!-- Close sits on the tab row rather than on a line of its own, so the
+         page starts straight away instead of below an empty strip. -->
+    <div class="p-tabs">
+        <button type="button" class="p-tab active" data-printer="Regular" onclick="switchPrinter('Regular')">Regular Printer</button>
+        <button type="button" class="p-tab" data-printer="Thermal" onclick="switchPrinter('Thermal')">Thermal Printer</button>
+        <button type="button" class="btn-close p-close-btn" style="font-size:10px;" aria-label="Close" onclick="navigateBack(); return false;"></button>
+    </div>
+
+    <div class="p-layout">
+        <div class="p-left">
+            <div id="host-Regular">
+                @{ ViewData["Themes"] = Model.Themes.Where(t => !string.Equals(t.PrinterType, "Thermal", StringComparison.OrdinalIgnoreCase)).ToList(); }
+                @await Html.PartialAsync("_PrintPanel", Model.Regular, ViewData)
+            </div>
+            <div id="host-Thermal" style="display:none;">
+                @{
+                    var thermalThemes = Model.Themes.Where(t => string.Equals(t.PrinterType, "Thermal", StringComparison.OrdinalIgnoreCase)).ToList();
+                    ViewData["Themes"] = thermalThemes.Count > 0 ? thermalThemes : Model.Themes;
+                }
+                @await Html.PartialAsync("_ThermalPanel", Model.Thermal, ViewData)
+            </div>
+        </div>
+
+        <div class="p-right">
+            <div class="p-preview-head">
+                <h3>Live Preview</h3>
+                <select class="p-select" id="previewDocType" onchange="refreshPreview()">
+                    @foreach (var kv in docTypes)
+                    {
+                        <option value="@kv.Key" selected="@(kv.Key == 5)">@kv.Value</option>
+                    }
+                </select>
+                <button type="button" class="p-btn secondary" onclick="refreshPreview()">Refresh</button>
+            </div>
+            <div class="p-preview-box">
+                <iframe id="previewFrame" title="PDF preview"></iframe>
+                <div class="p-preview-mask" id="previewMask">Rendering preview&hellip;</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- hidden file input shared by logo + signature -->
+<input type="file" id="imagePicker" accept="image/*" style="display:none;" />
+
+<!-- ==================== Change Transaction Names ==================== -->
+<div class="p-modal" id="txnModal">
+    <div class="p-modal-box">
+        <div class="p-modal-head">
+            <h3>Change Transaction Names</h3>
+            <button type="button" class="btn-close" style="font-size:10px;" onclick="closeModal('txnModal')"></button>
+        </div>
+        <div class="p-modal-body">
+            <table class="p-table">
+                <thead>
+                    <tr>
+                        <th style="width:22%;">Transaction</th>
+                        <th style="width:22%;">Printed Title</th>
+                        <th>Original Label</th>
+                        <th>Duplicate Label</th>
+                        <th>Triplicate Label</th>
+                    </tr>
+                </thead>
+                <tbody id="txnRows">
+                    @foreach (var row in Model.TransactionNames)
+                    {
+                        <tr data-doctype="@row.TradeDocumentTypesId">
+                            <td>@(docTypes.ContainsKey(row.TradeDocumentTypesId) ? docTypes[row.TradeDocumentTypesId] : row.TradeDocumentTypesId.ToString())</td>
+                            <td><input type="text" data-txn="DisplayTitle" value="@row.DisplayTitle" /></td>
+                            <td><input type="text" data-txn="LabelOriginal" value="@row.LabelOriginal" /></td>
+                            <td><input type="text" data-txn="LabelDuplicate" value="@row.LabelDuplicate" /></td>
+                            <td><input type="text" data-txn="LabelTriplicate" value="@row.LabelTriplicate" /></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="p-modal-foot">
+            <button type="button" class="p-btn secondary" onclick="closeModal('txnModal')">Cancel</button>
+            <button type="button" class="p-btn" onclick="saveTransactionNames()">Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== Item Table Customization ==================== -->
+<div class="p-modal" id="colModal">
+    <div class="p-modal-box">
+        <div class="p-modal-head">
+            <h3>Item Table Customization</h3>
+            <button type="button" class="btn-close" style="font-size:10px;" onclick="closeModal('colModal')"></button>
+        </div>
+        <div class="p-modal-body">
+            <div class="p-field">
+                <label>Apply to</label>
+                <select class="p-select" id="colDocType" onchange="loadItemColumns()">
+                    <option value="0">All transaction types</option>
+                    @foreach (var kv in docTypes)
+                    {
+                        <option value="@kv.Key">@kv.Value</option>
+                    }
+                </select>
+            </div>
+            <p class="p-desc">Drag a row to reorder. Width is a relative weight, not a fixed size.</p>
+            <table class="p-table">
+                <thead>
+                    <tr>
+                        <th style="width:26px;"></th>
+                        <th style="width:34px;">Show</th>
+                        <th style="width:32%;">Column</th>
+                        <th>Header Text</th>
+                        <th style="width:70px;">Width</th>
+                    </tr>
+                </thead>
+                <tbody id="colRows"></tbody>
+            </table>
+        </div>
+        <div class="p-modal-foot">
+            <button type="button" class="p-btn secondary" onclick="closeModal('colModal')">Cancel</button>
+            <button type="button" class="p-btn" onclick="saveItemColumns()">Save</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var COLUMN_LABELS = {
+        @Html.Raw(string.Join(",\n        ", catalog.Select(c => "'" + c.Key + "': '" + c.DefaultHeader.Replace("'", "\\'") + "'")))
+    };
+
+    var currentPrinter = 'Regular';
+    var previewTimer = null;
+    var previewUrl = null;
+    var imageTarget = null;
+
+    // =============================================================
+    //  Tabs
+    // =============================================================
+    function switchPrinter(type) {
+        currentPrinter = type;
+        document.querySelectorAll('.p-tab').forEach(function (t) {
+            t.classList.toggle('active', t.getAttribute('data-printer') === type);
+        });
+        ['Regular', 'Thermal'].forEach(function (p) {
+            var host = document.getElementById('host-' + p);
+            if (host) host.style.display = (p === type) ? '' : 'none';
+        });
+        refreshPreview();
+    }
+
+    function switchSub(printer, sub) {
+        var panel = document.getElementById('panel-' + printer);
+        if (!panel) return;
+        panel.querySelectorAll('.p-subtab').forEach(function (b) {
+            b.classList.toggle('active', b.getAttribute('data-sub') === sub);
+        });
+
+        // Only the head strip swaps - the option list below is shared.
+        panel.querySelectorAll('.p-sub-head').forEach(function (s) {
+            s.style.display = (s.getAttribute('data-sub') === sub) ? '' : 'none';
+        });
+    }
+
+    function toggleAdvancedColors(printer) {
+        var box = document.getElementById(printer + '_AdvancedColors');
+        if (box) box.style.display = (box.style.display === 'none') ? '' : 'none';
+    }
+
+    // Black or white, whichever stays readable on the picked accent.
+    function contrastOn(hex) {
+        var h = String(hex).replace('#', '');
+        if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+        var r = parseInt(h.substr(0, 2), 16),
+            g = parseInt(h.substr(2, 2), 16),
+            b = parseInt(h.substr(4, 2), 16);
+        return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#000000' : '#FFFFFF';
+    }
+
+    // One swatch drives the whole palette: headings, table header band,
+    // rules and the total row all take the accent, text flips for contrast.
+    function pickSwatch(printer, hex) {
+        var panel = document.getElementById('panel-' + printer);
+        if (!panel) return;
+
+        var text = contrastOn(hex);
+
+        // A pale accent (the white swatch especially) sits on a white page, so
+        // rules and headings would vanish if they took the accent directly.
+        var light = (text === '#000000');
+
+        var map = {
+            PrimaryColor: light ? '#333333' : hex,   // headings sit on white
+            HeaderBgColor: hex,                      // filled band takes the accent
+            BorderColor: light ? '#A9A9A9' : hex,
+            TotalRowColor: hex,
+            HeaderTextColor: text
+        };
+
+        Object.keys(map).forEach(function (k) {
+            var el = panel.querySelector('[data-field="' + k + '"]');
+            if (el) el.value = map[k];
+        });
+
+        panel.querySelectorAll('.p-swatch').forEach(function (s) {
+            s.classList.toggle('on', s.getAttribute('data-swatch').toLowerCase() === hex.toLowerCase());
+        });
+
+        autoSave(printer);
+        if (printer === currentPrinter) queuePreview();
+    }
+
+    // =============================================================
+    //  Collect + save
+    // =============================================================
+    function collect(printer) {
+        var panel = document.getElementById('panel-' + printer);
+        var data = {};
+        if (!panel) return data;
+
+        panel.querySelectorAll('[data-field]').forEach(function (el) {
+            var field = el.getAttribute('data-field');
+            if (el.type === 'checkbox') {
+                data[field] = el.checked;
+            } else if (el.type === 'number' || el.hasAttribute('data-num')) {
+                var n = parseFloat(el.value);
+                data[field] = isNaN(n) ? 0 : n;
+            } else if (el.hasAttribute('data-bool')) {
+                data[field] = String(el.value).toLowerCase() === 'true';
+            } else if (field === 'ThemeId' || field === 'Id') {
+                data[field] = parseInt(el.value) || 0;
+            } else {
+                data[field] = el.value;
+            }
+        });
+
+        data.PrinterType = printer;
+        return data;
+    }
+
+    function autoSave(printer) {
+        printer = printer || currentPrinter;
+        var data = collect(printer);
+
+        fetch('/Web/Settings/Print/SavePrintSettings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(function (r) { if (r.ok) return r.json(); throw new Error('Failed'); })
+        .then(function (result) {
+            if (result.success) showToast('Print settings saved!');
+            else showToast(result.message || 'Error saving', 'error');
+        })
+        .catch(function () { showToast('Error saving print settings', 'error'); });
+    }
+
+    // =============================================================
+    //  Theme
+    // =============================================================
+    function applyTheme(printer, themeId) {
+        fetch('/Web/Settings/Print/ApplyTheme', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ThemeId: themeId, PrinterType: printer })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (result) {
+            if (!result.success) { showToast(result.message || 'Error applying theme', 'error'); return; }
+
+            var panel = document.getElementById('panel-' + printer);
+            panel.querySelector('[data-field="ThemeId"]').value = themeId;
+
+            panel.querySelectorAll('.p-theme').forEach(function (t) {
+                t.classList.toggle('selected', parseInt(t.getAttribute('data-theme-id')) === themeId);
+            });
+
+            var map = {
+                PrimaryColor: result.colors.primaryColor,
+                HeaderBgColor: result.colors.headerBgColor,
+                BorderColor: result.colors.borderColor,
+                TotalRowColor: result.colors.totalRowColor,
+                HeaderTextColor: result.colors.headerTextColor
+            };
+            Object.keys(map).forEach(function (k) {
+                var el = panel.querySelector('[data-field="' + k + '"]');
+                if (el && map[k]) el.value = map[k];
+            });
+
+            var orientation = panel.querySelector('[data-field="Orientation"]');
+            if (orientation && result.orientation) orientation.value = result.orientation;
+
+            // Keep the Change Colors swatches in step with the theme accent.
+            var accent = (result.colors.primaryColor || '').toLowerCase();
+            panel.querySelectorAll('.p-swatch').forEach(function (s) {
+                s.classList.toggle('on', s.getAttribute('data-swatch').toLowerCase() === accent);
+            });
+
+            showToast('Theme applied!');
+            refreshPreview();
+        })
+        .catch(function () { showToast('Error applying theme', 'error'); });
+    }
+
+    // =============================================================
+    //  Thermal page size (segmented control)
+    // =============================================================
+    function setPaper(size) {
+        var hidden = document.getElementById('Thermal_PaperSize');
+        if (!hidden) return;
+        hidden.value = size;
+
+        document.querySelectorAll('#thermalPaperSeg .p-seg-btn').forEach(function (b) {
+            b.classList.toggle('on', b.getAttribute('data-paper') === size);
+        });
+
+        autoSave('Thermal');
+        if (currentPrinter === 'Thermal') queuePreview();
+    }
+
+    // =============================================================
+    //  Live preview
+    // =============================================================
+    function queuePreview() {
+        if (previewTimer) clearTimeout(previewTimer);
+        previewTimer = setTimeout(refreshPreview, 450);
+    }
+
+    function refreshPreview() {
+        var mask = document.getElementById('previewMask');
+        mask.classList.add('on');
+
+        var payload = {
+            PrinterType: currentPrinter,
+            DocumentTypeId: parseInt(document.getElementById('previewDocType').value) || 5,
+            Settings: collect(currentPrinter)
+        };
+
+        fetch('/Web/Settings/Print/PreviewPdf', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(function (r) {
+            if (!r.ok) throw new Error('Preview failed');
+            return r.blob();
+        })
+        .then(function (blob) {
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            previewUrl = URL.createObjectURL(blob);
+            document.getElementById('previewFrame').src = previewUrl;
+            mask.classList.remove('on');
+        })
+        .catch(function () {
+            mask.classList.remove('on');
+            showToast('Could not render preview', 'error');
+        });
+    }
+
+    // =============================================================
+    //  Transaction names
+    // =============================================================
+    function openTransactionNames() { document.getElementById('txnModal').classList.add('on'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('on'); }
+
+    function saveTransactionNames() {
+        var rows = [];
+        document.querySelectorAll('#txnRows tr').forEach(function (tr) {
+            rows.push({
+                TradeDocumentTypesId: parseInt(tr.getAttribute('data-doctype')) || 0,
+                DisplayTitle: tr.querySelector('[data-txn="DisplayTitle"]').value,
+                LabelOriginal: tr.querySelector('[data-txn="LabelOriginal"]').value,
+                LabelDuplicate: tr.querySelector('[data-txn="LabelDuplicate"]').value,
+                LabelTriplicate: tr.querySelector('[data-txn="LabelTriplicate"]').value
+            });
+        });
+
+        fetch('/Web/Settings/Print/SaveTransactionNames', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(rows)
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (result) {
+            if (result.success) { showToast('Transaction names saved!'); closeModal('txnModal'); refreshPreview(); }
+            else showToast(result.message || 'Error saving', 'error');
+        })
+        .catch(function () { showToast('Error saving transaction names', 'error'); });
+    }
+
+    // =============================================================
+    //  Item table columns
+    // =============================================================
+    function openItemColumns() {
+        document.getElementById('colModal').classList.add('on');
+        loadItemColumns();
+    }
+
+    function loadItemColumns() {
+        var docType = parseInt(document.getElementById('colDocType').value) || 0;
+
+        fetch('/Web/Settings/Print/GetItemColumns?documentTypeId=' + docType)
+            .then(function (r) { return r.json(); })
+            .then(function (result) {
+                var tbody = document.getElementById('colRows');
+                tbody.innerHTML = '';
+                if (!result.success) { showToast(result.message || 'Error loading columns', 'error'); return; }
+
+                result.data.forEach(function (c) {
+                    var tr = document.createElement('tr');
+                    tr.setAttribute('draggable', 'true');
+                    tr.setAttribute('data-key', c.columnKey);
+                    tr.innerHTML =
+                        '<td class="p-drag">&#8942;&#8942;</td>' +
+                        '<td style="text-align:center;"><input type="checkbox" data-col="visible"' + (c.isVisible ? ' checked' : '') + '></td>' +
+                        '<td>' + (COLUMN_LABELS[c.columnKey] || c.columnKey) + '</td>' +
+                        '<td><input type="text" data-col="header" value="' + escapeAttr(c.headerText || '') + '"></td>' +
+                        '<td><input type="number" data-col="width" min="1" max="60" step="1" value="' + (c.widthPercent || 8) + '"></td>';
+                    tbody.appendChild(tr);
+                });
+
+                wireDragAndDrop(tbody);
+            })
+            .catch(function () { showToast('Error loading columns', 'error'); });
+    }
+
+    function escapeAttr(v) {
+        return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    }
+
+    function wireDragAndDrop(tbody) {
+        var dragged = null;
+
+        tbody.querySelectorAll('tr').forEach(function (tr) {
+            tr.addEventListener('dragstart', function () { dragged = tr; tr.style.opacity = '.4'; });
+            tr.addEventListener('dragend', function () { tr.style.opacity = ''; dragged = null; });
+            tr.addEventListener('dragover', function (e) { e.preventDefault(); });
+            tr.addEventListener('drop', function (e) {
+                e.preventDefault();
+                if (!dragged || dragged === tr) return;
+                var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+                if (rows.indexOf(dragged) < rows.indexOf(tr)) tr.after(dragged);
+                else tr.before(dragged);
+            });
+        });
+    }
+
+    function saveItemColumns() {
+        var docType = parseInt(document.getElementById('colDocType').value) || 0;
+        var columns = [];
+        var order = 0;
+
+        document.querySelectorAll('#colRows tr').forEach(function (tr) {
+            columns.push({
+                ColumnKey: tr.getAttribute('data-key'),
+                HeaderText: tr.querySelector('[data-col="header"]').value,
+                IsVisible: tr.querySelector('[data-col="visible"]').checked,
+                SortOrder: order++,
+                WidthPercent: parseFloat(tr.querySelector('[data-col="width"]').value) || 8
+            });
+        });
+
+        fetch('/Web/Settings/Print/SaveItemColumns', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ DocumentTypeId: docType, Columns: columns })
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (result) {
+            if (result.success) { showToast('Item table saved!'); closeModal('colModal'); refreshPreview(); }
+            else showToast(result.message || 'Error saving', 'error');
+        })
+        .catch(function () { showToast('Error saving item table', 'error'); });
+    }
+
+    // =============================================================
+    //  Logo / signature upload
+    // =============================================================
+    function pickImage(target) {
+        imageTarget = target;
+        var picker = document.getElementById('imagePicker');
+        picker.value = '';
+        picker.click();
+    }
+
+    document.getElementById('imagePicker').addEventListener('change', function () {
+        if (!this.files || !this.files[0] || !imageTarget) return;
+
+        var form = new FormData();
+        form.append('file', this.files[0]);
+
+        var url = imageTarget === 'logo'
+            ? '/Web/Settings/Print/UploadLogo'
+            : '/Web/Settings/Print/UploadSignature';
+
+        fetch(url, { method: 'POST', body: form })
+            .then(function (r) { return r.json(); })
+            .then(function (result) {
+                if (!result.success) { showToast(result.message || 'Upload failed', 'error'); return; }
+
+                var suffix = imageTarget === 'logo' ? '_LogoPreview' : '_SignPreview';
+                ['Regular', 'Thermal'].forEach(function (p) {
+                    var img = document.getElementById(p + suffix);
+                    if (img) { img.src = '/Web' + result.path + '?t=' + Date.now(); img.style.display = ''; }
+                });
+
+                showToast('Image updated!');
+                refreshPreview();
+            })
+            .catch(function () { showToast('Upload failed', 'error'); });
+    });
+
+    // =============================================================
+    //  Toast
+    // =============================================================
+    function showToast(msg, type) {
+        var t = document.getElementById('printToast');
+        t.textContent = msg;
+        t.className = 'p-toast' + (type === 'error' ? ' error' : '');
+        t.style.display = 'block';
+        setTimeout(function () { t.style.display = 'none'; }, 2500);
+    }
+
+    // =============================================================
+    //  Wiring
+    // =============================================================
+    // Wraps the thermal header inputs so their caption sits on the border,
+    // matching the rest of the Settings screens.
+    function decorateFloatLabels() {
+        document.querySelectorAll('.p-float[data-label]').forEach(function (input) {
+            if (input.parentElement && input.parentElement.classList.contains('p-float-wrap')) return;
+
+            var wrap = document.createElement('div');
+            wrap.className = 'p-float-wrap';
+
+            var caption = document.createElement('span');
+            caption.textContent = input.getAttribute('data-label');
+
+            input.parentElement.insertBefore(wrap, input);
+            wrap.appendChild(caption);
+            wrap.appendChild(input);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        decorateFloatLabels();
+
+        document.querySelectorAll('.p-panel').forEach(function (panel) {
+            var printer = panel.getAttribute('data-printer');
+
+            panel.querySelectorAll('[data-field]').forEach(function (el) {
+                var evt = (el.tagName === 'SELECT' || el.type === 'checkbox' || el.type === 'color') ? 'change' : 'input';
+                el.addEventListener(evt, function () {
+                    autoSave(printer);
+                    if (printer === currentPrinter) queuePreview();
+                });
+            });
+        });
+
+        refreshPreview();
+    });
+</script>

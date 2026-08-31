@@ -1,0 +1,372 @@
+@using MUNEEMJI.Models.Setting
+@model PrintSettingsModel
+@{
+    var pfx = Model.PrinterType;
+    var themes = ViewData["Themes"] as List<PrintThemeModel> ?? new List<PrintThemeModel>();
+    var isThermal = string.Equals(pfx, "Thermal", StringComparison.OrdinalIgnoreCase);
+
+    var paperSizes = isThermal
+        ? new[] { "2 inch", "3 inch", "4 inch" }
+        : new[] { "A4", "A5", "A3", "Letter", "Legal" };
+
+    var textSizes = new[] { "Small", "Medium", "Large", "Extra Large" };
+
+    // Accent palette for the Change Colors tab. Picking one recolours the
+    // whole document; the fine-grained pickers below stay available.
+    var swatches = new[]
+    {
+        "#9B8BE8", "#1B7FA8", "#A0A0A0", "#4A4A4A", "#8A8A5C", "#5B7FE8",
+        "#22B8D8", "#1B7A3D", "#7DC242", "#7A4A28", "#8E44AD", "#A0356B",
+        "#7A3B18", "#A0522D", "#9B30D9", "#E91E8C", "#D9A96A", "#C89544",
+        "#E87DB8", "#F08C1E", "#D32F2F", "#E8541E", "#5D3A1A", "#FFFFFF"
+    };
+
+    var currentAccent = (Model.EffectivePrimaryColor ?? "").Trim();
+}
+
+<div class="p-panel" id="panel-@pfx" data-printer="@pfx">
+
+    <!-- ============ Sub tabs: Change Layout / Change Colors ============ -->
+    <div class="p-subtabs">
+        <button type="button" class="p-subtab active" data-sub="layout" onclick="switchSub('@pfx','layout')">Change Layout</button>
+        <button type="button" class="p-subtab" data-sub="colors" onclick="switchSub('@pfx','colors')">Change Colors</button>
+    </div>
+
+    <!-- ============================================================
+         Only this strip swaps between the two sub-tabs. Every option
+         below is shared, exactly as on the Change Layout tab.
+         ============================================================ -->
+
+    <!-- ---------- Head: Change Layout = theme thumbnails ---------- -->
+    <div class="p-sub-head" data-sub="layout">
+        <div class="p-section">
+            <div class="p-themes">
+                @foreach (var theme in themes)
+                {
+                    <div class="p-theme @(theme.Id == Model.ThemeId ? "selected" : "")"
+                         data-theme-id="@theme.Id"
+                         onclick="applyTheme('@pfx', @theme.Id)">
+                        <div class="p-theme-thumb" style="background:@theme.HeaderBgColor;border-color:@theme.BorderColor;">
+                            <div class="p-theme-bar" style="background:@theme.PrimaryColor;"></div>
+                            <div class="p-theme-line"></div>
+                            <div class="p-theme-line"></div>
+                            <div class="p-theme-line short"></div>
+                            <div class="p-theme-total" style="background:@theme.TotalRowColor;"></div>
+                        </div>
+                        <div class="p-theme-name">@theme.DisplayName</div>
+                        <div class="p-theme-meta">@theme.Orientation</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ---------- Head: Change Colors = accent swatches ---------- -->
+    <div class="p-sub-head" data-sub="colors" style="display:none;">
+        <div class="p-section">
+            <div class="p-swatches">
+                @foreach (var swatch in swatches)
+                {
+                    <button type="button"
+                            class="p-swatch @(string.Equals(currentAccent, swatch, StringComparison.OrdinalIgnoreCase) ? "on" : "")"
+                            data-swatch="@swatch"
+                            style="background:@swatch;"
+                            title="@swatch"
+                            onclick="pickSwatch('@pfx', '@swatch')"></button>
+                }
+            </div>
+
+            <a href="#" class="p-link p-link-block" onclick="toggleAdvancedColors('@pfx'); return false;">Fine-tune colours</a>
+
+            <div class="p-advanced-colors" id="@(pfx)_AdvancedColors" style="display:none;">
+                <div class="p-field">
+                    <label>Primary / Heading</label>
+                    <input type="color" class="p-color" data-field="PrimaryColor" value="@Model.EffectivePrimaryColor" />
+                </div>
+                <div class="p-field">
+                    <label>Table Header Background</label>
+                    <input type="color" class="p-color" data-field="HeaderBgColor" value="@Model.EffectiveHeaderBgColor" />
+                </div>
+                <div class="p-field">
+                    <label>Table Header Text</label>
+                    <input type="color" class="p-color" data-field="HeaderTextColor" value="@Model.EffectiveHeaderTextColor" />
+                </div>
+                <div class="p-field">
+                    <label>Border</label>
+                    <input type="color" class="p-color" data-field="BorderColor" value="@Model.EffectiveBorderColor" />
+                </div>
+                <div class="p-field">
+                    <label>Total Row Background</label>
+                    <input type="color" class="p-color" data-field="TotalRowColor" value="@Model.EffectiveTotalRowColor" />
+                </div>
+                <button type="button" class="p-btn secondary"
+                        onclick="applyTheme('@pfx', parseInt(document.getElementById('@(pfx)_ThemeId').value) || 1)">
+                    Reset colours to theme
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         Shared body - identical on both sub-tabs
+         ============================================================ -->
+    <div class="p-sub-body">
+
+        <input type="hidden" data-field="ThemeId" id="@(pfx)_ThemeId" value="@Model.ThemeId" />
+        <input type="hidden" data-field="PrinterType" value="@pfx" />
+        <input type="hidden" data-field="Id" value="@Model.Id" />
+
+        <!-- ---------- Company / Header ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Print Company Info</h3>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="MakeDefault" id="@(pfx)_MakeDefault" @(Model.MakeDefault ? "checked" : "") />
+                <label for="@(pfx)_MakeDefault">Make @pfx Printer Default</label>
+            </div>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="RepeatHeader" id="@(pfx)_RepeatHeader" @(Model.RepeatHeader ? "checked" : "") />
+                <label for="@(pfx)_RepeatHeader">Print repeat header in all pages</label>
+                <span class="p-info" title="When off, the company letterhead prints only on the first page.">i</span>
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintCompanyName" id="@(pfx)_PrintCompanyName" @(Model.PrintCompanyName ? "checked" : "") />
+                <label for="@(pfx)_PrintCompanyName">Company Name</label>
+                <input type="text" class="p-input p-grow" data-field="CompanyNameText" id="@(pfx)_CompanyNameText"
+                       value="@Model.CompanyNameText" placeholder="@(ViewData["CompanyName"])" />
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintLogo" id="@(pfx)_PrintLogo" @(Model.PrintLogo ? "checked" : "") />
+                <label for="@(pfx)_PrintLogo">Company Logo</label>
+                <a href="#" class="p-link" onclick="pickImage('logo'); return false;">Change</a>
+                <img id="@(pfx)_LogoPreview" class="p-thumb" src="@(ViewData["LogoUrl"])" alt="" onerror="this.style.display='none'" />
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintAddress" id="@(pfx)_PrintAddress" @(Model.PrintAddress ? "checked" : "") />
+                <label for="@(pfx)_PrintAddress">Address</label>
+                <input type="text" class="p-input p-grow" data-field="AddressText" id="@(pfx)_AddressText"
+                       value="@Model.AddressText" placeholder="@(ViewData["CompanyAddress"])" />
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintEmail" id="@(pfx)_PrintEmail" @(Model.PrintEmail ? "checked" : "") />
+                <label for="@(pfx)_PrintEmail">Email</label>
+                <input type="text" class="p-input p-grow" data-field="EmailText" id="@(pfx)_EmailText"
+                       value="@Model.EmailText" placeholder="@(ViewData["CompanyEmail"])" />
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintPhone" id="@(pfx)_PrintPhone" @(Model.PrintPhone ? "checked" : "") />
+                <label for="@(pfx)_PrintPhone">Phone Number</label>
+                <input type="text" class="p-input p-grow" data-field="PhoneText" id="@(pfx)_PhoneText"
+                       value="@Model.PhoneText" placeholder="@(ViewData["CompanyPhone"])" />
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintGstin" id="@(pfx)_PrintGstin" @(Model.PrintGstin ? "checked" : "") />
+                <label for="@(pfx)_PrintGstin">GSTIN on Sale</label>
+                <input type="text" class="p-input p-grow" data-field="GstinText" id="@(pfx)_GstinText"
+                       value="@Model.GstinText" placeholder="@(ViewData["CompanyGstin"])" />
+            </div>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="PrintState" id="@(pfx)_PrintState" @(Model.PrintState ? "checked" : "") />
+                <label for="@(pfx)_PrintState">State Name and Code</label>
+            </div>
+        </div>
+
+        <!-- ---------- Page setup ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Page Setup</h3>
+
+            <div class="p-field">
+                <label>Paper Size</label>
+                <select class="p-select" data-field="PaperSize" id="@(pfx)_PaperSize">
+                    @foreach (var size in paperSizes)
+                    {
+                        <option value="@size" selected="@(string.Equals(Model.PaperSize, size, StringComparison.OrdinalIgnoreCase))">@size</option>
+                    }
+                </select>
+            </div>
+
+            @if (!isThermal)
+            {
+                <div class="p-field">
+                    <label>Orientation</label>
+                    <select class="p-select" data-field="Orientation" id="@(pfx)_Orientation">
+                        <option value="Portrait" selected="@(string.Equals(Model.Orientation, "Portrait", StringComparison.OrdinalIgnoreCase))">Portrait</option>
+                        <option value="Landscape" selected="@(string.Equals(Model.Orientation, "Landscape", StringComparison.OrdinalIgnoreCase))">Landscape</option>
+                    </select>
+                </div>
+            }
+            else
+            {
+                <input type="hidden" data-field="Orientation" value="Portrait" />
+            }
+
+            <div class="p-field">
+                <label>Company Name Text Size</label>
+                <select class="p-select" data-field="CompanyNameTextSize" id="@(pfx)_CompanyNameTextSize">
+                    @foreach (var size in textSizes)
+                    {
+                        <option value="@size" selected="@(string.Equals(Model.CompanyNameTextSize, size, StringComparison.OrdinalIgnoreCase))">@size</option>
+                    }
+                </select>
+            </div>
+
+            <div class="p-field">
+                <label>Invoice Text Size</label>
+                <select class="p-select" data-field="InvoiceTextSize" id="@(pfx)_InvoiceTextSize">
+                    @foreach (var size in textSizes)
+                    {
+                        <option value="@size" selected="@(string.Equals(Model.InvoiceTextSize, size, StringComparison.OrdinalIgnoreCase))">@size</option>
+                    }
+                </select>
+            </div>
+
+            <div class="p-field">
+                <label>Extra space on Top of PDF</label>
+                <input type="number" class="p-input p-num" data-field="ExtraSpaceTop" id="@(pfx)_ExtraSpaceTop"
+                       value="@Model.ExtraSpaceTop" min="0" max="200" step="1" />
+                <span class="p-unit">pt</span>
+            </div>
+
+            <div class="p-field">
+                <label>Margins (L / R / B)</label>
+                <input type="number" class="p-input p-num" data-field="MarginLeft" value="@Model.MarginLeft" min="0" max="100" step="1" />
+                <input type="number" class="p-input p-num" data-field="MarginRight" value="@Model.MarginRight" min="0" max="100" step="1" />
+                <input type="number" class="p-input p-num" data-field="MarginBottom" value="@Model.MarginBottom" min="0" max="100" step="1" />
+            </div>
+
+            <div class="p-field">
+                <label>Font</label>
+                <select class="p-select" data-field="FontFamily" id="@(pfx)_FontFamily">
+                    @foreach (var font in new[] { "Arial", "Calibri", "Times New Roman", "Verdana", "Tahoma" })
+                    {
+                        <option value="@font" selected="@(string.Equals(Model.FontFamily, font, StringComparison.OrdinalIgnoreCase))">@font</option>
+                    }
+                </select>
+                <span class="p-hint">Fonts are loaded from wwwroot/DataContainer/Font</span>
+            </div>
+
+            <div class="p-field">
+                <label>Watermark Text</label>
+                <input type="text" class="p-input p-grow" data-field="WatermarkText" value="@Model.WatermarkText" placeholder="Leave blank for none" />
+            </div>
+        </div>
+
+        <!-- ---------- Copies ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Copies</h3>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="PrintOriginalDuplicate" id="@(pfx)_PrintOriginalDuplicate" @(Model.PrintOriginalDuplicate ? "checked" : "") />
+                <label for="@(pfx)_PrintOriginalDuplicate">Print Original/Duplicate</label>
+                <span class="p-info" title="Prints one page per selected copy, each with its own caption.">i</span>
+            </div>
+
+            <div class="p-nested">
+                <div class="p-check p-check-inline">
+                    <input type="checkbox" data-field="PrintCopyOriginal" id="@(pfx)_PrintCopyOriginal" @(Model.PrintCopyOriginal ? "checked" : "") />
+                    <label for="@(pfx)_PrintCopyOriginal">Original</label>
+                    <input type="text" class="p-input p-grow" data-field="LabelOriginal" value="@Model.LabelOriginal" />
+                </div>
+                <div class="p-check p-check-inline">
+                    <input type="checkbox" data-field="PrintCopyDuplicate" id="@(pfx)_PrintCopyDuplicate" @(Model.PrintCopyDuplicate ? "checked" : "") />
+                    <label for="@(pfx)_PrintCopyDuplicate">Duplicate</label>
+                    <input type="text" class="p-input p-grow" data-field="LabelDuplicate" value="@Model.LabelDuplicate" />
+                </div>
+                <div class="p-check p-check-inline">
+                    <input type="checkbox" data-field="PrintCopyTriplicate" id="@(pfx)_PrintCopyTriplicate" @(Model.PrintCopyTriplicate ? "checked" : "") />
+                    <label for="@(pfx)_PrintCopyTriplicate">Triplicate</label>
+                    <input type="text" class="p-input p-grow" data-field="LabelTriplicate" value="@Model.LabelTriplicate" />
+                </div>
+            </div>
+
+            <a href="#" class="p-link p-link-block" onclick="openTransactionNames(); return false;">Change Transaction Names &rsaquo;</a>
+        </div>
+
+        <!-- ---------- Item table ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Item Table</h3>
+
+            <div class="p-check">
+                <input type="checkbox" data-field="ExpandItemTable" id="@(pfx)_ExpandItemTable" @(Model.ExpandItemTable ? "checked" : "") />
+                <label for="@(pfx)_ExpandItemTable">Expand table to print on whole page</label>
+            </div>
+
+            <div class="p-field">
+                <label>Min No. of Rows</label>
+                <input type="number" class="p-input p-num" data-field="MinItemRows" value="@Model.MinItemRows" min="0" max="60" step="1" />
+            </div>
+
+            <a href="#" class="p-link p-link-block" onclick="openItemColumns(); return false;">Item Table Customization &rsaquo;</a>
+        </div>
+
+        <!-- ---------- Totals & taxes ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Totals and Taxes</h3>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintTotalItemQuantity" id="@(pfx)_PrintTotalItemQuantity" @(Model.PrintTotalItemQuantity ? "checked" : "") /><label for="@(pfx)_PrintTotalItemQuantity">Total Item Quantity</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintAmountWithDecimal" id="@(pfx)_PrintAmountWithDecimal" @(Model.PrintAmountWithDecimal ? "checked" : "") /><label for="@(pfx)_PrintAmountWithDecimal">Amount with Decimal</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintAmountWithGrouping" id="@(pfx)_PrintAmountWithGrouping" @(Model.PrintAmountWithGrouping ? "checked" : "") /><label for="@(pfx)_PrintAmountWithGrouping">Print Amount with Grouping</label><span class="p-info" title="1,23,456.00 instead of 123456.00">i</span></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintReceivedAmount" id="@(pfx)_PrintReceivedAmount" @(Model.PrintReceivedAmount ? "checked" : "") /><label for="@(pfx)_PrintReceivedAmount">Received Amount</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintBalanceAmount" id="@(pfx)_PrintBalanceAmount" @(Model.PrintBalanceAmount ? "checked" : "") /><label for="@(pfx)_PrintBalanceAmount">Balance Amount</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintCurrentBalanceParty" id="@(pfx)_PrintCurrentBalanceParty" @(Model.PrintCurrentBalanceParty ? "checked" : "") /><label for="@(pfx)_PrintCurrentBalanceParty">Current Balance of Party</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintTaxDetails" id="@(pfx)_PrintTaxDetails" @(Model.PrintTaxDetails ? "checked" : "") /><label for="@(pfx)_PrintTaxDetails">Tax Details</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintYouSaved" id="@(pfx)_PrintYouSaved" @(Model.PrintYouSaved ? "checked" : "") /><label for="@(pfx)_PrintYouSaved">You Saved</label></div>
+
+            <div class="p-field">
+                <label>Amount in Words</label>
+                <select class="p-select" data-field="AmountInWordsFormat" id="@(pfx)_AmountInWordsFormat">
+                    <option value="Indian" selected="@(string.Equals(Model.AmountInWordsFormat, "Indian", StringComparison.OrdinalIgnoreCase))">Indian (Lakh / Crore)</option>
+                    <option value="International" selected="@(string.Equals(Model.AmountInWordsFormat, "International", StringComparison.OrdinalIgnoreCase))">International (Million / Billion)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- ---------- Footer ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Footer</h3>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintDescription" id="@(pfx)_PrintDescription" @(Model.PrintDescription ? "checked" : "") /><label for="@(pfx)_PrintDescription">Print Description</label></div>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintTermsConditions" id="@(pfx)_PrintTermsConditions" @(Model.PrintTermsConditions ? "checked" : "") /><label for="@(pfx)_PrintTermsConditions">Print Terms and Conditions</label></div>
+            <div class="p-nested">
+                <textarea class="p-textarea" data-field="DefaultTermsText" rows="3" placeholder="Terms printed on every document">@Model.DefaultTermsText</textarea>
+            </div>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintReceivedBy" id="@(pfx)_PrintReceivedBy" @(Model.PrintReceivedBy ? "checked" : "") /><label for="@(pfx)_PrintReceivedBy">Print Received by details</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintDeliveredBy" id="@(pfx)_PrintDeliveredBy" @(Model.PrintDeliveredBy ? "checked" : "") /><label for="@(pfx)_PrintDeliveredBy">Print Delivered by details</label></div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintSignatureText" id="@(pfx)_PrintSignatureText" @(Model.PrintSignatureText ? "checked" : "") />
+                <label for="@(pfx)_PrintSignatureText">Print Signature Text</label>
+                <input type="text" class="p-input p-grow" data-field="SignatureText" value="@Model.SignatureText" />
+            </div>
+
+            <div class="p-check p-check-inline">
+                <input type="checkbox" data-field="PrintSignatureImage" id="@(pfx)_PrintSignatureImage" @(Model.PrintSignatureImage ? "checked" : "") />
+                <label for="@(pfx)_PrintSignatureImage">Signature Image</label>
+                <a href="#" class="p-link" onclick="pickImage('signature'); return false;">Change Signature</a>
+                <img id="@(pfx)_SignPreview" class="p-thumb" src="@(ViewData["SignatureUrl"])" alt="" onerror="this.style.display='none'" />
+            </div>
+
+            <div class="p-check"><input type="checkbox" data-field="PrintPaymentMode" id="@(pfx)_PrintPaymentMode" @(Model.PrintPaymentMode ? "checked" : "") /><label for="@(pfx)_PrintPaymentMode">Payment Mode</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintAcknowledgement" id="@(pfx)_PrintAcknowledgement" @(Model.PrintAcknowledgement ? "checked" : "") /><label for="@(pfx)_PrintAcknowledgement">Print Acknowledgement</label></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintPageNumbers" id="@(pfx)_PrintPageNumbers" @(Model.PrintPageNumbers ? "checked" : "") /><label for="@(pfx)_PrintPageNumbers">Print Page Numbers</label></div>
+        </div>
+
+        <!-- ---------- Bank ---------- -->
+        <div class="p-section">
+            <h3 class="p-title">Bank Details</h3>
+            <div class="p-check"><input type="checkbox" data-field="PrintBankDetails" id="@(pfx)_PrintBankDetails" @(Model.PrintBankDetails ? "checked" : "") /><label for="@(pfx)_PrintBankDetails">Print Bank Details</label><span class="p-info" title="Uses the first bank account of this company.">i</span></div>
+            <div class="p-check"><input type="checkbox" data-field="PrintUpiQr" id="@(pfx)_PrintUpiQr" @(Model.PrintUpiQr ? "checked" : "") /><label for="@(pfx)_PrintUpiQr">Print UPI ID</label></div>
+        </div>
+    </div>
+
+</div>

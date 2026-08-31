@@ -39,6 +39,7 @@ namespace MUNEEMJI.Filters
             { "ItemSettings", "Settings" },
             { "Transaction", "Settings" },
             { "TransactionSettings", "Settings" },
+            { "Print", "Settings" },
         };
 
         // Action names that require Create permission

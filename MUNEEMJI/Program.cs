@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MUNEEMJI.Models;
 using MUNEEMJI.PdfServices;
+using MUNEEMJI.PdfServices.Quest;
 using MUNEEMJI.Repositories;
 using MUNEEMJI.Services;
 var builder = WebApplication.CreateBuilder(args);
@@ -61,25 +62,32 @@ builder.Services.AddScoped<IErrorLogService, ErrorLogService>();
 builder.Services.AddScoped<IStockAndBalanceService, StockAndBalanceService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddScoped<MUNEEMJI.Services.IGstSettingsService, MUNEEMJI.Services.GstSettingsService>();
+builder.Services.AddScoped<IPrintSettingsService, PrintSettingsService>();
 
 // Razorpay configuration
 builder.Services.Configure<RazorpaySettings>(builder.Configuration.GetSection("Razorpay"));
 builder.Services.AddScoped<IRazorpayService, RazorpayService>();
 
-builder.Services.AddScoped<ISalesInvoicesPdf, SalesInvoicesPdf>();
-builder.Services.AddScoped<IEstimationQuotationPdf, EstimationQuotationPdf>();
-builder.Services.AddScoped<IPaymentInPdf, PaymentInPdf>();
-builder.Services.AddScoped<ISaleOrderPdf, SaleOrderPdf>();
-builder.Services.AddScoped<IDeliveryChallanPdf, DeliveryChallanPdf>();
-builder.Services.AddScoped<ISaleReturnPdf, SaleReturnPdf>();
-builder.Services.AddScoped<ICreditNotePdf, CreditNotePdf>();
-builder.Services.AddScoped<IOtherIncomePdf, OtherIncomePdf>();
-builder.Services.AddScoped<IPurchaseBillPdf, PurchaseBillPdf>();
-builder.Services.AddScoped<IPaymentOutPdf, PaymentOutPdf>();
-builder.Services.AddScoped<IExpensePdf, ExpensePdf>();
-builder.Services.AddScoped<IPurchaseOrderPdf, PurchaseOrderPdf>();
-builder.Services.AddScoped<IPurchaseReturnPdf, PurchaseReturnPdf>();
-builder.Services.AddScoped<IDrNotePdf, DrNotePdf>();
+// ---------------------------------------------------------------------
+// PDF generation - QuestPDF, driven by Settings > Print.
+// To roll back to the legacy iTextSharp generators, swap the concrete type
+// on each line below (e.g. QuestSalesInvoicesPdf -> SalesInvoicesPdf).
+// The old classes are still compiled and unchanged.
+// ---------------------------------------------------------------------
+builder.Services.AddScoped<ISalesInvoicesPdf, QuestSalesInvoicesPdf>();
+builder.Services.AddScoped<IEstimationQuotationPdf, QuestEstimationQuotationPdf>();
+builder.Services.AddScoped<IPaymentInPdf, QuestPaymentInPdf>();
+builder.Services.AddScoped<ISaleOrderPdf, QuestSaleOrderPdf>();
+builder.Services.AddScoped<IDeliveryChallanPdf, QuestDeliveryChallanPdf>();
+builder.Services.AddScoped<ISaleReturnPdf, QuestSaleReturnPdf>();
+builder.Services.AddScoped<ICreditNotePdf, QuestCreditNotePdf>();
+builder.Services.AddScoped<IOtherIncomePdf, QuestOtherIncomePdf>();
+builder.Services.AddScoped<IPurchaseBillPdf, QuestPurchaseBillPdf>();
+builder.Services.AddScoped<IPaymentOutPdf, QuestPaymentOutPdf>();
+builder.Services.AddScoped<IExpensePdf, QuestExpensePdf>();
+builder.Services.AddScoped<IPurchaseOrderPdf, QuestPurchaseOrderPdf>();
+builder.Services.AddScoped<IPurchaseReturnPdf, QuestPurchaseReturnPdf>();
+builder.Services.AddScoped<IDrNotePdf, QuestDrNotePdf>();
 builder.Services.AddRazorPages();
 
 // Add Session services
@@ -118,6 +126,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 var app = builder.Build();
+
+// QuestPDF licence + fonts. Done at startup so the first PDF request is not
+// the one that pays for font registration, and so a headless Linux host never
+// falls back to an OS font that is not installed.
+QuestPdfEngine.EnsureInitialised(app.Environment);
 
 // Configure the HTTP request pipeline.
 app.UsePathBase("/Web");
